@@ -1,0 +1,106 @@
+{
+  // Formatting: Prettier, configured by .prettierrc.json (gts / Google style).
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.rulers": [80],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "prettier.configPath": ".prettierrc.json",
+  "prettier.requireConfig": true,
+
+  // Linting: ESLint with the gts flat config (eslint.config.js).
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "files.associations": {
+    "*.mdx": "mdx",
+    "*.css": "tailwindcss"
+  },
+
+  // License header inserted automatically into every new file
+  // (psioniq.psi-header). Keep in sync with scripts/license-headers.mjs.
+  "psi-header.changes-tracking": {
+    "isActive": true,
+    "autoHeader": "autoSave",
+    "include": [
+      "typescript",
+      "typescriptreact",
+      "javascript",
+      "css",
+      "html",
+      "mdx"
+    ],
+    "exclude": ["json", "jsonc", "markdown", "plaintext"]
+  },
+  "psi-header.config": {
+    "author": "swemre",
+    "authorEmail": "emre@swemre.com",
+    "company": "swemre",
+    "forceToTop": true
+  },
+  "psi-header.lang-config": [
+    {
+      "language": "typescript",
+      "begin": "/**",
+      "prefix": " * ",
+      "end": " */",
+      "blankLinesAfter": 1
+    },
+    {
+      "language": "typescriptreact",
+      "begin": "/**",
+      "prefix": " * ",
+      "end": " */",
+      "blankLinesAfter": 1
+    },
+    {
+      "language": "javascript",
+      "begin": "/**",
+      "prefix": " * ",
+      "end": " */",
+      "blankLinesAfter": 1
+    },
+    {
+      "language": "css",
+      "begin": "/*",
+      "prefix": " * ",
+      "end": " */",
+      "blankLinesAfter": 1
+    },
+    {
+      "language": "mdx",
+      "begin": "{/*",
+      "prefix": " * ",
+      "end": " */}",
+      "blankLinesAfter": 1
+    },
+    {
+      "language": "html",
+      "begin": "<!--",
+      "prefix": "  ",
+      "end": "-->",
+      "blankLinesAfter": 1
+    }
+  ],
+  "psi-header.templates": [
+    {
+      "language": "*",
+      "template": [
+        "Copyright <<year>> <<author>> (<<authoremail>>). All rights reserved.",
+        "",
+        "Licensed under the Apache License, Version 2.0 with the Commons Clause",
+        "License Condition v1.0 (the \"License\"). Personal use of this code and",
+        "content is permitted; any commercial gain requires prior written",
+        "permission from the copyright holder. See the LICENSE file for full terms.",
+        "",
+        "Contact: <<authoremail>>"
+      ]
+    }
+  ]
+}

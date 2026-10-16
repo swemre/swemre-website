@@ -1,78 +1,58 @@
-# React + TypeScript + Vite
+# swemre-website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The personal website at [swemre.com](https://swemre.com): articles, projects, songs, a chat
+widget and a resume request form. Built with React 19, TypeScript, Vite, Tailwind CSS and MDX.
 
-Currently, two official plugins are available:
+Content comes from one workspace of `swemre-website-api` and is written in `swemre-cms`. Block
+content is rendered by `swemre-blocks`, the same view the CMS uses for its preview. Articles that
+have a `<slug>.mdx` file in `src/page` use that file instead.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run locally
 
-## React Compiler
+Start the API first (see its README), then:
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+The site runs on http://localhost:5173. It reads the workspace `swemre-website` from
+`http://localhost:8080/api`; see `.env.example` to change either. `swemre-blocks` must sit next to
+this folder; Vite and TypeScript resolve it by path.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Content
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `npm run rss` writes `public/rss.xml` from the published posts. It runs before `dev` and `build`
+  and keeps the existing file when the API cannot be reached.
+- `scripts/import-content-to-api.mjs` is a one-time import of the content in `src/database` into a
+  workspace. It skips posts that already exist, so it can run again:
 
+  ```bash
+  ADMIN_PASSWORD=... node --experimental-strip-types --no-warnings scripts/import-content-to-api.mjs
+  ```
+
+## Checks
+
+```bash
+npm run checkstyle   # ESLint, Prettier and license headers
+npm run build        # type check and production build into dist/
 ```
+
+## Deploy
+
+The build is a static single page app, served from Garage (open source S3 storage) on the server;
+see `deploy/README.md` in `swemre-website-api`. `scripts/deploy-s3.sh` builds it for the given
+API and uploads it with rclone: hashed bundles are cached for a year, everything else is
+revalidated. Without a local rclone the script uses its Docker image.
+
+```bash
+S3_ENDPOINT=https://s3.swemre.com S3_BUCKET=swemre.com S3_ACCESS_KEY_ID=GK... S3_SECRET_ACCESS_KEY=... VITE_API_BASE=https://api.swemre.com/api npm run deploy:s3
+```
+
+The key comes from `deploy/garage-init.sh`. Traefik answers routes like `/articles/<slug>` with
+`index.html`, so they work on reload. `SKIP_INSTALL=1` skips `npm ci`, for example while a dev
+server is running.
+
+## License
+
+Personal use is permitted; commercial use needs written permission. See `LICENSE` and `NOTICE`.
