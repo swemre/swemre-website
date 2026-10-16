@@ -1,0 +1,5 @@
+# Every text file keeps LF, so scripts behave the same on every machine
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.png binary
+*.jpg binary
