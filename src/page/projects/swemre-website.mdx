@@ -1,0 +1,207 @@
+{/*
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */}
+
+The site you are looking at: a personal portfolio with articles, projects, a music dock and a chat widget, built to feel like the documentation sites developers already know. This page is a guided tour of how it is put together, from the folder layout and the data layer down to the design tokens, the quality gates and the engineering documents that describe it all.
+
+## Goals
+
+Every design decision on the site traces back to one of these goals:
+
+- **Familiar**: GitHub and SaaS documentation conventions (sidebars, an "On this page" list, boxes with header bars, a search dialog on Ctrl K), so nothing needs explaining.
+- **Typed end to end**: content metadata, services, contexts and UI share one type file.
+- **Swappable data**: every entity goes through a service, so the in-memory arrays can become an API later without touching a component.
+- **One source of style**: every colour, size, shadow and width is a token in one CSS file.
+- **Strict, automatic quality**: lint, formatting, license headers and types are checked by two commands.
+- **Documented like it matters**: requirements, design, interfaces, tests and risks are written down in the repository.
+
+And a few explicit non-goals: no server-side rendering, no accounts, no CMS and no analytics.
+
+## Stack
+
+| Concern    | Choice                                                    |
+| ---------- | --------------------------------------------------------- |
+| UI         | React 19 with the React Compiler                          |
+| Language   | TypeScript with `erasableSyntaxOnly`                      |
+| Build      | Vite 8 (Rolldown)                                         |
+| Routing    | React Router 7, one layout route                          |
+| Content    | MDX 3, GitHub-flavoured Markdown, Shiki highlighting      |
+| Styling    | Tailwind CSS v4 with every default cleared                |
+| Quality    | Google TypeScript Style (gts 7), ESLint 9, Prettier       |
+| Feeds      | RSS generated at build time                               |
+| Third party | Spotify iFrame API, loaded only on first play            |
+
+The React Compiler deserves a mention: it memoises components automatically, so the code contains almost no `useMemo` or `useCallback`. The few that remain are there because a stable identity is part of a contract, not for performance.
+
+## Folder structure
+
+```text
+src/
+├── page/          Routed pages and their MDX bodies only
+│   ├── home/      HomePage.tsx
+│   ├── article/   ArticlesPage, ArticlePage and one .mdx per article
+│   ├── projects/  ProjectsPage, ProjectPage and one .mdx per project
+│   └── sp/        Special pages (privacy policy) with a corporate layout
+├── templates/     Page skeletons: SiteLayout, DocsLayout, ArticleTemplate, …
+├── components/    Reusable UI (Navbar, HeaderBand, DocHeader, SongRow, Dock,
+│                  chat/, search/, mdx/)
+├── context/       React contexts and their providers
+├── hooks/         useService, useFindAll, usePlayer, useChat, …
+├── services/      SwemreService implementations and the registry
+├── database/      Static arrays: the local "database"
+├── forms/         Form components and validation
+├── config/        Site-wide constants (name, socials, paths)
+├── types/         type.d.ts: every type in the project, in one file
+├── utils/         Small pure helpers (cn, buttonClass, formatDate)
+└── main.css       The whole design system
+```
+
+The rule is strict: `page/` holds pages and MDX and nothing else. Anything reusable moves to its own folder. Dependencies flow one way, from pages to templates to components to hooks to services to data, and pages never import the database directly.
+
+### One type file
+
+All types live in `src/types/type.d.ts`, grouped into sections: entities and services, content, interactions, forms, search, Spotify, player, chat and UI. Comments in that file are reserved for format notes, such as "ISO 8601, UTC" or "minutes". Having one file makes the data model readable in a single sitting, at the cost of one gotcha: TypeScript's `skipLibCheck` skips `.d.ts` files, so after editing it there is a separate type check to run.
+
+## Request flow
+
+What happens when a visitor opens `/articles/getting-started-with-mdx`:
+
+1. `index.html` runs a tiny inline script that reads the stored theme and sets `data-theme` before anything paints.
+2. `main.tsx` mounts the router, the service registry and the theme provider; `App` adds the player, chat, search and resume-modal providers.
+3. React Router matches the `SiteLayout` route, which renders the navbar, the `<Outlet />`, the footer and the dock.
+4. `ArticlePage` reads the slug and calls `useService('article').findBySlug(slug)` through a stable loader.
+5. The service returns the metadata and a lazy MDX component for the body, which downloads as its own chunk.
+6. `ArticleTemplate` draws the header band, the title block, the sidebars and the table of contents, then renders the body.
+7. `ArticleInteractionStore` records a view in `localStorage`, guarded so React StrictMode does not count it twice.
+
+## Routes and templates
+
+| Path               | Page           | Template            | Header band |
+| ------------------ | -------------- | ------------------- | ----------- |
+| `/`                | `HomePage`     | `HomeTemplate`      | No          |
+| `/articles`        | `ArticlesPage` | `ListTemplate`      | Yes         |
+| `/articles/:slug`  | `ArticlePage`  | `ArticleTemplate`   | Yes         |
+| `/projects`        | `ProjectsPage` | `ListTemplate`      | Yes         |
+| `/projects/:slug`  | `ProjectPage`  | `ProjectTemplate`   | Yes         |
+| `/sp/:slug`        | `SpecialPage`  | `CorporateTemplate` | No          |
+
+Articles and projects share `DocsLayout`: a three-column grid with navigation on the left, the reading column in the middle and the table of contents on the right. The reading column is capped at 75 characters (`75ch`), the long-standing typographic recommendation for comfortable line length, and the gap to the sidebars grows on larger screens. The page title, breadcrumbs, tags and actions sit at the top of that same column, rendered by `DocHeader`, so they line up with the text.
+
+The header band above them is purely decorative: a gradient in shades of the primary blue with a faint grid, about 150 pixels tall including the navbar that floats over it. The navbar is transparent at the top of these pages and turns solid once you scroll.
+
+The home page is different on purpose: one screen with no scrolling on desktop, holding a short introduction, a phone button, a resume request button and three compact lists.
+
+## Services
+
+Pages ask for data through `useService(name)`. Each service implements one generic contract:
+
+```ts
+interface SwemreService<T extends Entity> {
+  findAll(): Promise<T[]>
+  findById(id: string): Promise<T | undefined>
+  create(data: NewEntity<T>): Promise<T>
+  update(id: string, patch: Partial<NewEntity<T>>): Promise<T | undefined>
+  remove(id: string): Promise<boolean>
+}
+```
+
+| Service              | Backing store                 | Extra methods                 |
+| -------------------- | ----------------------------- | ----------------------------- |
+| `ArticleService`     | `articleDatabase` + MDX glob  | `findBySlug`, `getBody`       |
+| `ProjectService`     | `projectDatabase` + MDX glob  | `findBySlug`, `getBody`       |
+| `SongService`        | `songDatabase`                | none                          |
+| `SpecialPageService` | `specialPageDatabase` + MDX   | `findBySlug`, `getBody`       |
+| `ContactFormService` | in-memory array               | `submitResumeRequest`         |
+| `ChatService`        | `localStorage`                | `start`, `send`, `presence`   |
+| `SearchService`      | registered sources            | `register`, `search`          |
+
+Everything is asynchronous even though today it is all in memory. That one decision means the move to a backend is a change inside the services, not across the UI. The article on the generic service layer walks through the code in detail.
+
+## Content
+
+Articles and projects are two files each: a metadata entry in `src/database/` and an MDX body in `src/page/<folder>/<slug>.mdx`. The slug ties them together.
+
+- Metadata is a typed array, so the compiler checks every field and listing pages, search and RSS read titles without loading any body.
+- Bodies are discovered with `import.meta.glob` and wrapped in `React.lazy` once at module load, so each one is a separate chunk.
+- A shared MDX component map styles every Markdown element and makes `<Callout>` available without an import.
+- Code is highlighted at build time by Shiki, with both light and dark colours emitted as CSS variables.
+- `h2` and `h3` headings get anchor ids, and a hook builds the table of contents from the rendered body.
+
+Adding an article means adding one entry and one file. Nothing else needs to know.
+
+## Visitor state
+
+Visitors can like and save articles, and each article counts its views. All of that lives in `localStorage` under one namespaced key and is read through `useSyncExternalStore`, which keeps every component in sync and even updates other open tabs. Reading tolerates corrupt data and writing tolerates full or blocked storage, so the site works in private browsing too.
+
+The other keys are the theme and the chat conversations. All three are listed in the privacy policy, and none of them leaves the visitor's device.
+
+## Search
+
+Anything that extends `Searchable` (an `id`, a `title`, an optional summary and tags) can register a source with the search service. Pages, articles, projects, songs and legal pages are registered today. Press <kbd>Ctrl</kbd> <kbd>K</kbd> or <kbd>/</kbd> to try it.
+
+Scoring is deliberately simple and predictable: a title prefix beats a word prefix inside the title, which beats a substring, which beats a tag, which beats the summary. Every term in the query must match somewhere. Selecting a result navigates, opens a link or, for songs, starts playback in the dock.
+
+## The dock
+
+The bottom-right dock is mounted by the layout route, so it survives navigation:
+
+- **Music player**: the Spotify iFrame API driven by one shared controller. Song rows on the home page look like Spotify's track list and start or pause playback. The player can collapse to a mini bar without stopping the music, and falls back to a plain embed if the API script is blocked.
+- **Chat**: a round "SW" launcher opens a panel where visitors can start, revisit and delete conversations, stored in `localStorage`. Until a backend exists, the owner shows as offline and messages are marked "Queued".
+
+When the chat panel is open the player collapses automatically, so the two never compete for space.
+
+## Design system
+
+`src/main.css` clears every Tailwind namespace (colours, shadows, radii, fonts, text sizes and containers) and defines semantic tokens instead: `canvas`, `surface`, `fg`, `border`, `primary` and friends, plus layout tokens such as `max-w-page`, `max-w-reading`, `w-dock` and `h-band`. Dark mode swaps the variables under `[data-theme='dark']`; no component uses `dark:` for colours.
+
+Components contain no hex values, no inline styles and no pixel sizes. Fluid sizes, such as a panel that is 24rem on desktop and full width on a phone, are expressed inside the token with `min()` or `clamp()`. One lesson learned the hard way: a token named `--spacing-grid` made Tailwind generate an `inline-grid` sizing utility that overrode the display utility of the same name. Tokens are now never named after Tailwind keywords.
+
+## Accessibility
+
+- Every control is a native element: buttons, links, a real `<dialog>` for the search and resume modals.
+- Icon-only buttons have accessible names, toggle buttons expose `aria-pressed`, and decorative elements such as the header band and the equalizer bars are hidden from assistive technology.
+- A visible focus ring is defined once in the base layer.
+- Colour contrast was measured for every token pair in both themes. One pair (the faintest grey in dark mode) is just under 3:1 and is tracked as a known issue.
+
+## Quality gates
+
+- `npm run checkstyle` runs ESLint with Google's TypeScript style rules plus the project's own (including no semicolons), Prettier with Tailwind class sorting, and the license header check.
+- `npm run build` type-checks the whole project, regenerates the RSS feed and builds the bundle.
+- Every source file carries the Apache 2.0 plus Commons Clause header, inserted automatically by the editor and enforced by a script.
+
+The type-aware lint rules catch more than style. `no-floating-promises` flags every promise that is neither awaited nor deliberately ignored, and the React Compiler's rules catch components created during render and refs read at the wrong time.
+
+## Engineering documentation
+
+The repository's `.claude/docs` folder holds a documentation set modelled on NASA's software engineering standard, scaled to a one-person project:
+
+| Document                               | What it records                                   |
+| -------------------------------------- | ------------------------------------------------- |
+| Software Management Plan               | Classification, lifecycle, milestones, standards  |
+| Software Requirements Specification    | About a hundred numbered "shall" requirements     |
+| Software Design Description            | Layers, modules, state machines, data design      |
+| Interface Control Document             | Service contracts, storage keys, Spotify API      |
+| Test Plan and Test Procedures          | Test levels, tools and around seventy test designs |
+| Requirements Traceability Matrix       | Requirement to design, code, test and status      |
+| Assurance Plan, Risk Register, ADRs    | Checklists, risks with scores, decision history   |
+| Software Version Description           | What is in this baseline and what is known missing |
+
+The documents are honest about status: static checks run on every change, while unit, component and end-to-end tests are designed but not yet implemented.
+
+## What is next
+
+- Automated tests: Vitest and Testing Library for services and components, Playwright and axe for journeys and accessibility.
+- A small backend for resume requests and chat delivery, replacing the in-memory and offline-only behaviour.
+- Hosting with a single-page-app fallback, a content security policy and a CI pipeline running the same checks.
+- Turning on TypeScript's strict mode.
+
+<Callout type="note">
+  The source is the reference for everything above. Start with `src/types/type.d.ts` for the data model, `src/main.css` for the design system and `.claude/docs/engineering/README.md` for the documentation set.
+</Callout>

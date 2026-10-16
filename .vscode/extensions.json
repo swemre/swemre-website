@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "psioniq.psi-header",
+    "unifiedjs.vscode-mdx",
+    "editorconfig.editorconfig",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

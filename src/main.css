@@ -1,0 +1,252 @@
+/*
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  /* ---------- reset Tailwind defaults ---------- */
+  --color-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --container-*: initial;
+
+  /* ---------- colours (light) ---------- */
+  --color-canvas: #f4f6f8; /* page background, softer than pure white */
+  --color-canvas-subtle: #eef1f4; /* sidebars, bands */
+  --color-surface: #fafbfc; /* boxes, cards */
+  --color-surface-muted: #f0f3f6; /* box headers, hovered rows */
+  --color-overlay: #fbfcfd; /* dialogs, popovers */
+  --color-inset: #eaeef2; /* code blocks, inputs */
+
+  --color-fg: #2b3137; /* body text */
+  --color-fg-strong: #1f2328; /* headings */
+  --color-fg-muted: #59636e;
+  --color-fg-subtle: #818b98;
+  --color-fg-on-emphasis: #ffffff;
+
+  --color-border: #d4dae0;
+  --color-border-muted: #e2e7ec;
+  --color-border-strong: #b4bec8;
+
+  --color-primary: #1d4ed8;
+  --color-primary-emphasis: #1e40af;
+  --color-primary-muted: #e0e7fa;
+  --color-primary-solid: #12357f; /* filled buttons and header bands */
+  --color-primary-solid-hover: #1a46a6;
+  --color-secondary: #8250df;
+  --color-secondary-muted: #ece4fb;
+
+  --color-success: #1a7f37;
+  --color-success-muted: #dcf2e3;
+  --color-attention: #9a6700;
+  --color-attention-muted: #fbf0d2;
+  --color-danger: #cf222e;
+  --color-danger-muted: #fbe1e3;
+  --color-spotify: #1db954;
+
+  --color-cover-fg: #ffffff;
+  --color-cover-ink: #0d1117;
+
+  --color-band-from: #0a1f55; /* header band gradient, primary tones */
+  --color-band-via: #12357f;
+  --color-band-to: #2457d6;
+  --color-band-glow: #9cbcff;
+
+  --color-shadow: rgb(31 35 40 / 0.1);
+  --color-shadow-strong: rgb(31 35 40 / 0.18);
+  --color-scrim: rgb(31 35 40 / 0.45);
+
+  /* ---------- shadows ---------- */
+  --shadow-xs: 0 1px 0 var(--color-shadow);
+  --shadow-sm: 0 1px 2px var(--color-shadow);
+  --shadow-md: 0 3px 6px var(--color-shadow), 0 1px 2px var(--color-shadow);
+  --shadow-lg: 0 8px 24px var(--color-shadow), 0 2px 6px var(--color-shadow);
+  --shadow-xl: 0 12px 32px var(--color-shadow-strong);
+  --shadow-overlay:
+    0 0 0 1px var(--color-border), 0 16px 48px var(--color-shadow-strong);
+
+  /* ---------- radius (deliberately small) ---------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* ---------- fonts ---------- */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-heading: var(--font-sans);
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---------- text sizes ---------- */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.625rem;
+  --text-reading: 1.0625rem; /* article body */
+  --text-reading--line-height: 1.875rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.875rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.375rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.75rem;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 3.5rem;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 4.25rem;
+
+  /* ---------- layout widths ---------- */
+  --container-page: 108rem; /* page content */
+  --container-wide: 150rem; /* navbar and footer */
+  --container-reading: 75ch; /* article and project column: ~65-75 characters per line */
+  --container-sidebar: clamp(14rem, 14vw, 19rem); /* docs sidebars */
+  --container-hero: 64rem; /* home intro block */
+  --container-measure: 48rem; /* lede and summary paragraphs */
+  --container-search: 20rem; /* navbar search trigger */
+  --container-dialog: min(32rem, calc(100vw - 2rem));
+  --container-palette: min(42rem, calc(100vw - 2rem)); /* search dialog */
+  --container-dock: min(24rem, calc(100vw - 2rem)); /* player panel */
+  --container-chat-panel: min(21rem, calc(100vw - 2rem));
+  --container-bubble: 80%; /* chat message bubble */
+
+  --spacing-nav: 3.5rem; /* navbar height */
+  --spacing-sticky: 5rem; /* top offset for sticky sidebars */
+  --spacing-band: clamp(8.5rem, 16vh, 10rem); /* header band, navbar included */
+  --spacing-band-cell: 3rem; /* header band grid cell */
+  --spacing-embed: 9.5rem; /* Spotify compact embed, fixed by Spotify at 152px */
+  --spacing-dialog-top: 12vh;
+  --spacing-palette: min(36rem, 76vh); /* search dialog max height */
+  --spacing-chat: min(28rem, calc(100dvh - 10rem)); /* chat panel height */
+
+  /* ---------- motion ---------- */
+  --animate-pop: pop 140ms ease-out;
+  --animate-fade: fade 140ms ease-out;
+  --animate-eq: eq 900ms ease-in-out infinite;
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes eq {
+    0%,
+    100% {
+      transform: scaleY(0.3);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+}
+
+/* ---------- colours (dark: grey-blue, GitHub "dimmed" family) ---------- */
+:root[data-theme='dark'] {
+  --color-canvas: #22272e;
+  --color-canvas-subtle: #1e2228;
+  --color-surface: #272d35;
+  --color-surface-muted: #2d333b;
+  --color-overlay: #2d333b;
+  --color-inset: #1c2128;
+
+  --color-fg: #adbac7;
+  --color-fg-strong: #cdd9e5;
+  --color-fg-muted: #8b98a5;
+  --color-fg-subtle: #636e7b;
+  --color-fg-on-emphasis: #ffffff;
+
+  --color-border: #444c56;
+  --color-border-muted: #373e47;
+  --color-border-strong: #545d68;
+
+  --color-primary: #7aa2f7;
+  --color-primary-emphasis: #9bb9ff;
+  --color-primary-muted: rgb(86 126 230 / 0.2);
+  --color-primary-solid: #1b3a8a;
+  --color-primary-solid-hover: #2449a8;
+
+  --color-band-from: #0c1838;
+  --color-band-via: #16306f;
+  --color-band-to: #2650b8;
+  --color-band-glow: #7aa2f7;
+  --color-secondary: #986ee2;
+  --color-secondary-muted: rgb(152 110 226 / 0.18);
+
+  --color-success: #57ab5a;
+  --color-success-muted: rgb(70 149 74 / 0.18);
+  --color-attention: #c69026;
+  --color-attention-muted: rgb(174 124 20 / 0.18);
+  --color-danger: #e5534b;
+  --color-danger-muted: rgb(229 83 75 / 0.18);
+
+  --color-shadow: rgb(1 4 9 / 0.3);
+  --color-shadow-strong: rgb(1 4 9 / 0.55);
+  --color-scrim: rgb(1 4 9 / 0.6);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    scroll-padding-top: calc(var(--spacing-nav) + 1rem);
+  }
+
+  body {
+    @apply bg-canvas font-sans text-base text-fg antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary-muted;
+  }
+
+  :focus-visible {
+    @apply rounded-xs outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* Shiki emits both themes as variables; pick one from data-theme. */
+  .shiki,
+  .shiki span {
+    color: var(--shiki-light);
+  }
+  [data-theme='dark'] .shiki,
+  [data-theme='dark'] .shiki span {
+    color: var(--shiki-dark);
+  }
+}

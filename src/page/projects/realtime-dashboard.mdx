@@ -1,0 +1,237 @@
+{/*
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */}
+
+<Callout type="warning">
+  Placeholder project. This page is a design write-up, not a description of a shipped product. Replace it with a real write-up.
+</Callout>
+
+**Realtime dashboard** streams live metrics from servers and services over WebSockets and renders them as charts that update smoothly, many times a second, without dropping frames or growing memory. It is a study in the unglamorous details of real-time interfaces: backpressure, batching, fixed memory budgets and charts that do not redraw the world on every data point.
+
+## The problem
+
+Most dashboards poll. Every few seconds each chart asks an API for the latest numbers, the API queries a database, and the chart redraws from scratch. That design has three problems:
+
+- **Stale by construction.** A spike that lasts two seconds can vanish between polls.
+- **Wasteful.** Every chart repeats the same query whether anything changed or not.
+- **Janky at scale.** Redrawing dozens of charts at once blocks the main thread, so scrolling and hovering stutter exactly when you are trying to read the data.
+
+Streaming fixes the first two: the server pushes small updates the moment they happen. The third needs careful work in the browser, and it is where most of this project's effort goes.
+
+## Goals
+
+| Goal                   | Target                                                          |
+| ---------------------- | --------------------------------------------------------------- |
+| Freshness              | New points visible within 250 ms of being produced              |
+| Smoothness             | 60 frames per second with 40 charts and 20 updates per second each |
+| Bounded memory         | Flat memory use after hours of streaming                        |
+| Resilience             | Automatic reconnect with backfill; no gaps after a dropped connection |
+| Efficient wire format  | Small messages, batched                                         |
+| Accessible             | Current values available as text, not only as pixels            |
+
+### Non-goals
+
+- Long-term storage and querying of historical metrics (a time-series database does that; the dashboard reads from it for backfill only).
+- Alerting in the first version.
+
+## Architecture
+
+```text
+ Services ──► Collector ──► Stream hub ──WebSocket──► Browser
+ (metrics)    (aggregate     (fan-out per            │
+               per second)    subscription)          ├─ Socket worker: parse, batch
+                                                     ├─ Ring buffers per series
+                                                     └─ Render loop (rAF) ─► Canvas charts
+```
+
+- The **collector** receives raw metrics and aggregates them into one point per series per interval, so a noisy source cannot flood clients.
+- The **stream hub** keeps track of which client subscribed to which series and fans out only what each one needs.
+- In the browser, a **Web Worker** owns the socket and parsing, the main thread owns rendering, and the two meet at a set of fixed-size buffers.
+
+## Wire format
+
+Messages are small and batched. A single message carries every point produced in the last interval for the series a client follows:
+
+```json
+{
+  "t": 1760000000,
+  "points": [
+    ["cpu.web-1", 0.42],
+    ["cpu.web-2", 0.38],
+    ["rps.api", 1284]
+  ]
+}
+```
+
+- **One timestamp per batch** rather than per point, because points in a batch share an interval.
+- **Series as short string keys**, mapped to numeric ids after the first message if bandwidth matters.
+- **A sequence number** per connection (omitted above for brevity) lets the client detect a gap and request a backfill.
+
+JSON is the starting point because it is debuggable in browser tools. If profiling shows parsing is a bottleneck, the same structure can move to a binary encoding without changing anything else.
+
+## Subscriptions
+
+Clients subscribe to series by pattern when a chart mounts and unsubscribe when it unmounts:
+
+```ts
+socket.send(JSON.stringify({type: 'subscribe', series: ['cpu.*', 'rps.api']}))
+```
+
+Charts that are scrolled out of view pause their subscription after a short delay, using an `IntersectionObserver`. On a long dashboard this cuts traffic and work dramatically, because most charts are off screen most of the time.
+
+## Keeping the main thread free
+
+The browser has one main thread for layout, painting, input and your JavaScript. Every millisecond spent parsing messages or updating data structures is a millisecond the page cannot respond to a scroll or a hover. Three techniques keep it free.
+
+### 1. Parse in a worker
+
+A Web Worker owns the WebSocket. It parses each message, routes points to their series and writes them into shared buffers. The main thread never sees a raw message.
+
+### 2. Render once per frame
+
+Messages arrive whenever the network delivers them, often several per frame. Rendering on each one would waste work. Instead, the main thread runs a single `requestAnimationFrame` loop. Each frame it checks which series changed since the last frame, and redraws only those charts. Ten messages in one frame cost one redraw.
+
+```ts
+function frame() {
+  for (const chart of charts) {
+    if (chart.series.version !== chart.drawnVersion) {
+      chart.draw()
+      chart.drawnVersion = chart.series.version
+    }
+  }
+  requestAnimationFrame(frame)
+}
+```
+
+### 3. Canvas, not the DOM
+
+Each chart is a `<canvas>`. Drawing a few hundred line segments on a canvas is cheap; creating and updating hundreds of SVG elements per frame is not. Axes and labels change rarely, so they are drawn on a separate canvas layer and only repainted when the scale changes.
+
+## Bounded memory: ring buffers
+
+A dashboard left open over a weekend must not end the weekend using gigabytes. Each series stores its points in a fixed-size ring buffer: a typed array plus a write index that wraps around.
+
+```ts
+class RingBuffer {
+  private readonly times: Float64Array
+  private readonly values: Float64Array
+  private next = 0
+  private size = 0
+
+  constructor(capacity: number) {
+    this.times = new Float64Array(capacity)
+    this.values = new Float64Array(capacity)
+  }
+
+  push(time: number, value: number) {
+    this.times[this.next] = time
+    this.values[this.next] = value
+    this.next = (this.next + 1) % this.times.length
+    this.size = Math.min(this.size + 1, this.times.length)
+  }
+}
+```
+
+Typed arrays avoid per-point objects entirely, so there is no garbage collection pressure from streaming data. Memory is decided up front: with a capacity of 3,600 points (an hour at one point per second), each series costs about 56 kilobytes, regardless of how long the page stays open.
+
+With `SharedArrayBuffer` (which requires cross-origin isolation headers), the worker and the main thread can share the same buffers without copying. Without it, the worker posts transferable chunks once per frame.
+
+## Downsampling for display
+
+A chart that is 600 pixels wide cannot show 3,600 points meaningfully. Drawing them all wastes time and produces a smear. Before drawing, each series is downsampled to roughly one point per horizontal pixel with a shape-preserving algorithm (largest-triangle-three-buckets), which keeps peaks and dips visible that simple averaging would flatten.
+
+## Reconnects and backfill
+
+Connections drop: laptops sleep, phones change networks, servers deploy. The client handles it in three steps:
+
+1. **Detect**: a missed heartbeat or a closed socket marks the connection as lost; charts show a subtle "reconnecting" state rather than freezing silently.
+2. **Reconnect** with exponential backoff and jitter, so a server restart does not get a thundering herd of clients at the same instant.
+3. **Backfill**: send the last received sequence number and timestamp per series; the server answers with the missing range from the time-series store before resuming the live stream.
+
+The goal is that a chart viewed after a reconnect is indistinguishable from one that never disconnected.
+
+## Backpressure
+
+If a client falls behind (a slow device, a throttled background tab), the server must not queue unlimited data for it. The stream hub keeps a small send buffer per client. When it fills, the hub drops intermediate batches for that client and sends only the latest values, marking the gap. The client then backfills the gap once it catches up. Slow clients degrade gracefully instead of taking the server down with them.
+
+## Dashboards as data
+
+A dashboard is a layout of panels, and each panel is a query plus a chart type. Storing layouts as JSON keeps them versionable and shareable:
+
+```json
+{
+  "title": "API overview",
+  "panels": [
+    {"title": "Requests per second", "series": ["rps.api"], "chart": "line"},
+    {"title": "CPU by host", "series": ["cpu.*"], "chart": "line", "stack": true},
+    {"title": "Error rate", "series": ["errors.api"], "chart": "line", "unit": "%"}
+  ]
+}
+```
+
+The panel grid uses CSS grid with panels spanning one or two columns, reflowing to a single column on narrow screens. Because subscriptions follow visibility, a layout with fifty panels costs little more than one with ten until you scroll.
+
+Layouts live in the repository next to the services they describe, so a change to a service and a change to its dashboard can be reviewed together.
+
+## Time and scale
+
+Two small details make charts readable at a glance:
+
+- **A shared time axis.** All panels on a dashboard show the same window (for example the last fifteen minutes) and scroll together. Hovering one chart shows a crosshair at the same instant on every chart, which is what makes it possible to see that an error spike and a CPU spike happened together.
+- **Stable vertical scales.** Rescaling the y-axis on every update makes lines jump around even when nothing changed. Scales expand immediately when a value exceeds them but shrink only after the larger values have scrolled out of the window, with a short animation.
+
+Timestamps are always stored and transmitted in UTC and displayed in the viewer's local time zone, with the zone shown in the axis label.
+
+## Accessibility
+
+Charts are pictures, and pictures are not enough:
+
+- Each chart has a text summary that updates at a calm pace (for example every five seconds): current value, minimum and maximum in view, and trend.
+- The summary uses a polite live region, so screen reader users hear changes without being interrupted constantly.
+- Colours for multiple series are chosen for contrast and distinguishable under common colour-vision deficiencies, and lines also differ by dash pattern.
+- Animations respect `prefers-reduced-motion`.
+
+## Testing strategy
+
+- **Unit**: ring buffer wrap-around, downsampling preserving extremes, sequence gap detection.
+- **Load**: a synthetic producer at configurable rates, measuring frame times in a headless browser with performance tracing.
+- **Soak**: a dashboard left streaming for hours, asserting flat memory.
+- **Chaos**: dropped connections, delayed messages and out-of-order batches, asserting that charts converge to the same data as an undisturbed client.
+
+## Risks
+
+| Risk                                               | Mitigation                                        |
+| -------------------------------------------------- | ------------------------------------------------- |
+| Main-thread jank on low-end devices                | Worker parsing, per-frame rendering, off-screen pausing |
+| Memory growth over long sessions                   | Fixed-size typed-array ring buffers               |
+| Thundering herd after a server restart             | Backoff with jitter                               |
+| Gaps after reconnect                               | Sequence numbers and backfill                     |
+| `SharedArrayBuffer` unavailable                    | Fall back to transferable chunks once per frame   |
+
+## Open questions
+
+- **Server-Sent Events or WebSockets?** The stream is almost entirely server to client, which is exactly what Server-Sent Events are for, and they reconnect automatically. WebSockets win only because subscriptions change often and are sent from the client. A prototype of both will settle it.
+- **Aggregation interval.** One point per second suits most service metrics, but some (queue depth during an incident) benefit from finer resolution. Per-series intervals add complexity to the collector and the wire format.
+- **Who pays for history?** Backfill reads from the time-series database on every reconnect. With many clients reconnecting after a deploy, that could become the most expensive query in the system. A short in-memory history on the stream hub may be enough to serve most backfills.
+- **Mobile.** Background tabs on phones are throttled aggressively. The dashboard may need to drop the socket entirely when hidden and rely on backfill when it comes back.
+
+Each question has a measurable answer, which is why they are left for the prototypes rather than decided on paper.
+
+## Milestones
+
+1. Collector, stream hub and one chart type over WebSocket.
+2. Worker parsing, ring buffers and the render loop.
+3. Reconnect, backfill and backpressure.
+4. Downsampling, accessibility summaries and dashboard layouts.
+5. Alerting rules on the collector.
+
+## Status
+
+Design stage. The first milestone is the end-to-end path for a single chart; the performance targets above are the acceptance criteria for milestone 2.

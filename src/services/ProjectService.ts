@@ -1,0 +1,80 @@
+/**
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+
+import type {ComponentType} from 'react'
+import type {Project} from '../types/type'
+import {ArrayService} from './ArrayService'
+import {
+  metaNumber,
+  metaString,
+  publicRequest,
+  safely,
+  workspacePath,
+  type PagedContent,
+  type PublicPost,
+} from './apiClient'
+import {lazyBodies} from './mdxBodies'
+
+const bodies = lazyBodies(
+  import.meta.glob<{default: ComponentType}>('../page/projects/*.mdx'),
+)
+
+const toProject = (post: PublicPost): Project => ({
+  id: String(post.id),
+  slug: post.slug,
+  title: post.title,
+  summary: post.excerpt,
+  year:
+    metaNumber(post.meta, 'year') ?? new Date(post.publishedAt).getFullYear(),
+  tags: post.terms
+    .filter(term => term.taxonomy === 'TAG')
+    .map(term => term.name),
+  url: metaString(post.meta, 'url'),
+  repoUrl: metaString(post.meta, 'repoUrl'),
+  body: post.content,
+  bodyFormat: post.contentFormat,
+  coverUrl: metaString(post.meta, 'coverUrl'),
+})
+
+// Projects are PROJECT posts of the website; the site only reads them.
+export class ProjectService extends ArrayService<Project> {
+  constructor() {
+    super([])
+  }
+
+  override async findAll(): Promise<Project[]> {
+    return safely(async () => {
+      const page = await publicRequest<PagedContent<PublicPost>>(
+        `${workspacePath}/posts?type=PROJECT&size=100&sort-by=publishedAt&direction=DESC`,
+      )
+      return (page?.content ?? [])
+        .map(toProject)
+        .sort((a, b) => b.year - a.year)
+    }, [])
+  }
+
+  override async findById(id: string): Promise<Project | undefined> {
+    return (await this.findAll()).find(project => project.id === id)
+  }
+
+  findBySlug(slug: string): Promise<Project | undefined> {
+    return safely(async () => {
+      const post = await publicRequest<PublicPost>(
+        `${workspacePath}/posts/PROJECT/${encodeURIComponent(slug)}`,
+      )
+      return post ? toProject(post) : undefined
+    }, undefined)
+  }
+
+  getBody(slug: string): ComponentType | undefined {
+    return bodies[slug]
+  }
+}

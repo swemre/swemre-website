@@ -1,0 +1,52 @@
+/**
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+
+import {useRef, type ReactNode} from 'react'
+import {Toc} from '../components/Toc'
+import {useHeadings} from '../hooks/useHeadings'
+import {docsColumns} from '../utils/layout'
+
+export function DocsLayout({
+  sidebar,
+  before,
+  after,
+  children,
+}: {
+  sidebar: ReactNode
+  before?: ReactNode
+  after?: ReactNode
+  children: ReactNode
+}) {
+  const bodyRef = useRef<HTMLDivElement>(null)
+  const headings = useHeadings(bodyRef)
+
+  return (
+    <div className={`${docsColumns} flex-1 py-10`}>
+      <aside className="hidden lg:sticky lg:top-sticky lg:block lg:max-h-[calc(100dvh-var(--spacing-sticky))] lg:self-start lg:overflow-y-auto">
+        {sidebar}
+      </aside>
+
+      <main className="min-w-0">
+        <div className="mx-auto max-w-reading">
+          {before}
+          <div ref={bodyRef} className="text-reading">
+            {children}
+          </div>
+          {after}
+        </div>
+      </main>
+
+      <aside className="hidden xl:sticky xl:top-sticky xl:block xl:self-start">
+        <Toc headings={headings} />
+      </aside>
+    </div>
+  )
+}
