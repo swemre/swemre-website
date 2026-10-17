@@ -11,7 +11,7 @@
 
 // Run via `npm run rss` (Node's --experimental-strip-types loads the .ts files).
 // Builds public/rss.xml from two sources:
-//   - published posts, projects and songs of the website in swemre-website-api, so the feed follows the CMS
+//   - published articles, projects and songs of the website in swemre-website-api, so the feed follows the CMS
 //   - src/database/feedDatabase.ts for notes
 // If the API cannot be reached, the existing public/rss.xml is kept and the script exits 0,
 // so `dev` and `build` still work offline. Fails (exit 1) when the feed log itself is invalid.
@@ -41,10 +41,16 @@ async function fetchPublished(path) {
   const response = await fetch(`${apiBase}${path}`, {
     headers: {Accept: 'application/json'},
   })
+  // 404: the workspace has no such content type yet, so it has nothing to announce
+  if (response.status === 404) return []
   if (!response.ok) throw new Error(`${path} answered ${response.status}`)
   const page = await response.json()
   return page.content ?? []
 }
+
+// A text field of a post; the API leaves empty fields out
+const fieldText = (post, key) =>
+  typeof post.fields?.[key] === 'string' ? post.fields[key] : ''
 
 // Tags are the TAG terms of a post; they become RSS categories
 const termNames = post =>
@@ -55,10 +61,10 @@ const termNames = post =>
 // Each API item becomes one feed entry; its publishedAt is the moment it went live
 async function fetchApiItems() {
   const articles = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=POST&size=100&sort-by=publishedAt&direction=DESC`,
+    `/public/v1/workspaces/${workspaceKey}/posts?type=article&size=100&sort-by=publishedAt&direction=DESC`,
   )
   const projects = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=PROJECT&size=100&sort-by=publishedAt&direction=DESC`,
+    `/public/v1/workspaces/${workspaceKey}/posts?type=project&size=100&sort-by=publishedAt&direction=DESC`,
   )
 
   const articleItems = articles.map(article => {
@@ -69,7 +75,7 @@ async function fetchApiItems() {
       link,
       guid: link,
       permalink: true,
-      description: article.summary,
+      description: fieldText(article, 'summary'),
       categories: ['article', ...termNames(article)],
     }
   })
@@ -82,23 +88,21 @@ async function fetchApiItems() {
       link,
       guid: link,
       permalink: true,
-      description: project.summary,
+      description: fieldText(project, 'summary'),
       categories: ['project', ...termNames(project)],
     }
   })
 
   const songs = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=SONG&size=100&sort-by=publishedAt&direction=DESC`,
+    `/public/v1/workspaces/${workspaceKey}/posts?type=song&size=100&sort-by=publishedAt&direction=DESC`,
   )
   const songItems = songs.map(song => {
-    const artist =
-      typeof song.meta?.artist === 'string' ? song.meta.artist : song.author
-    const spotifyId =
-      typeof song.meta?.spotifyId === 'string' ? song.meta.spotifyId : ''
+    const artist = fieldText(song, 'artist') || song.author
+    const spotifyUrl = fieldText(song, 'spotifyUrl')
     return {
       publishedAt: song.publishedAt,
       title: `Song I liked: ${song.title} by ${artist}`,
-      link: `https://open.spotify.com/track/${spotifyId}`,
+      link: spotifyUrl || siteConfig.url,
       guid: `${siteConfig.url}/#song-${song.id}`,
       permalink: false,
       description: `Added "${song.title}" by ${artist} to the songs I liked.`,

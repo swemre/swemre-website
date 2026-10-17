@@ -11,10 +11,8 @@
 
 import {useCallback} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {MdxBody} from '../../components/MdxBody'
 import {ContentBody} from '../../components/ContentBody'
 import {SidebarNav} from '../../components/SidebarNav'
-import {docsMdxComponents} from '../../components/mdx/docsMdxComponents'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
@@ -29,7 +27,6 @@ export default function ProjectPage() {
   const {data: project, loading} = useAsyncData(loader)
   const all = useFindAll(service)
   const articles = useFindAll(useService('article'))
-  const Body = service.getBody(slug)
 
   useDocumentTitle(project?.title)
 
@@ -81,11 +78,7 @@ export default function ProjectPage() {
         />
       }
     >
-      {Body ? (
-        <MdxBody body={Body} components={docsMdxComponents} />
-      ) : (
-        <ContentBody body={project.body ?? ''} format={project.bodyFormat} />
-      )}
+      <ContentBody value={project.body} />
     </ProjectTemplate>
   )
 }

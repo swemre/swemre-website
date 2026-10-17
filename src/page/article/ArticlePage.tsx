@@ -11,10 +11,8 @@
 
 import {useCallback, useEffect, useRef} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {MdxBody} from '../../components/MdxBody'
 import {ContentBody} from '../../components/ContentBody'
 import {SidebarNav} from '../../components/SidebarNav'
-import {docsMdxComponents} from '../../components/mdx/docsMdxComponents'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
@@ -30,7 +28,6 @@ export default function ArticlePage() {
   const {data: article, loading} = useAsyncData(loader)
   const all = useFindAll(service)
   const projects = useFindAll(useService('project'))
-  const Body = service.getBody(slug)
   const counted = useRef<string | null>(null)
 
   const id = article?.id
@@ -93,11 +90,7 @@ export default function ArticlePage() {
         />
       }
     >
-      {Body ? (
-        <MdxBody body={Body} components={docsMdxComponents} />
-      ) : (
-        <ContentBody body={article.body ?? ''} format={article.bodyFormat} />
-      )}
+      <ContentBody value={article.body} />
     </ArticleTemplate>
   )
 }

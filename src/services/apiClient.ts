@@ -18,17 +18,15 @@ export const workspaceKey: string =
   import.meta.env.VITE_WORKSPACE_KEY ?? 'swemre-website'
 export const workspacePath = `/public/v1/workspaces/${workspaceKey}`
 
-// A post as the public API returns it. Post types share this shape; meta holds type fields.
+// A post as the public API returns it. Every content type shares this shape; fields holds the
+// values of the type's own fields, with media fields expanded to the file's details
 export interface PublicPost {
   id: number
-  postType: 'POST' | 'PAGE' | 'PROJECT' | 'SONG'
+  typeKey: string
   slug: string
   title: string
-  excerpt: string
-  content: string
-  contentFormat: 'TEXT' | 'BLOCKS'
   author: string
-  meta: Record<string, unknown>
+  fields: Record<string, unknown>
   terms: {
     id: number
     taxonomy: 'CATEGORY' | 'TAG'
@@ -39,21 +37,35 @@ export interface PublicPost {
   lastUpdatedAt: string
 }
 
-export const metaString = (
-  meta: Record<string, unknown>,
+export const fieldString = (
+  fields: Record<string, unknown>,
   key: string,
 ): string | undefined => {
-  const value = meta[key]
+  const value = fields[key]
   return typeof value === 'string' && value !== '' ? value : undefined
 }
 
-export const metaNumber = (
-  meta: Record<string, unknown>,
+export const fieldNumber = (
+  fields: Record<string, unknown>,
   key: string,
 ): number | undefined => {
-  const value = meta[key]
+  const value = fields[key]
   return typeof value === 'number' ? value : undefined
 }
+
+// A media field arrives as {id, url, ...}; url is a path on the API
+export const fieldMediaUrl = (
+  fields: Record<string, unknown>,
+  key: string,
+): string | undefined => {
+  const value = fields[key]
+  if (!value || typeof value !== 'object' || !('url' in value)) return undefined
+  const url = String((value as {url: unknown}).url)
+  return url.startsWith('http') ? url : `${apiBase}${url}`
+}
+
+export const tagNames = (post: PublicPost): string[] =>
+  post.terms.filter(term => term.taxonomy === 'TAG').map(term => term.name)
 
 export class ApiError extends Error {
   readonly status: number

@@ -239,14 +239,4 @@
   :focus-visible {
     @apply rounded-xs outline-2 outline-offset-2 outline-primary;
   }
-
-  /* Shiki emits both themes as variables; pick one from data-theme. */
-  .shiki,
-  .shiki span {
-    color: var(--shiki-light);
-  }
-  [data-theme='dark'] .shiki,
-  [data-theme='dark'] .shiki span {
-    color: var(--shiki-dark);
-  }
 }

@@ -9,42 +9,36 @@
  * Contact: emre@swemre.com
  */
 
-import type {ComponentType} from 'react'
 import type {Project} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
-  metaNumber,
-  metaString,
+  fieldMediaUrl,
+  fieldNumber,
+  fieldString,
   publicRequest,
   safely,
+  tagNames,
   workspacePath,
   type PagedContent,
   type PublicPost,
 } from './apiClient'
-import {lazyBodies} from './mdxBodies'
-
-const bodies = lazyBodies(
-  import.meta.glob<{default: ComponentType}>('../page/projects/*.mdx'),
-)
 
 const toProject = (post: PublicPost): Project => ({
   id: String(post.id),
   slug: post.slug,
   title: post.title,
-  summary: post.excerpt,
+  summary: fieldString(post.fields, 'summary') ?? '',
   year:
-    metaNumber(post.meta, 'year') ?? new Date(post.publishedAt).getFullYear(),
-  tags: post.terms
-    .filter(term => term.taxonomy === 'TAG')
-    .map(term => term.name),
-  url: metaString(post.meta, 'url'),
-  repoUrl: metaString(post.meta, 'repoUrl'),
-  body: post.content,
-  bodyFormat: post.contentFormat,
-  coverUrl: metaString(post.meta, 'coverUrl'),
+    fieldNumber(post.fields, 'year') ??
+    new Date(post.publishedAt).getFullYear(),
+  tags: tagNames(post),
+  url: fieldString(post.fields, 'url'),
+  repoUrl: fieldString(post.fields, 'repoUrl'),
+  body: post.fields.body,
+  coverUrl: fieldMediaUrl(post.fields, 'cover'),
 })
 
-// Projects are PROJECT posts of the website; the site only reads them.
+// Projects are the "project" content type of the website; the site only reads them.
 export class ProjectService extends ArrayService<Project> {
   constructor() {
     super([])
@@ -53,7 +47,7 @@ export class ProjectService extends ArrayService<Project> {
   override async findAll(): Promise<Project[]> {
     return safely(async () => {
       const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=PROJECT&size=100&sort-by=publishedAt&direction=DESC`,
+        `${workspacePath}/posts?type=project&size=100&sort-by=publishedAt&direction=DESC`,
       )
       return (page?.content ?? [])
         .map(toProject)
@@ -68,13 +62,9 @@ export class ProjectService extends ArrayService<Project> {
   findBySlug(slug: string): Promise<Project | undefined> {
     return safely(async () => {
       const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/PROJECT/${encodeURIComponent(slug)}`,
+        `${workspacePath}/posts/project/${encodeURIComponent(slug)}`,
       )
       return post ? toProject(post) : undefined
     }, undefined)
-  }
-
-  getBody(slug: string): ComponentType | undefined {
-    return bodies[slug]
   }
 }

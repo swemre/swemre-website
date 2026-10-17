@@ -9,20 +9,12 @@
  * Contact: emre@swemre.com
  */
 
-import {BlocksView, blocksFromText, parseBlocks} from 'swemre-blocks'
+import {BlocksView, blocksFromValue} from 'swemre-blocks'
 import {useTheme} from '../hooks/useTheme'
 
-// Body of an article, project, song or special page that has no `<slug>.mdx` file. Blocks
-// written in the CMS and plain text from older posts both render through the shared view that
-// the CMS preview uses, so the two look the same.
-export function ContentBody({
-  body,
-  format,
-}: {
-  body: string
-  format?: 'TEXT' | 'BLOCKS'
-}) {
+// Body of an article, project or special page: the blocks of its rich text field, rendered by
+// the same view as the CMS preview, so the two look the same
+export function ContentBody({value}: {value: unknown}) {
   const {mode} = useTheme()
-  const blocks = format === 'BLOCKS' ? parseBlocks(body) : blocksFromText(body)
-  return <BlocksView blocks={blocks} theme={mode} />
+  return <BlocksView blocks={blocksFromValue(value)} theme={mode} />
 }
