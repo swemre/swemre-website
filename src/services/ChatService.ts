@@ -15,7 +15,7 @@ import type {
   ChatPresence,
   Conversation,
 } from '../types/type'
-import {publicRequest, workspacePath} from './apiClient'
+import {apiBase, publicRequest, workspacePath} from './apiClient'
 import {LocalStorageService} from './LocalStorageService'
 
 const GREETING =
@@ -66,6 +66,12 @@ const merge = (local: ChatMessage[], remote: ApiMessage[]): ChatMessage[] => [
   ...remote.map(fromApi),
   ...local.filter(item => item.delivery === 'queued'),
 ]
+
+// What the conversation's socket sends: a new message, or the owner coming online or going away
+export type ChatSocketEvent =
+  {type: 'message'; message: ApiMessage} | {type: 'presence'; online: boolean}
+
+const RECONNECT_DELAYS_MS = [1_000, 2_000, 5_000, 10_000, 30_000]
 
 export class ChatService extends LocalStorageService<Conversation> {
   constructor() {
@@ -167,5 +173,63 @@ export class ChatService extends LocalStorageService<Conversation> {
     } catch {
       // Keep the stored copy when the API cannot be reached
     }
+  }
+
+  // Keeps a socket open to the conversation, reconnecting with growing pauses, until the
+  // returned function is called. Without a token the conversation is not on the server yet.
+  connect(
+    publicToken: string,
+    onEvent: (event: ChatSocketEvent) => void,
+  ): () => void {
+    const url = `${apiBase.replace(/^http/, 'ws')}${workspacePath}/conversations/${publicToken}/ws`
+    let socket: WebSocket | null = null
+    let attempt = 0
+    let timer: number | undefined
+    let stopped = false
+
+    const open = () => {
+      if (stopped) return
+      socket = new WebSocket(url)
+      socket.onopen = () => {
+        attempt = 0
+      }
+      socket.onmessage = event => {
+        try {
+          onEvent(JSON.parse(String(event.data)) as ChatSocketEvent)
+        } catch {
+          // A message this version does not understand is ignored
+        }
+      }
+      socket.onclose = () => {
+        if (stopped) return
+        const delay =
+          RECONNECT_DELAYS_MS[Math.min(attempt, RECONNECT_DELAYS_MS.length - 1)]
+        attempt += 1
+        timer = window.setTimeout(open, delay)
+      }
+    }
+    open()
+
+    return () => {
+      stopped = true
+      window.clearTimeout(timer)
+      socket?.close()
+    }
+  }
+
+  // A message pushed over the socket joins the stored conversation once
+  async receive(id: string, apiMessage: ApiMessage): Promise<void> {
+    const conversation = this.rows.find(row => row.id === id)
+    if (!conversation) return
+    const received = fromApi(apiMessage)
+    if (conversation.messages.some(item => item.id === received.id)) return
+    await this.update(id, {
+      updatedAt: received.sentAt,
+      messages: [
+        ...conversation.messages.filter(item => item.delivery !== 'queued'),
+        received,
+        ...conversation.messages.filter(item => item.delivery === 'queued'),
+      ],
+    })
   }
 }
