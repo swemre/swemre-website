@@ -9,36 +9,32 @@
  * Contact: emre@swemre.com
  */
 
-import type {ComponentType} from 'react'
 import type {SpecialPage} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
-  metaString,
+  fieldString,
   publicRequest,
   safely,
   workspacePath,
   type PagedContent,
   type PublicPost,
 } from './apiClient'
-import {lazyBodies} from './mdxBodies'
-
-const bodies = lazyBodies(
-  import.meta.glob<{default: ComponentType}>('../page/sp/*.mdx'),
-)
 
 const toSpecialPage = (post: PublicPost): SpecialPage => ({
   id: String(post.id),
   slug: post.slug,
   title: post.title,
-  summary: post.excerpt,
-  version: metaString(post.meta, 'version') ?? '1.0',
+  summary: fieldString(post.fields, 'summary') ?? '',
+  version: fieldString(post.fields, 'version') ?? '1.0',
   effectiveDate:
-    metaString(post.meta, 'effectiveDate') ?? post.publishedAt.slice(0, 10),
-  updatedAt:
-    metaString(post.meta, 'updatedAt') ?? post.lastUpdatedAt.slice(0, 10),
+    fieldString(post.fields, 'effectiveDate') ?? post.publishedAt.slice(0, 10),
+  updatedAt: post.lastUpdatedAt.slice(0, 10),
+  body: post.fields.body,
 })
 
-// Special pages (legal pages such as the privacy policy) are PAGE posts of the website
+// Special pages (legal pages such as the privacy policy) are a "page" content type, made in the
+// CMS with a rich text "body" field and optional summary, version and effectiveDate fields.
+// Without that type every special page is not found.
 export class SpecialPageService extends ArrayService<SpecialPage> {
   constructor() {
     super([])
@@ -47,7 +43,7 @@ export class SpecialPageService extends ArrayService<SpecialPage> {
   override async findAll(): Promise<SpecialPage[]> {
     return safely(async () => {
       const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=PAGE&size=100&sort-by=title&direction=ASC`,
+        `${workspacePath}/posts?type=page&size=100&sort-by=title&direction=ASC`,
       )
       return (page?.content ?? []).map(toSpecialPage)
     }, [])
@@ -60,13 +56,9 @@ export class SpecialPageService extends ArrayService<SpecialPage> {
   findBySlug(slug: string): Promise<SpecialPage | undefined> {
     return safely(async () => {
       const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/PAGE/${encodeURIComponent(slug)}`,
+        `${workspacePath}/posts/page/${encodeURIComponent(slug)}`,
       )
       return post ? toSpecialPage(post) : undefined
     }, undefined)
-  }
-
-  getBody(slug: string): ComponentType | undefined {
-    return bodies[slug]
   }
 }

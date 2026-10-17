@@ -1,11 +1,21 @@
 # swemre-website
 
 The personal website at [swemre.com](https://swemre.com): articles, projects, songs, a chat
-widget and a resume request form. Built with React 19, TypeScript, Vite, Tailwind CSS and MDX.
+widget and a resume request form. Built with React 19, TypeScript, Vite and Tailwind CSS.
 
-Content comes from one workspace of `swemre-website-api` and is written in `swemre-cms`. Block
-content is rendered by `swemre-blocks`, the same view the CMS uses for its preview. Articles that
-have a `<slug>.mdx` file in `src/page` use that file instead.
+All content comes from one workspace of `swemre-website-api` and is written in `swemre-cms`; the
+site bundles none. Each page reads one content type and its fields:
+
+| Content type | Shown at                   | Fields the site reads                                |
+| ------------ | -------------------------- | ---------------------------------------------------- |
+| `article`    | `/articles/<slug>`         | `summary`, `cover`, `readingTime`, `body`            |
+| `project`    | `/projects/<slug>`         | `summary`, `year`, `url`, `repoUrl`, `cover`, `body` |
+| `song`       | the music player           | `artist`, `spotifyUrl`, `artwork`                    |
+| `page`       | `/sp/<slug>` (legal pages) | `summary`, `version`, `effectiveDate`, `body`        |
+
+`body` is a rich text field, rendered by `swemre-blocks`, the same view the CMS uses for its
+preview. A content type the site does not know yet (a short, a carousel...) needs a page or
+component here before it shows up.
 
 ## Run locally
 
@@ -24,12 +34,6 @@ this folder; Vite and TypeScript resolve it by path.
 
 - `npm run rss` writes `public/rss.xml` from the published posts. It runs before `dev` and `build`
   and keeps the existing file when the API cannot be reached.
-- `scripts/import-content-to-api.mjs` is a one-time import of the content in `src/database` into a
-  workspace. It skips posts that already exist, so it can run again:
-
-  ```bash
-  ADMIN_PASSWORD=... node --experimental-strip-types --no-warnings scripts/import-content-to-api.mjs
-  ```
 
 ## Checks
 

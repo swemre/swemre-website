@@ -11,8 +11,7 @@
 
 import {useCallback} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import {MdxBody} from '../../components/MdxBody'
-import {legalMdxComponents} from '../../components/mdx/docsMdxComponents'
+import {ContentBody} from '../../components/ContentBody'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useService} from '../../hooks/useService'
@@ -23,7 +22,6 @@ export default function SpecialPage() {
   const service = useService('specialPage')
   const loader = useCallback(() => service.findBySlug(slug), [service, slug])
   const {data: page, loading} = useAsyncData(loader)
-  const Body = service.getBody(slug)
 
   useDocumentTitle(page?.title)
 
@@ -35,7 +33,7 @@ export default function SpecialPage() {
     )
   }
 
-  if (!page || !Body) {
+  if (!page) {
     return (
       <main className="mx-auto w-full max-w-page px-8 py-16">
         <h1 className="text-3xl font-semibold text-fg-strong">
@@ -50,7 +48,7 @@ export default function SpecialPage() {
 
   return (
     <CorporateTemplate page={page}>
-      <MdxBody body={Body} components={legalMdxComponents} />
+      <ContentBody value={page.body} />
     </CorporateTemplate>
   )
 }

@@ -14,14 +14,4 @@ import type {FeedItem} from '../types/type'
 // Append-only log of RSS items for songs and notes, newest at the bottom. Articles, projects and
 // songs are not listed here: the RSS generator reads them from swemre-website-api. Keep `id` stable
 // after publishing; feed readers use it to detect new items.
-export const feedDatabase: FeedItem[] = [
-  {
-    id: 'feed-note-2026-10-15',
-    kind: 'note',
-    title: 'The feed now includes projects and songs',
-    summary:
-      'Besides articles, this feed now announces new project write-ups and songs added to the "Songs I liked" list.',
-    link: '/',
-    publishedAt: '2026-10-15T12:00:00Z',
-  },
-]
+export const feedDatabase: FeedItem[] = []

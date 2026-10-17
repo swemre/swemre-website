@@ -9,42 +9,35 @@
  * Contact: emre@swemre.com
  */
 
-import type {ComponentType} from 'react'
 import type {Article} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
-  metaString,
+  fieldMediaUrl,
+  fieldNumber,
+  fieldString,
   publicRequest,
   safely,
+  tagNames,
   workspacePath,
   type PagedContent,
   type PublicPost,
 } from './apiClient'
-import {lazyBodies} from './mdxBodies'
-
-const bodies = lazyBodies(
-  import.meta.glob<{default: ComponentType}>('../page/article/*.mdx'),
-)
 
 const toArticle = (post: PublicPost): Article => ({
   id: String(post.id),
   slug: post.slug,
   title: post.title,
-  summary: post.excerpt,
+  summary: fieldString(post.fields, 'summary') ?? '',
   author: post.author,
   createdAt: post.publishedAt,
-  readingTime:
-    typeof post.meta.readingTime === 'number' ? post.meta.readingTime : 1,
-  tags: post.terms
-    .filter(term => term.taxonomy === 'TAG')
-    .map(term => term.name),
-  body: post.content,
-  bodyFormat: post.contentFormat,
-  coverUrl: metaString(post.meta, 'coverUrl'),
+  readingTime: fieldNumber(post.fields, 'readingTime') ?? 1,
+  tags: tagNames(post),
+  body: post.fields.body,
+  coverUrl: fieldMediaUrl(post.fields, 'cover'),
 })
 
-// Articles are POST posts of the website. The site only reads them, so the inherited write
-// methods of ArrayService are not used.
+// Articles are the "article" content type of the website. The site only reads them, so the
+// inherited write methods of ArrayService are not used.
 export class ArticleService extends ArrayService<Article> {
   constructor() {
     super([])
@@ -53,7 +46,7 @@ export class ArticleService extends ArrayService<Article> {
   override async findAll(): Promise<Article[]> {
     return safely(async () => {
       const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=POST&size=100&sort-by=publishedAt&direction=DESC`,
+        `${workspacePath}/posts?type=article&size=100&sort-by=publishedAt&direction=DESC`,
       )
       return (page?.content ?? []).map(toArticle)
     }, [])
@@ -66,13 +59,9 @@ export class ArticleService extends ArrayService<Article> {
   findBySlug(slug: string): Promise<Article | undefined> {
     return safely(async () => {
       const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/POST/${encodeURIComponent(slug)}`,
+        `${workspacePath}/posts/article/${encodeURIComponent(slug)}`,
       )
       return post ? toArticle(post) : undefined
     }, undefined)
-  }
-
-  getBody(slug: string): ComponentType | undefined {
-    return bodies[slug]
   }
 }

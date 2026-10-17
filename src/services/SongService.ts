@@ -12,7 +12,8 @@
 import type {Song} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
-  metaString,
+  fieldMediaUrl,
+  fieldString,
   publicRequest,
   safely,
   workspacePath,
@@ -20,15 +21,22 @@ import {
   type PublicPost,
 } from './apiClient'
 
+// open.spotify.com/track/<id>?si=... becomes <id>; a bare id is kept as it is
+export function spotifyTrackId(url: string | undefined): string {
+  if (!url) return ''
+  const match = /track\/([A-Za-z0-9]+)/.exec(url)
+  return match ? match[1] : url
+}
+
 const toSong = (post: PublicPost): Song => ({
   id: String(post.id),
   title: post.title,
-  artist: metaString(post.meta, 'artist') ?? post.author,
-  spotifyId: metaString(post.meta, 'spotifyId') ?? '',
-  artworkUrl: metaString(post.meta, 'coverUrl'),
+  artist: fieldString(post.fields, 'artist') ?? post.author,
+  spotifyId: spotifyTrackId(fieldString(post.fields, 'spotifyUrl')),
+  artworkUrl: fieldMediaUrl(post.fields, 'artwork'),
 })
 
-// Songs are SONG posts of the website, listed in the "Songs I liked" box
+// Songs are the "song" content type of the website, listed in the "Songs I liked" box
 export class SongService extends ArrayService<Song> {
   constructor() {
     super([])
@@ -37,9 +45,11 @@ export class SongService extends ArrayService<Song> {
   override async findAll(): Promise<Song[]> {
     return safely(async () => {
       const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=SONG&size=100&sort-by=title&direction=ASC`,
+        `${workspacePath}/posts?type=song&size=100&sort-by=title&direction=ASC`,
       )
-      return (page?.content ?? []).map(toSong)
+      return (page?.content ?? [])
+        .map(toSong)
+        .filter(song => song.spotifyId !== '')
     }, [])
   }
 

@@ -62,7 +62,7 @@ export interface Searchable extends Entity {
 }
 
 export interface Article extends Searchable {
-  /** URL segment and the `<slug>.mdx` body file name. */
+  /** URL segment. */
   slug: string
   summary: string
   author: string
@@ -71,25 +71,21 @@ export interface Article extends Searchable {
   /** Minutes. */
   readingTime: number
   tags: string[]
-  /** Plain-text body from the API, used when no `<slug>.mdx` file exists. */
-  body?: string
-  /** `BLOCKS` when `body` is a JSON array of CMS blocks; `TEXT` for plain text. */
-  bodyFormat?: 'TEXT' | 'BLOCKS'
+  /** Blocks of the rich text body field, as the API returns them. */
+  body?: unknown
   coverUrl?: string
 }
 
 export interface Project extends Searchable {
-  /** URL segment and the `<slug>.mdx` body file name. */
+  /** URL segment. */
   slug: string
   summary: string
   year: number
   tags: string[]
   url?: string
   repoUrl?: string
-  /** Plain-text body from the API, used when no `<slug>.mdx` file exists. */
-  body?: string
-  /** `BLOCKS` when `body` is a JSON array of CMS blocks; `TEXT` for plain text. */
-  bodyFormat?: 'TEXT' | 'BLOCKS'
+  /** Blocks of the rich text body field, as the API returns them. */
+  body?: unknown
   coverUrl?: string
 }
 
@@ -101,7 +97,7 @@ export interface Song extends Searchable {
 }
 
 export interface SpecialPage extends Searchable {
-  /** URL segment under /sp/ and the `<slug>.mdx` body file name. */
+  /** URL segment under /sp/. */
   slug: string
   summary: string
   version: string
@@ -109,6 +105,8 @@ export interface SpecialPage extends Searchable {
   effectiveDate: string
   /** ISO 8601 date (YYYY-MM-DD). */
   updatedAt: string
+  /** Blocks of the rich text body field, as the API returns them. */
+  body?: unknown
 }
 
 export interface NavigationItem extends Searchable {
