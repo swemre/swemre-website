@@ -41,6 +41,8 @@ async function fetchPublished(path) {
   const response = await fetch(`${apiBase}${path}`, {
     headers: {Accept: 'application/json'},
   })
+  // 404: the workspace has no such content type yet, so it has nothing to announce
+  if (response.status === 404) return []
   if (!response.ok) throw new Error(`${path} answered ${response.status}`)
   const page = await response.json()
   return page.content ?? []
