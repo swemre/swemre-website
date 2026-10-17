@@ -12,7 +12,7 @@
 ### 1.1 Identification
 
 **swemre-website**: the personal portfolio and article site of Emre
-Caniklioglu (handle `swemre`), deployed as static files at
+(handle `swemre`), deployed as static files at
 `https://swemre.com` (planned).
 
 ### 1.2 System overview

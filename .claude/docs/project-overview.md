@@ -2,7 +2,7 @@
 
 ## What it is
 
-The personal website of swemre (Emre Caniklioglu, Software Engineer): a
+The personal website of swemre (Emre, Software Engineer): a
 one-screen home page, an articles section, a projects section, legal pages,
 site-wide search, and a bottom-right dock with a Spotify player and a chat
 widget. Formal requirements: `engineering/software-requirements-specification.md`.
