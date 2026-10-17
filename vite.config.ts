@@ -41,7 +41,7 @@ function rssPlugin(): Plugin {
   }
 }
 
-// The block views shared with swemre-cms live next to both projects
+// The block views shared with swemre-press live next to both projects
 const sharedBlocks = fileURLToPath(
   new URL('../swemre-blocks/src/index.ts', import.meta.url),
 )
