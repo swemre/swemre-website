@@ -35,6 +35,29 @@ export function ChatProvider({children}: {children: ReactNode}) {
 
   const refresh = async () => setConversations(await chat.findAll())
 
+  // One socket per conversation that exists on the server: owner replies and the owner's
+  // presence arrive while the page is open, without reloading
+  const tokens = conversations
+    .filter(conversation => conversation.publicToken)
+    .map(conversation => `${conversation.id}:${conversation.publicToken}`)
+    .join(',')
+  useEffect(() => {
+    if (!tokens) return
+    const stops = tokens.split(',').map(entry => {
+      const [id, publicToken] = entry.split(':')
+      return chat.connect(publicToken, event => {
+        if (event.type === 'presence') {
+          setPresence(event.online ? 'online' : 'offline')
+          return
+        }
+        void chat
+          .receive(id, event.message)
+          .then(async () => setConversations(await chat.findAll()))
+      })
+    })
+    return () => stops.forEach(stop => stop())
+  }, [chat, tokens])
+
   const start = () => {
     void chat.start().then(async conversation => {
       await refresh()
