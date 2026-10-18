@@ -9,12 +9,12 @@
  * Contact: emre@swemre.com
  */
 
-import {ArticleCard} from '../../components/ArticleCard'
 import {BandBackdrop} from '../../components/BandBackdrop'
 import {HomeSection} from '../../components/HomeSection'
+import {ArticleShowcase} from '../../components/home/ArticleShowcase'
+import {ProjectShowcase} from '../../components/home/ProjectShowcase'
 import {Icon} from '../../components/Icon'
 import {ListBox} from '../../components/ListBox'
-import {ProjectCard} from '../../components/ProjectCard'
 import {SongRow} from '../../components/SongRow'
 import {siteConfig} from '../../config/site'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
@@ -126,13 +126,7 @@ export default function HomePage() {
         moreTo="/articles"
       >
         {articles.loading && <Loading />}
-        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {(articles.data ?? []).slice(0, 3).map(article => (
-            <li key={article.id}>
-              <ArticleCard article={article} />
-            </li>
-          ))}
-        </ul>
+        <ArticleShowcase articles={(articles.data ?? []).slice(0, 4)} />
       </HomeSection>
 
       <HomeSection
@@ -142,13 +136,7 @@ export default function HomePage() {
         moreTo="/projects"
       >
         {projects.loading && <Loading />}
-        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {(projects.data ?? []).slice(0, 3).map(project => (
-            <li key={project.id}>
-              <ProjectCard project={project} />
-            </li>
-          ))}
-        </ul>
+        <ProjectShowcase projects={(projects.data ?? []).slice(0, 3)} />
       </HomeSection>
 
       <HomeSection index="03" label="Listening" title="Songs I liked">

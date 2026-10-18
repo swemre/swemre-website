@@ -142,9 +142,15 @@ The home page scrolls. A full-height hero on the band backdrop holds text
 only (no avatar): a mono kicker, the job title with the name in blue gradient
 text, the tagline, "Request a call back" (white) and "Request my resume"
 (translucent), and live counts of articles, projects and songs. Below it,
-numbered sections (`components/HomeSection.tsx`): 01 latest articles
-(`ArticleCard`), 02 projects (`ProjectCard`), 03 songs, and 04 a contact
-panel on the band backdrop. The phone number is not shown; "Request a call
+numbered sections (`components/HomeSection.tsx`): 01 articles
+(`components/home/ArticleShowcase.tsx`: the latest as a large cover feature, the
+next three as a reading list with thumbnails), 02 projects
+(`components/home/ProjectShowcase.tsx`: alternating case-study rows with the
+cover in a browser frame, summary, a body excerpt, year, stack and live host,
+and Case study, Live site and Source buttons), 03 songs, and 04 a contact panel
+on the band backdrop. `components/CoverImage.tsx` shows a cover or, without
+one, the title initials on the band gradient. Every layout stacks on phones,
+adapts at tablet width and reaches its full layout at `lg`. The phone number is not shown; "Request a call
 back" opens `forms/CallbackRequestForm.tsx` through `useResumeModal().openCallback`.
 The owner's avatar is used only by the chat launcher and chat panel
 (`public/images/avatar-96.png`, `avatar-384.png`).
