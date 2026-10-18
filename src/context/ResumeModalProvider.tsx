@@ -10,18 +10,28 @@
  */
 
 import {useState, type ReactNode} from 'react'
+import {Modal} from '../components/Modal'
 import {ResumeRequestModal} from '../components/ResumeRequestModal'
+import {CallbackRequestForm} from '../forms/CallbackRequestForm'
 import {ResumeModalContext} from './ResumeModalContext'
 
 export function ResumeModalProvider({children}: {children: ReactNode}) {
-  const [isOpen, setIsOpen] = useState(false)
-  const open = () => setIsOpen(true)
-  const close = () => setIsOpen(false)
+  const [shown, setShown] = useState<'resume' | 'callback' | null>(null)
+  const open = () => setShown('resume')
+  const openCallback = () => setShown('callback')
+  const close = () => setShown(null)
 
   return (
-    <ResumeModalContext value={{open, close}}>
+    <ResumeModalContext value={{open, openCallback, close}}>
       {children}
-      <ResumeRequestModal open={isOpen} onClose={close} />
+      <ResumeRequestModal open={shown === 'resume'} onClose={close} />
+      <Modal
+        open={shown === 'callback'}
+        onClose={close}
+        label="Request a call back"
+      >
+        <CallbackRequestForm onDone={close} />
+      </Modal>
     </ResumeModalContext>
   )
 }

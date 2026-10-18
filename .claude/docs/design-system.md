@@ -1,9 +1,9 @@
 # Design system
 
-Look and feel target: a modern product site with a technical, calm core.
-Inter type, rounded radii, pill-shaped buttons and navigation, thin borders,
-soft layered shadows, an indigo, magenta and cyan brand gradient, and a deep
-"night sky" header band with drifting aurora glows.
+Look and feel target: a clean, futuristic engineering lab. One hue only, a
+dark matte blue, with neutral greys; Inter type with mono labels; small radii;
+thin borders; buttons that lift, grow and slide on hover; and a dark blue
+header band with slow drifting glows.
 
 ## Where tokens live
 
@@ -15,7 +15,7 @@ soft layered shadows, an indigo, magenta and cyan brand gradient, and a deep
    initial) so only project tokens exist;
 3. defines light values in `@theme`;
 4. overrides the same variables under `:root[data-theme='dark']`
-   (deep indigo night family);
+   (matte navy family);
 5. adds a tiny base layer (body, selection, focus ring, Shiki theme switch).
 
 Theme switching only changes CSS variables, so components never need `dark:`
@@ -28,15 +28,15 @@ variants for colours. A `dark:` custom variant exists for rare non-colour cases.
 | Surfaces | `canvas`, `canvas-subtle`, `surface`, `surface-muted`, `overlay`, `inset` |
 | Text     | `fg`, `fg-strong`, `fg-muted`, `fg-subtle`, `fg-on-emphasis`             |
 | Borders  | `border`, `border-muted`, `border-strong`                                |
-| Brand    | `primary` (indigo), `primary-emphasis`, `primary-muted`, `primary-solid(-hover)`, `secondary` (magenta), `secondary-muted`, `accent` (cyan); gradients run primary → secondary → accent |
+| Brand    | `primary` (dark matte blue), `primary-emphasis`, `primary-muted`, `primary-solid(-hover)`; `secondary` and `accent` are lighter tints of the same blue. Do not introduce other hues |
 | Status   | `success`, `attention`, `danger` (+ `-muted`), `spotify`                 |
 | Cover    | `cover-fg`, `cover-ink`: same in both themes, for navbar content over the header band; `cover-tint-1..3` for gradient text on the band |
-| Band     | `band-from`, `band-via`, `band-to` (night-sky gradient), `band-glow`, `band-glow-2`, `band-glow-3` (aurora glows); separate light and dark values |
+| Band     | `band-from`, `band-via`, `band-to` (dark blue gradient), `band-glow`, `band-glow-2`, `band-glow-3` (blue glows); separate light and dark values |
 | Effects  | `shadow`, `shadow-strong`, `scrim` (dialog backdrop)                     |
 | Shadows  | `shadow-xs` `sm` `md` `lg` `xl` `overlay`, `cta` / `cta-hover` (primary button glow), `cover-cta` (white button on the band) |
-| Radius   | `rounded-xs` 4px, `sm` 8px (controls, rows), `md` 12px, `lg` 16px (cards, boxes), `xl` 24px, `full` (buttons, nav pills, tags) |
+| Radius   | `rounded-xs` 2px (tags), `sm` 4px (buttons, controls), `md` 6px, `lg` 8px (cards, boxes), `xl` 12px, `full` (dots only) |
 | Fonts    | `font-sans` (Inter Variable, self-hosted via `@fontsource-variable/inter`, system fallback), `font-heading`, `font-mono` |
-| Text     | `text-2xs` … `text-6xl`, plus `text-reading` (article body), each with a paired line height |
+| Text     | `text-2xs` … `text-7xl`, plus `text-reading` (article body), each with a paired line height |
 | Containers | `page` 108rem (content), `wide` 150rem (navbar/footer), `reading` 75ch (doc column incl. header; ≈ 65 to 75 characters per line), `sidebar` `clamp(14rem, 14vw, 19rem)`, `hero` 64rem, `measure` 48rem (ledes), `search` 20rem, `dialog` / `palette` / `dock` (fluid `min(…, 100vw - 2rem)`), `bubble` 80%. Use as `max-w-*`, `w-*`, `basis-*` |
 | Spacing  | `nav` (navbar height), `sticky` (sticky offset), `band` (header band, `clamp(9rem, 18vh, 11rem)`), `band-cell` (band grid), `glow-lg` / `glow-md` / `glow-sm` (aurora glow sizes), `embed` (Spotify embed, 152 px), `dialog-top`, `palette` (search max height), `chat` (chat panel height). Use as `h-*`, `pt-*`, `top-*`, `mt-*`, `max-h-*` |
 | Motion   | `animate-pop`, `animate-fade`, `animate-eq` (equalizer bars), `animate-rise` (entrance slide, movement only so content never stays hidden), `animate-drift` (aurora glows). `prefers-reduced-motion` turns motion off |
@@ -47,7 +47,11 @@ Examples: `bg-surface border border-border rounded-lg shadow-sm`,
 ## Shared class helpers
 
 - `utils/cn.ts`: join class lists (Prettier sorts classes inside `cn()`).
-- `utils/buttonClass.ts`: `buttonClass(variant, size, extra)` with
+- `utils/buttonClass.ts`: `buttonClass(variant, size, extra)` with motion
+  built in: every button lifts and grows on hover and presses in on click,
+  icons slide right, primary buttons get a light sweep (`shineClass`) and
+  outlined or ghost buttons a tint that grows in from the left (`fillClass`).
+  Variants:
   `primary | secondary | ghost` and `sm | md | lg`. When overriding `display`
   on a button, use a variant (`max-sm:hidden`), not `hidden`, because the
   base classes include `inline-flex`.
@@ -76,9 +80,9 @@ Examples: `bg-surface border border-border rounded-lg shadow-sm`,
 
 ## Primary colour and header bands
 
-Primary is indigo (`primary-solid` #4f46e5 light / #5b50f0 dark).
+Primary is a dark matte blue (`primary-solid` #1b3560 light / #1f3d6e dark).
 `components/BandBackdrop.tsx` draws the band: a `bg-linear-to-br` gradient
-from `band-from` via `band-via` to `band-to`, three blurred aurora glows
+from `band-from` via `band-via` to `band-to`, three blurred blue glows
 (`band-glow`, `-2`, `-3`) that drift slowly, a grid (`band-cell` squares)
 masked to fade out from the top centre, and a thin light line at the bottom.
 `components/HeaderBand.tsx` is the purely decorative strip (`aria-hidden`,
@@ -104,12 +108,11 @@ every `inline-grid` element (ADR-011).
 ## Navbar
 
 `Navbar` is `fixed`, transparent at the top and frosted (`bg-canvas/70`,
-`backdrop-blur-xl`, border) after scrolling. The main links sit in a pill
-group; search, theme and menu controls are round. `SiteLayout` offsets pages with `pt-nav`, except
+`backdrop-blur-xl`, border) after scrolling. The controls use `rounded-sm`. `SiteLayout` offsets pages with `pt-nav`, except
 band routes (`overlayRoutes`), whose band sits under the navbar. Over the
 band the header has `data-tone="cover"`; children restyle through
 `group-data-[tone=cover]/nav:` classes (shared strings in
-`utils/navTone.ts`), and the CTA inverts to white (`coverCta`). Logo: a gradient "S" tile plus the "SWEMRE" wordmark. The search trigger grows up to `max-w-search`.
+`utils/navTone.ts`), and the CTA inverts to white (`coverCta`). Logo: one "SWEMRE" mark. The search trigger grows up to `max-w-search`.
 
 ## Sidebars
 
@@ -135,17 +138,18 @@ set from `data-theme`. Code fences need a language (` ```ts `).
 
 ## Home page and avatar
 
-The home page sits on the same backdrop as the header bands
-(`components/BandBackdrop.tsx`: gradient, glow, grid), full height, with the
-navbar in cover tone. Hero text uses `cover-fg` with the name in gradient
-text; the avatar has a blurred gradient halo; the phone button is a white pill
-and the resume button a translucent pill. The owner's avatar (pixel-art
-GitHub profile picture) is served from `public/images/avatar-96.png` and
-`avatar-384.png` (`siteConfig.avatar`, `avatarLarge`) and appears in the hero,
-the chat launcher (rounded-md, presence dot on the top corner) and the chat
-panel.
+The home page scrolls. A full-height hero on the band backdrop holds text
+only (no avatar): a mono kicker, the job title with the name in blue gradient
+text, the tagline, "Request a call back" (white) and "Request my resume"
+(translucent), and live counts of articles, projects and songs. Below it,
+numbered sections (`components/HomeSection.tsx`): 01 latest articles
+(`ArticleCard`), 02 projects (`ProjectCard`), 03 songs, and 04 a contact
+panel on the band backdrop. The phone number is not shown; "Request a call
+back" opens `forms/CallbackRequestForm.tsx` through `useResumeModal().openCallback`.
+The owner's avatar is used only by the chat launcher and chat panel
+(`public/images/avatar-96.png`, `avatar-384.png`).
 
 ## Footer
 
-Icon-only round links (`size-9` hit area, 16 px icons) with `aria-label` and
+Icon-only links (`size-8` hit area, 16 px icons) with `aria-label` and
 `title`; the copyright reads "© 2026 SWEMRE".

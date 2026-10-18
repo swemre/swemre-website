@@ -13,41 +13,41 @@ import type {ReactNode} from 'react'
 import {BandBackdrop} from '../components/BandBackdrop'
 
 export function HomeTemplate({
-  avatar,
   kicker,
   title,
   tagline,
   actions,
+  stats,
   children,
 }: {
-  avatar: ReactNode
   kicker: ReactNode
   title: ReactNode
   tagline: string
   actions: ReactNode
+  stats: ReactNode
   children: ReactNode
 }) {
   return (
-    <div className="relative isolate flex min-h-0 flex-1 flex-col pt-nav">
-      <BandBackdrop />
-      <main className="mx-auto flex min-h-0 w-full max-w-page flex-1 flex-col justify-center gap-10 px-4 py-12 sm:px-6 lg:gap-14 lg:px-8 lg:py-8">
-        <section className="flex max-w-hero animate-rise flex-col gap-7 sm:flex-row sm:items-center sm:gap-10">
-          {avatar}
-          <div>
-            {kicker}
-            <h1 className="mt-5 text-4xl font-extrabold tracking-tighter text-balance text-cover-fg sm:text-6xl">
-              {title}
-            </h1>
-            <p className="mt-5 max-w-measure text-lg text-cover-fg/75 sm:text-xl">
-              {tagline}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">{actions}</div>
-          </div>
-        </section>
-        <div className="grid min-h-0 animate-rise gap-5 [animation-delay:120ms] md:grid-cols-3">
-          {children}
+    <main className="flex-1">
+      <section className="relative isolate flex min-h-dvh flex-col pt-nav">
+        <BandBackdrop />
+        <div className="mx-auto flex w-full max-w-page flex-1 animate-rise flex-col justify-center px-4 py-16 sm:px-6 lg:px-8">
+          {kicker}
+          <h1 className="mt-6 max-w-hero text-5xl font-extrabold tracking-tighter text-balance text-cover-fg sm:text-6xl lg:text-7xl">
+            {title}
+          </h1>
+          <p className="mt-6 max-w-measure text-lg text-cover-fg/70 sm:text-xl">
+            {tagline}
+          </p>
+          <div className="mt-10 flex flex-wrap gap-3">{actions}</div>
         </div>
-      </main>
-    </div>
+        <div className="mx-auto w-full max-w-page px-4 pb-8 sm:px-6 lg:px-8">
+          {stats}
+        </div>
+      </section>
+      <div className="mx-auto w-full max-w-page space-y-28 px-4 py-24 sm:px-6 lg:px-8">
+        {children}
+      </div>
+    </main>
   )
 }

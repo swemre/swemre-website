@@ -10,7 +10,12 @@
  */
 
 import {contactFormDatabase} from '../database/contactFormDatabase'
-import type {ContactForm, ContactFormInput} from '../types/type'
+import type {
+  CallbackFormInput,
+  CallbackRequest,
+  ContactForm,
+  ContactFormInput,
+} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {publicRequest, workspacePath} from './apiClient'
 
@@ -45,6 +50,33 @@ export class ContactFormService extends ArrayService<ContactForm> {
       fullName: input.fullName.trim(),
       email: input.email.trim(),
       reason: input.reason.trim(),
+      createdAt: submitted?.submittedAt ?? new Date().toISOString(),
+    }
+  }
+
+  // Same endpoint as the resume request; the kind tells the owner to phone back
+  async submitCallbackRequest(
+    input: CallbackFormInput,
+  ): Promise<CallbackRequest> {
+    const submitted = await publicRequest<SubmittedContactRequestDto>(
+      `${workspacePath}/contact-requests`,
+      {
+        method: 'POST',
+        body: {
+          kind: 'CALLBACK_REQUEST',
+          fullName: input.fullName.trim(),
+          phone: input.phone.trim(),
+          reason: input.topic.trim(),
+        },
+      },
+    )
+
+    return {
+      id: crypto.randomUUID(),
+      kind: 'callback-request',
+      fullName: input.fullName.trim(),
+      phone: input.phone.trim(),
+      topic: input.topic.trim(),
       createdAt: submitted?.submittedAt ?? new Date().toISOString(),
     }
   }

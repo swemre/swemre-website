@@ -14,7 +14,7 @@ import {siteConfig, socialLinks} from '../config/site'
 import {Icon} from './Icon'
 
 const iconLink =
-  'inline-grid size-9 place-items-center rounded-full text-fg-muted transition-colors hover:bg-primary-muted hover:text-primary hover:no-underline'
+  'inline-grid size-8 place-items-center rounded-sm text-fg-muted transition-colors hover:bg-primary-muted hover:text-primary hover:no-underline'
 
 export function Footer() {
   return (

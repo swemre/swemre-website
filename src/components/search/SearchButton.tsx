@@ -28,7 +28,7 @@ export function SearchButton() {
       data-sound="none"
       aria-label="Search"
       className={cn(
-        'inline-flex h-9 items-center gap-2 rounded-full border border-border bg-surface px-3 text-sm text-fg-subtle shadow-xs transition-colors hover:border-border-strong hover:text-fg-muted md:max-w-search md:min-w-0 md:flex-1',
+        'inline-flex h-8 items-center gap-2 rounded-sm border border-border bg-surface px-2 text-sm text-fg-subtle shadow-xs transition-colors hover:border-border-strong hover:text-fg-muted md:max-w-search md:min-w-0 md:flex-1',
         coverControl,
       )}
     >

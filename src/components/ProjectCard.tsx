@@ -22,7 +22,7 @@ export function ProjectCard({project}: {project: Project}) {
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
       />
       <div className="flex items-center gap-3">
-        <span className="inline-grid size-10 shrink-0 place-items-center rounded-md bg-linear-to-br from-primary-muted to-secondary-muted text-primary">
+        <span className="inline-grid size-10 shrink-0 place-items-center rounded-md bg-primary-muted text-primary">
           <Icon name="repo" size={18} />
         </span>
         <Link
@@ -31,7 +31,7 @@ export function ProjectCard({project}: {project: Project}) {
         >
           {project.title}
         </Link>
-        <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-2xs font-medium text-fg-muted">
+        <span className="ml-auto rounded-xs border border-border px-2 py-0.5 font-mono text-2xs font-medium text-fg-muted">
           {project.year}
         </span>
       </div>

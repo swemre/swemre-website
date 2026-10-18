@@ -28,7 +28,7 @@ const links = [
 
 const linkClass = ({isActive}: {isActive: boolean}) =>
   cn(
-    'rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors hover:no-underline',
+    'rounded-sm px-3 py-1.5 text-sm font-medium transition-colors hover:no-underline',
     isActive
       ? 'bg-surface-muted text-fg-strong group-data-[tone=cover]/nav:bg-cover-fg/15 group-data-[tone=cover]/nav:text-cover-fg'
       : 'text-fg-muted group-data-[tone=cover]/nav:text-cover-fg/80 hover:bg-surface-muted hover:text-fg-strong group-data-[tone=cover]/nav:hover:bg-cover-fg/10 group-data-[tone=cover]/nav:hover:text-cover-fg',
@@ -56,23 +56,14 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
           to="/"
           onClick={closeMenu}
           aria-label="SWEMRE, home"
-          className="group/logo flex items-center gap-2 hover:no-underline"
+          className="flex items-center hover:no-underline"
         >
-          <span
-            aria-hidden="true"
-            className="inline-grid size-8 place-items-center rounded-sm bg-linear-to-br from-primary-solid via-secondary to-accent font-mono text-sm font-extrabold text-fg-on-emphasis shadow-md transition-transform duration-300 group-hover/logo:rotate-6"
-          >
-            S
-          </span>
-          <span className="font-mono text-sm font-bold tracking-[0.18em] text-fg-strong group-data-[tone=cover]/nav:text-cover-fg">
+          <span className="inline-grid h-8 place-items-center rounded-sm bg-fg-strong px-2 font-mono text-sm font-bold tracking-wider text-canvas transition-transform duration-300 group-data-[tone=cover]/nav:bg-cover-fg group-data-[tone=cover]/nav:text-cover-ink hover:scale-105">
             SWEMRE
           </span>
         </Link>
 
-        <nav
-          aria-label="Main"
-          className="hidden items-center gap-0.5 rounded-full border border-border-muted bg-surface/60 p-1 group-data-[tone=cover]/nav:border-cover-fg/15 group-data-[tone=cover]/nav:bg-cover-fg/5 md:flex"
-        >
+        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
           {links.map(link => (
             <NavLink
               key={link.to}
@@ -106,7 +97,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(open => !open)}
             className={cn(
-              'inline-grid size-9 place-items-center rounded-full border border-border bg-surface text-fg-muted md:hidden',
+              'inline-grid size-8 place-items-center rounded-sm border border-border bg-surface text-fg-muted md:hidden',
               coverControl,
             )}
           >

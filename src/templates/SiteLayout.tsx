@@ -27,7 +27,6 @@ const overlayRoutes = [
 
 export function SiteLayout() {
   const {pathname} = useLocation()
-  const isHome = pathname === '/'
   const overCover = overlayRoutes.some(route => matchPath(route, pathname))
 
   useEffect(() => {
@@ -39,12 +38,7 @@ export function SiteLayout() {
   }, [pathname])
 
   return (
-    <div
-      className={cn(
-        'flex min-h-dvh flex-col',
-        isHome && 'lg:h-dvh lg:overflow-hidden',
-      )}
-    >
+    <div className="flex min-h-dvh flex-col">
       <Navbar overCover={overCover} />
       <div
         className={cn('flex min-h-0 flex-1 flex-col', !overCover && 'pt-nav')}

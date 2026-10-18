@@ -9,9 +9,12 @@
  * Contact: emre@swemre.com
  */
 
-import {Link} from 'react-router-dom'
+import {ArticleCard} from '../../components/ArticleCard'
+import {BandBackdrop} from '../../components/BandBackdrop'
+import {HomeSection} from '../../components/HomeSection'
 import {Icon} from '../../components/Icon'
-import {ListBox, ListRow} from '../../components/ListBox'
+import {ListBox} from '../../components/ListBox'
+import {ProjectCard} from '../../components/ProjectCard'
 import {SongRow} from '../../components/SongRow'
 import {siteConfig} from '../../config/site'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
@@ -19,47 +22,53 @@ import {useFindAll} from '../../hooks/useFindAll'
 import {useResumeModal} from '../../hooks/useResumeModal'
 import {useService} from '../../hooks/useService'
 import {HomeTemplate} from '../../templates/HomeTemplate'
-import {formatDate} from '../../utils/formatDate'
-
-const LIMIT = 5
+import {buttonClass, fillClass, shineClass} from '../../utils/buttonClass'
+import {cn} from '../../utils/cn'
 
 const bandButton =
-  'inline-flex h-12 items-center justify-center gap-2 rounded-full border px-6 text-base font-medium whitespace-nowrap transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:no-underline'
+  'relative isolate inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-sm border px-6 text-base font-medium whitespace-nowrap transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:scale-[1.03] hover:no-underline active:translate-y-0 active:scale-[0.97] [&>svg]:transition-transform [&>svg]:duration-300 hover:[&>svg]:translate-x-0.5'
+
+const solidBandButton = cn(
+  bandButton,
+  'border-cover-fg bg-cover-fg text-cover-ink shadow-cover-cta before:via-band-glow/30',
+  shineClass,
+)
+
+const glassBandButton = cn(
+  bandButton,
+  'border-cover-fg/25 bg-cover-fg/5 text-cover-fg backdrop-blur-md after:bg-cover-fg/15',
+  fillClass,
+)
+
+const pad = (count: number) => String(count).padStart(2, '0')
 
 function Loading() {
-  return <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
+  return <p className="text-sm text-fg-muted">Loading…</p>
 }
 
 export default function HomePage() {
   useDocumentTitle()
-  const resume = useResumeModal()
+  const requests = useResumeModal()
   const articles = useFindAll(useService('article'))
   const projects = useFindAll(useService('project'))
   const songs = useFindAll(useService('song'))
 
+  const stats: Array<[string, number | undefined]> = [
+    ['Articles', articles.data?.length],
+    ['Projects', projects.data?.length],
+    ['Songs', songs.data?.length],
+  ]
+
   return (
     <HomeTemplate
-      avatar={
-        <div className="relative shrink-0 self-start sm:self-center">
-          <div
-            aria-hidden="true"
-            className="absolute -inset-1 rounded-xl bg-linear-to-br from-band-glow via-band-glow-2 to-band-glow-3 opacity-80 blur-md"
-          />
-          <img
-            src={siteConfig.avatarLarge}
-            alt={`${siteConfig.name}'s avatar`}
-            className="relative size-28 rounded-xl bg-band-from shadow-xl ring-1 ring-cover-fg/30 sm:size-40"
-          />
-        </div>
-      }
       kicker={
-        <span className="inline-flex items-center gap-2 rounded-full border border-cover-fg/20 bg-cover-fg/10 px-3.5 py-1.5 text-xs font-medium text-cover-fg/90 backdrop-blur-md">
+        <p className="inline-flex items-center gap-3 font-mono text-xs font-medium tracking-[0.25em] text-cover-fg/70 uppercase">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
-            <span className="relative inline-flex size-2 rounded-full bg-success" />
+            <span className="absolute inline-flex size-full animate-ping rounded-xs bg-cover-tint-2 opacity-70" />
+            <span className="relative inline-flex size-2 rounded-xs bg-cover-tint-2" />
           </span>
-          Portfolio, articles and side projects
-        </span>
+          {siteConfig.brand} / Software engineering lab
+        </p>
       }
       title={
         <>
@@ -72,69 +81,138 @@ export default function HomePage() {
       tagline={siteConfig.tagline}
       actions={
         <>
-          <a
-            href={siteConfig.phoneHref}
-            className={`${bandButton} border-cover-fg bg-cover-fg text-cover-ink shadow-cover-cta hover:bg-cover-fg/90`}
-          >
-            <Icon name="phone" />
-            {siteConfig.phoneDisplay}
-          </a>
           <button
             type="button"
-            onClick={resume.open}
+            onClick={requests.openCallback}
             data-sound="none"
-            className={`${bandButton} border-cover-fg/25 bg-cover-fg/10 text-cover-fg backdrop-blur-md hover:bg-cover-fg/20`}
+            className={solidBandButton}
+          >
+            <Icon name="phone" />
+            Request a call back
+          </button>
+          <button
+            type="button"
+            onClick={requests.open}
+            data-sound="none"
+            className={glassBandButton}
           >
             <Icon name="file" />
             Request my resume
           </button>
         </>
       }
+      stats={
+        <dl className="grid grid-cols-3 border-t border-cover-fg/15 pt-6">
+          {stats.map(([label, count]) => (
+            <div
+              key={label}
+              className="border-l border-cover-fg/15 pl-4 first:border-l-0 first:pl-0"
+            >
+              <dt className="font-mono text-2xs tracking-[0.2em] text-cover-fg/50 uppercase">
+                {label}
+              </dt>
+              <dd className="mt-1 font-mono text-2xl font-semibold text-cover-fg">
+                {count === undefined ? '--' : pad(count)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      }
     >
-      <ListBox title="Articles" icon="book" moreTo="/articles">
+      <HomeSection
+        index="01"
+        label="Writing"
+        title="Latest articles"
+        moreTo="/articles"
+      >
         {articles.loading && <Loading />}
-        {(articles.data ?? []).slice(0, LIMIT).map(article => (
-          <ListRow
-            key={article.id}
-            icon={<Icon name="file" className="text-fg-subtle" />}
-            title={
-              <Link
-                to={`/articles/${article.slug}`}
-                className="text-fg-strong hover:text-primary"
-              >
-                {article.title}
-              </Link>
-            }
-            meta={`${formatDate(article.createdAt)} · ${article.readingTime} min read`}
-          />
-        ))}
-      </ListBox>
+        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {(articles.data ?? []).slice(0, 3).map(article => (
+            <li key={article.id}>
+              <ArticleCard article={article} />
+            </li>
+          ))}
+        </ul>
+      </HomeSection>
 
-      <ListBox title="Projects" icon="repo" moreTo="/projects">
+      <HomeSection
+        index="02"
+        label="Building"
+        title="Selected projects"
+        moreTo="/projects"
+      >
         {projects.loading && <Loading />}
-        {(projects.data ?? []).slice(0, LIMIT).map(project => (
-          <ListRow
-            key={project.id}
-            icon={<Icon name="repo" className="text-fg-subtle" />}
-            title={
-              <Link
-                to={`/projects/${project.slug}`}
-                className="text-fg-strong hover:text-primary"
-              >
-                {project.title}
-              </Link>
-            }
-            meta={`${project.year} · ${project.summary}`}
-          />
-        ))}
-      </ListBox>
+        <ul className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {(projects.data ?? []).slice(0, 3).map(project => (
+            <li key={project.id}>
+              <ProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+      </HomeSection>
 
-      <ListBox title="Songs I liked" icon="spotify" divided={false}>
-        {songs.loading && <Loading />}
-        {(songs.data ?? []).slice(0, LIMIT).map((song, index) => (
-          <SongRow key={song.id} song={song} index={index + 1} />
-        ))}
-      </ListBox>
+      <HomeSection index="03" label="Listening" title="Songs I liked">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
+          <p className="max-w-measure text-lg text-fg-muted">
+            What plays while I work. Pick a track to listen right here.
+          </p>
+          <ListBox title="Playlist" icon="spotify" divided={false}>
+            {songs.loading && (
+              <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
+            )}
+            {(songs.data ?? []).slice(0, 6).map((song, index) => (
+              <SongRow key={song.id} song={song} index={index + 1} />
+            ))}
+          </ListBox>
+        </div>
+      </HomeSection>
+
+      <section
+        aria-label="Contact"
+        className="relative isolate animate-rise overflow-hidden rounded-lg border border-border px-6 py-16 sm:px-12 lg:py-20"
+      >
+        <BandBackdrop />
+        <p className="font-mono text-xs font-medium tracking-[0.2em] text-cover-fg/60 uppercase">
+          04 / Contact
+        </p>
+        <h2 className="mt-3 max-w-hero text-4xl font-extrabold tracking-tighter text-cover-fg sm:text-5xl">
+          Let us build something together.
+        </h2>
+        <p className="mt-4 max-w-measure text-lg text-cover-fg/70">
+          Leave your number and I will call you back, or ask for my resume.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={requests.openCallback}
+            data-sound="none"
+            className={solidBandButton}
+          >
+            <Icon name="phone" />
+            Request a call back
+          </button>
+          <button
+            type="button"
+            onClick={requests.open}
+            data-sound="none"
+            className={glassBandButton}
+          >
+            <Icon name="file" />
+            Request my resume
+          </button>
+          <a
+            href={`mailto:${siteConfig.email}`}
+            className={buttonClass(
+              'ghost',
+              'lg',
+              'text-cover-fg/80 after:bg-cover-fg/10 hover:text-cover-fg',
+            )}
+          >
+            <Icon name="mail" />
+            {siteConfig.email}
+          </a>
+        </div>
+      </section>
     </HomeTemplate>
   )
 }
