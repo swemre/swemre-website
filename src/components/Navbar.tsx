@@ -47,7 +47,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
       className={cn(
         'group/nav fixed inset-x-0 top-0 z-30 border-b transition-[background-color,border-color,box-shadow] duration-200',
         solid
-          ? 'border-border bg-canvas/85 shadow-sm backdrop-blur-md'
+          ? 'border-border-muted bg-canvas/70 shadow-sm backdrop-blur-xl backdrop-saturate-150'
           : 'border-transparent bg-transparent',
       )}
     >
@@ -58,7 +58,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
           aria-label="SWEMRE, home"
           className="flex items-center hover:no-underline"
         >
-          <span className="inline-grid h-8 place-items-center rounded-sm bg-fg-strong px-2 font-mono text-sm font-bold tracking-wider text-canvas group-data-[tone=cover]/nav:bg-cover-fg group-data-[tone=cover]/nav:text-cover-ink">
+          <span className="inline-grid h-8 place-items-center rounded-sm bg-fg-strong px-2 font-mono text-sm font-bold tracking-wider text-canvas transition-transform duration-300 group-data-[tone=cover]/nav:bg-cover-fg group-data-[tone=cover]/nav:text-cover-ink hover:scale-105">
             SWEMRE
           </span>
         </Link>
@@ -109,7 +109,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
       {menuOpen && (
         <nav
           aria-label="Mobile"
-          className="flex flex-col gap-1 border-t border-border-muted bg-canvas px-4 py-3 md:hidden"
+          className="flex animate-pop flex-col gap-1 border-t border-border-muted bg-canvas/95 px-4 py-3 backdrop-blur-xl md:hidden"
         >
           {links.map(link => (
             <NavLink

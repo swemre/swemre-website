@@ -27,7 +27,7 @@ export function PagerLink({
     <Link
       to={to}
       className={cn(
-        'flex flex-col gap-1 rounded-md border border-border bg-surface p-4 shadow-xs transition-colors hover:border-primary hover:no-underline',
+        'flex flex-col gap-1 rounded-lg border border-border bg-surface p-5 shadow-xs transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:no-underline hover:shadow-lg',
         next && 'text-right sm:col-start-2',
       )}
     >

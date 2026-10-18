@@ -45,7 +45,7 @@ export function ProjectTemplate({
             ]}
             badges={
               <>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-fg-muted">
+                <span className="inline-flex items-center gap-1.5 rounded-xs border border-border px-2.5 py-0.5 text-xs font-medium text-fg-muted">
                   <Icon name="repo" size={12} /> {project.year}
                 </span>
                 {project.tags.map(tag => (

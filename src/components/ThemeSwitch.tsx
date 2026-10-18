@@ -25,7 +25,7 @@ export function ThemeSwitch() {
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       className={cn(
-        'inline-grid size-8 place-items-center rounded-sm border border-border bg-surface text-fg-muted shadow-xs transition-colors hover:bg-surface-muted hover:text-fg-strong',
+        'inline-grid size-8 place-items-center rounded-sm border border-border bg-surface text-fg-muted shadow-xs transition-[background-color,color,transform] duration-300 hover:rotate-12 hover:bg-surface-muted hover:text-fg-strong',
         coverControl,
       )}
     >

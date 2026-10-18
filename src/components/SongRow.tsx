@@ -23,7 +23,7 @@ function Equalizer() {
         <span
           key={delay}
           className={cn(
-            'h-full w-0.75 origin-bottom animate-eq rounded-xs bg-spotify',
+            'h-full w-0.75 origin-bottom animate-eq rounded-xs bg-primary',
             delay,
           )}
         />

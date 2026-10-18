@@ -52,7 +52,7 @@ export function ArticleTemplate({
             meta={
               <>
                 <span className="inline-flex items-center gap-2">
-                  <span className="inline-grid size-6 place-items-center rounded-full bg-primary-solid text-xs font-semibold text-fg-on-emphasis">
+                  <span className="inline-grid size-7 place-items-center rounded-sm bg-primary-solid text-xs font-semibold text-fg-on-emphasis">
                     {article.author.charAt(0).toUpperCase()}
                   </span>
                   <span className="font-medium text-fg-strong">
@@ -70,7 +70,7 @@ export function ArticleTemplate({
         }
         after={
           <>
-            <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-surface-muted px-5 py-4">
+            <section className="mt-14 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-surface-muted px-6 py-5">
               <p className="text-sm font-medium text-fg-strong">
                 Was this article helpful?
               </p>

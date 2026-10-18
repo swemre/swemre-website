@@ -57,7 +57,7 @@ export default function ArticlesPage() {
       onClick={() => setTag(tag)}
       aria-pressed={activeTag === tag}
       className={cn(
-        'flex w-full items-center justify-between rounded-sm px-3 py-1.5 text-sm transition-colors',
+        'flex w-full items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors',
         activeTag === tag
           ? 'bg-primary-muted font-medium text-primary'
           : 'text-fg-muted hover:bg-surface-muted hover:text-fg-strong',
@@ -95,7 +95,7 @@ export default function ArticlesPage() {
       sidebar={
         <div className="space-y-6">
           <nav aria-label="Filter by topic">
-            <p className="mb-2 flex items-center gap-2 px-3 text-xs font-semibold text-fg-strong">
+            <p className="mb-2 flex items-center gap-2 px-3 text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
               <Icon name="tag" size={14} className="text-fg-subtle" />
               Topics
             </p>
@@ -117,8 +117,8 @@ export default function ArticlesPage() {
         </div>
       }
     >
-      <div className="overflow-hidden rounded-md border border-border bg-surface shadow-xs">
-        <div className="flex items-center gap-2 border-b border-border bg-surface-muted px-5 py-3 text-sm">
+      <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
+        <div className="flex items-center gap-2 border-b border-border-muted px-6 py-3.5 text-sm">
           <span className="font-semibold text-fg-strong">
             {shown.length} {shown.length === 1 ? 'article' : 'articles'}
           </span>

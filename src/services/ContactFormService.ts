@@ -10,7 +10,12 @@
  */
 
 import {contactFormDatabase} from '../database/contactFormDatabase'
-import type {ContactForm, ContactFormInput} from '../types/type'
+import type {
+  CallbackFormInput,
+  CallbackRequest,
+  ContactForm,
+  ContactFormInput,
+} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {publicRequest, workspacePath} from './apiClient'
 
@@ -20,6 +25,7 @@ interface SubmittedFormDto {
 
 // The form's key in swemre-website-api; its fields are defined in the CMS (Form settings)
 const CV_REQUEST_FORM = 'cv-request'
+const CALLBACK_REQUEST_FORM = 'callback-request'
 
 export class ContactFormService extends ArrayService<ContactForm> {
   constructor() {
@@ -49,6 +55,34 @@ export class ContactFormService extends ArrayService<ContactForm> {
       fullName: input.fullName.trim(),
       email: input.email.trim(),
       reason: input.reason.trim(),
+      createdAt: submitted?.submittedAt ?? new Date().toISOString(),
+    }
+  }
+
+  // A form of its own in the CMS (key callback-request: fullName, phone, topic)
+  async submitCallbackRequest(
+    input: CallbackFormInput,
+  ): Promise<CallbackRequest> {
+    const submitted = await publicRequest<SubmittedFormDto>(
+      `${workspacePath}/forms/${CALLBACK_REQUEST_FORM}/submissions`,
+      {
+        method: 'POST',
+        body: {
+          fields: {
+            fullName: input.fullName.trim(),
+            phone: input.phone.trim(),
+            topic: input.topic.trim(),
+          },
+        },
+      },
+    )
+
+    return {
+      id: crypto.randomUUID(),
+      kind: 'callback-request',
+      fullName: input.fullName.trim(),
+      phone: input.phone.trim(),
+      topic: input.topic.trim(),
       createdAt: submitted?.submittedAt ?? new Date().toISOString(),
     }
   }

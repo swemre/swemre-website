@@ -33,19 +33,26 @@ export function ListBox({
   return (
     <section
       className={cn(
-        'flex min-h-0 flex-col overflow-hidden rounded-md border border-border bg-surface shadow-xs',
+        'flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface/90 shadow-lg backdrop-blur-xl',
         className,
       )}
     >
-      <header className="flex items-center gap-2 border-b border-border bg-surface-muted px-4 py-2.5">
-        <Icon name={icon} className="text-fg-muted" />
+      <header className="flex items-center gap-2.5 border-b border-border-muted px-4 py-3">
+        <span className="inline-grid size-7 place-items-center rounded-sm bg-primary-muted text-primary">
+          <Icon name={icon} size={15} />
+        </span>
         <h2 className="text-sm font-semibold text-fg-strong">{title}</h2>
         {moreTo && (
           <Link
             to={moreTo}
-            className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-primary"
+            className="group/more ml-auto inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary-muted hover:no-underline"
           >
-            View all <Icon name="arrow-right" size={12} />
+            View all{' '}
+            <Icon
+              name="arrow-right"
+              size={12}
+              className="transition-transform group-hover/more:translate-x-0.5"
+            />
           </Link>
         )}
       </header>
@@ -77,7 +84,7 @@ export function ListRow({
   return (
     <li
       className={cn(
-        'flex items-center gap-3 px-4 py-2.5 transition-colors',
+        'flex items-center gap-3 px-4 py-3 transition-colors',
         active ? 'bg-primary-muted' : 'hover:bg-surface-muted',
       )}
     >

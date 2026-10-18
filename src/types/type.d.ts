@@ -144,6 +144,25 @@ export interface ContactFormInput {
 
 export type ContactFormErrors = Partial<Record<keyof ContactFormInput, string>>
 
+export interface CallbackRequest extends Entity {
+  kind: 'callback-request'
+  fullName: string
+  phone: string
+  topic: string
+  /** ISO 8601, UTC. */
+  createdAt: string
+}
+
+export interface CallbackFormInput {
+  fullName: string
+  phone: string
+  topic: string
+}
+
+export type CallbackFormErrors = Partial<
+  Record<keyof CallbackFormInput, string>
+>
+
 // ---------- search ----------
 
 export type SearchAction =
@@ -360,6 +379,7 @@ export interface ThemeContextValue {
 
 export interface ResumeModalContextValue {
   open: () => void
+  openCallback: () => void
   close: () => void
 }
 
