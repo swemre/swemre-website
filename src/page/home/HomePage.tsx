@@ -53,6 +53,23 @@ export default function HomePage() {
   const projects = useFindAll(useService('project'))
   const songs = useFindAll(useService('song'))
 
+  const latestArticles = (articles.data ?? []).slice(0, 4)
+  const featuredProjects = (projects.data ?? []).slice(0, 3)
+  const playlist = (songs.data ?? []).slice(0, 6)
+
+  // A section stays while it loads and disappears when its list is empty, so an empty
+  // workspace shows only the hero and the contact panel; numbers follow the visible sections
+  const visible = {
+    articles: articles.loading || latestArticles.length > 0,
+    projects: projects.loading || featuredProjects.length > 0,
+    songs: songs.loading || playlist.length > 0,
+  }
+  const order = (Object.keys(visible) as Array<keyof typeof visible>).filter(
+    key => visible[key],
+  )
+  const number = (key: keyof typeof visible | 'contact') =>
+    pad((key === 'contact' ? order.length : order.indexOf(key)) + 1)
+
   const stats: Array<[string, number | undefined]> = [
     ['Articles', articles.data?.length],
     ['Projects', projects.data?.length],
@@ -119,41 +136,51 @@ export default function HomePage() {
         </dl>
       }
     >
-      <HomeSection
-        index="01"
-        label="Writing"
-        title="Latest articles"
-        moreTo="/articles"
-      >
-        {articles.loading && <Loading />}
-        <ArticleShowcase articles={(articles.data ?? []).slice(0, 4)} />
-      </HomeSection>
+      {visible.articles && (
+        <HomeSection
+          index={number('articles')}
+          label="Writing"
+          title="Latest articles"
+          moreTo="/articles"
+        >
+          {articles.loading && <Loading />}
+          <ArticleShowcase articles={latestArticles} />
+        </HomeSection>
+      )}
 
-      <HomeSection
-        index="02"
-        label="Building"
-        title="Selected projects"
-        moreTo="/projects"
-      >
-        {projects.loading && <Loading />}
-        <ProjectShowcase projects={(projects.data ?? []).slice(0, 3)} />
-      </HomeSection>
+      {visible.projects && (
+        <HomeSection
+          index={number('projects')}
+          label="Building"
+          title="Selected projects"
+          moreTo="/projects"
+        >
+          {projects.loading && <Loading />}
+          <ProjectShowcase projects={featuredProjects} />
+        </HomeSection>
+      )}
 
-      <HomeSection index="03" label="Listening" title="Songs I liked">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
-          <p className="max-w-measure text-lg text-fg-muted">
-            What plays while I work. Pick a track to listen right here.
-          </p>
-          <ListBox title="Playlist" icon="spotify" divided={false}>
-            {songs.loading && (
-              <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
-            )}
-            {(songs.data ?? []).slice(0, 6).map((song, index) => (
-              <SongRow key={song.id} song={song} index={index + 1} />
-            ))}
-          </ListBox>
-        </div>
-      </HomeSection>
+      {visible.songs && (
+        <HomeSection
+          index={number('songs')}
+          label="Listening"
+          title="Songs I liked"
+        >
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
+            <p className="max-w-measure text-lg text-fg-muted">
+              What plays while I work. Pick a track to listen right here.
+            </p>
+            <ListBox title="Playlist" icon="spotify" divided={false}>
+              {songs.loading && (
+                <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
+              )}
+              {playlist.map((song, index) => (
+                <SongRow key={song.id} song={song} index={index + 1} />
+              ))}
+            </ListBox>
+          </div>
+        </HomeSection>
+      )}
 
       <section
         aria-label="Contact"
@@ -161,7 +188,7 @@ export default function HomePage() {
       >
         <BandBackdrop />
         <p className="font-mono text-xs font-medium tracking-[0.2em] text-cover-fg/60 uppercase">
-          04 / Contact
+          {number('contact')} / Contact
         </p>
         <h2 className="mt-3 max-w-hero text-4xl font-extrabold tracking-tighter text-cover-fg sm:text-5xl">
           Let us build something together.
