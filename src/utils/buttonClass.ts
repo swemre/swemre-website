@@ -13,11 +13,11 @@ import type {ButtonSize, ButtonVariant} from '../types/type'
 import {cn} from './cn'
 
 const base =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm border font-medium transition-colors hover:no-underline disabled:cursor-not-allowed disabled:opacity-60'
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:no-underline active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'border-primary-solid bg-primary-solid text-fg-on-emphasis shadow-xs hover:border-primary-solid-hover hover:bg-primary-solid-hover',
+    'border-primary-solid bg-primary-solid text-fg-on-emphasis shadow-cta hover:border-primary-solid-hover hover:bg-primary-solid-hover hover:shadow-cta-hover',
   secondary:
     'border-border bg-surface text-fg-strong shadow-xs hover:border-border-strong hover:bg-surface-muted',
   ghost:
@@ -25,9 +25,9 @@ const variants: Record<ButtonVariant, string> = {
 }
 
 const sizes: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-9 px-4 text-sm',
-  lg: 'h-11 px-5 text-base',
+  sm: 'h-9 px-4 text-sm',
+  md: 'h-10 px-5 text-sm',
+  lg: 'h-12 px-6 text-base',
 }
 
 export const buttonClass = (

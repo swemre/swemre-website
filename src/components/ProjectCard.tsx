@@ -16,12 +16,18 @@ import {TagLabel} from './TagLabel'
 
 export function ProjectCard({project}: {project: Project}) {
   return (
-    <article className="flex h-full flex-col rounded-md border border-border bg-surface p-5 shadow-xs transition-shadow hover:shadow-md">
-      <div className="flex items-center gap-2">
-        <Icon name="repo" className="text-fg-muted" />
+    <article className="group/card relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface p-6 shadow-sm transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
+      />
+      <div className="flex items-center gap-3">
+        <span className="inline-grid size-10 shrink-0 place-items-center rounded-md bg-linear-to-br from-primary-muted to-secondary-muted text-primary">
+          <Icon name="repo" size={18} />
+        </span>
         <Link
           to={`/projects/${project.slug}`}
-          className="truncate font-semibold text-primary"
+          className="truncate text-lg font-semibold text-fg-strong after:absolute after:inset-0 hover:text-primary hover:no-underline"
         >
           {project.title}
         </Link>
@@ -29,14 +35,16 @@ export function ProjectCard({project}: {project: Project}) {
           {project.year}
         </span>
       </div>
-      <p className="mt-2 flex-1 text-sm text-fg-muted">{project.summary}</p>
+      <p className="mt-4 flex-1 text-sm leading-6 text-fg-muted">
+        {project.summary}
+      </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {project.tags.map(tag => (
           <TagLabel key={tag}>{tag}</TagLabel>
         ))}
       </div>
       {(project.url || project.repoUrl) && (
-        <div className="mt-4 flex gap-4 border-t border-border-muted pt-3 text-xs">
+        <div className="relative z-10 mt-5 flex gap-4 border-t border-border-muted pt-4 text-xs font-medium">
           {project.url && (
             <a
               href={project.url}

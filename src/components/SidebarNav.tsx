@@ -19,13 +19,13 @@ export function SidebarNav({sections}: {sections: SidebarNavSection[]}) {
     <nav aria-label="Site sections" className="space-y-6 text-sm">
       {sections.map(section => (
         <div key={section.title}>
-          <p className="mb-2 flex items-center gap-2 px-3 text-xs font-semibold text-fg-strong">
+          <p className="mb-2 flex items-center gap-2 px-3 text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
             <Icon name={section.icon} size={14} className="text-fg-subtle" />
             {section.title}
             {section.moreTo && (
               <Link
                 to={section.moreTo}
-                className="ml-auto font-medium text-primary"
+                className="ml-auto font-medium tracking-normal text-primary normal-case"
               >
                 All
               </Link>
@@ -38,7 +38,7 @@ export function SidebarNav({sections}: {sections: SidebarNavSection[]}) {
                   to={item.to}
                   aria-current={item.active ? 'page' : undefined}
                   className={cn(
-                    'block rounded-sm px-3 py-1.5 leading-snug transition-colors hover:no-underline',
+                    'block rounded-sm px-3 py-2 leading-snug transition-colors hover:no-underline',
                     item.active
                       ? 'bg-primary-muted font-medium text-primary'
                       : 'text-fg-muted hover:bg-surface-muted hover:text-fg-strong',

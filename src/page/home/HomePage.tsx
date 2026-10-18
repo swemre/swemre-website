@@ -24,7 +24,7 @@ import {formatDate} from '../../utils/formatDate'
 const LIMIT = 5
 
 const bandButton =
-  'inline-flex h-11 items-center justify-center gap-2 rounded-sm border px-5 text-base font-medium whitespace-nowrap transition-colors hover:no-underline'
+  'inline-flex h-12 items-center justify-center gap-2 rounded-full border px-6 text-base font-medium whitespace-nowrap transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:no-underline'
 
 function Loading() {
   return <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
@@ -40,25 +40,41 @@ export default function HomePage() {
   return (
     <HomeTemplate
       avatar={
-        <img
-          src={siteConfig.avatarLarge}
-          alt={`${siteConfig.name}'s avatar`}
-          className="size-28 shrink-0 rounded-md bg-cover-fg/10 shadow-lg ring-1 ring-cover-fg/25 sm:size-36"
-        />
+        <div className="relative shrink-0 self-start sm:self-center">
+          <div
+            aria-hidden="true"
+            className="absolute -inset-1 rounded-xl bg-linear-to-br from-band-glow via-band-glow-2 to-band-glow-3 opacity-80 blur-md"
+          />
+          <img
+            src={siteConfig.avatarLarge}
+            alt={`${siteConfig.name}'s avatar`}
+            className="relative size-28 rounded-xl bg-band-from shadow-xl ring-1 ring-cover-fg/30 sm:size-40"
+          />
+        </div>
       }
       kicker={
-        <span className="inline-flex items-center gap-2 rounded-full border border-cover-fg/25 bg-cover-fg/10 px-3 py-1 text-xs font-medium text-cover-fg backdrop-blur-sm">
-          <span className="size-2 rounded-full bg-success" />
+        <span className="inline-flex items-center gap-2 rounded-full border border-cover-fg/20 bg-cover-fg/10 px-3.5 py-1.5 text-xs font-medium text-cover-fg/90 backdrop-blur-md">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+            <span className="relative inline-flex size-2 rounded-full bg-success" />
+          </span>
           Portfolio, articles and side projects
         </span>
       }
-      title={`${siteConfig.jobTitle} - ${siteConfig.name}`}
+      title={
+        <>
+          {siteConfig.jobTitle}{' '}
+          <span className="bg-linear-to-r from-cover-tint-1 via-cover-tint-2 to-cover-tint-3 bg-clip-text text-transparent">
+            {siteConfig.name}
+          </span>
+        </>
+      }
       tagline={siteConfig.tagline}
       actions={
         <>
           <a
             href={siteConfig.phoneHref}
-            className={`${bandButton} border-cover-fg bg-cover-fg text-cover-ink hover:bg-cover-fg/90`}
+            className={`${bandButton} border-cover-fg bg-cover-fg text-cover-ink shadow-cover-cta hover:bg-cover-fg/90`}
           >
             <Icon name="phone" />
             {siteConfig.phoneDisplay}
@@ -67,7 +83,7 @@ export default function HomePage() {
             type="button"
             onClick={resume.open}
             data-sound="none"
-            className={`${bandButton} border-cover-fg/30 bg-cover-fg/10 text-cover-fg hover:bg-cover-fg/20`}
+            className={`${bandButton} border-cover-fg/25 bg-cover-fg/10 text-cover-fg backdrop-blur-md hover:bg-cover-fg/20`}
           >
             <Icon name="file" />
             Request my resume

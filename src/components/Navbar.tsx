@@ -28,7 +28,7 @@ const links = [
 
 const linkClass = ({isActive}: {isActive: boolean}) =>
   cn(
-    'rounded-sm px-3 py-1.5 text-sm font-medium transition-colors hover:no-underline',
+    'rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors hover:no-underline',
     isActive
       ? 'bg-surface-muted text-fg-strong group-data-[tone=cover]/nav:bg-cover-fg/15 group-data-[tone=cover]/nav:text-cover-fg'
       : 'text-fg-muted group-data-[tone=cover]/nav:text-cover-fg/80 hover:bg-surface-muted hover:text-fg-strong group-data-[tone=cover]/nav:hover:bg-cover-fg/10 group-data-[tone=cover]/nav:hover:text-cover-fg',
@@ -47,7 +47,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
       className={cn(
         'group/nav fixed inset-x-0 top-0 z-30 border-b transition-[background-color,border-color,box-shadow] duration-200',
         solid
-          ? 'border-border bg-canvas/85 shadow-sm backdrop-blur-md'
+          ? 'border-border-muted bg-canvas/70 shadow-sm backdrop-blur-xl backdrop-saturate-150'
           : 'border-transparent bg-transparent',
       )}
     >
@@ -56,14 +56,23 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
           to="/"
           onClick={closeMenu}
           aria-label="SWEMRE, home"
-          className="flex items-center hover:no-underline"
+          className="group/logo flex items-center gap-2 hover:no-underline"
         >
-          <span className="inline-grid h-8 place-items-center rounded-sm bg-fg-strong px-2 font-mono text-sm font-bold tracking-wider text-canvas group-data-[tone=cover]/nav:bg-cover-fg group-data-[tone=cover]/nav:text-cover-ink">
+          <span
+            aria-hidden="true"
+            className="inline-grid size-8 place-items-center rounded-sm bg-linear-to-br from-primary-solid via-secondary to-accent font-mono text-sm font-extrabold text-fg-on-emphasis shadow-md transition-transform duration-300 group-hover/logo:rotate-6"
+          >
+            S
+          </span>
+          <span className="font-mono text-sm font-bold tracking-[0.18em] text-fg-strong group-data-[tone=cover]/nav:text-cover-fg">
             SWEMRE
           </span>
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+        <nav
+          aria-label="Main"
+          className="hidden items-center gap-0.5 rounded-full border border-border-muted bg-surface/60 p-1 group-data-[tone=cover]/nav:border-cover-fg/15 group-data-[tone=cover]/nav:bg-cover-fg/5 md:flex"
+        >
           {links.map(link => (
             <NavLink
               key={link.to}
@@ -97,7 +106,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(open => !open)}
             className={cn(
-              'inline-grid size-8 place-items-center rounded-sm border border-border bg-surface text-fg-muted md:hidden',
+              'inline-grid size-9 place-items-center rounded-full border border-border bg-surface text-fg-muted md:hidden',
               coverControl,
             )}
           >
@@ -109,7 +118,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
       {menuOpen && (
         <nav
           aria-label="Mobile"
-          className="flex flex-col gap-1 border-t border-border-muted bg-canvas px-4 py-3 md:hidden"
+          className="flex animate-pop flex-col gap-1 border-t border-border-muted bg-canvas/95 px-4 py-3 backdrop-blur-xl md:hidden"
         >
           {links.map(link => (
             <NavLink

@@ -10,7 +10,7 @@
  */
 
 import type {ReactNode} from 'react'
-import {HeaderBand} from '../components/HeaderBand'
+import {BandBackdrop} from '../components/BandBackdrop'
 
 export function ListTemplate({
   title,
@@ -27,21 +27,23 @@ export function ListTemplate({
 }) {
   return (
     <main className="flex-1">
-      <HeaderBand />
-      <div className="mx-auto w-full max-w-page px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border-muted pb-6">
+      <div className="relative isolate pt-nav">
+        <BandBackdrop />
+        <div className="mx-auto flex w-full max-w-page animate-rise flex-wrap items-end justify-between gap-4 px-4 pt-14 pb-12 sm:px-6 lg:px-8 lg:pt-20">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-fg-strong">
+            <h1 className="bg-linear-to-r from-cover-fg via-cover-tint-1 to-cover-tint-2 bg-clip-text text-5xl font-extrabold tracking-tighter text-transparent sm:text-6xl">
               {title}
             </h1>
-            <p className="mt-2 max-w-measure text-lg text-fg-muted">{lede}</p>
+            <p className="mt-3 max-w-measure text-lg text-cover-fg/75">
+              {lede}
+            </p>
           </div>
           {toolbar}
         </div>
       </div>
       <div className="mx-auto grid w-full max-w-page gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[var(--container-sidebar)_minmax(0,1fr)] lg:px-8">
         {sidebar ? (
-          <aside className="lg:sticky lg:top-sticky lg:self-start">
+          <aside className="max-lg:order-last lg:sticky lg:top-sticky lg:self-start">
             {sidebar}
           </aside>
         ) : null}

@@ -28,12 +28,12 @@ export function DocHeader({
   actions?: ReactNode
 }) {
   return (
-    <header className="mb-8 border-b border-border-muted pb-6">
+    <header className="mb-10 animate-rise border-b border-border-muted pb-8">
       <Breadcrumbs items={crumbs} />
       {badges && (
         <div className="mt-5 flex flex-wrap items-center gap-2">{badges}</div>
       )}
-      <h1 className="mt-3 text-4xl font-bold tracking-tight text-balance text-fg-strong">
+      <h1 className="mt-4 text-4xl font-extrabold tracking-tighter text-balance text-fg-strong sm:text-5xl">
         {title}
       </h1>
       <p className="mt-3 max-w-measure text-lg text-fg-muted">{summary}</p>

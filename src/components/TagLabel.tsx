@@ -13,7 +13,7 @@ import type {ReactNode} from 'react'
 
 export function TagLabel({children}: {children: ReactNode}) {
   return (
-    <span className="inline-flex items-center rounded-full bg-primary-muted px-2.5 py-0.5 text-xs font-medium text-primary">
+    <span className="inline-flex items-center rounded-full border border-primary/15 bg-primary-muted px-2.5 py-0.5 text-xs font-medium text-primary">
       {children}
     </span>
   )

@@ -19,12 +19,14 @@ import {TagLabel} from './TagLabel'
 export function ArticleRow({article}: {article: Article}) {
   const interaction = useArticleInteraction(article.id)
   return (
-    <li className="flex gap-4 px-6 py-6 transition-colors hover:bg-surface-muted">
-      <Icon name="file" size={18} className="mt-1 text-fg-subtle" />
+    <li className="group/row relative flex gap-5 px-6 py-7 transition-colors hover:bg-surface-muted/60">
+      <span className="mt-0.5 hidden size-10 shrink-0 place-items-center rounded-md bg-primary-muted text-primary transition-transform duration-300 group-hover/row:scale-105 sm:inline-grid">
+        <Icon name="file" size={18} />
+      </span>
       <div className="min-w-0 flex-1">
         <Link
           to={`/articles/${article.slug}`}
-          className="text-xl font-semibold text-primary"
+          className="text-xl font-semibold tracking-tight text-fg-strong group-hover/row:text-primary after:absolute after:inset-0 hover:no-underline"
         >
           {article.title}
         </Link>
