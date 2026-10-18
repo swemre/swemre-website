@@ -3,7 +3,7 @@
 The personal website at [swemre.com](https://swemre.com): articles, projects, songs, a chat
 widget and a resume request form. Built with React 19, TypeScript, Vite and Tailwind CSS.
 
-All content comes from one workspace of `swemre-website-api` and is written in `swemre-cms`; the
+All content comes from one workspace of `swemre-website-api` and is written in `swemre-press`; the
 site bundles none. Each page reads one content type and its fields:
 
 | Content type | Shown at                   | Fields the site reads                                |

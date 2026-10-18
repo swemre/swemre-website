@@ -19,9 +19,13 @@ import type {
 import {ArrayService} from './ArrayService'
 import {publicRequest, workspacePath} from './apiClient'
 
-interface SubmittedContactRequestDto {
+interface SubmittedFormDto {
   submittedAt: string
 }
+
+// The form's key in swemre-website-api; its fields are defined in the CMS (Form settings)
+const CV_REQUEST_FORM = 'cv-request'
+const CALLBACK_REQUEST_FORM = 'callback-request'
 
 export class ContactFormService extends ArrayService<ContactForm> {
   constructor() {
@@ -31,15 +35,16 @@ export class ContactFormService extends ArrayService<ContactForm> {
   // The API keeps the submission; the site only needs confirmation that it was stored.
   // A failure is thrown so the form shows an error instead of a false success.
   async submitResumeRequest(input: ContactFormInput): Promise<ContactForm> {
-    const submitted = await publicRequest<SubmittedContactRequestDto>(
-      `${workspacePath}/contact-requests`,
+    const submitted = await publicRequest<SubmittedFormDto>(
+      `${workspacePath}/forms/${CV_REQUEST_FORM}/submissions`,
       {
         method: 'POST',
         body: {
-          kind: 'RESUME_REQUEST',
-          fullName: input.fullName.trim(),
-          email: input.email.trim(),
-          reason: input.reason.trim(),
+          fields: {
+            fullName: input.fullName.trim(),
+            email: input.email.trim(),
+            reason: input.reason.trim(),
+          },
         },
       },
     )
@@ -54,19 +59,20 @@ export class ContactFormService extends ArrayService<ContactForm> {
     }
   }
 
-  // Same endpoint as the resume request; the kind tells the owner to phone back
+  // A form of its own in the CMS (key callback-request: fullName, phone, topic)
   async submitCallbackRequest(
     input: CallbackFormInput,
   ): Promise<CallbackRequest> {
-    const submitted = await publicRequest<SubmittedContactRequestDto>(
-      `${workspacePath}/contact-requests`,
+    const submitted = await publicRequest<SubmittedFormDto>(
+      `${workspacePath}/forms/${CALLBACK_REQUEST_FORM}/submissions`,
       {
         method: 'POST',
         body: {
-          kind: 'CALLBACK_REQUEST',
-          fullName: input.fullName.trim(),
-          phone: input.phone.trim(),
-          reason: input.topic.trim(),
+          fields: {
+            fullName: input.fullName.trim(),
+            phone: input.phone.trim(),
+            topic: input.topic.trim(),
+          },
         },
       },
     )
