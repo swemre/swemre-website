@@ -17,6 +17,7 @@ import {
   fieldMediaUrl,
   fieldNumber,
   fieldString,
+  postSeo,
   publicRequest,
   safely,
   tagNames,
@@ -39,6 +40,7 @@ const toArticle = (post: PublicPost): Article => ({
   coverAlt: fieldMediaAlt(post.fields, 'cover'),
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
+  seo: postSeo(post.fields),
 })
 
 // Articles are the "article" content type of the website. The site only reads them, so the

@@ -14,6 +14,7 @@ import {Breadcrumbs} from '../components/Breadcrumbs'
 import {Icon} from '../components/Icon'
 import {Toc} from '../components/Toc'
 import {siteConfig} from '../config/site'
+import {useSiteSettings} from '../hooks/useSiteSettings'
 import {useHeadings} from '../hooks/useHeadings'
 import type {SpecialPage} from '../types/type'
 
@@ -32,6 +33,7 @@ export function CorporateTemplate({
   page: SpecialPage
   children: ReactNode
 }) {
+  const {contactEmail} = useSiteSettings()
   const bodyRef = useRef<HTMLDivElement>(null)
   const headings = useHeadings(bodyRef, 'h2')
 
@@ -72,8 +74,8 @@ export function CorporateTemplate({
             <p className="font-semibold text-fg-strong">Questions?</p>
             <p className="mt-1 text-fg-muted">
               Contact{' '}
-              <a href={`mailto:${siteConfig.email}`} className="text-primary">
-                {siteConfig.email}
+              <a href={`mailto:${contactEmail}`} className="text-primary">
+                {contactEmail}
               </a>
             </p>
           </div>

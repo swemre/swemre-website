@@ -15,6 +15,7 @@ import type {ContactFormService} from '../services/ContactFormService'
 import type {ProjectService} from '../services/ProjectService'
 import type {SearchService} from '../services/SearchService'
 import type {SongService} from '../services/SongService'
+import type {SiteSettingsService} from '../services/SiteSettingsService'
 import type {SpecialPageService} from '../services/SpecialPageService'
 
 // ---------- entities and services ----------
@@ -39,6 +40,7 @@ export interface ServiceMap {
   contactForm: ContactFormService
   project: ProjectService
   search: SearchService
+  siteSettings: SiteSettingsService
   song: SongService
   specialPage: SpecialPageService
 }
@@ -61,6 +63,21 @@ export interface Searchable extends Entity {
   tags?: string[]
 }
 
+/** Search and link preview fields of a post; empty fields fall back to its own. */
+export interface PostSeo {
+  seoTitle?: string
+  seoDescription?: string
+  ogImageUrl?: string
+}
+
+/** The website's single site settings entry, or the defaults in config/site.ts. */
+export interface SiteSettings {
+  tagline: string
+  contactEmail: string
+  defaultOgImageUrl: string
+  logoUrl?: string
+}
+
 export interface Article extends Searchable {
   /** URL segment. */
   slug: string
@@ -79,6 +96,7 @@ export interface Article extends Searchable {
   coverWidth?: number
   /** Pixels, of the original file. */
   coverHeight?: number
+  seo: PostSeo
 }
 
 export interface Project extends Searchable {
@@ -97,6 +115,7 @@ export interface Project extends Searchable {
   coverWidth?: number
   /** Pixels, of the original file. */
   coverHeight?: number
+  seo: PostSeo
 }
 
 export interface Song extends Searchable {
@@ -117,6 +136,7 @@ export interface SpecialPage extends Searchable {
   updatedAt: string
   /** Blocks of the rich text body field, as the API returns them. */
   body?: unknown
+  seo: PostSeo
 }
 
 export interface NavigationItem extends Searchable {

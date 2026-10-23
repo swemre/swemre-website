@@ -10,7 +10,7 @@
  */
 
 import {Link} from 'react-router-dom'
-import {siteConfig} from '../config/site'
+import {useSiteSettings} from '../hooks/useSiteSettings'
 import {useDocumentTitle} from '../hooks/useDocumentTitle'
 import {buttonClass} from '../utils/buttonClass'
 import {HeaderBand} from './HeaderBand'
@@ -31,6 +31,7 @@ export function NotFound({
   band?: boolean
   contact?: boolean
 }) {
+  const {contactEmail} = useSiteSettings()
   useDocumentTitle(title)
 
   return (
@@ -47,8 +48,8 @@ export function NotFound({
         {contact && (
           <p className="mt-3 max-w-measure text-fg-muted">
             Questions? Write to{' '}
-            <a href={`mailto:${siteConfig.email}`} className="text-primary">
-              {siteConfig.email}
+            <a href={`mailto:${contactEmail}`} className="text-primary">
+              {contactEmail}
             </a>
             .
           </p>

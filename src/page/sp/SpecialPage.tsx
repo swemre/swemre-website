@@ -24,9 +24,12 @@ export default function SpecialPage() {
   const loader = useCallback(() => service.findBySlug(slug), [service, slug])
   const {data: page, loading} = useAsyncData(loader)
 
-  useDocumentTitle(loading ? undefined : (page?.title ?? 'Page not found'), {
-    description: page?.summary,
-  })
+  useDocumentTitle(
+    loading
+      ? undefined
+      : (page?.seo.seoTitle ?? page?.title ?? 'Page not found'),
+    {description: page?.summary, image: page?.seo.ogImageUrl},
+  )
 
   if (loading) {
     return (
