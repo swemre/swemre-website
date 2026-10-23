@@ -201,11 +201,16 @@ decision is marked Superseded with a link to its replacement.
   `recordPageView`). Reads time out after `timeoutMs` and throw. A read key
   is sent as `X-Read-Key` only when configured. `index.html` takes the site
   URL and language from the same variables.
-- **Consequences**: Moving to the channel API or to v2 changes one file.
-  One build serves one website; another website of the workspace is another
-  build with its own variables. The `X-Read-Key` header name and the v2
-  paths are not settled with the API yet; until then the client keeps the
-  v1 workspace paths and the channel key is read but unused.
+- **Consequences**: Moving to the channel API changes one file. One build
+  serves one website; another website of the workspace is another build
+  with its own variables. With `VITE_CHANNEL_KEY` set, content and form
+  submissions use public API v2 (`/public/v2/channels/<channel>/...`, pages
+  `{items, total, page, size}`, `locale` and `content-type` parameters) and
+  send `X-Read-Key`; v2 lists have no sort parameter, so the client sorts.
+  Without a channel key everything stays on v1. Chat and page views stay on
+  v1 until v2 defines them (v2 has only "start a conversation" so far, and a
+  conversation must continue where it started). v2 item bodies are not
+  settled (PRS-000436), so the client maps them loosely to `PublicPost`.
 
 ## Change log
 
@@ -213,3 +218,4 @@ decision is marked Superseded with a link to its replacement.
 | ---------- | ------------------------------- | ------------------------- |
 | 2026-10-15 | Records written for M0 to M4    | Claude, for swemre review |
 | 2026-10-23 | ADR-017 public API client and site environment | Claude, for swemre review |
+| 2026-10-23 | ADR-017: public API v2 for content and forms when a channel key is set | Claude, for swemre review |

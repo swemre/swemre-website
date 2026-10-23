@@ -312,6 +312,7 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-10  | Only `services/publicApi.ts` shall build public API paths and request headers; services and build scripts shall use its typed methods. | I | P1 |
 | SRS-MNT-11  | The API base, workspace key, channel key, read key, site URL, locale and read timeout shall come from the build's `VITE_*` environment through `config/env.ts`, with the defaults in `config/siteDefaults.ts`; `index.html`, the bundle and the RSS and sitemap scripts shall use the same values. | T | P1 |
 | SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
+| SRS-MNT-13  | With a channel key, articles, projects, songs, pages, site settings and form submissions shall be read from and sent to public API v2 for that channel in the configured locale, with the read key as `X-Read-Key` (only on v2 requests); without one, and for chat and page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -340,3 +341,4 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000332: added GEN-07, GEN-08 (error boundaries) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: changed GEN-04 (back/forward restores scroll); added A11Y-09 (skip link) and A11Y-10 (focus and title announcement on route change) | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
+| 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |

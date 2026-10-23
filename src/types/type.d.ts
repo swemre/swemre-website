@@ -64,7 +64,7 @@ export type EnvSource = Record<string, string | boolean | undefined>
 export interface SiteEnv {
   apiBase: string
   workspaceKey: string
-  /** The website channel of the workspace; unused until the channel API exists (PRS-000443). */
+  /** The website channel install (lower case). Set: content is read from public API v2. */
   channelKey?: string
   /** Sent as `X-Read-Key` when set; a read key is public, it only selects the channel. */
   readKey?: string
@@ -79,7 +79,8 @@ export interface SiteEnv {
 // A post as the public API returns it. Every content type shares this shape; fields holds the
 // values of the type's own fields, with media fields expanded to the file's details
 export interface PublicPost {
-  id: number
+  /** v1: a number; v2: a UUIDv7 string. */
+  id: number | string
   typeKey: string
   slug: string
   title: string
@@ -97,6 +98,14 @@ export interface PublicPost {
 
 export interface PagedContent<T> {
   content: T[]
+}
+
+// Public API v2 pages; item bodies are not settled yet (PRS-000436), so they stay loose
+export interface PublicPage<T> {
+  items: T[]
+  total: number
+  page: number
+  size: number
 }
 
 export interface PostListQuery {

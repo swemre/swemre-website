@@ -297,10 +297,10 @@ a tap on a queued message.
 | --------------------- | --------------------------- | ---------------------------------------------------- |
 | `VITE_API_BASE`       | `http://localhost:8080/api` | API origin and path prefix                           |
 | `VITE_WORKSPACE_KEY`  | `swemre-website`            | `/public/v1/workspaces/<key>/...`                    |
-| `VITE_CHANNEL_KEY`    | unset                       | The website channel (PRS-000443); read, not used yet |
-| `VITE_READ_KEY`       | unset                       | Sent as `X-Read-Key` when set (name to be agreed with the API) |
+| `VITE_CHANNEL_KEY`    | unset                       | The website channel install (lower case); set: content and forms use v2 |
+| `VITE_READ_KEY`       | unset                       | Sent as `X-Read-Key` on v2 requests; a missing or wrong key gives 401 |
 | `VITE_SITE_URL`       | `https://swemre.com`        | Canonical origin, `og:url`, RSS and sitemap links; trailing slash dropped |
-| `VITE_LOCALE`         | `en`                        | `<html lang>`                                        |
+| `VITE_LOCALE`         | `en`                        | `<html lang>`; `locale` parameter on v2 reads        |
 | `VITE_API_TIMEOUT_MS` | `10000`                     | Reads (`GET`) abort after this many milliseconds     |
 
 `PublicApi` methods: `listPosts(type, {size, sortBy, direction})` (`[]` on
@@ -309,6 +309,16 @@ a tap on a queued message.
 (IF-18), `presence()`, `sendChatMessage(token, text)`,
 `getConversation(token)`, `conversationSocketUrl(token)` and
 `recordPageView({path, referrer, sessionId})`.
+
+| Call             | v2 (channel key set)                                            | v1 (fallback)                                   |
+| ---------------- | --------------------------------------------------------------- | ----------------------------------------------- |
+| `listPosts`      | `GET /public/v2/channels/<c>/publications?content-type=&locale=&size=` → `{items, total, page, size}`, sorted by the client | `GET /public/v1/workspaces/<w>/posts?type=&size=&sort-by=&direction=` |
+| `getPost`        | `GET .../publications/<slug>?locale=`                           | `GET .../posts/<type>/<slug>`                   |
+| `submitForm`     | `POST .../forms/<form-key>/submissions`                         | same path under v1                              |
+| chat, presence, page views | v1 only until v2 defines them                         | `.../conversations...`, `.../presence`, `.../page-views` |
+
+Not used yet: `GET .../terms?kind=` and `GET .../media/<id>/file` (media URLs
+arrive as paths in the content and are joined to `VITE_API_BASE`).
 
 ### 6.4 IF-18 Public form submissions
 
@@ -428,3 +438,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes: list cache, `submitCallbackRequest` and confirmation rule (IF-18), chat delivery members and `retry`, `SearchSource.featured`, `DocumentMeta` (IF-19), theme written only on toggle, `swemre:viewed-articles`, sitemap and robots (IF-17), `sitemap` script | Claude, for swemre review |
 | 2026-10-23 | IF-20 public API client and site environment (ADR-017) | Claude, for swemre review |
+| 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |

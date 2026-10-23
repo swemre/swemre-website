@@ -13,6 +13,7 @@ import {siteEnv} from '../config/env.ts'
 import type {
   PagedContent,
   PostListQuery,
+  PublicPage,
   PublicApi,
   PublicPost,
   SiteEnv,
@@ -28,10 +29,50 @@ export class ApiError extends Error {
   }
 }
 
-// Every path of the public API the website and its build scripts use is built here, so moving
-// to the channel API (PRS-000443) changes this file only
+const stringOf = (item: Record<string, unknown>, ...keys: string[]) => {
+  for (const key of keys) {
+    if (typeof item[key] === 'string') return item[key]
+  }
+  return ''
+}
+
+// v2 publication bodies are not settled yet (PRS-000436); this reads the v1 field names and the
+// likely v2 ones, so pages keep working while the contract lands
+const fromPublication = (
+  item: Record<string, unknown>,
+  type: string,
+): PublicPost => ({
+  id: stringOf(item, 'id'),
+  typeKey: stringOf(item, 'contentType', 'typeKey') || type,
+  slug: stringOf(item, 'slug'),
+  title: stringOf(item, 'title'),
+  author: stringOf(item, 'author'),
+  fields: (item.fields as Record<string, unknown>) ?? {},
+  terms: Array.isArray(item.terms) ? item.terms : [],
+  publishedAt: stringOf(item, 'publishedAt'),
+  lastUpdatedAt:
+    stringOf(item, 'lastUpdatedAt', 'updatedAt') ||
+    stringOf(item, 'publishedAt'),
+})
+
+const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
+  if (!query.sortBy) return posts
+  const key = query.sortBy
+  const sign = query.direction === 'DESC' ? -1 : 1
+  return [...posts].sort(
+    (a, b) => sign * String(a[key]).localeCompare(String(b[key])),
+  )
+}
+
+// Every path of the public API the website and its build scripts use is built here. With a
+// channel key, content and forms come from the channel API (v2); without one, and for chat and
+// page views until v2 has them, from the workspace API (v1)
 export function createPublicApi(env: SiteEnv): PublicApi {
-  const root = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
+  const v1 = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
+  const v2 = env.channelKey
+    ? `/public/v2/channels/${encodeURIComponent(env.channelKey)}`
+    : undefined
+  const content = v2 ?? v1
 
   async function request<T>(
     method: 'GET' | 'POST',
@@ -40,8 +81,11 @@ export function createPublicApi(env: SiteEnv): PublicApi {
   ): Promise<T | undefined> {
     const headers: Record<string, string> = {Accept: 'application/json'}
     if (body !== undefined) headers['Content-Type'] = 'application/json'
-    if (env.readKey) headers['X-Read-Key'] = env.readKey
-    const response = await fetch(`${env.apiBase}${root}${path}`, {
+    // Only the channel API knows the header; on v1 it would fail the CORS preflight
+    if (env.readKey && v2 && path.startsWith(v2)) {
+      headers['X-Read-Key'] = env.readKey
+    }
+    const response = await fetch(`${env.apiBase}${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -62,26 +106,46 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     return json as T
   }
 
-  const listQuery = (type: string, query: PostListQuery) => {
-    const params = new URLSearchParams({type, size: String(query.size ?? 100)})
-    if (query.sortBy) params.set('sort-by', query.sortBy)
-    if (query.direction) params.set('direction', query.direction)
-    return params.toString()
-  }
+  const size = (query: PostListQuery) => String(query.size ?? 100)
 
   return {
     async listPosts(type, query = {}) {
+      if (v2) {
+        const params = new URLSearchParams({
+          'content-type': type,
+          locale: env.locale,
+          size: size(query),
+        })
+        const page = await request<PublicPage<Record<string, unknown>>>(
+          'GET',
+          `${v2}/publications?${params}`,
+        )
+        const posts = (page?.items ?? []).map(item =>
+          fromPublication(item, type),
+        )
+        return sortPosts(posts, query)
+      }
+      const params = new URLSearchParams({type, size: size(query)})
+      if (query.sortBy) params.set('sort-by', query.sortBy)
+      if (query.direction) params.set('direction', query.direction)
       const page = await request<PagedContent<PublicPost>>(
         'GET',
-        `/posts?${listQuery(type, query)}`,
+        `${v1}/posts?${params}`,
       )
       return page?.content ?? []
     },
 
-    getPost(type, slug) {
+    async getPost(type, slug) {
+      if (v2) {
+        const item = await request<Record<string, unknown>>(
+          'GET',
+          `${v2}/publications/${encodeURIComponent(slug)}?${new URLSearchParams({locale: env.locale})}`,
+        )
+        return item ? fromPublication(item, type) : undefined
+      }
       return request<PublicPost>(
         'GET',
-        `/posts/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
+        `${v1}/posts/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
       )
     },
 
@@ -89,7 +153,7 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     async submitForm(form, fields) {
       const submitted = await request<SubmittedForm>(
         'POST',
-        `/forms/${encodeURIComponent(form)}/submissions`,
+        `${content}/forms/${encodeURIComponent(form)}/submissions`,
         {fields},
       )
       if (!submitted) {
@@ -99,17 +163,19 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     },
 
     async presence() {
-      const status = await request<{online: boolean}>('GET', '/presence')
+      const status = await request<{online: boolean}>('GET', `${v1}/presence`)
       return status?.online === true
     },
 
-    async sendChatMessage<T>(publicToken: string | undefined, text: string) {
+    // Chat stays on v1 as a whole: v2 so far defines only starting a conversation, and a
+    // conversation must be continued on the API version that created it
+    async sendChatMessage<T>(publicToken: string | undefined, message: string) {
       const remote = await request<T>(
         'POST',
         publicToken
-          ? `/conversations/${encodeURIComponent(publicToken)}/message`
-          : '/conversations',
-        {text},
+          ? `${v1}/conversations/${encodeURIComponent(publicToken)}/message`
+          : `${v1}/conversations`,
+        {text: message},
       )
       if (!remote) throw new ApiError(404, 'conversation was not found')
       return remote
@@ -118,16 +184,17 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     getConversation<T>(publicToken: string) {
       return request<T>(
         'GET',
-        `/conversations/${encodeURIComponent(publicToken)}`,
+        `${v1}/conversations/${encodeURIComponent(publicToken)}`,
       )
     },
 
     conversationSocketUrl(publicToken) {
-      return `${env.apiBase.replace(/^http/, 'ws')}${root}/conversations/${encodeURIComponent(publicToken)}/ws`
+      return `${env.apiBase.replace(/^http/, 'ws')}${v1}/conversations/${encodeURIComponent(publicToken)}/ws`
     },
 
+    // v2 page views arrive with analytics in 1.1.0-ALPHA
     async recordPageView(view) {
-      await request('POST', '/page-views', view)
+      await request('POST', `${v1}/page-views`, view)
     },
   }
 }
