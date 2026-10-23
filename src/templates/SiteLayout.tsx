@@ -16,6 +16,7 @@ import {ErrorBoundary} from '../components/ErrorBoundary'
 import {ErrorPage} from '../components/ErrorPage'
 import {Footer} from '../components/Footer'
 import {Navbar} from '../components/Navbar'
+import {SkipLink} from '../components/SkipLink'
 import {recordPageView} from '../services/analytics'
 import {cn} from '../utils/cn'
 
@@ -32,15 +33,12 @@ export function SiteLayout() {
   const overCover = overlayRoutes.some(route => matchPath(route, pathname))
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-
-  useEffect(() => {
     void recordPageView(pathname)
   }, [pathname])
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <SkipLink />
       <Navbar overCover={overCover} />
       <div
         className={cn('flex min-h-0 flex-1 flex-col', !overCover && 'pt-nav')}

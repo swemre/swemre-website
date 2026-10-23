@@ -27,7 +27,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-GEN-01   | §3.1, §9      | `vite.config.ts`, `package.json`                             | TC-MNT-02                 | Pass (BLD)        |
 | SRS-GEN-02   | §4.1          | `templates/SiteLayout.tsx`                                   | TC-E2E-01                 | Pass (INSP, SS)   |
 | SRS-GEN-03   | §4.1, §4.2    | `components/NotFound.tsx`, `App.tsx`                         | TC-ART-09, TC-MAN-05      | Manual (Verified in browser 2026-10-23: not-found title, W20) |
-| SRS-GEN-04   | §4.1          | `SiteLayout` effect                                          | TC-E2E-01                 | Designed          |
+| SRS-GEN-04   | §4.1          | `hooks/useRouteFocus.ts`                                     | TC-E2E-01, TC-E2E-13      | Manual (Verified in browser 2026-10-23: top on new path, back restores, PRS-000321); async pages Unverified |
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `index.html` defaults                    | TC-GEN-01, TC-MAN-05      | Manual (Verified in browser 2026-10-23, W24) |
 | SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
@@ -154,6 +154,8 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-A11Y-06  | §4.5         | `HeaderBand` `aria-hidden`                 | TC-E2E-04               | Pass (INSP)       |
 | SRS-A11Y-07  | §8           | all routes                                 | TC-E2E-09               | Designed          |
 | SRS-A11Y-08  | §4.3         | `fieldMediaAlt`, `fieldMediaSize`, `CoverImage`, `DocHeader` | TC-ART-13               | Unverified (W23) |
+| SRS-A11Y-09  | §4.1         | `components/SkipLink.tsx`                  | TC-E2E-13               | Manual (Verified in browser 2026-10-23, PRS-000321) |
+| SRS-A11Y-10  | §4.1         | `hooks/useRouteFocus.ts`, `SkipLink` live region | TC-E2E-13         | Manual (Verified in browser 2026-10-23 on static pages, PRS-000321); late article/project headings and screen-reader output Unverified |
 | SRS-PERF-01  | §7           | `mdxBodies.ts`                             | build output analysis   | Pass (BLD)        |
 | SRS-PERF-02  | §7           | whole app                                  | TC-E2E-11               | Designed          |
 | SRS-PERF-03  | §7           | whole app                                  | TC-E2E-11               | Designed          |
@@ -213,6 +215,12 @@ THM-02). A changed requirement loses an earlier Designed status and is
 "Manual" counts partial checks where the row names a remaining Unverified
 part (LAY-08 loading state, RES-07 error clearing).
 
+## Coverage update (2026-10-23, PRS-000321)
+
+SRS-GEN-04 changed (Designed → Manual, partial); SRS-A11Y-09 and A11Y-10
+added (Manual, A11Y-10 partial). Totals: Designed 37, Manual 15, total 148;
+other rows unchanged.
+
 Reverse trace check: every test case in SWE-DOC-006 cites at least one
 requirement; every requirement above cites at least one test or inspection.
 
@@ -223,4 +231,5 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes W1 to W26: rows for the new and changed requirements, `Unverified` status, browser check of 2026-10-23, second coverage summary | Claude, for swemre review |
 | 2026-10-23 | PRS-000332: rows for GEN-07, GEN-08 | Claude, for swemre review |
+| 2026-10-23 | PRS-000321: GEN-04 row changed, A11Y-09 and A11Y-10 added, coverage update | Claude, for swemre review |
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |

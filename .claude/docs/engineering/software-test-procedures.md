@@ -434,6 +434,17 @@ open and submit the resume modal, open search and navigate, play a song, open
 chat and send a message. Every focused element shows the focus ring. Focus
 returns to the trigger when a dialog closes.
 
+### TC-E2E-13 Skip link and route focus (SRS-A11Y-09, A11Y-10, GEN-04)
+
+1. Load `/`, `/articles`, `/projects` and an article; press Tab once → "Skip to content" is focused and visible (fixed, top left, above the navbar).
+2. Press Enter → focus is on `<main>`; the next Tab reaches the first control inside `<main>`; the URL does not change.
+3. From `/`, Tab to the navbar "Articles" link and press Enter → URL `/articles`, `scrollY` 0, focus on the `h1` "Articles" without a focus ring, live region text "Articles · SWEMRE".
+4. Open an article with the API slow or down → focus moves to the `h1` when it renders, or to `<main>` after 3 s.
+5. At 375×812 scroll `/` to 600 px, follow a link, go back → `/` at `scrollY` 600.
+6. On `/articles`, change the topic filter (query only) → focus and scroll do not move.
+
+Status: steps 1 to 3 and 5 Manual (Verified in browser 2026-10-23, Vite dev server, API down, PRS-000321); step 4 checked only for the fallback to `<main>` (special page with API down); article and project headings arriving late and step 6 Unverified.
+
 ### TC-E2E-11 Performance budget (SRS-PERF-02, PERF-03)
 
 Lighthouse CI (mobile preset) on `/` and one article → LCP < 2.5 s,
@@ -514,4 +525,5 @@ relative-luminance formula).
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes: added TC-SVC-03, TC-SVC-04, TC-SRCH-06, TC-SRCH-07, TC-CHAT-08 to TC-CHAT-11, TC-MAP-01, TC-MAP-02, TC-NAV-03, TC-HOME-02, TC-HOME-03, TC-ART-12 to TC-ART-15, TC-PRJ-03, TC-PRJ-04, TC-RES-04 to TC-RES-07, TC-THM-03, TC-GEN-01, TC-LGL-02, TC-E2E-12, TC-MAN-05; updated TC-ART-04, TC-ART-09, TC-ART-10, TC-SRCH-02, TC-CHAT-02, TC-CHAT-04 to TC-CHAT-06, TC-HOME-01, TC-THM-02, TC-E2E-01, TC-E2E-07 | Claude, for swemre review |
 | 2026-10-23 | PRS-000332: added TC-GEN-02 | Claude, for swemre review |
+| 2026-10-23 | PRS-000321: added TC-E2E-13 (skip link, route focus, scroll restore) | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |
