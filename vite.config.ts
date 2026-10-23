@@ -16,7 +16,8 @@ import {execFile} from 'node:child_process'
 import {existsSync} from 'node:fs'
 import {join} from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {defineConfig, type Plugin} from 'vite'
+import {defineConfig, loadEnv, type Plugin} from 'vite'
+import {siteDefaults} from './src/config/siteDefaults.ts'
 
 // Regenerates public/rss.xml when content data changes during `npm run dev`.
 function rssPlugin(): Plugin {
@@ -40,6 +41,23 @@ function rssPlugin(): Plugin {
         if (/[\\/]src[\\/](database|config)[\\/]/.test(file)) run()
       })
     },
+  }
+}
+
+// index.html names this website's URL and language, so one build serves one website
+function siteEnvPlugin(mode: string): Plugin {
+  const env = {...loadEnv(mode, process.cwd()), ...process.env}
+  const siteUrl = (env.VITE_SITE_URL || siteDefaults.siteUrl).replace(
+    /\/+$/,
+    '',
+  )
+  const locale = env.VITE_LOCALE || siteDefaults.locale
+  return {
+    name: 'swemre-site-env',
+    transformIndexHtml: html =>
+      html
+        .replaceAll('%SITE_URL%', siteUrl)
+        .replace('<html lang="en">', `<html lang="${locale}">`),
   }
 }
 
@@ -70,7 +88,7 @@ const sharedBlocks = fileURLToPath(
   new URL('../swemre-blocks/src/index.ts', import.meta.url),
 )
 
-export default defineConfig({
+export default defineConfig(({mode}) => ({
   resolve: {
     alias: {'swemre-blocks': sharedBlocks},
     // One React for the site and the shared package
@@ -79,9 +97,10 @@ export default defineConfig({
   server: {fs: {allow: ['..']}},
   plugins: [
     rssPlugin(),
+    siteEnvPlugin(mode),
     prerenderedRoutesPlugin(),
     tailwindcss(),
     react(),
     babel({presets: [reactCompilerPreset()]}),
   ],
-})
+}))

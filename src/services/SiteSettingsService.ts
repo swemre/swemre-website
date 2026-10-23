@@ -11,15 +11,8 @@
 
 import {siteConfig} from '../config/site'
 import type {SiteSettings} from '../types/type'
-import {
-  fieldMediaUrl,
-  fieldString,
-  publicRequest,
-  safely,
-  workspacePath,
-  type PagedContent,
-  type PublicPost,
-} from './apiClient'
+import {fieldMediaUrl, fieldString, safely} from './apiClient'
+import {publicApi} from './publicApi'
 
 export const defaultSiteSettings: SiteSettings = {
   tagline: siteConfig.tagline,
@@ -33,10 +26,8 @@ export class SiteSettingsService {
 
   load(): Promise<SiteSettings> {
     this.cache ??= safely(async () => {
-      const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=site-settings&size=1`,
-      )
-      const fields = page?.content[0]?.fields ?? {}
+      const posts = await publicApi.listPosts('site-settings', {size: 1})
+      const fields = posts[0]?.fields ?? {}
       return {
         tagline: fieldString(fields, 'tagline') ?? defaultSiteSettings.tagline,
         contactEmail:

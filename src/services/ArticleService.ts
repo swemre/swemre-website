@@ -9,7 +9,7 @@
  * Contact: emre@swemre.com
  */
 
-import type {Article} from '../types/type'
+import type {Article, PublicPost} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
   fieldMediaAlt,
@@ -18,13 +18,9 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
-  publicRequest,
-  safely,
   tagNames,
-  workspacePath,
-  type PagedContent,
-  type PublicPost,
 } from './apiClient'
+import {publicApi} from './publicApi'
 
 const toArticle = (post: PublicPost): Article => ({
   id: String(post.id),
@@ -51,24 +47,20 @@ export class ArticleService extends ArrayService<Article> {
   }
 
   override async findAll(): Promise<Article[]> {
-    return safely(async () => {
-      const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=article&size=100&sort-by=publishedAt&direction=DESC`,
-      )
-      return (page?.content ?? []).map(toArticle)
-    }, [])
+    const posts = await publicApi.listPosts('article', {
+      size: 100,
+      sortBy: 'publishedAt',
+      direction: 'DESC',
+    })
+    return posts.map(toArticle)
   }
 
   override async findById(id: string): Promise<Article | undefined> {
     return (await this.findAll()).find(article => article.id === id)
   }
 
-  findBySlug(slug: string): Promise<Article | undefined> {
-    return safely(async () => {
-      const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/article/${encodeURIComponent(slug)}`,
-      )
-      return post ? toArticle(post) : undefined
-    }, undefined)
+  async findBySlug(slug: string): Promise<Article | undefined> {
+    const post = await publicApi.getPost('article', slug)
+    return post ? toArticle(post) : undefined
   }
 }

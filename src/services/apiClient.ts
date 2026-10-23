@@ -9,35 +9,8 @@
  * Contact: emre@swemre.com
  */
 
-import type {PostSeo} from '../types/type'
-
-// The website only calls the public endpoints of swemre-website-api
-export const apiBase: string =
-  import.meta.env.VITE_API_BASE ?? 'http://localhost:8080/api'
-
-// The website reads one workspace of swemre-website-api; its key selects the content
-export const workspaceKey: string =
-  import.meta.env.VITE_WORKSPACE_KEY ?? 'swemre-website'
-export const workspacePath = `/public/v1/workspaces/${workspaceKey}`
-
-// A post as the public API returns it. Every content type shares this shape; fields holds the
-// values of the type's own fields, with media fields expanded to the file's details
-export interface PublicPost {
-  id: number
-  typeKey: string
-  slug: string
-  title: string
-  author: string
-  fields: Record<string, unknown>
-  terms: {
-    id: number
-    taxonomy: 'CATEGORY' | 'TAG'
-    name: string
-    slug: string
-  }[]
-  publishedAt: string
-  lastUpdatedAt: string
-}
+import {siteEnv} from '../config/env.ts'
+import type {PostSeo, PublicPost} from '../types/type'
 
 export const fieldString = (
   fields: Record<string, unknown>,
@@ -63,7 +36,7 @@ export const fieldMediaUrl = (
   const value = fields[key]
   if (!value || typeof value !== 'object' || !('url' in value)) return undefined
   const url = String((value as {url: unknown}).url)
-  return url.startsWith('http') ? url : `${apiBase}${url}`
+  return url.startsWith('http') ? url : `${siteEnv.apiBase}${url}`
 }
 
 const mediaValue = (
@@ -103,44 +76,6 @@ export const fieldMediaSize = (
 export const tagNames = (post: PublicPost): string[] =>
   post.terms.filter(term => term.taxonomy === 'TAG').map(term => term.name)
 
-export class ApiError extends Error {
-  readonly status: number
-
-  constructor(status: number, message: string) {
-    super(message)
-    this.status = status
-  }
-}
-
-export async function publicRequest<T>(
-  path: string,
-  options: {method?: 'GET' | 'POST'; body?: unknown} = {},
-): Promise<T | undefined> {
-  const response = await fetch(`${apiBase}${path}`, {
-    method: options.method ?? 'GET',
-    headers:
-      options.body === undefined
-        ? {Accept: 'application/json'}
-        : {Accept: 'application/json', 'Content-Type': 'application/json'},
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
-  })
-
-  if (response.status === 404) return undefined
-  if (response.status === 204) return undefined
-
-  const text = await response.text()
-  const json: unknown = text ? JSON.parse(text) : undefined
-
-  if (!response.ok) {
-    const message =
-      json && typeof json === 'object' && 'message' in json
-        ? String((json as {message: unknown}).message)
-        : response.statusText
-    throw new ApiError(response.status, message)
-  }
-  return json as T
-}
-
 // Visitor identity for analytics: random, kept per browser session, never linked to a person
 export function visitorSessionId(): string {
   const key = 'swemre:analytics-session'
@@ -155,12 +90,7 @@ export function visitorSessionId(): string {
   }
 }
 
-export interface PagedContent<T> {
-  content: T[]
-}
-
-// Pages wait for their loader to settle, so a failed request must still resolve.
-// A missing API shows empty lists and "not found" pages instead of a spinner.
+// For data that has a sensible default (site settings): a failed request resolves with it
 export async function safely<T>(
   load: () => Promise<T>,
   fallback: T,

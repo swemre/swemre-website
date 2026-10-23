@@ -32,6 +32,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `utils/documentTags.ts`, `index.html` defaults | TC-GEN-01, TC-MAN-05, TC-PRE-01 | Unverified (canonical and Twitter tags added by PRS-000311; canonical, `og:url` and no duplicates seen in the browser 2026-10-23) |
 | SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
 | SRS-GEN-08   | §4.1, §6      | `components/ErrorBoundary.tsx`, `SiteLayout`                 | TC-GEN-02                 | Manual (Verified in browser 2026-10-23, forced render error in the chat launcher) |
+| SRS-GEN-09   | §6            | `hooks/useAsyncData.ts`, `components/LoadError.tsx`, pages, `SearchService` | TC-GEN-03 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
 | SRS-LAY-01   | §4.9          | `main.css` `--container-page`, all `max-w-page` users        | TC-E2E-03                 | Pass (SS at 1920); 3440 cap Designed |
 | SRS-LAY-02   | §4.9          | `Navbar`, `Footer` `max-w-wide`                              | TC-E2E-03                 | Pass (SS at 1920) |
 | SRS-LAY-03   | §4.5          | `DocsLayout` `max-w-reading`                                 | TC-E2E-03                 | Pass (INSP)       |
@@ -109,6 +110,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-CHAT-12  | §4.7          | `ChatProvider` (`online`, `connected`, `open`), `ChatService` constructor, `deliver` chain | TC-CHAT-08, TC-CHAT-10, TC-E2E-07 | Unverified (W13) |
 | SRS-CHAT-13  | §4.7          | `ConversationRow`                                            | TC-CHAT-11                | Unverified (W14) |
 | SRS-CHAT-14  | §4.7          | `ChatPanel` `max-sm:` sheet, `Dock` `usePhoneScrollLock`     | TC-E2E-12                 | Unverified (W12) |
+| SRS-CHAT-15  | §6            | `ChatService.presence`, `ChatPanel`, `ChatLauncher` | TC-CHAT-12 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
 | SRS-RES-01   | §4.1          | `ResumeModalProvider`, `ResumeRequestModal`                  | TC-RES-02                 | Designed          |
 | SRS-RES-02   | §4.1          | `forms/validateResumeRequest.ts`                             | TC-RES-01, TC-RES-03      | Designed          |
 | SRS-RES-03   | §4.3          | `ResumeRequestForm`, `ContactFormService.submitForm`         | TC-RES-02, TC-SVC-04      | Unverified (W1, resume path) |
@@ -117,6 +119,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-RES-06   | §4.3, §6      | `CallbackRequestForm`, `ContactFormService.submitForm`       | TC-RES-05, TC-SVC-04, TC-MAN-05 | Manual (Verified in browser 2026-10-23: call back error shown, W1) |
 | SRS-RES-07   | §10           | `ResumeRequestForm`, `CallbackRequestForm` `onChange`, `onSubmit` | TC-RES-06, TC-MAN-05      | Manual (Verified in browser 2026-10-23: focus to first invalid field, W19); error clearing on edit Unverified |
 | SRS-RES-08   | §10           | form headers `pr-14`                                         | TC-RES-07, TC-MAN-05      | Manual (Verified in browser 2026-10-23: header room, W18) |
+| SRS-RES-09   | §6            | `CallbackRequestForm`, `ResumeRequestForm` | TC-RES-08               | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) (resume form) |
 | SRS-THM-01   | §4.8          | `ThemeProvider`, `ThemeSwitch`                               | TC-THM-01                 | Pass (SS both themes) |
 | SRS-THM-02   | §4.8          | `ThemeProvider` (`chosen ?? system`), `index.html`           | TC-THM-01 to TC-THM-03    | Unverified (W17) |
 | SRS-THM-03   | §4.8          | `index.html` inline script                                   | inspection                | Pass (INSP)       |
@@ -180,6 +183,10 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-MNT-07   | §4.9         | `main.css`                                 | TC-MNT-05               | Pass (INSP)       |
 | SRS-MNT-08   | coding std   | repository                                 | inspection              | Pass (INSP)       |
 | SRS-MNT-09   | §4.3         | services + glob                            | demonstration           | Pass (four articles and two projects added this baseline with one entry + one MDX each) |
+| SRS-MNT-10   | §4.3         | `services/publicApi.ts`, services, `scripts/generate-*.mjs` | inspection, TC-API-01 | Manual (Verified 2026-10-23: same request URLs in the browser, chat send works; RSS and sitemap output unchanged) |
+| SRS-MNT-11   | §4.3         | `config/env.ts`, `config/siteDefaults.ts`, `vite.config.ts`, `index.html` | TC-API-02 | Manual (Verified 2026-10-23: build with `VITE_SITE_URL` and `VITE_LOCALE` set) |
+| SRS-MNT-12   | §4.3         | `services/publicApi.ts`                    | TC-API-03               | Manual (Verified 2026-10-23 with a local mock server: 200 ms timeout rejected after 212 ms) |
+| SRS-MNT-13   | §4.3         | `services/publicApi.ts`                    | TC-API-04               | Manual (Verified 2026-10-23 against a local mock serving the bodies of docs/public-api-v2.md; not yet against the API's v2 endpoints) |
 | SRS-CMP-01   | n/a          | whole app                                  | L4 suite (3 engines)    | Open              |
 | SRS-CMP-02   | §4.9         | layout tokens                              | TC-E2E-03               | Pass (SS at 1920); other widths Designed |
 | SRS-CMP-03   | §6           | stores, theme                              | TC-E2E-08               | Designed          |
@@ -235,3 +242,9 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | PRS-000321: GEN-04 row changed, A11Y-09 and A11Y-10 added, coverage update | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: rows SRS-PRE-01 to PRE-03, SRS-GEN-06 back to Unverified for the new tags | Claude, for swemre review |
 | 2026-10-23 | PRS-000312: GEN-03 row, PRE-04 row | Claude, for swemre review |
+| 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |
+| 2026-10-23 | PRS-000443: MNT-12 verified, row for MNT-13 | Claude, for swemre review |
+| 2026-10-23 | MNT-13 status after the v2 contract | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: RES-09 row | Claude, for swemre review |

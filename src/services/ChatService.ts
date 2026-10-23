@@ -15,7 +15,7 @@ import type {
   ChatPresence,
   Conversation,
 } from '../types/type'
-import {apiBase, publicRequest, workspacePath} from './apiClient'
+import {publicApi} from './publicApi'
 import {LocalStorageService} from './LocalStorageService'
 
 const GREETING =
@@ -105,12 +105,9 @@ export class ChatService extends LocalStorageService<Conversation> {
 
   async presence(): Promise<ChatPresence> {
     try {
-      const status = await publicRequest<{online: boolean}>(
-        `${workspacePath}/presence`,
-      )
-      return status?.online ? 'online' : 'offline'
+      return (await publicApi.presence()) ? 'online' : 'offline'
     } catch {
-      return 'offline'
+      return 'unreachable'
     }
   }
 
@@ -211,22 +208,15 @@ export class ChatService extends LocalStorageService<Conversation> {
     publicToken: string | undefined,
     text: string,
   ): Promise<ApiConversation> {
-    const remote = await publicRequest<ApiConversation>(
-      publicToken
-        ? `${workspacePath}/conversations/${publicToken}/message`
-        : `${workspacePath}/conversations`,
-      {method: 'POST', body: {text}},
-    )
-    if (!remote) throw new Error('conversation was not found')
-    return remote
+    return publicApi.sendChatMessage<ApiConversation>(publicToken, text)
   }
 
   private async sync(id: string): Promise<void> {
     const conversation = this.rows.find(row => row.id === id)
     if (!conversation?.publicToken) return
     try {
-      const remote = await publicRequest<ApiConversation>(
-        `${workspacePath}/conversations/${conversation.publicToken}`,
+      const remote = await publicApi.getConversation<ApiConversation>(
+        conversation.publicToken,
       )
       const current = this.rows.find(row => row.id === id)
       if (!remote || !current) return
@@ -244,7 +234,7 @@ export class ChatService extends LocalStorageService<Conversation> {
     publicToken: string,
     onEvent: (event: ChatSocketEvent) => void,
   ): () => void {
-    const url = `${apiBase.replace(/^http/, 'ws')}${workspacePath}/conversations/${publicToken}/ws`
+    const url = publicApi.conversationSocketUrl(publicToken)
     let socket: WebSocket | null = null
     let attempt = 0
     let timer: number | undefined

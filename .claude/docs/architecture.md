@@ -160,6 +160,11 @@ text never sits on the plain canvas (SRS-LAY-08).
    SearchService (register(source) → search(query))  — not an entity service
 ```
 
+- `services/publicApi.ts` (ADR-017) is the only module that knows public
+  API paths and headers; services call its typed methods and the RSS, sitemap and
+  pre-render scripts import it too. `config/env.ts` reads `SiteEnv` from
+  `import.meta.env` in the bundle and from `process.env` in Node; one build
+  serves one website. `apiClient.ts` keeps only the field helpers.
 - `serviceRegistry.ts` instantiates each service once; `createSearchService`
   registers all sources against those instances.
 - `ServiceContext` defaults to the registry; `ServiceProvider` can inject a
@@ -459,7 +464,9 @@ Schemas: SWE-DOC-004 §5.
 | `localStorage` read throws or holds junk  | Fallback to empty state                                           |
 | `localStorage` write throws (quota, blocked) | Keep in-memory state, continue                                 |
 | Spotify iFrame API fails to load          | `failed` state, plain embed iframe fallback; script promise reset for retry |
-| Loader promise rejects in `useAsyncData`  | **Not handled**: stays `loading` (RSK-04, planned fix)             |
+| Content request fails or times out       | `useAsyncData` returns `error` and `retry`; pages show `LoadError` ("Content could not be loaded", Retry); search skips the source (SRS-GEN-09) |
+| Presence check fails                      | Chat presence `unreachable`: launcher and header say so, banner in the conversation (SRS-CHAT-15) |
+| Form submission fails without an answer   | Form shows the unreachable message, fields kept (SRS-RES-09) |
 | Resume or call back submission rejects, or the form does not exist (404) | Error sound and alert; the form stays editable for another try (SRS-RES-05, RES-06) |
 | Chat message not accepted by the API      | Message `queued` ("Not sent · tap to retry"); retried on tap, socket connect, `online` and panel open |
 | List request fails or returns empty       | Not cached; the next `findAll` asks the API again                 |
@@ -529,3 +536,5 @@ Full trace: SWE-DOC-007.
 | 2026-10-23 | PRS-000332: error boundaries around the page outlet and the dock (§4.1, §6) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: `SkipLink` and `useRouteFocus` (skip link, focus and title announcement on route change, scroll restore on back/forward); `main.css` hides the focus ring on programmatic `tabindex=-1` targets (`main`, `main h1`) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: canonical and Twitter tags through `documentTags`, §4.10a route pre-render, preview plugin | Claude, for swemre review |
+| 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: §6 failed loads, unreachable chat and forms (closes RSK-04) | Claude, for swemre review |

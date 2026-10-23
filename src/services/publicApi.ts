@@ -1,0 +1,206 @@
+/**
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+
+import {siteEnv} from '../config/env.ts'
+import type {
+  PagedContent,
+  PostListQuery,
+  Publication,
+  PublicPage,
+  PublicApi,
+  PublicPost,
+  SiteEnv,
+  SubmittedForm,
+} from '../types/type'
+
+export class ApiError extends Error {
+  readonly status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
+// A v2 publication (docs/public-api-v2.md in swemre-website-api) in the v1 post shape the
+// services read: cover, excerpt and body move into fields, a media `alt` becomes `altText`
+const fromPublication = (item: Publication): PublicPost => {
+  const fields: Record<string, unknown> = {...item.fields}
+  if (item.cover) fields.cover = {...item.cover, altText: item.cover.alt}
+  if (item.excerpt && fields.summary === undefined) {
+    fields.summary = item.excerpt
+  }
+  if (item.body !== undefined) fields.body = item.body
+  return {
+    id: item.id,
+    typeKey: item.contentType,
+    slug: item.slug,
+    title: item.title,
+    author: item.author ?? '',
+    fields,
+    terms: (item.terms ?? []).map(term => ({
+      id: term.id,
+      taxonomy: term.kind,
+      name: term.name,
+      slug: term.slug,
+    })),
+    publishedAt: item.publishedAt,
+    lastUpdatedAt: item.updatedAt ?? item.publishedAt,
+    locale: item.locale,
+    languageVersions: item.languageVersions ?? [],
+  }
+}
+
+const hasTerm = (post: PublicPost, slug: string | undefined) =>
+  !slug || post.terms.some(term => term.slug === slug)
+
+const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
+  if (!query.sortBy) return posts
+  const key = query.sortBy
+  const sign = query.direction === 'DESC' ? -1 : 1
+  return [...posts].sort(
+    (a, b) => sign * String(a[key]).localeCompare(String(b[key])),
+  )
+}
+
+// Every path of the public API the website and its build scripts use is built here. With a
+// channel key, publications come from the channel API (v2); without one, and for forms, chat and
+// page views until v2 serves them, from the workspace API (v1)
+export function createPublicApi(env: SiteEnv): PublicApi {
+  const v1 = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
+  const v2 = env.channelKey
+    ? `/public/v2/channels/${encodeURIComponent(env.channelKey)}`
+    : undefined
+
+  async function request<T>(
+    method: 'GET' | 'POST',
+    path: string,
+    body?: unknown,
+  ): Promise<T | undefined> {
+    const headers: Record<string, string> = {Accept: 'application/json'}
+    if (body !== undefined) headers['Content-Type'] = 'application/json'
+    // Only the channel API knows the header; on v1 it would fail the CORS preflight
+    if (env.readKey && v2 && path.startsWith(v2)) {
+      headers['X-Read-Key'] = env.readKey
+    }
+    const response = await fetch(`${env.apiBase}${path}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: method === 'GET' ? AbortSignal.timeout(env.timeoutMs) : undefined,
+    })
+
+    if (response.status === 404 || response.status === 204) return undefined
+
+    const text = await response.text()
+    const json: unknown = text ? JSON.parse(text) : undefined
+    if (!response.ok) {
+      const message =
+        json && typeof json === 'object' && 'message' in json
+          ? String((json as {message: unknown}).message)
+          : response.statusText
+      throw new ApiError(response.status, message)
+    }
+    return json as T
+  }
+
+  const size = (query: PostListQuery) => String(query.size ?? 100)
+
+  return {
+    async listPosts(type, query = {}) {
+      if (v2) {
+        const params = new URLSearchParams({
+          'content-type': type,
+          locale: env.locale,
+          size: size(query),
+        })
+        if (query.term) params.set('term', query.term)
+        const page = await request<PublicPage<Publication>>(
+          'GET',
+          `${v2}/publications?${params}`,
+        )
+        return sortPosts((page?.items ?? []).map(fromPublication), query)
+      }
+      const params = new URLSearchParams({type, size: size(query)})
+      if (query.sortBy) params.set('sort-by', query.sortBy)
+      if (query.direction) params.set('direction', query.direction)
+      const page = await request<PagedContent<PublicPost>>(
+        'GET',
+        `${v1}/posts?${params}`,
+      )
+      return (page?.content ?? []).filter(post => hasTerm(post, query.term))
+    },
+
+    async getPost(type, slug) {
+      if (v2) {
+        const item = await request<Publication>(
+          'GET',
+          `${v2}/publications/${encodeURIComponent(slug)}?${new URLSearchParams({locale: env.locale})}`,
+        )
+        return item?.contentType === type ? fromPublication(item) : undefined
+      }
+      return request<PublicPost>(
+        'GET',
+        `${v1}/posts/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
+      )
+    },
+
+    // A 404 means the form does not exist, so no confirmation is a failure
+    async submitForm(form, fields) {
+      const submitted = await request<SubmittedForm>(
+        'POST',
+        `${v1}/forms/${encodeURIComponent(form)}/submissions`,
+        {fields},
+      )
+      if (!submitted) {
+        throw new ApiError(404, `Form ${form} did not confirm the submission`)
+      }
+      return submitted
+    },
+
+    async presence() {
+      const status = await request<{online: boolean}>('GET', `${v1}/presence`)
+      return status?.online === true
+    },
+
+    // Chat stays on v1 as a whole: v2 so far defines only starting a conversation, and a
+    // conversation must be continued on the API version that created it
+    async sendChatMessage<T>(publicToken: string | undefined, message: string) {
+      const remote = await request<T>(
+        'POST',
+        publicToken
+          ? `${v1}/conversations/${encodeURIComponent(publicToken)}/message`
+          : `${v1}/conversations`,
+        {text: message},
+      )
+      if (!remote) throw new ApiError(404, 'conversation was not found')
+      return remote
+    },
+
+    getConversation<T>(publicToken: string) {
+      return request<T>(
+        'GET',
+        `${v1}/conversations/${encodeURIComponent(publicToken)}`,
+      )
+    },
+
+    conversationSocketUrl(publicToken) {
+      return `${env.apiBase.replace(/^http/, 'ws')}${v1}/conversations/${encodeURIComponent(publicToken)}/ws`
+    },
+
+    // v2 page views arrive with analytics in 1.1.0-ALPHA
+    async recordPageView(view) {
+      await request('POST', `${v1}/page-views`, view)
+    },
+  }
+}
+
+export const publicApi: PublicApi = createPublicApi(siteEnv)

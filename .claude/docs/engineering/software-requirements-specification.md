@@ -88,6 +88,7 @@ features). No backend, no cookies, no analytics.
 | SRS-GEN-06  | Each page shall set the `description` meta tag, `<link rel="canonical">`, the Open Graph tags `og:title`, `og:description`, `og:url` and `og:image`, and `twitter:card`, `twitter:title`, `twitter:description` and `twitter:image`. Canonical and `og:url` shall be `https://swemre.com` + the current path without a trailing slash (`https://swemre.com/` for the home page). Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
 | SRS-GEN-07  | A render error inside a page shall show an error view inside the layout (navbar and footer kept): "Something went wrong", a Reload button and a link to `/`, with the document title "Something went wrong · SWEMRE". Navigating to another route shall clear it. | T | P1 | PRS-000332 |
 | SRS-GEN-08  | A render error in the dock (chat or player) shall hide the dock and leave the page usable. Every caught render error shall be written to the browser console. | T | P1 | PRS-000332 |
+| SRS-GEN-09  | When a content request fails or times out (SRS-MNT-12), the list pages, the home sections (articles, projects, songs) and the article, project and special pages shall show "Content could not be loaded" with a Retry button that loads again; an empty workspace shall keep its empty states, so the two look different. The search dialog shall skip a source that fails. | T | P1 | PRS-000333 |
 | SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
 | SRS-LAY-08  | Article and project pages shall draw the header band while their content is loading and when it is not found, so the transparent navbar of band routes always sits over a band. | T, D | P1 | UX-W4 |
 | SRS-LAY-09  | Sidebar navigation sections without items shall not be rendered; a sidebar whose sections are all empty shall render nothing. | T | P2 | UX-W9 |
@@ -200,6 +201,7 @@ features). No backend, no cookies, no analytics.
 | SRS-CHAT-12  | Unsent messages shall be retried automatically when the conversation's socket (re)connects, when the browser fires `online` and when the chat panel opens. Messages shall be posted one at a time in order, never twice, and a message still `sending` when the page closed shall be `queued` on the next load. | T | P1 | UX-W13 |
 | SRS-CHAT-13  | Deleting a conversation shall ask for confirmation in the row ("Delete "<title>"?", Cancel focused, Escape cancels). The delete button shall be visible on hover and keyboard focus, and always on coarse (touch) pointers. | T | P2 | UX-W14 |
 | SRS-CHAT-14  | Below 640 px the open chat panel shall be a full-screen sheet that respects the top and bottom safe-area insets, and the page behind it shall not scroll while it is open. | T, D | P2 | UX-W12 |
+| SRS-CHAT-15  | When the presence check fails, the chat shall say the server cannot be reached ("not reachable" on the launcher, a banner in the conversation) instead of "offline"; messages stay queued (SRS-CHAT-11). | T | P1 | PRS-000333 |
 
 ### 3.9 Resume request (RES)
 
@@ -213,6 +215,7 @@ features). No backend, no cookies, no analytics.
 | SRS-RES-06  | The call back form ("Request a call back": full name, phone, topic) shall follow the same rules: it is sent through `ContactFormService.submitCallbackRequest`, shows its confirmation only after the API confirms the submission, and shows an error otherwise. | T | P1 | UX-W1 |
 | SRS-RES-07  | In both forms, editing a field shall clear that field's error, and a submission with invalid fields shall move focus to the first invalid field in form order. | T | P2 | UX-W19 |
 | SRS-RES-08  | The dialog header of both forms shall leave room for the close button, so the title and subtitle never run under it. | I, D | P3 | UX-W18 |
+| SRS-RES-09  | When a form submission fails without an answer from the server (network error), the form shall say "The server cannot be reached. Check your connection and try again; what you entered is kept." instead of the generic failure. | T | P1 | PRS-000333 |
 
 ### 3.10 Theme (THM)
 
@@ -313,6 +316,10 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-07  | Colours, shadows, radii, fonts, text sizes and layout sizes shall be defined only as tokens in `src/main.css`. | I | P1 |
 | SRS-MNT-08  | Comments shall be limited to license headers, format notes, `TODO(...)` markers and non-obvious behaviour. | I | P2 |
 | SRS-MNT-09  | Adding an article or project shall require only one metadata entry and one MDX file.             | D    | P1   |
+| SRS-MNT-10  | Only `services/publicApi.ts` shall build public API paths and request headers; services and build scripts shall use its typed methods. | I | P1 |
+| SRS-MNT-11  | The API base, workspace key, channel key, read key, site URL, locale and read timeout shall come from the build's `VITE_*` environment through `config/env.ts`, with the defaults in `config/siteDefaults.ts`; `index.html`, the bundle and the RSS and sitemap scripts shall use the same values. | T | P1 |
+| SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
+| SRS-MNT-13  | With a channel key, articles, projects, songs, pages and site settings shall be read from public API v2 for that channel in the configured locale, with the read key as `X-Read-Key` (only on v2 requests); without one, and for form submissions, chat and page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -342,3 +349,9 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000321: changed GEN-04 (back/forward restores scroll); added A11Y-09 (skip link) and A11Y-10 (focus and title announcement on route change) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: added PRE-01 to PRE-03; changed GEN-06 (canonical, Twitter title, description and image, no trailing slash), FUT-04 | Claude, for swemre review |
 | 2026-10-23 | PRS-000312: GEN-03 noindex on not-found views; added PRE-04 (404 status, favicon.ico) | Claude, for swemre review |
+| 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
+| 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |
+| 2026-10-23 | MNT-13: form submissions stay on v1 until v2 serves them | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: RES-09 | Claude, for swemre review |
