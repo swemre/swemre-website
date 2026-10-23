@@ -305,6 +305,9 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-07  | Colours, shadows, radii, fonts, text sizes and layout sizes shall be defined only as tokens in `src/main.css`. | I | P1 |
 | SRS-MNT-08  | Comments shall be limited to license headers, format notes, `TODO(...)` markers and non-obvious behaviour. | I | P2 |
 | SRS-MNT-09  | Adding an article or project shall require only one metadata entry and one MDX file.             | D    | P1   |
+| SRS-MNT-10  | Only `services/publicApi.ts` shall build public API paths and request headers; services and build scripts shall use its typed methods. | I | P1 |
+| SRS-MNT-11  | The API base, workspace key, channel key, read key, site URL, locale and read timeout shall come from the build's `VITE_*` environment through `config/env.ts`, with the defaults in `config/siteDefaults.ts`; `index.html`, the bundle and the RSS and sitemap scripts shall use the same values. | T | P1 |
+| SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -330,3 +333,4 @@ features). No backend, no cookies, no analytics.
 | 2026-10-15 | Initial draft from the implemented baseline and owner requests OWN-1 to OWN-8 | Claude, for swemre review |
 | 2026-10-15 | OWN-9 to OWN-11: narrower containers, 75ch reading measure, sound design (SND), feed log and skills (RSS-03 to RSS-06) | Claude, for swemre review |
 | 2026-10-23 | Website UX fixes (UX-W1 to UX-W26). Changed: GEN-03, GEN-05, HOME-02, ART-10, ART-11, PRJ-05, CHAT-02, CHAT-06, RES-03, THM-02, FUT-04. Added: GEN-06, LAY-07 to LAY-09, NAV-06, HOME-05, HOME-06, ART-15 to ART-17, PRJ-07 to PRJ-09, SRCH-07, SRCH-08, CHAT-10 to CHAT-14, RES-05 to RES-08, LGL-04, MAP-01 to MAP-03, A11Y-08, PERF-05 | Claude, for swemre review |
+| 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |

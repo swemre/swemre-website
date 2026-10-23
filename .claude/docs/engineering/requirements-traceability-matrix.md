@@ -172,6 +172,9 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-MNT-07   | §4.9         | `main.css`                                 | TC-MNT-05               | Pass (INSP)       |
 | SRS-MNT-08   | coding std   | repository                                 | inspection              | Pass (INSP)       |
 | SRS-MNT-09   | §4.3         | services + glob                            | demonstration           | Pass (four articles and two projects added this baseline with one entry + one MDX each) |
+| SRS-MNT-10   | §4.3         | `services/publicApi.ts`, services, `scripts/generate-*.mjs` | inspection, TC-API-01 | Manual (Verified 2026-10-23: same request URLs in the browser, chat send works; RSS and sitemap output unchanged) |
+| SRS-MNT-11   | §4.3         | `config/env.ts`, `config/siteDefaults.ts`, `vite.config.ts`, `index.html` | TC-API-02 | Manual (Verified 2026-10-23: build with `VITE_SITE_URL` and `VITE_LOCALE` set) |
+| SRS-MNT-12   | §4.3         | `services/publicApi.ts`                    | TC-API-03               | Unverified        |
 | SRS-CMP-01   | n/a          | whole app                                  | L4 suite (3 engines)    | Open              |
 | SRS-CMP-02   | §4.9         | layout tokens                              | TC-E2E-03               | Pass (SS at 1920); other widths Designed |
 | SRS-CMP-03   | §6           | stores, theme                              | TC-E2E-08               | Designed          |
@@ -217,3 +220,4 @@ requirement; every requirement above cites at least one test or inspection.
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes W1 to W26: rows for the new and changed requirements, `Unverified` status, browser check of 2026-10-23, second coverage summary | Claude, for swemre review |
+| 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |

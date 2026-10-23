@@ -9,17 +9,10 @@
  * Contact: emre@swemre.com
  */
 
-import type {Song} from '../types/type'
+import type {PublicPost, Song} from '../types/type'
 import {ArrayService} from './ArrayService'
-import {
-  fieldMediaUrl,
-  fieldString,
-  publicRequest,
-  safely,
-  workspacePath,
-  type PagedContent,
-  type PublicPost,
-} from './apiClient'
+import {fieldMediaUrl, fieldString, safely} from './apiClient'
+import {publicApi} from './publicApi'
 
 // open.spotify.com/track/<id>?si=... becomes <id>; a bare id is kept as it is
 export function spotifyTrackId(url: string | undefined): string {
@@ -44,12 +37,12 @@ export class SongService extends ArrayService<Song> {
 
   override async findAll(): Promise<Song[]> {
     return safely(async () => {
-      const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=song&size=100&sort-by=title&direction=ASC`,
-      )
-      return (page?.content ?? [])
-        .map(toSong)
-        .filter(song => song.spotifyId !== '')
+      const posts = await publicApi.listPosts('song', {
+        size: 100,
+        sortBy: 'title',
+        direction: 'ASC',
+      })
+      return posts.map(toSong).filter(song => song.spotifyId !== '')
     }, [])
   }
 

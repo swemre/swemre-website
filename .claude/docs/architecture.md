@@ -156,6 +156,11 @@ text never sits on the plain canvas (SRS-LAY-08).
    SearchService (register(source) → search(query))  — not an entity service
 ```
 
+- `services/publicApi.ts` (ADR-017) is the only module that knows public
+  API paths and headers; services call its typed methods and the RSS and
+  sitemap scripts import it too. `config/env.ts` reads `SiteEnv` from
+  `import.meta.env` in the bundle and from `process.env` in Node; one build
+  serves one website. `apiClient.ts` keeps only the field helpers.
 - `serviceRegistry.ts` instantiates each service once; `createSearchService`
   registers all sources against those instances.
 - `ServiceContext` defaults to the registry; `ServiceProvider` can inject a
@@ -479,3 +484,4 @@ Full trace: SWE-DOC-007.
 | 2026-10-15 | Owner placeholder replaced with full SDD draft     | Claude, for swemre review |
 | 2026-10-15 | Added §4.7a sound design and the feed log pipeline | Claude, for swemre review |
 | 2026-10-23 | UX fixes: shared `NotFound`, band while loading, list caching, contact-form failure handling, covers, session view count, search default list, chat delivery states and phone sheet, theme follows the OS, §4.8a document metadata, sitemap step | Claude, for swemre review |
+| 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |

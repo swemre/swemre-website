@@ -27,7 +27,9 @@ npm run dev
 ```
 
 The site runs on http://localhost:5173. It reads the workspace `swemre-website` from
-`http://localhost:8080/api`; see `.env.example` to change either. `swemre-blocks` must sit next to
+`http://localhost:8080/api`. `.env.example` lists every setting: API base, workspace,
+site URL, language, read timeout and, once the channel API exists, the channel and its read key.
+Each website of a workspace is its own build with its own values. `swemre-blocks` must sit next to
 this folder; Vite and TypeScript resolve it by path.
 
 ## Content

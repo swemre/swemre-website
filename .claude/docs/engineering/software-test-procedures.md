@@ -342,6 +342,9 @@ not be heard in the headless environment).
 | TC-LGL-01   | SRS-LGL-01, LGL-02        | Render `SpecialPage` at `/sp/privacy-policy`                                                    | Version, effective and updated dates; numbered contents | Designed |
 | TC-LGL-02   | SRS-LGL-04                | Render `SpecialPage` at an unknown slug                                                         | `NotFound` with "This page is not available right now.", a `mailto:` link to the contact email and a link to `/` | Designed |
 | TC-FTR-01   | SRS-FTR-01, LGL-03        | Render `Footer`                                                                                 | Social links; RSS link `/rss.xml`; privacy link         | Designed |
+| TC-API-01   | SRS-MNT-10                | Load `/articles/<slug>`, open the chat and send a message; list the API requests. Run `npm run rss` and `npm run sitemap` against the same API before and after the change | Same request URLs as before the change; RSS (ignoring `lastBuildDate`) and sitemap identical | Designed |
+| TC-API-02   | SRS-MNT-11                | `readSiteEnv` with an empty source, then with every variable set (site URL with a trailing slash, timeout `abc`); build with `VITE_SITE_URL=https://example.test/ VITE_LOCALE=de` | Defaults from `siteDefaults`; values trimmed, slash dropped, default timeout; `dist/index.html` has `lang="de"` and `og:url` `https://example.test/` | Designed |
+| TC-API-03   | SRS-MNT-12                | `createPublicApi` with `timeoutMs: 50` against a server that never answers; call `listPosts` | Rejects with a timeout error after about 50 ms | Designed |
 
 ## 5. End-to-end tests (L4, Playwright)
 
@@ -509,3 +512,4 @@ relative-luminance formula).
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes: added TC-SVC-03, TC-SVC-04, TC-SRCH-06, TC-SRCH-07, TC-CHAT-08 to TC-CHAT-11, TC-MAP-01, TC-MAP-02, TC-NAV-03, TC-HOME-02, TC-HOME-03, TC-ART-12 to TC-ART-15, TC-PRJ-03, TC-PRJ-04, TC-RES-04 to TC-RES-07, TC-THM-03, TC-GEN-01, TC-LGL-02, TC-E2E-12, TC-MAN-05; updated TC-ART-04, TC-ART-09, TC-ART-10, TC-SRCH-02, TC-CHAT-02, TC-CHAT-04 to TC-CHAT-06, TC-HOME-01, TC-THM-02, TC-E2E-01, TC-E2E-07 | Claude, for swemre review |
+| 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |

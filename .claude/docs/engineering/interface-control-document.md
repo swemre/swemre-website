@@ -39,6 +39,7 @@ disagree, the code wins and this document is corrected.
 | IF-17   | Sitemap and `robots.txt`          | External (crawlers) | `generate-sitemap.mjs`, `public/robots.txt` | Search engines |
 | IF-18   | Public form submissions           | HTTP (swemre-website-api) | API `forms/<form>/submissions` | `ContactFormService` |
 | IF-19   | Document metadata (`<title>`, description, Open Graph) | External (link previews) | `useDocumentTitle`, `index.html` | Browsers, link previewers |
+| IF-20   | Public API client and site environment | Internal API / build env | `services/publicApi.ts`, `config/env.ts` | Services, build scripts, `vite.config.ts` |
 
 ## 3. Internal software interfaces
 
@@ -290,6 +291,25 @@ every later unsent one `queued`. The queue is flushed one message at a time
 on the socket's `connected` event, the window `online` event, panel open and
 a tap on a queued message.
 
+### 6.3a IF-20 Public API client and site environment
+
+| Variable              | Default                     | Use                                                  |
+| --------------------- | --------------------------- | ---------------------------------------------------- |
+| `VITE_API_BASE`       | `http://localhost:8080/api` | API origin and path prefix                           |
+| `VITE_WORKSPACE_KEY`  | `swemre-website`            | `/public/v1/workspaces/<key>/...`                    |
+| `VITE_CHANNEL_KEY`    | unset                       | The website channel (PRS-000443); read, not used yet |
+| `VITE_READ_KEY`       | unset                       | Sent as `X-Read-Key` when set (name to be agreed with the API) |
+| `VITE_SITE_URL`       | `https://swemre.com`        | Canonical origin, `og:url`, RSS and sitemap links; trailing slash dropped |
+| `VITE_LOCALE`         | `en`                        | `<html lang>`                                        |
+| `VITE_API_TIMEOUT_MS` | `10000`                     | Reads (`GET`) abort after this many milliseconds     |
+
+`PublicApi` methods: `listPosts(type, {size, sortBy, direction})` (`[]` on
+404, throws `ApiError` on other non-2xx, on network errors and on timeout),
+`getPost(type, slug)` (`undefined` on 404), `submitForm(form, fields)`
+(IF-18), `presence()`, `sendChatMessage(token, text)`,
+`getConversation(token)`, `conversationSocketUrl(token)` and
+`recordPageView({path, referrer, sessionId})`.
+
 ### 6.4 IF-18 Public form submissions
 
 | Item       | Value                                                                         |
@@ -407,3 +427,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes: list cache, `submitCallbackRequest` and confirmation rule (IF-18), chat delivery members and `retry`, `SearchSource.featured`, `DocumentMeta` (IF-19), theme written only on toggle, `swemre:viewed-articles`, sitemap and robots (IF-17), `sitemap` script | Claude, for swemre review |
+| 2026-10-23 | IF-20 public API client and site environment (ADR-017) | Claude, for swemre review |

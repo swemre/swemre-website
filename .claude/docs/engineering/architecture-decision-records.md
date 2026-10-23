@@ -182,8 +182,34 @@ decision is marked Superseded with a link to its replacement.
 - **Consequences**: One more file to touch per content item (automated by
   skills); deterministic output; feed readers see stable GUIDs.
 
+## ADR-017 One typed public API client and one site environment per build
+
+- **Status**: Proposed (1.0.0-ALPHA, foundation for PRS-000443)
+- **Context**: Every service, the analytics call and the RSS and sitemap
+  scripts built their own `/public/v1/workspaces/<key>/...` paths and read
+  `VITE_API_BASE` and `VITE_WORKSPACE_KEY` on their own; the site URL was a
+  constant. The platform makes the website one channel of its workspace,
+  read with a channel key and a read key under `/api/public/v2`, and a
+  workspace may run several websites.
+- **Decision**: `config/env.ts` reads the build's environment once
+  (`readSiteEnv`) into `SiteEnv`: API base, workspace key, channel key, read
+  key, site URL, locale and read timeout, with defaults in
+  `config/siteDefaults.ts`. It works in the bundle (`import.meta.env`) and
+  in the Node build scripts (`process.env`). `services/publicApi.ts` is the
+  only module that knows public API paths and headers; services and scripts
+  call its typed methods (`listPosts`, `getPost`, `submitForm`, chat,
+  `recordPageView`). Reads time out after `timeoutMs` and throw. A read key
+  is sent as `X-Read-Key` only when configured. `index.html` takes the site
+  URL and language from the same variables.
+- **Consequences**: Moving to the channel API or to v2 changes one file.
+  One build serves one website; another website of the workspace is another
+  build with its own variables. The `X-Read-Key` header name and the v2
+  paths are not settled with the API yet; until then the client keeps the
+  v1 workspace paths and the channel key is read but unused.
+
 ## Change log
 
 | Date       | Change                          | Author                    |
 | ---------- | ------------------------------- | ------------------------- |
 | 2026-10-15 | Records written for M0 to M4    | Claude, for swemre review |
+| 2026-10-23 | ADR-017 public API client and site environment | Claude, for swemre review |

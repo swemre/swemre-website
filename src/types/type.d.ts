@@ -55,6 +55,81 @@ export interface AsyncSettled<T> {
   data: T
 }
 
+// ---------- public api ----------
+
+export type EnvSource = Record<string, string | boolean | undefined>
+
+/** Where this website reads from and where it is served; one build per website. */
+export interface SiteEnv {
+  apiBase: string
+  workspaceKey: string
+  /** The website channel of the workspace; unused until the channel API exists (PRS-000443). */
+  channelKey?: string
+  /** Sent as `X-Read-Key` when set; a read key is public, it only selects the channel. */
+  readKey?: string
+  /** Absolute, without a trailing slash. */
+  siteUrl: string
+  /** BCP 47, for example `en`. */
+  locale: string
+  /** Milliseconds before a read gives up. */
+  timeoutMs: number
+}
+
+// A post as the public API returns it. Every content type shares this shape; fields holds the
+// values of the type's own fields, with media fields expanded to the file's details
+export interface PublicPost {
+  id: number
+  typeKey: string
+  slug: string
+  title: string
+  author: string
+  fields: Record<string, unknown>
+  terms: {
+    id: number
+    taxonomy: 'CATEGORY' | 'TAG'
+    name: string
+    slug: string
+  }[]
+  publishedAt: string
+  lastUpdatedAt: string
+}
+
+export interface PagedContent<T> {
+  content: T[]
+}
+
+export interface PostListQuery {
+  size?: number
+  sortBy?: 'publishedAt' | 'title'
+  direction?: 'ASC' | 'DESC'
+}
+
+export interface SubmittedForm {
+  submittedAt: string
+}
+
+export interface PageViewInput {
+  path: string
+  referrer: string | null
+  sessionId: string
+}
+
+export interface PublicApi {
+  /** Throws on a failed or timed-out request; `[]` when the workspace lacks the type. */
+  listPosts(type: string, query?: PostListQuery): Promise<PublicPost[]>
+  getPost(type: string, slug: string): Promise<PublicPost | undefined>
+  /** Throws unless the API confirms the submission. */
+  submitForm(
+    form: string,
+    fields: Record<string, string>,
+  ): Promise<SubmittedForm>
+  presence(): Promise<boolean>
+  sendChatMessage<T>(publicToken: string | undefined, text: string): Promise<T>
+  getConversation<T>(publicToken: string): Promise<T | undefined>
+  conversationSocketUrl(publicToken: string): string
+  recordPageView(view: PageViewInput): Promise<void>
+}
+
 // ---------- content ----------
 
 export interface Searchable extends Entity {
