@@ -30,6 +30,8 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-GEN-04   | §4.1          | `SiteLayout` effect                                          | TC-E2E-01                 | Designed          |
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `index.html` defaults                    | TC-GEN-01, TC-MAN-05      | Manual (Verified in browser 2026-10-23, W24) |
+| SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
+| SRS-GEN-08   | §4.1, §6      | `components/ErrorBoundary.tsx`, `SiteLayout`                 | TC-GEN-02                 | Manual (Verified in browser 2026-10-23, forced render error in the chat launcher) |
 | SRS-LAY-01   | §4.9          | `main.css` `--container-page`, all `max-w-page` users        | TC-E2E-03                 | Pass (SS at 1920); 3440 cap Designed |
 | SRS-LAY-02   | §4.9          | `Navbar`, `Footer` `max-w-wide`                              | TC-E2E-03                 | Pass (SS at 1920) |
 | SRS-LAY-03   | §4.5          | `DocsLayout` `max-w-reading`                                 | TC-E2E-03                 | Pass (INSP)       |
@@ -220,4 +222,5 @@ requirement; every requirement above cites at least one test or inspection.
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes W1 to W26: rows for the new and changed requirements, `Unverified` status, browser check of 2026-10-23, second coverage summary | Claude, for swemre review |
+| 2026-10-23 | PRS-000332: rows for GEN-07, GEN-08 | Claude, for swemre review |
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |

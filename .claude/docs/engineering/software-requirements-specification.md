@@ -86,6 +86,8 @@ features). No backend, no cookies, no analytics.
 | SRS-GEN-04  | On every route change the window shall scroll to the top.                                                                                                          | T    | P2   | OWN-5  |
 | SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · SWEMRE`; pages without a title (home) shall use `SWEMRE`.                                          | T    | P3   | Design |
 | SRS-GEN-06  | Each page shall set the `description` meta tag and the Open Graph tags `og:title`, `og:description`, `og:url` (site URL + current path) and `og:image`, plus `twitter:card`. Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
+| SRS-GEN-07  | A render error inside a page shall show an error view inside the layout (navbar and footer kept): "Something went wrong", a Reload button and a link to `/`, with the document title "Something went wrong · SWEMRE". Navigating to another route shall clear it. | T | P1 | PRS-000332 |
+| SRS-GEN-08  | A render error in the dock (chat or player) shall hide the dock and leave the page usable. Every caught render error shall be written to the browser console. | T | P1 | PRS-000332 |
 | SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
 | SRS-LAY-08  | Article and project pages shall draw the header band while their content is loading and when it is not found, so the transparent navbar of band routes always sits over a band. | T, D | P1 | UX-W4 |
 | SRS-LAY-09  | Sidebar navigation sections without items shall not be rendered; a sidebar whose sections are all empty shall render nothing. | T | P2 | UX-W9 |
@@ -333,4 +335,5 @@ features). No backend, no cookies, no analytics.
 | 2026-10-15 | Initial draft from the implemented baseline and owner requests OWN-1 to OWN-8 | Claude, for swemre review |
 | 2026-10-15 | OWN-9 to OWN-11: narrower containers, 75ch reading measure, sound design (SND), feed log and skills (RSS-03 to RSS-06) | Claude, for swemre review |
 | 2026-10-23 | Website UX fixes (UX-W1 to UX-W26). Changed: GEN-03, GEN-05, HOME-02, ART-10, ART-11, PRJ-05, CHAT-02, CHAT-06, RES-03, THM-02, FUT-04. Added: GEN-06, LAY-07 to LAY-09, NAV-06, HOME-05, HOME-06, ART-15 to ART-17, PRJ-07 to PRJ-09, SRCH-07, SRCH-08, CHAT-10 to CHAT-14, RES-05 to RES-08, LGL-04, MAP-01 to MAP-03, A11Y-08, PERF-05 | Claude, for swemre review |
+| 2026-10-23 | PRS-000332: added GEN-07, GEN-08 (error boundaries) | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |

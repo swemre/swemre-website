@@ -112,7 +112,9 @@ Pages never import `database/` (SRS-MNT-06). Types flow from
 | `App.tsx`                      | `PlayerProvider > ChatProvider > SearchDialogProvider > ResumeModalProvider > Routes`; `*` renders `components/NotFound.tsx` |
 | `components/NotFound.tsx`      | The one not-found view (route, article, project, special page): "404" kicker, title, message, back link; optional `band` (draws `HeaderBand`) and `contact` (shows the email); sets the document title |
 | `components/Navbar.tsx`        | Fixed navbar; the mobile menu closes on Escape (focus back to the toggle), on `pointerdown` outside the header and when `pathname` changes (state reset during render, no effect) |
-| `templates/SiteLayout.tsx`     | Layout route: `Navbar`, `Outlet`, `Footer`, `Dock`; scroll-to-top on route change; decides navbar tone and top padding from `overlayRoutes` |
+| `components/ErrorBoundary.tsx` | Class component that catches render errors below it, logs them with a scope name and shows `fallback`; a new `resetKey` clears the error |
+| `components/ErrorPage.tsx`     | Fallback for page errors: "Something went wrong", Reload (full reload) and a link to `/`; sets the document title |
+| `templates/SiteLayout.tsx`     | Layout route: `Navbar`, `Outlet` (inside an `ErrorBoundary` with `ErrorPage`, reset by `pathname`), `Footer`, `Dock` (inside an `ErrorBoundary` that renders nothing); scroll-to-top on route change; decides navbar tone and top padding from `overlayRoutes` |
 
 Provider order matters: the dock (inside `SiteLayout`) needs player and chat
 context; the search dialog can trigger `play-song`, so it sits inside the
@@ -418,6 +420,8 @@ Schemas: SWE-DOC-004 §5.
 | Failure                                   | Behaviour                                                        |
 | ----------------------------------------- | ---------------------------------------------------------------- |
 | Unknown route or slug                     | "Not found" view with a link back                                 |
+| Render error in a page                    | `ErrorPage` inside the layout, error logged; cleared on the next route (SRS-GEN-07) |
+| Render error in the chat or player        | Dock hidden, page keeps working, error logged (SRS-GEN-08)         |
 | `localStorage` read throws or holds junk  | Fallback to empty state                                           |
 | `localStorage` write throws (quota, blocked) | Keep in-memory state, continue                                 |
 | Spotify iFrame API fails to load          | `failed` state, plain embed iframe fallback; script promise reset for retry |
@@ -484,4 +488,5 @@ Full trace: SWE-DOC-007.
 | 2026-10-15 | Owner placeholder replaced with full SDD draft     | Claude, for swemre review |
 | 2026-10-15 | Added §4.7a sound design and the feed log pipeline | Claude, for swemre review |
 | 2026-10-23 | UX fixes: shared `NotFound`, band while loading, list caching, contact-form failure handling, covers, session view count, search default list, chat delivery states and phone sheet, theme follows the OS, §4.8a document metadata, sitemap step | Claude, for swemre review |
+| 2026-10-23 | PRS-000332: error boundaries around the page outlet and the dock (§4.1, §6) | Claude, for swemre review |
 | 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |
