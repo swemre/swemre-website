@@ -83,9 +83,11 @@ features). No backend, no cookies, no analytics.
 | SRS-GEN-01  | The system shall be delivered as static files produced by `npm run build`, with no server-side code.                                                              | I    | P1   | OWN-1  |
 | SRS-GEN-02  | Every route shall render inside one shared layout containing the navbar, the page outlet, the footer and the dock.                                                 | I, D | P1   | OWN-3  |
 | SRS-GEN-03  | An unknown route shall render the shared not-found view (`components/NotFound.tsx`: "404" kicker, "Page not found" heading, a link to `/`) and set the document title to "Page not found · SWEMRE". Article, project and special-page not-found states shall use the same view. | T    | P2   | OWN-3, UX-W20 |
-| SRS-GEN-04  | On every route change the window shall scroll to the top.                                                                                                          | T    | P2   | OWN-5  |
+| SRS-GEN-04  | On every route change to a new path the window shall scroll to the top. On browser back and forward it shall restore the scroll position the visitor left that history entry at, once the page is tall enough (waiting up to 3 s, stopping on wheel, touch or key input). | T | P2 | OWN-5, PRS-000321 |
 | SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · SWEMRE`; pages without a title (home) shall use `SWEMRE`.                                          | T    | P3   | Design |
 | SRS-GEN-06  | Each page shall set the `description` meta tag, `<link rel="canonical">`, the Open Graph tags `og:title`, `og:description`, `og:url` and `og:image`, and `twitter:card`, `twitter:title`, `twitter:description` and `twitter:image`. Canonical and `og:url` shall be `https://swemre.com` + the current path without a trailing slash (`https://swemre.com/` for the home page). Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
+| SRS-GEN-07  | A render error inside a page shall show an error view inside the layout (navbar and footer kept): "Something went wrong", a Reload button and a link to `/`, with the document title "Something went wrong · SWEMRE". Navigating to another route shall clear it. | T | P1 | PRS-000332 |
+| SRS-GEN-08  | A render error in the dock (chat or player) shall hide the dock and leave the page usable. Every caught render error shall be written to the browser console. | T | P1 | PRS-000332 |
 | SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
 | SRS-LAY-08  | Article and project pages shall draw the header band while their content is loading and when it is not found, so the transparent navbar of band routes always sits over a band. | T, D | P1 | UX-W4 |
 | SRS-LAY-09  | Sidebar navigation sections without items shall not be rendered; a sidebar whose sections are all empty shall render nothing. | T | P2 | UX-W9 |
@@ -273,6 +275,8 @@ features). No backend, no cookies, no analytics.
 | SRS-A11Y-06  | Decorative elements (header band, equalizer) shall be hidden from assistive technology.           | I    | P2   |
 | SRS-A11Y-07  | Automated axe checks shall report no serious or critical violations on any route.                 | T    | P2   |
 | SRS-A11Y-08  | Cover images shall use the media field's `altText` as `alt` (empty `alt` when it has none, as a decorative image) and carry the file's `width` and `height` when the API returns them (UX-W23). | T, I | P2 |
+| SRS-A11Y-09  | The first Tab on every page shall reveal a visible "Skip to content" link; activating it shall move focus to the page's `<main>` (PRS-000321). | T | P1 |
+| SRS-A11Y-10  | After a client-side change of path (not on first load and not on a query change), focus shall move to the page's `main h1`, or to `<main>` when no heading appears within 3 s, without scrolling, unless the visitor has already moved focus; the new document title shall be announced through a polite live region (PRS-000321). | T | P1 |
 
 ### 4.2 Performance (PERF)
 
@@ -333,4 +337,6 @@ features). No backend, no cookies, no analytics.
 | 2026-10-15 | Initial draft from the implemented baseline and owner requests OWN-1 to OWN-8 | Claude, for swemre review |
 | 2026-10-15 | OWN-9 to OWN-11: narrower containers, 75ch reading measure, sound design (SND), feed log and skills (RSS-03 to RSS-06) | Claude, for swemre review |
 | 2026-10-23 | Website UX fixes (UX-W1 to UX-W26). Changed: GEN-03, GEN-05, HOME-02, ART-10, ART-11, PRJ-05, CHAT-02, CHAT-06, RES-03, THM-02, FUT-04. Added: GEN-06, LAY-07 to LAY-09, NAV-06, HOME-05, HOME-06, ART-15 to ART-17, PRJ-07 to PRJ-09, SRCH-07, SRCH-08, CHAT-10 to CHAT-14, RES-05 to RES-08, LGL-04, MAP-01 to MAP-03, A11Y-08, PERF-05 | Claude, for swemre review |
+| 2026-10-23 | PRS-000332: added GEN-07, GEN-08 (error boundaries) | Claude, for swemre review |
+| 2026-10-23 | PRS-000321: changed GEN-04 (back/forward restores scroll); added A11Y-09 (skip link) and A11Y-10 (focus and title announcement on route change) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: added PRE-01 to PRE-03; changed GEN-06 (canonical, Twitter title, description and image, no trailing slash), FUT-04 | Claude, for swemre review |

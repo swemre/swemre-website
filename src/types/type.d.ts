@@ -9,6 +9,7 @@
  * Contact: emre@swemre.com
  */
 
+import type {ReactNode} from 'react'
 import type {ArticleService} from '../services/ArticleService'
 import type {ChatService} from '../services/ChatService'
 import type {ContactFormService} from '../services/ContactFormService'
@@ -468,6 +469,20 @@ export type IconName =
   | 'volume-off'
   | 'warning'
   | 'x'
+
+export interface ErrorBoundaryProps {
+  /** Names the failing area in the console message. */
+  scope: string
+  fallback: ReactNode
+  /** A new value clears a caught error, for example the next pathname. */
+  resetKey?: string
+  children: ReactNode
+}
+
+export interface ErrorBoundaryState {
+  failed: boolean
+  resetKey?: string
+}
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 
