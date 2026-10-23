@@ -22,6 +22,7 @@ import {useFindAll} from '../../hooks/useFindAll'
 import {useResumeModal} from '../../hooks/useResumeModal'
 import {useService} from '../../hooks/useService'
 import {useSiteSettings} from '../../hooks/useSiteSettings'
+import type {DocumentMeta} from '../../types/type'
 import {HomeTemplate} from '../../templates/HomeTemplate'
 import {buttonClass, fillClass, shineClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
@@ -47,8 +48,10 @@ function Loading() {
   return <p className="text-sm text-fg-muted">Loading…</p>
 }
 
+const HOME_META: DocumentMeta = {schema: {kind: 'home'}}
+
 export default function HomePage() {
-  useDocumentTitle()
+  useDocumentTitle(undefined, HOME_META)
   const requests = useResumeModal()
   const settings = useSiteSettings()
   const articles = useFindAll(useService('article'))

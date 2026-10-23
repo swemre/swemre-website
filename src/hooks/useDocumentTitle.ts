@@ -12,7 +12,7 @@
 import {useEffect} from 'react'
 import {useLocation} from 'react-router-dom'
 import {siteConfig} from '../config/site'
-import type {DocumentMeta} from '../types/type'
+import type {DocumentMeta, JsonLd} from '../types/type'
 import {documentTags} from '../utils/documentTags'
 import {useSiteSettings} from './useSiteSettings'
 
@@ -41,6 +41,20 @@ function setOptionalMeta(
   }
 }
 
+function setJsonLd(data: JsonLd | undefined) {
+  const id = 'structured-data'
+  const existing = document.getElementById(id)
+  if (!data) {
+    existing?.remove()
+    return
+  }
+  const element = existing ?? document.createElement('script')
+  element.id = id
+  element.setAttribute('type', 'application/ld+json')
+  element.textContent = JSON.stringify(data)
+  if (!existing) document.head.append(element)
+}
+
 function setCanonical(href: string) {
   let element = document.head.querySelector<HTMLLinkElement>(
     'link[rel="canonical"]',
@@ -56,14 +70,14 @@ function setCanonical(href: string) {
 export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
   const {pathname} = useLocation()
   const settings = useSiteSettings()
-  const {description, image, article} = meta
+  const {description, image, article, schema} = meta
 
   useEffect(() => {
     const tags = documentTags(
       siteConfig,
       pathname,
       title,
-      {description, image, article},
+      {description, image, article, schema},
       settings.defaultOgImage,
     )
     document.title = tags.title
@@ -92,5 +106,14 @@ export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
     setMeta('name', 'twitter:description', tags.description)
     setMeta('name', 'twitter:image', tags.image.url)
     setOptionalMeta('name', 'twitter:image:alt', tags.image.alt)
-  }, [title, description, image, article, pathname, settings.defaultOgImage])
+    setJsonLd(tags.jsonLd)
+  }, [
+    title,
+    description,
+    image,
+    article,
+    schema,
+    pathname,
+    settings.defaultOgImage,
+  ])
 }

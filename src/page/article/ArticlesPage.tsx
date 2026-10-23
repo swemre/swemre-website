@@ -18,13 +18,16 @@ import {useAllArticleInteractions} from '../../hooks/useArticleInteraction'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
 import {useService} from '../../hooks/useService'
+import type {DocumentMeta} from '../../types/type'
 import {ListTemplate} from '../../templates/ListTemplate'
 import {buttonClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
 import {projectNavItem} from '../../utils/navItems'
 
+const LIST_META: DocumentMeta = {schema: {kind: 'list'}}
+
 export default function ArticlesPage() {
-  useDocumentTitle('Articles')
+  useDocumentTitle('Articles', LIST_META)
   const articles = useFindAll(useService('article'))
   const projects = useFindAll(useService('project'))
   const interactions = useAllArticleInteractions()
