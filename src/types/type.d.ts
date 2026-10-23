@@ -415,6 +415,14 @@ export interface DocumentMeta {
   image?: string
 }
 
+export interface DocumentTags {
+  title: string
+  description: string
+  url: string
+  image: string
+  twitterCard: 'summary' | 'summary_large_image'
+}
+
 export interface ResumeModalContextValue {
   open: () => void
   openCallback: () => void

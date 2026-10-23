@@ -84,7 +84,8 @@ the analyses listed in §7.
 ## 3. Test items
 
 All modules under `src/`, `scripts/generate-rss.mjs`,
-`scripts/generate-sitemap.mjs`, `scripts/license-headers.mjs`, `index.html`
+`scripts/generate-sitemap.mjs`, `scripts/prerender.mjs`,
+`scripts/license-headers.mjs`, `index.html`
 inline script, `public/robots.txt` and `src/main.css` tokens.
 
 ### 3.0 Verification state of the 2026-10-23 UX fixes

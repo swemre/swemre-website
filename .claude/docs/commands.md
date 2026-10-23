@@ -5,9 +5,10 @@ Run from the repository root.
 | Command                 | What it does                                                         |
 | ----------------------- | -------------------------------------------------------------------- |
 | `npm run dev`           | RSS generation, then Vite dev server on http://localhost:5173 (HMR)  |
-| `npm run build`         | RSS generation, `tsc -b` type-check, production bundle into `dist/`  |
+| `npm run build`         | RSS generation, `tsc -b` type-check, production bundle into `dist/`, then `prerender` |
+| `npm run prerender`     | Writes `dist/<route>/index.html` per known route with its title, description, canonical, Open Graph and Twitter tags from the API (ADR-016). Runs after `build`; re-runnable on its own. API unreachable: warns, changes nothing, exits 0 |
 | `npm run rss`           | Validate `src/database/feedDatabase.ts` and regenerate `public/rss.xml` (also runs before `dev`/`build`, and on database changes during `dev`). Exits 1 on feed problems |
-| `npm run preview`       | Serve the production build locally                                   |
+| `npm run preview`       | Serve the production build locally; `/<route>` gets its pre-rendered `dist/<route>/index.html` |
 | `npm run lint`          | ESLint only                                                          |
 | `npm run checkstyle`    | ESLint (gts) + `prettier --check` + license-header check. Read-only. |
 | `npm run checkstyle:fix`| ESLint `--fix` + `prettier --write` + adds missing license headers   |

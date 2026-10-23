@@ -38,7 +38,7 @@ disagree, the code wins and this document is corrected.
 | IF-16   | Sound API and `data-sound` attributes | Internal API / markup | `SoundProvider`, `soundEngine` | Components |
 | IF-17   | Sitemap and `robots.txt`          | External (crawlers) | `generate-sitemap.mjs`, `public/robots.txt` | Search engines |
 | IF-18   | Public form submissions           | HTTP (swemre-website-api) | API `forms/<form>/submissions` | `ContactFormService` |
-| IF-19   | Document metadata (`<title>`, description, Open Graph) | External (link previews) | `useDocumentTitle`, `index.html` | Browsers, link previewers |
+| IF-19   | Document metadata (`<title>`, description, canonical, Open Graph, Twitter) | External (link previews) | `useDocumentTitle`, `scripts/prerender.mjs`, `index.html` | Browsers, link previewers, crawlers |
 
 ## 3. Internal software interfaces
 
@@ -372,13 +372,18 @@ description, language `en`, `managingEditor` and `webMaster`
 | `meta[name=description]`     | page description, else "Portfolio, articles and projects of Emre, software engineer." |
 | `og:title`                   | same as `<title>`                                                   |
 | `og:description`             | same as description                                                 |
-| `og:url`                     | `siteConfig.url` + current path                                     |
-| `og:image`                   | page image (article/project cover), else `siteConfig.url` + `avatarLarge` |
+| `link[rel=canonical]`        | `siteConfig.url` + current path without trailing slash (`https://swemre.com/` for `/`) |
+| `og:url`                     | same as canonical                                                   |
+| `og:image`                   | page image (`ogImage`, else article/project cover), else the site settings' `defaultOgImage`, else `siteConfig.url` + `avatarLarge` |
 | `twitter:card`               | `summary_large_image` with a page image, else `summary`             |
+| `twitter:title`, `twitter:description`, `twitter:image` | same as `og:title`, `og:description`, `og:image` |
 
-Missing tags are created in `document.head`; existing ones (from
-`index.html`) are updated in place. `index.html` keeps static defaults for
-clients that do not run JavaScript.
+Missing tags are created in `document.head`; existing ones are updated in
+place. The same tags, with the same values, are in the static HTML of every
+pre-rendered route: `dist/index.html` for `/` and `dist/<route>/index.html`
+for `/articles`, `/projects`, `/articles/<slug>`, `/projects/<slug>` and
+`/sp/<slug>` (SRS-PRE-01). A host serving the build answers `/<route>` with
+`<route>/index.html` when it exists, else with `index.html` (SPA fallback).
 
 ## 8. IF-12 Design tokens
 
@@ -393,10 +398,11 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | Script            | Contract                                                           |
 | ----------------- | ------------------------------------------------------------------ |
 | `dev`             | RSS, sitemap, then Vite dev server on port 5173                     |
-| `build`           | RSS, sitemap, `tsc -b`, `vite build` → `dist/`; non-zero exit on any error |
-| `preview`         | Serve `dist/`                                                       |
+| `build`           | RSS, sitemap, `tsc -b`, `vite build` → `dist/`, then `prerender`; non-zero exit on any error |
+| `preview`         | Serve `dist/`; `/<route>` gets `dist/<route>/index.html` when it exists |
 | `rss`             | Validate the feed log and regenerate `public/rss.xml`; exit 1 on problems |
 | `sitemap`         | Regenerate `public/sitemap.xml` from the API (IF-17); exit 0 offline when a sitemap exists, else 1 |
+| `prerender`       | Rewrite the route pages in `dist/` from `dist/index.html` and the API (IF-19); exit 0 offline with nothing changed; exit 1 when `dist/index.html` is missing. Reads `VITE_API_BASE`, `VITE_WORKSPACE_KEY` |
 | `lint`            | ESLint only                                                         |
 | `checkstyle`      | ESLint, Prettier check, license check; read-only; non-zero on any issue |
 | `checkstyle:fix`  | Same with fixes applied                                             |
@@ -407,3 +413,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
 | 2026-10-23 | UX fixes: list cache, `submitCallbackRequest` and confirmation rule (IF-18), chat delivery members and `retry`, `SearchSource.featured`, `DocumentMeta` (IF-19), theme written only on toggle, `swemre:viewed-articles`, sitemap and robots (IF-17), `sitemap` script | Claude, for swemre review |
+| 2026-10-23 | PRS-000311: IF-19 canonical, Twitter tags and pre-rendered route pages; `prerender` script, `build` and `preview` contracts | Claude, for swemre review |

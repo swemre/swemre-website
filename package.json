@@ -12,8 +12,10 @@
     "checkstyle:fix": "eslint . --fix && prettier --write . && node scripts/license-headers.mjs --fix",
     "rss": "node --experimental-strip-types --no-warnings scripts/generate-rss.mjs",
     "sitemap": "node --experimental-strip-types --no-warnings scripts/generate-sitemap.mjs",
+    "prerender": "node --experimental-strip-types --no-warnings scripts/prerender.mjs",
     "predev": "npm run rss && npm run sitemap",
     "prebuild": "npm run rss && npm run sitemap",
+    "postbuild": "npm run prerender",
     "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
