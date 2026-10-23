@@ -16,6 +16,7 @@
     "predev": "npm run rss && npm run sitemap",
     "prebuild": "npm run rss && npm run sitemap",
     "postbuild": "npm run prerender",
+    "refresh": "node scripts/refresh.mjs",
     "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {

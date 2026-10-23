@@ -38,7 +38,7 @@ export function CorporateTemplate({
   const headings = useHeadings(bodyRef, 'h2')
 
   return (
-    <main className="flex-1">
+    <main id="main" className="flex-1">
       <div className="border-b border-border-muted bg-canvas-subtle">
         <div className="mx-auto w-full max-w-page px-4 py-8 sm:px-6 lg:px-8">
           <Breadcrumbs
@@ -74,7 +74,10 @@ export function CorporateTemplate({
             <p className="font-semibold text-fg-strong">Questions?</p>
             <p className="mt-1 text-fg-muted">
               Contact{' '}
-              <a href={`mailto:${contactEmail}`} className="text-primary">
+              <a
+                href={`mailto:${contactEmail}`}
+                className="text-primary underline underline-offset-2"
+              >
                 {contactEmail}
               </a>
             </p>

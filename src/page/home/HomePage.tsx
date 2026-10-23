@@ -23,7 +23,7 @@ import {useFindAll} from '../../hooks/useFindAll'
 import {useResumeModal} from '../../hooks/useResumeModal'
 import {useService} from '../../hooks/useService'
 import {useSiteSettings} from '../../hooks/useSiteSettings'
-import type {AsyncResult} from '../../types/type'
+import type {AsyncResult, DocumentMeta} from '../../types/type'
 import {HomeTemplate} from '../../templates/HomeTemplate'
 import {buttonClass, fillClass, shineClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
@@ -49,11 +49,13 @@ function Loading() {
   return <p className="text-sm text-fg-muted">Loading…</p>
 }
 
+const HOME_META: DocumentMeta = {schema: {kind: 'home'}}
+
 const showSection = (list: AsyncResult<unknown[]>, shown: unknown[]) =>
   list.loading || list.error !== undefined || shown.length > 0
 
 export default function HomePage() {
-  useDocumentTitle()
+  useDocumentTitle(undefined, HOME_META)
   const requests = useResumeModal()
   const settings = useSiteSettings()
   const articles = useFindAll(useService('article'))
@@ -208,6 +210,7 @@ export default function HomePage() {
 
       <section
         aria-label="Contact"
+        data-band
         className="relative isolate animate-rise overflow-hidden rounded-lg border border-border px-6 py-16 sm:px-12 lg:py-20"
       >
         <BandBackdrop />

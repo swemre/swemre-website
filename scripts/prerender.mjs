@@ -27,11 +27,15 @@ import {
 import {dirname, join} from 'node:path'
 import {siteEnv} from '../src/config/env.ts'
 import {defaultShareImage, siteConfig} from '../src/config/site.ts'
-import {fieldString, shareImage} from '../src/services/apiClient.ts'
+import {
+  fieldNumber,
+  fieldString,
+  shareImage,
+} from '../src/services/apiClient.ts'
 import {publicApi} from '../src/services/publicApi.ts'
 import {documentTags} from '../src/utils/documentTags.ts'
 
-const DIST = 'dist'
+const DIST = process.env.DIST_DIR || 'dist'
 const DETAIL_FOLDERS = ['articles', 'projects', 'sp']
 const SLUG = /^[a-z0-9][a-z0-9-]*$/i
 
@@ -58,6 +62,15 @@ const detailRoute = (folder, post) => ({
       folder === 'articles'
         ? {publishedTime: post.publishedAt, modifiedTime: post.lastUpdatedAt}
         : undefined,
+    schema:
+      folder === 'articles'
+        ? {kind: 'article', author: post.author}
+        : {
+            kind: 'project',
+            url: fieldString(post.fields, 'url'),
+            repoUrl: fieldString(post.fields, 'repoUrl'),
+            year: fieldNumber(post.fields, 'year'),
+          },
   },
 })
 
@@ -84,9 +97,9 @@ async function loadRoutes() {
     shareImage(settings[0]?.fields ?? {}, ['defaultOgImage']) ??
     defaultShareImage
   const routes = [
-    {path: '/', meta: {}},
-    {path: '/articles', title: 'Articles', meta: {}},
-    {path: '/projects', title: 'Projects', meta: {}},
+    {path: '/', meta: {schema: {kind: 'home'}}},
+    {path: '/articles', title: 'Articles', meta: {schema: {kind: 'list'}}},
+    {path: '/projects', title: 'Projects', meta: {schema: {kind: 'list'}}},
     ...articles.map(post => detailRoute('articles', post)),
     ...projects.map(post => detailRoute('projects', post)),
     ...pages.map(specialRoute),
@@ -99,6 +112,7 @@ const MANAGED_TAGS = [
   /<meta\b[^>]*\bproperty="(og|article):[^"]*"[^>]*>\s*/g,
   /<meta\b[^>]*\bname="twitter:[^"]*"[^>]*>\s*/g,
   /<link\b[^>]*\brel="canonical"[^>]*>\s*/g,
+  /<script\b[^>]*\btype="application\/ld\+json"[^>]*>[\s\S]*?<\/script>\s*/g,
 ]
 
 // The shell before and after its <title>, without the tags this script writes
@@ -112,6 +126,9 @@ function shellParts(html) {
     strip(html.slice(title.index + title[0].length)),
   ]
 }
+
+// JSON inside a <script> must not close it early
+const jsonForHtml = data => JSON.stringify(data).replaceAll('<', '\\u003c')
 
 function headTags(tags) {
   const meta = (attribute, key, value) =>
@@ -138,6 +155,11 @@ function headTags(tags) {
     ...meta('name', 'twitter:description', tags.description),
     ...meta('name', 'twitter:image', tags.image.url),
     ...meta('name', 'twitter:image:alt', tags.image.alt),
+    ...(tags.jsonLd
+      ? [
+          `<script type="application/ld+json" id="structured-data">${jsonForHtml(tags.jsonLd)}</script>`,
+        ]
+      : []),
   ].join('\n    ')
 }
 

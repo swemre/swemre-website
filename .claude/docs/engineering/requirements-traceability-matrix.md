@@ -31,6 +31,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `utils/documentTags.ts`, `index.html` defaults | TC-GEN-01, TC-MAN-05, TC-PRE-01 | Unverified (canonical and Twitter tags added by PRS-000311; canonical, `og:url` and no duplicates seen in the browser 2026-10-23) |
 | SRS-GEN-10   | §4.8a         | `utils/documentTags.ts`, `useDocumentTitle`, `apiClient.shareImage`, `config/site.ts` `defaultShareImage`, `prerender.mjs` | TC-GEN-04 | Manual (Verified 2026-10-23: pre-rendered article file and runtime tags in the browser, removal on navigation) |
+| SRS-GEN-11   | §4.8a         | `utils/documentTags.ts` `structuredData`, `useDocumentTitle` `setJsonLd`, page `schema` meta, `prerender.mjs` | TC-GEN-05 | Manual (Verified 2026-10-23: pre-rendered article and runtime home/article in the browser); Google Rich Results Test Unverified until deployed |
 | SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
 | SRS-GEN-08   | §4.1, §6      | `components/ErrorBoundary.tsx`, `SiteLayout`                 | TC-GEN-02                 | Manual (Verified in browser 2026-10-23, forced render error in the chat launcher) |
 | SRS-GEN-09   | §6            | `hooks/useAsyncData.ts`, `components/LoadError.tsx`, pages, `SearchService` | TC-GEN-03 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
@@ -144,6 +145,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-PRE-01   | §4.10a        | `scripts/prerender.mjs`, `utils/documentTags.ts`, `package.json` `postbuild` | TC-PRE-01 a, d, f | Manual (a, d 2026-10-23); runtime equality f Unverified |
 | SRS-PRE-02   | §4.10a        | `prerender.mjs` `removeDetailPages`, `shellParts`, slug check | TC-PRE-01 b, c, g         | Manual (b, c 2026-10-23); g Designed |
 | SRS-PRE-03   | §4.10a, §6    | `prerender.mjs` offline branch, `swemre-prerendered-routes`  | TC-PRE-01 d, e            | Manual (2026-10-23); production serving Unverified (deploy change) |
+| SRS-PRE-05   | §4.10a        | `scripts/refresh.mjs`, `generate-rss.mjs`, `generate-sitemap.mjs`, `prerender.mjs`, `scripts/deploy.sh`; swemre-website-api `deploy/refresh-site.sh` | TC-PRE-03 | Manual (Verified 2026-10-24: refresh on a build against the local API; refresh-site.sh in a temp folder with a stub upload: a missing page is rewritten and published, an unchanged run uploads nothing); on the server Unverified |
 | SRS-PRE-04   | §4.10a        | swemre-website-api `deploy/traefik-dynamic.yml` (`site-pages`), Garage error document, `public/favicon.ico` | TC-PRE-02 | Manual (404 and favicon checked against local Traefik and Garage containers for swemre-website-api#7); production Unverified |
 | SRS-SND-01   | §4.7a         | `SoundProvider` pointer/key classification                   | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-02   | §4.7a         | `SoundProvider` `soundForKey`                                | TC-SND-01, TC-MAN-04      | Designed          |
@@ -159,12 +161,12 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | Requirement  | Design (SDD) | Code / config                              | Test case(s)            | Status (evidence) |
 | ------------ | ------------ | ------------------------------------------ | ----------------------- | ----------------- |
 | SRS-A11Y-01  | §8           | all interactive components                 | TC-E2E-10               | Designed          |
-| SRS-A11Y-02  | §4.9         | `main.css` `:focus-visible`                | TC-E2E-10               | Pass (INSP)       |
-| SRS-A11Y-03  | §4.9         | colour tokens                              | TC-MAN-03               | **Fail** (fg-subtle on canvas, dark: 2.90:1), RSK-09 |
+| SRS-A11Y-02  | §4.9         | `main.css` `:focus-visible`                | TC-E2E-10               | Manual (Verified 2026-10-24: keyboard pass on home; ring is the band text colour on the blue bands and the cover navbar, PRS-000322) |
+| SRS-A11Y-03  | §4.9         | colour tokens                              | TC-MAN-03               | Pass (axe-core 4.10.2 (WCAG 2.0 to 2.2 A/AA) in the browser 2026-10-24: no contrast findings after `fg-subtle` became #636e82 light and #818c9f dark; sticky sidebar under the translucent navbar is an axe artefact, see TC-E2E-09) |
 | SRS-A11Y-04  | §8           | `aria-label` on icon buttons               | TC-E2E-09               | Pass (INSP)       |
 | SRS-A11Y-05  | §8           | `components/Modal.tsx`                     | TC-E2E-10               | Pass (INSP)       |
 | SRS-A11Y-06  | §4.5         | `HeaderBand` `aria-hidden`                 | TC-E2E-04               | Pass (INSP)       |
-| SRS-A11Y-07  | §8           | all routes                                 | TC-E2E-09               | Designed          |
+| SRS-A11Y-07  | §8           | all routes                                 | TC-E2E-09               | Pass (axe-core 4.10.2 (WCAG 2.0 to 2.2 A/AA) in the browser 2026-10-24: home, articles, an article, projects, a special page, 404, both form dialogs, search and chat in light and dark: no serious or critical findings) |
 | SRS-A11Y-08  | §4.3         | `fieldMediaAlt`, `fieldMediaSize`, `CoverImage`, `DocHeader` | TC-ART-13               | Unverified (W23) |
 | SRS-A11Y-09  | §4.1         | `components/SkipLink.tsx`                  | TC-E2E-13               | Manual (Verified in browser 2026-10-23, PRS-000321) |
 | SRS-A11Y-10  | §4.1         | `hooks/useRouteFocus.ts`, `SkipLink` live region | TC-E2E-13         | Manual (Verified in browser 2026-10-23 on static pages, PRS-000321); late article/project headings and screen-reader output Unverified |
@@ -250,9 +252,12 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: MNT-12 verified, row for MNT-13 | Claude, for swemre review |
 | 2026-10-23 | MNT-13 status after the v2 contract | Claude, for swemre review |
+| 2026-10-24 | PRS-000315: PRE-05 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000314: GEN-10 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: RES-09 row | Claude, for swemre review |
 | 2026-10-24 | Forms batch: rows for RES-10 to RES-13 | Claude, for swemre review |
 | 2026-10-24 | MNT-13 status: forms and chat on v2 | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: A11Y-02, A11Y-03 (closes the RSK-09 failure), A11Y-07 statuses after the audit | Claude, for swemre review |
+| 2026-10-23 | PRS-000313: GEN-11 row | Claude, for swemre review |

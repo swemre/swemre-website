@@ -22,6 +22,9 @@ import {feedDatabase} from '../src/database/feedDatabase.ts'
 import {publicApi} from '../src/services/publicApi.ts'
 
 const FEED_PATH = '/rss.xml'
+// OUT_DIR=dist writes into an existing build (npm run refresh)
+const OUT_DIR = process.env.OUT_DIR || 'public'
+const OUT_FILE = `${OUT_DIR}/rss.xml`
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?Z$/
 
 const escape = text =>
@@ -135,9 +138,9 @@ try {
   apiItems = await fetchApiItems()
 } catch (error) {
   console.warn(
-    `rss: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing public/rss.xml`,
+    `rss: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing ${OUT_FILE}`,
   )
-  process.exit(existsSync('public/rss.xml') ? 0 : 1)
+  process.exit(existsSync(OUT_FILE) ? 0 : 1)
 }
 
 const logItems = feedDatabase
@@ -183,6 +186,6 @@ ${itemXml}
 </rss>
 `
 
-mkdirSync('public', {recursive: true})
-writeFileSync('public/rss.xml', xml)
+mkdirSync(OUT_DIR, {recursive: true})
+writeFileSync(OUT_FILE, xml)
 console.log(`rss.xml written with ${items.length} items`)

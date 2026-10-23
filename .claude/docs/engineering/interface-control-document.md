@@ -414,6 +414,7 @@ description, language `en`, `managingEditor` and `webMaster`
 | `article:published_time`, `article:modified_time` | article pages only: `publishedAt` and `lastUpdatedAt` (ISO) |
 | `twitter:card`               | `summary` for the avatar fallback, else `summary_large_image`       |
 | `twitter:image:alt`          | same as `og:image:alt`                                              |
+| `script#structured-data` (`application/ld+json`) | schema.org `@graph` per SRS-GEN-11; `<` escaped as `\u003c` in the static HTML |
 | `twitter:title`, `twitter:description`, `twitter:image` | same as `og:title`, `og:description`, `og:image` |
 
 Missing tags are created in `document.head`; existing ones are updated in
@@ -441,6 +442,7 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | `rss`             | Validate the feed log and regenerate `public/rss.xml`; exit 1 on problems |
 | `sitemap`         | Regenerate `public/sitemap.xml` from the API (IF-17); exit 0 offline when a sitemap exists, else 1 |
 | `prerender`       | Rewrite the route pages in `dist/` from `dist/index.html` and the API (IF-19); exit 0 offline with nothing changed; exit 1 when `dist/index.html` is missing. Reads `VITE_API_BASE`, `VITE_WORKSPACE_KEY` |
+| `refresh`         | `rss`, `sitemap` and `prerender` into an existing build (`node scripts/refresh.mjs <folder>`, default `dist`); runs every step, exits 1 if one failed. The server's `deploy/refresh-site.sh` runs it every two minutes (SRS-PRE-05) |
 | `lint`            | ESLint only                                                         |
 | `checkstyle`      | ESLint, Prettier check, license check; read-only; non-zero on any issue |
 | `checkstyle:fix`  | Same with fixes applied                                             |
@@ -455,5 +457,7 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | IF-20 public API client and site environment (ADR-017) | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 publication bodies, `term` filter, forms on v1 | Claude, for swemre review |
+| 2026-10-24 | IF-13: `refresh` script; `OUT_DIR` for `rss`/`sitemap`, `DIST_DIR` for `prerender` | Claude, for swemre review |
 | 2026-10-23 | IF-19: `og:type`, `og:site_name`, `og:image:width/height/alt`, `article:published_time/modified_time`, `twitter:image:alt` (SRS-GEN-10) | Claude, for swemre review |
 | 2026-10-24 | IF-20: forms and chat on v2 | Claude, for swemre review |
+| 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |

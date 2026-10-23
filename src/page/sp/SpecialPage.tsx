@@ -36,7 +36,10 @@ export default function SpecialPage() {
 
   if (loading) {
     return (
-      <main className="mx-auto w-full max-w-page flex-1 px-4 py-10 text-fg-muted sm:px-6 lg:px-8">
+      <main
+        id="main"
+        className="mx-auto w-full max-w-page flex-1 px-4 py-10 text-fg-muted sm:px-6 lg:px-8"
+      >
         Loading…
       </main>
     )
