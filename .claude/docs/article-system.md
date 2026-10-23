@@ -148,7 +148,11 @@ API, with `lastmod`. If the API is unreachable it keeps the existing file
 `useDocumentTitle(title?, {description?, image?})` sets the tab title plus
 the `description`, Open Graph and `twitter:card` tags per page. Article and
 project pages pass their summary and cover; without them the site
-description and the large avatar are used.
+description and the large avatar are used. It also sets the canonical link
+and the Twitter title, description and image; `utils/documentTags.ts`
+computes all values. `npm run prerender` (after `build`) writes the same
+tags into `dist/<route>/index.html` for every known route, so link previews
+without JavaScript see them (ADR-016).
 
 ## Sound design
 

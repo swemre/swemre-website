@@ -257,6 +257,24 @@ stub API (`VITE_API_BASE` pointing at it):
 Also run `npm run dev` and `npm run build` once each: the sitemap step runs
 after RSS. Status: Designed.
 
+**TC-PRE-01** Route pre-render (SRS-PRE-01 to PRE-03, GEN-06), with
+`VITE_API_BASE` at a local API:
+
+| Case | Setup                                                     | Expected                                           |
+| ---- | --------------------------------------------------------- | -------------------------------------------------- |
+| a    | `npm run build` with published articles                    | `dist/articles/<slug>/index.html` exists; one `<title>` "<seoTitle or title> · SWEMRE"; description, canonical and `og:url` `https://swemre.com/articles/<slug>`, `og:image`/`twitter:image` the `ogImage` or cover; `twitter:card` `summary_large_image`; `dist/index.html` "SWEMRE", canonical `https://swemre.com/`, site settings image |
+| b    | Run `npm run prerender` again                              | `dist/` byte-identical                            |
+| c    | Add `dist/articles/old-post/index.html`; run `npm run prerender` | `old-post` removed                            |
+| d    | `npx vite preview`; request `/articles/<slug>`, `/articles`, `/articles/unknown` | The article's tags; the list's tags; the `dist/index.html` shell (SPA fallback) |
+| e    | `npm run build` with `VITE_API_BASE` at a closed port      | Warning; exit 0; only `dist/index.html`, with the `index.html` defaults |
+| f    | Open a pre-rendered route in the browser after load         | Runtime tags equal the static ones, no duplicate tags |
+| g    | A slug outside `[a-z0-9-]` (stub API)                      | Warning; no file for it                            |
+
+Status: a to e Manual pass 2026-10-23 (local API container, one article, no
+projects or special pages); f Unverified (the local API container refused
+the preview origin through CORS, so the page showed "not found"; canonical
+and `og:url` matched and no tag was duplicated); g Designed.
+
 **TC-MAP-02** robots.txt (SRS-MAP-03): inspect `public/robots.txt` → allows
 `/` for every agent and names `https://swemre.com/sitemap.xml`. Status:
 Pass by inspection 2026-10-23.
@@ -338,7 +356,7 @@ not be heard in the headless environment).
 | TC-THM-01   | SRS-THM-01, THM-02        | Stored `dark` → render; toggle                                                                  | `data-theme="dark"`, then `light`; storage updated      | Designed |
 | TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`; storage still empty                     | Designed |
 | TC-THM-03   | SRS-THM-02                | Empty storage, `matchMedia` light; fire a `change` to dark; then toggle; then fire `change` to light | `data-theme` becomes `dark` with nothing stored; toggle stores `light` and applies it; the later system change is ignored | Designed |
-| TC-GEN-01   | SRS-GEN-05, GEN-06        | Component calling `useDocumentTitle('X', {description: 'D', image: 'I'})` at `/articles/x`; then `useDocumentTitle()` at `/` | Title "X · SWEMRE", description and `og:description` "D", `og:image` "I", `og:url` ends `/articles/x`, `twitter:card` `summary_large_image`; then "SWEMRE", site description, avatar image, `summary`; no duplicate meta elements | Designed |
+| TC-GEN-01   | SRS-GEN-05, GEN-06        | Component calling `useDocumentTitle('X', {description: 'D', image: 'I'})` at `/articles/x/`; then `useDocumentTitle()` at `/` | Title "X · SWEMRE", description and `og:description` "D", `og:image` and `twitter:image` "I", canonical and `og:url` `https://swemre.com/articles/x` (no trailing slash), `twitter:title` "X · SWEMRE", `twitter:card` `summary_large_image`; then canonical `https://swemre.com/`, then "SWEMRE", site description, avatar image, `summary`; no duplicate meta elements | Designed |
 | TC-GEN-02   | SRS-GEN-07, GEN-08        | Render `SiteLayout` in a `MemoryRouter` with a route element that throws; navigate to `/`. Then make a child of `Dock` throw | "Something went wrong", Reload and "Back to home" with navbar and footer present, title "Something went wrong · SWEMRE", `console.error` called; after navigating the home page renders. Dock gone, page content still rendered | Designed |
 | TC-LGL-01   | SRS-LGL-01, LGL-02        | Render `SpecialPage` at `/sp/privacy-policy`                                                    | Version, effective and updated dates; numbered contents | Designed |
 | TC-LGL-02   | SRS-LGL-04                | Render `SpecialPage` at an unknown slug                                                         | `NotFound` with "This page is not available right now.", a `mailto:` link to the contact email and a link to `/` | Designed |
@@ -523,3 +541,4 @@ relative-luminance formula).
 | 2026-10-23 | UX fixes: added TC-SVC-03, TC-SVC-04, TC-SRCH-06, TC-SRCH-07, TC-CHAT-08 to TC-CHAT-11, TC-MAP-01, TC-MAP-02, TC-NAV-03, TC-HOME-02, TC-HOME-03, TC-ART-12 to TC-ART-15, TC-PRJ-03, TC-PRJ-04, TC-RES-04 to TC-RES-07, TC-THM-03, TC-GEN-01, TC-LGL-02, TC-E2E-12, TC-MAN-05; updated TC-ART-04, TC-ART-09, TC-ART-10, TC-SRCH-02, TC-CHAT-02, TC-CHAT-04 to TC-CHAT-06, TC-HOME-01, TC-THM-02, TC-E2E-01, TC-E2E-07 | Claude, for swemre review |
 | 2026-10-23 | PRS-000332: added TC-GEN-02 | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: added TC-E2E-13 (skip link, route focus, scroll restore) | Claude, for swemre review |
+| 2026-10-23 | PRS-000311: added TC-PRE-01; updated TC-GEN-01 (canonical, Twitter tags, trailing slash) | Claude, for swemre review |

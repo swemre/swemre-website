@@ -20,7 +20,8 @@ decision is marked Superseded with a link to its replacement.
   local development.
 - **Decision**: Vite 8 (Rolldown) SPA, React 19, React Compiler via the Babel
   preset, React Router 7 with one layout route.
-- **Consequences**: Simple static hosting; no SEO pre-rendering (SRS-FUT-04);
+- **Consequences**: Simple static hosting; no SEO pre-rendering (SRS-FUT-04;
+  head tags since ADR-016);
   React Compiler rules (`react-hooks/refs`, `static-components`) shape some
   code (ADR-007, ADR-009).
 
@@ -182,8 +183,39 @@ decision is marked Superseded with a link to its replacement.
 - **Consequences**: One more file to touch per content item (automated by
   skills); deterministic output; feed readers see stable GUIDs.
 
+## ADR-016 Post-build pre-render of route meta tags
+
+- **Status**: Proposed (PRS-000311)
+- **Context**: Titles, descriptions and Open Graph tags were set by
+  `useDocumentTitle` after load (SRS-GEN-06), so link previewers and
+  crawlers that do not run JavaScript saw the home page's tags on every
+  route (SRS-FUT-04). The site is static files in a Garage bucket behind
+  Traefik, with no server-side code (SRS-GEN-01). Options: (a) a post-build
+  Node script that writes `dist/<route>/index.html` per known route from
+  `dist/index.html` with the head tags replaced; (b) a headless-browser
+  pre-render of the full page; (c) an edge function or proxy that rewrites
+  the head per request.
+- **Decision**: (a). `scripts/prerender.mjs` runs as `postbuild` and on its
+  own as `npm run prerender`. It reads the routes and fields from the public
+  API like the RSS and sitemap scripts, has no dependencies, and computes
+  the tags with `src/utils/documentTags.ts`, the same function the pages
+  use at runtime, so static and runtime values cannot drift. Only the head
+  is pre-rendered; the body stays the SPA shell. Runtime updates stay for
+  client-side navigation.
+- **Consequences**: No headless browser in the build and no server code;
+  previews see per-route tags. Pages appear or change only when the step
+  runs again (a new build, or PRS-000315 calling `npm run prerender`). When
+  the API is unreachable the step is skipped with a warning and every route
+  keeps the `index.html` defaults. The production server must serve
+  `<route>/index.html` for `/<route>`: the Traefik `spa-index` middleware of
+  swemre-website-api currently rewrites every extensionless path to
+  `/index.html`, so it needs a deploy change (see SWE-DOC-003 §4.10). Body
+  content is still rendered client-side (search engines that run
+  JavaScript only).
+
 ## Change log
 
 | Date       | Change                          | Author                    |
 | ---------- | ------------------------------- | ------------------------- |
 | 2026-10-15 | Records written for M0 to M4    | Claude, for swemre review |
+| 2026-10-23 | ADR-016 post-build pre-render of route meta tags (PRS-000311) | Claude, for swemre review |
