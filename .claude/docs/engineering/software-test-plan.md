@@ -58,8 +58,9 @@ the analyses listed in §7.
 
 - **Equivalence partitioning and boundary values** for validation (name
   length 1/2, reason 9/10 characters, chat title 40/41 characters).
-- **State transition testing** for the player (SDD §4.7) and chat
-  conversation lifecycle.
+- **State transition testing** for the player (SDD §4.7), the chat
+  conversation lifecycle and chat message delivery (`sending` → `sent` or
+  `queued`, `queued` → `sending` on retry; TC-CHAT-08 to TC-CHAT-10).
 - **Decision tables** for search scoring.
 - **Error guessing / fault injection** for storage (throws, invalid JSON,
   wrong shape) and the Spotify script (blocked).
@@ -71,17 +72,27 @@ the analyses listed in §7.
 | Dependency           | Double                                                         |
 | -------------------- | -------------------------------------------------------------- |
 | Services             | Fake `ServiceMap` through `ServiceProvider services={...}`     |
-| `localStorage`       | jsdom storage; a throwing stub for fault cases                  |
+| `localStorage`, `sessionStorage` | jsdom storage; a throwing stub for fault cases       |
+| swemre-website-api   | `fetch` stub per case (L2/L3); a local stub HTTP server for the sitemap script (TC-MAP-01); Playwright route abort for offline chat (L4) |
+| Chat socket          | Fake `WebSocket` whose `onopen` and `onmessage` the test fires   |
+| Connectivity         | Dispatched window `online` event; Playwright `context.setOffline` |
 | Spotify iFrame API   | Stub on `window.onSpotifyIframeApiReady` with a fake controller (L3); network route block (L4 fallback test) |
 | Time                 | Vitest fake timers for `sentAt`, `createdAt`                    |
 | `crypto.randomUUID`  | Spy returning deterministic ids                                 |
-| `IntersectionObserver`, `matchMedia` | Minimal polyfills in the test setup             |
+| `IntersectionObserver`, `matchMedia` | Minimal polyfills in the test setup; `matchMedia` with a controllable `change` event for the theme (TC-THM-03), phone scroll lock and `pointer: coarse` |
 
 ## 3. Test items
 
 All modules under `src/`, `scripts/generate-rss.mjs`,
-`scripts/license-headers.mjs`, `index.html` inline script and `src/main.css`
-tokens.
+`scripts/generate-sitemap.mjs`, `scripts/license-headers.mjs`, `index.html`
+inline script, `public/robots.txt` and `src/main.css` tokens.
+
+### 3.0 Verification state of the 2026-10-23 UX fixes
+
+The UX fixes (SRS change log 2026-10-23) have designed test cases in
+SWE-DOC-006 but no automated tests yet. Twelve were checked by the lead in a
+browser on 2026-10-23 (TC-MAN-05); the RTM marks them "Verified in browser
+2026-10-23" and every other new or changed requirement `Unverified`.
 
 ### 3.1 Features not tested by automation
 
@@ -175,3 +186,4 @@ to the requirement ID and test case ID.
 | Date       | Change         | Author                    |
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
+| 2026-10-23 | UX fixes: sitemap script and robots.txt as test items, new test doubles (API `fetch`, socket, connectivity, `sessionStorage`, `matchMedia` changes), chat delivery state testing, §3.0 verification state | Claude, for swemre review |

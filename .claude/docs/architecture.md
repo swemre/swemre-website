@@ -109,7 +109,9 @@ Pages never import `database/` (SRS-MNT-06). Types flow from
 | ------------------------------ | ------------------------------------------------------------------------------ |
 | `index.html`                   | Document shell; inline script applies the stored theme before first paint      |
 | `main.tsx`                     | Mounts `StrictMode > BrowserRouter > ServiceProvider > ThemeProvider > App`    |
-| `App.tsx`                      | `PlayerProvider > ChatProvider > SearchDialogProvider > ResumeModalProvider > Routes`; inline 404 |
+| `App.tsx`                      | `PlayerProvider > ChatProvider > SearchDialogProvider > ResumeModalProvider > Routes`; `*` renders `components/NotFound.tsx` |
+| `components/NotFound.tsx`      | The one not-found view (route, article, project, special page): "404" kicker, title, message, back link; optional `band` (draws `HeaderBand`) and `contact` (shows the email); sets the document title |
+| `components/Navbar.tsx`        | Fixed navbar; the mobile menu closes on Escape (focus back to the toggle), on `pointerdown` outside the header and when `pathname` changes (state reset during render, no effect) |
 | `templates/SiteLayout.tsx`     | Layout route: `Navbar`, `Outlet`, `Footer`, `Dock`; scroll-to-top on route change; decides navbar tone and top padding from `overlayRoutes` |
 
 Provider order matters: the dock (inside `SiteLayout`) needs player and chat
@@ -126,10 +128,13 @@ player provider.
 | `/projects`        | `ProjectsPage` | `ListTemplate`      | Yes        |
 | `/projects/:slug`  | `ProjectPage`  | `ProjectTemplate`   | Yes        |
 | `/sp/:slug`        | `SpecialPage`  | `CorporateTemplate` | No         |
-| `*`                | `NotFound`     | inline              | No         |
+| `*`                | `NotFound`     | `components/NotFound.tsx` | No   |
 
 Band routes render `HeaderBand` at the top, under the fixed transparent
-navbar, so `SiteLayout` does not add `pt-nav` for them.
+navbar, so `SiteLayout` does not add `pt-nav` for them. `ArticlePage` and
+`ProjectPage` therefore draw `HeaderBand` in every state: while loading
+(above "Loading…") and when not found (`NotFound band`), so the light navbar
+text never sits on the plain canvas (SRS-LAY-08).
 
 ### 4.3 Data layer (services)
 
@@ -139,11 +144,14 @@ navbar, so `SiteLayout` does not add `pt-nav` for them.
               ArrayService<T> (abstract, holds rows: T[])
           ┌──────────┬───┴────────┬─────────────┬───────────────┐
    ArticleService ProjectService SongService SpecialPageService ContactFormService
-   (+findBySlug,  (+findBySlug,              (+findBySlug,      (+submitResumeRequest)
-    getBody)       getBody)                   getBody)
+   (+findBySlug,  (+findBySlug,              (+findBySlug,      (+submitResumeRequest,
+    getBody)       getBody)                   getBody)            submitCallbackRequest)
+   └─ list cached per session (cacheList) ──────────┘
                                     LocalStorageService<T> (persists on write)
                                                ▲
-                                          ChatService (+presence, start, send)
+                                          ChatService (+presence, start, list, enqueue,
+                                                       deliver, markSending, pending,
+                                                       connect, receive)
 
    SearchService (register(source) → search(query))  — not an entity service
 ```
@@ -155,6 +163,27 @@ navbar, so `SiteLayout` does not add `pt-nav` for them.
 - `useService(name)` returns `ServiceMap[name]` with its concrete type.
 - `useAsyncData(loader)` runs a stable loader and returns `{data, loading}`;
   `useFindAll(service)` wraps `findAll`.
+
+**List caching (SRS-PERF-05).** `ArrayService`'s constructor takes
+`cacheList`. When it is `true` (`ArticleService`, `ProjectService`,
+`SongService`, `SpecialPageService`), the constructor wraps the subclass's
+`findAll` so the API request runs once per page session: the first call
+stores the promise, concurrent and later callers share it, and every caller
+gets a shallow copy (`[...list]`) it may sort. An empty list or a rejection
+clears the cache, because the API services also answer `[]` when the API is
+unreachable; the next call then asks again. `findBySlug` and `getBody` are
+unchanged. `ChatService` and `ContactFormService` do not cache.
+
+**Contact forms.** `ContactFormService.submitResumeRequest` and
+`submitCallbackRequest` share `submitForm(form, fields)`, which posts to
+`/forms/<form>/submissions` and throws `ApiError(404)` when `publicRequest`
+returns `undefined` (the form does not exist). Only a confirmed submission
+resolves, so the forms never show a false success (SRS-RES-03, RES-06).
+
+**Covers.** `apiClient.ts` reads a media field's `altText`, `width` and
+`height` (`fieldMediaAlt`, `fieldMediaSize`); `Article` and `Project` carry
+them as `coverAlt`, `coverWidth`, `coverHeight`, and `CoverImage` and
+`DocHeader` pass them to `<img>` (SRS-A11Y-08).
 
 MDX bodies: `mdxBodies.ts` turns an `import.meta.glob` map into
 `{[slug]: React.lazy(...)}` **at module load**, so each body is a separate
@@ -171,20 +200,34 @@ listener for cross-tab sync. Writes are immutable updates followed by
 `notify`. Failures to read fall back to `{}`; failures to write keep the
 in-memory state.
 
+`registerView(id)` counts once per browser session (SRS-ART-11): a
+module-level set guards the current page load (this replaces the old ref
+guard in `ArticlePage` and also covers StrictMode), and the ids already
+counted are kept in `sessionStorage` under `swemre:viewed-articles` (JSON
+array), so a reload in the same tab does not count again. Without
+`sessionStorage` the set alone applies (once per page load).
+
 ### 4.5 Content templates
 
 | Template            | Layout                                                                                         |
 | ------------------- | ---------------------------------------------------------------------------------------------- |
-| `DocsLayout`        | Grid `sidebar │ body (max-w-reading) │ TOC` from `utils/layout.ts` `docsColumns`; owns `bodyRef` and `useHeadings`; `before`/`after` slots |
-| `ArticleTemplate`   | `HeaderBand` + `DocsLayout` with `DocHeader` (breadcrumbs, tags, title, summary, meta, actions) before the body, and the helpful box + pager after |
-| `ProjectTemplate`   | `HeaderBand` + `DocsLayout` with `DocHeader` (year badge, tags, Live/Source buttons) and pager  |
-| `ListTemplate`      | `HeaderBand`, title row with toolbar, then `sidebar │ content` grid                              |
+| `DocsLayout`        | Grid `sidebar │ body (max-w-reading) │ TOC` from `utils/layout.ts` `docsColumns`; owns `bodyRef` and `useHeadings`; `before`/`after` slots; below `xl`, when there are headings, a closed `<details>` "On this page" with `Toc showTitle={false}` between `before` and the body (SRS-ART-16) |
+| `ArticleTemplate`   | `HeaderBand` + `DocsLayout` with `DocHeader` (breadcrumbs, tags, title, summary, meta, actions, cover) before the body, and the helpful box + pager after |
+| `ProjectTemplate`   | `HeaderBand` + `DocsLayout` with `DocHeader` (year badge, tags, Live/Source buttons, cover) and pager |
+| `ListTemplate`      | `HeaderBand`, title row with toolbar, then `sidebar │ content` grid; the sidebar moves after the content below `lg`, or is hidden there with `sidebarFromLg` (articles index, which shows topic chips above the list instead) |
 | `CorporateTemplate` | Light banner with version table, numbered contents rail and a framed "file view" body          |
 | `HomeTemplate`      | Hero block (`max-w-hero`) and a three-column grid; one-screen at `lg`                          |
 
 `HeaderBand` is purely decorative (`aria-hidden`): primary-tone gradient
 (`band-from → band-via → band-to`), a radial glow and a token-sized grid,
 height `h-band`.
+
+`DocHeader` takes an optional `cover` (`src`, `alt`, `width`, `height`) and
+renders it as the last element of the header, eagerly with
+`fetchPriority="high"` because it is usually the largest paint (SRS-ART-15,
+PRJ-07). `SidebarNav` drops sections with no items and renders nothing when
+none remain (SRS-LAY-09); the projects index passes only an Articles section
+and no sidebar when there are no articles (SRS-PRJ-09).
 
 ### 4.6 Search
 
@@ -195,6 +238,15 @@ query into terms, scores each document (title prefix 100, title word prefix
 70, title substring 50, tag prefix 40, body 15; any unmatched term → 0) and
 returns the top 20. `SearchDialog` groups results by category and executes the
 action: `navigate`, `external` or `play-song`.
+
+An empty query returns a default list instead of every document: a source
+may declare `featured` (how many of its items the empty query lists; all
+when omitted, none when `0`). Pages omit it, Articles use `5` (the newest,
+because `findAll` is sorted), Projects, Songs and Legal use `0`
+(SRS-SRCH-08). `useSearchResults` keeps the last settled `{query, results}`
+and returns results only when `settled.query` equals the current query, so
+while a new query loads the list is empty and Enter cannot open a stale
+result (SRS-SRCH-07).
 
 ### 4.7 Dock: player and chat
 
@@ -224,11 +276,44 @@ local ref in `SpotifyPanel`, registered with `attachHost` in an effect, so the
 context value is not treated as a ref by the React Compiler. Collapse uses
 `h-0 overflow-hidden` so the iframe keeps playing.
 
+**Phones (below 640 px).** `Dock` renders an `aria-hidden` spacer
+(`h-dock-clear`) after the footer and offsets the fixed dock by
+`mb-safe-bottom`; the sound and chat buttons stack vertically. The open
+`ChatPanel` becomes a fixed full-screen sheet (`h-dvh`, `pt-safe-top`,
+`pb-safe-bottom`), and `usePhoneScrollLock` sets `overflow: hidden` on the
+root element while the panel is open and the phone media query matches
+(SRS-LAY-07, CHAT-14).
+
 **Chat** (`ChatProvider` + `ChatService`): conversations are
 `LocalStorageService<Conversation>` rows. `start()` creates a conversation
-with the owner greeting; `send()` appends a visitor message with delivery
-`queued` while `presence()` is `offline`, and titles the conversation from the
-first visitor message. The provider refreshes its list after each mutation.
+with the owner greeting. Sending is split so the message shows before the API
+answers (SRS-CHAT-10 to CHAT-12):
+
+```text
+ send(text) ─► enqueue(): append visitor message [sending], title from the first
+               visitor message, re-mark [queued] ones as [sending] ─► refresh
+           ─► deliver(id) ─► flush(): post each unsent message in order
+                               ├─ API stored it ──► replace local copy by server list [sent]
+                               └─ error / 404 ────► every unsent message [queued], stop
+
+ [sending] ──ok──► [sent]          [sending] ──fail──► [queued]
+ [queued] ──retry(id): markSending + deliver──► [sending]
+ page load: stored [sending] ──► [queued]
+```
+
+`retry(id)` runs on a tap on a queued bubble, for every conversation in
+`pending()` when the panel opens and on the window `online` event, and for
+one conversation when its socket reports `connected` (`onopen`, also after a
+reconnect). `deliver` chains calls per conversation through a promise map,
+so a retry while a post is in flight never posts the same message twice.
+`merge` keeps the greeting and every unsent local message after the server's
+list. `refresh()` reads the stored list (`list()`); only `findAll()` syncs
+every conversation with the API. Presence only changes the banner; it does
+not hold messages back.
+
+`ConversationRow` asks for confirmation before `remove` (Cancel focused,
+Escape cancels); the delete button is shown on hover, on focus within the
+row and always on `pointer-coarse` devices (SRS-CHAT-13).
 
 ### 4.7a Sound
 
@@ -251,9 +336,28 @@ resumed on the first gesture, which satisfies browser autoplay policies.
 
 ### 4.8 Theme
 
-`index.html` applies `data-theme` before React loads. `ThemeProvider` reads
-the same key, exposes `{mode, toggle}`, writes `data-theme` and persists.
-All colours are CSS variables, so no component uses `dark:` for colour.
+`index.html` applies `data-theme` before React loads: the stored choice, or
+the system preference. `ThemeProvider` keeps two inputs: `chosen` (the stored
+`swemre:theme`, or `null`) and `system`, read with `useSyncExternalStore`
+from `matchMedia('(prefers-color-scheme: dark)')` and its `change` event.
+`mode = chosen ?? system`; an effect writes `data-theme`. Only `toggle()`
+writes the key, so a first visit stores nothing and the theme keeps
+following the OS until the visitor picks one (SRS-THM-02). All colours are
+CSS variables, so no component uses `dark:` for colour.
+
+### 4.8a Document metadata
+
+`useDocumentTitle(title?, meta?)` sets `document.title` (`<title> · SWEMRE`
+or `SWEMRE`) and creates or updates `<meta name="description">`, `og:title`,
+`og:description`, `og:url` (`siteConfig.url` + current `pathname`),
+`og:image` and `twitter:card` in `document.head`. `meta` is
+`DocumentMeta` (`description?`, `image?`); without them the site description
+and `siteConfig.avatarLarge` are used, and `twitter:card` is `summary`
+instead of `summary_large_image`. Article and project pages pass their
+summary and cover, special pages their summary, and the detail pages pass no
+title while loading and "… not found" after (SRS-GEN-05, GEN-06). The tags
+are set client-side; `index.html` holds the static defaults for previews that
+do not run JavaScript (SRS-FUT-04).
 
 ### 4.9 Styling system
 
@@ -273,6 +377,10 @@ Token naming caution: a `--spacing-<name>` token generates utilities such as
 ```text
 predev/prebuild: scripts/generate-rss.mjs  (Node 22 type stripping reads database/*.ts;
                  resolves feedDatabase against article/project/song databases; exit 1 on problems)
+                 then scripts/generate-sitemap.mjs (npm run sitemap; reads siteConfig.url,
+                 fetches published article/project/page posts from the public API
+                 (VITE_API_BASE, VITE_WORKSPACE_KEY), writes public/sitemap.xml;
+                 API unreachable: keeps the old file, exit 0, or exit 1 if none exists)
 dev: swemre-rss Vite plugin reruns the script when src/database or src/config changes
 build: tsc -b  →  vite build
   plugins: @tailwindcss/vite → @mdx-js/rollup (remark-gfm, @shikijs/rehype dual theme)
@@ -291,7 +399,10 @@ build: tsc -b  →  vite build
 | ContactForm   | `database/contactFormDatabase.ts` (in memory) | UUID              | Page session        |
 | Interactions  | `localStorage`                | `swemre:article-interactions`     | Browser, persistent |
 | Conversation  | `localStorage`                | `swemre:chat-conversations`       | Browser, persistent |
-| Theme         | `localStorage`                | `swemre:theme`                    | Browser, persistent |
+| Theme         | `localStorage`                | `swemre:theme` (only after a toggle) | Browser, persistent |
+| Viewed articles | `sessionStorage`            | `swemre:viewed-articles`          | Browser tab session |
+| Article, project, song, special-page lists | Service memory (`ArrayService` list cache) | per service | Page session; not kept when empty |
+| Sitemap       | `public/sitemap.xml` (generated) | URL list                       | Build               |
 | Sound muted   | `localStorage`                | `swemre:sound-muted`              | Browser, persistent |
 | FeedItem      | `database/feedDatabase.ts`    | `id` (permanent)                  | Build               |
 
@@ -306,7 +417,10 @@ Schemas: SWE-DOC-004 §5.
 | `localStorage` write throws (quota, blocked) | Keep in-memory state, continue                                 |
 | Spotify iFrame API fails to load          | `failed` state, plain embed iframe fallback; script promise reset for retry |
 | Loader promise rejects in `useAsyncData`  | **Not handled**: stays `loading` (RSK-04, planned fix)             |
-| Resume submission rejects                 | **Not handled**: form stays "submitting" (RSK-04)                  |
+| Resume or call back submission rejects, or the form does not exist (404) | Error sound and alert; the form stays editable for another try (SRS-RES-05, RES-06) |
+| Chat message not accepted by the API      | Message `queued` ("Not sent · tap to retry"); retried on tap, socket connect, `online` and panel open |
+| List request fails or returns empty       | Not cached; the next `findAll` asks the API again                 |
+| Sitemap script cannot reach the API       | Existing `public/sitemap.xml` kept (exit 0); exit 1 when there is none |
 
 ## 7. Performance design
 
@@ -340,16 +454,20 @@ Schemas: SWE-DOC-004 §5.
 | Design element                     | Requirements                                         |
 | ---------------------------------- | ---------------------------------------------------- |
 | `SiteLayout`, `Navbar`, `Footer`   | GEN-02, GEN-04, NAV-*, FTR-01, LAY-02                |
-| `HeaderBand`, templates, tokens    | LAY-01, LAY-03 to LAY-06, ART-06, PRJ-03             |
-| Services + registry + hooks        | ART-01 to ART-03, PRJ-01, PRJ-02, MNT-06, MNT-09     |
+| `HeaderBand`, templates, tokens    | LAY-01, LAY-03 to LAY-06, LAY-08, ART-06, ART-15 to ART-17, PRJ-03, PRJ-07 |
+| `NotFound`                         | GEN-03, ART-10, PRJ-05, LGL-04                       |
+| `useDocumentTitle`                 | GEN-05, GEN-06                                       |
+| `SidebarNav`, `ProjectsPage`, `HomePage`, `ArticleShowcase` | LAY-09, PRJ-08, PRJ-09, HOME-02, HOME-05, HOME-06 |
+| Services + registry + hooks        | ART-01 to ART-03, PRJ-01, PRJ-02, MNT-06, MNT-09, PERF-05, A11Y-08 |
 | `ArticleInteractionStore`          | ART-11 to ART-13, SEC-06, CMP-03                     |
-| `SearchService`, `SearchDialog`    | SRCH-*                                               |
+| `SearchService`, `useSearchResults`, `SearchDialog` | SRCH-*                              |
 | `PlayerProvider`, `SpotifyPanel`, `SongRow` | PLY-*                                       |
-| `ChatService`, `ChatProvider`, chat components | CHAT-*                                   |
-| `ResumeModalProvider`, `ResumeRequestForm` | RES-*                                         |
+| `ChatService`, `ChatProvider`, chat components, `Dock` | CHAT-*, LAY-07                   |
+| `ResumeModalProvider`, `ResumeRequestForm`, `CallbackRequestForm`, `ContactFormService` | RES-* |
 | `ThemeProvider`, inline script     | THM-*                                                |
-| `CorporateTemplate`                | LGL-*                                                |
+| `CorporateTemplate`, `SpecialPage` | LGL-*                                                |
 | `scripts/generate-rss.mjs`, `feedDatabase`, `swemre-rss` plugin, skills | RSS-*            |
+| `scripts/generate-sitemap.mjs`, `public/robots.txt` | MAP-*                               |
 | `SoundProvider`, `soundEngine`, `SoundToggle` | SND-*                                     |
 
 Full trace: SWE-DOC-007.
@@ -360,3 +478,4 @@ Full trace: SWE-DOC-007.
 | ---------- | -------------------------------------------------- | ------------------------- |
 | 2026-10-15 | Owner placeholder replaced with full SDD draft     | Claude, for swemre review |
 | 2026-10-15 | Added §4.7a sound design and the feed log pipeline | Claude, for swemre review |
+| 2026-10-23 | UX fixes: shared `NotFound`, band while loading, list caching, contact-form failure handling, covers, session view count, search default list, chat delivery states and phone sheet, theme follows the OS, §4.8a document metadata, sitemap step | Claude, for swemre review |
