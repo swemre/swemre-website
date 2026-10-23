@@ -9,7 +9,7 @@
  * Contact: emre@swemre.com
  */
 
-import {siteEnv} from '../config/env'
+import {siteEnv} from '../config/env.ts'
 import type {PostSeo, PublicPost} from '../types/type'
 
 export const fieldString = (

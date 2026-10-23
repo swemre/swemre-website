@@ -161,8 +161,8 @@ text never sits on the plain canvas (SRS-LAY-08).
 ```
 
 - `services/publicApi.ts` (ADR-017) is the only module that knows public
-  API paths and headers; services call its typed methods and the RSS and
-  sitemap scripts import it too. `config/env.ts` reads `SiteEnv` from
+  API paths and headers; services call its typed methods and the RSS, sitemap and
+  pre-render scripts import it too. `config/env.ts` reads `SiteEnv` from
   `import.meta.env` in the bundle and from `process.env` in Node; one build
   serves one website. `apiClient.ts` keeps only the field helpers.
 - `serviceRegistry.ts` instantiates each service once; `createSearchService`

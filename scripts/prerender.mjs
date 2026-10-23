@@ -25,15 +25,15 @@ import {
   writeFileSync,
 } from 'node:fs'
 import {dirname, join} from 'node:path'
+import {siteEnv} from '../src/config/env.ts'
 import {siteConfig} from '../src/config/site.ts'
+import {fieldMediaUrl, fieldString} from '../src/services/apiClient.ts'
+import {publicApi} from '../src/services/publicApi.ts'
 import {documentTags} from '../src/utils/documentTags.ts'
 
 const DIST = 'dist'
 const DETAIL_FOLDERS = ['articles', 'projects', 'sp']
 const SLUG = /^[a-z0-9][a-z0-9-]*$/i
-const apiBase = process.env.VITE_API_BASE ?? 'http://localhost:8080/api'
-const workspaceKey = process.env.VITE_WORKSPACE_KEY ?? 'swemre-website'
-const workspacePath = `/public/v1/workspaces/${workspaceKey}`
 
 const escapeHtml = text =>
   String(text)
@@ -42,32 +42,8 @@ const escapeHtml = text =>
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
 
-async function fetchPosts(query) {
-  const response = await fetch(`${apiBase}${workspacePath}/posts?${query}`, {
-    headers: {Accept: 'application/json'},
-  })
-  // 404: the workspace has no such content type, so it has no pages
-  if (response.status === 404) return []
-  if (!response.ok) throw new Error(`${query} answered ${response.status}`)
-  const page = await response.json()
-  return page.content ?? []
-}
-
 const published = type =>
-  fetchPosts(`type=${type}&size=100&sort-by=publishedAt&direction=DESC`)
-
-// Same rules as fieldString and fieldMediaUrl in src/services/apiClient.ts
-const fieldString = (fields, key) =>
-  typeof fields?.[key] === 'string' && fields[key] !== ''
-    ? fields[key]
-    : undefined
-
-const fieldMediaUrl = (fields, key) => {
-  const value = fields?.[key]
-  if (!value || typeof value !== 'object' || !('url' in value)) return undefined
-  const url = String(value.url)
-  return url.startsWith('http') ? url : `${apiBase}${url}`
-}
+  publicApi.listPosts(type, {sortBy: 'publishedAt', direction: 'DESC'})
 
 // Mirrors the useDocumentTitle calls of ArticlePage and ProjectPage
 const detailRoute = (folder, post) => ({
@@ -97,13 +73,13 @@ const specialRoute = post => ({
 
 async function loadRoutes() {
   const [settings, articles, projects, pages] = await Promise.all([
-    fetchPosts('type=site-settings&size=1'),
+    publicApi.listPosts('site-settings', {size: 1}),
     published('article'),
     published('project'),
-    fetchPosts('type=page&size=100&sort-by=title&direction=ASC'),
+    publicApi.listPosts('page', {sortBy: 'title', direction: 'ASC'}),
   ])
   const defaultImage =
-    fieldMediaUrl(settings[0]?.fields, 'defaultOgImage') ??
+    fieldMediaUrl(settings[0]?.fields ?? {}, 'defaultOgImage') ??
     `${siteConfig.url}${siteConfig.avatarLarge}`
   const routes = [
     {path: '/', meta: {}},
@@ -182,7 +158,7 @@ try {
   loaded = await loadRoutes()
 } catch (error) {
   console.warn(
-    `prerender: swemre-website-api not reachable at ${apiBase} (${error.message}); skipped, every route keeps the tags of index.html`,
+    `prerender: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); skipped, every route keeps the tags of index.html`,
   )
   process.exit(0)
 }
