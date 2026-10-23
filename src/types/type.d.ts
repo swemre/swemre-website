@@ -196,11 +196,19 @@ export interface PostSeo {
   ogImageUrl?: string
 }
 
+/** The image a link preview shows; size and alt when the media field has them. */
+export interface ShareImage {
+  url: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
 /** The website's single site settings entry, or the defaults in config/site.ts. */
 export interface SiteSettings {
   tagline: string
   contactEmail: string
-  defaultOgImageUrl: string
+  defaultOgImage: ShareImage
   logoUrl?: string
 }
 
@@ -211,6 +219,8 @@ export interface Article extends Searchable {
   author: string
   /** ISO 8601, UTC. */
   createdAt: string
+  /** ISO instant of the last published change. */
+  updatedAt: string
   /** Minutes. */
   readingTime: number
   tags: string[]
@@ -223,6 +233,7 @@ export interface Article extends Searchable {
   /** Pixels, of the original file. */
   coverHeight?: number
   seo: PostSeo
+  shareImage?: ShareImage
 }
 
 export interface Project extends Searchable {
@@ -242,6 +253,7 @@ export interface Project extends Searchable {
   /** Pixels, of the original file. */
   coverHeight?: number
   seo: PostSeo
+  shareImage?: ShareImage
 }
 
 export interface Song extends Searchable {
@@ -263,6 +275,7 @@ export interface SpecialPage extends Searchable {
   /** Blocks of the rich text body field, as the API returns them. */
   body?: unknown
   seo: PostSeo
+  shareImage?: ShareImage
 }
 
 export interface NavigationItem extends Searchable {
@@ -538,15 +551,19 @@ export interface ThemeContextValue {
 
 export interface DocumentMeta {
   description?: string
-  image?: string
+  image?: ShareImage
+  /** Set on articles: `og:type` becomes `article` with these ISO times. */
+  article?: {publishedTime: string; modifiedTime: string}
 }
 
 export interface DocumentTags {
   title: string
   description: string
   url: string
-  image: string
+  image: ShareImage
+  ogType: 'website' | 'article'
   twitterCard: 'summary' | 'summary_large_image'
+  article?: {publishedTime: string; modifiedTime: string}
 }
 
 export interface ResumeModalContextValue {

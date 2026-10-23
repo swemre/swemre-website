@@ -10,7 +10,7 @@
  */
 
 import {siteEnv} from '../config/env.ts'
-import type {PostSeo, PublicPost} from '../types/type'
+import type {PostSeo, PublicPost, ShareImage} from '../types/type'
 
 export const fieldString = (
   fields: Record<string, unknown>,
@@ -71,6 +71,25 @@ export const fieldMediaSize = (
 ): number | undefined => {
   const size = mediaValue(fields, key)?.[dimension]
   return typeof size === 'number' && size > 0 ? size : undefined
+}
+
+// The first of the media fields that is set, as a link preview image
+export const shareImage = (
+  fields: Record<string, unknown>,
+  keys: string[],
+): ShareImage | undefined => {
+  for (const key of keys) {
+    const url = fieldMediaUrl(fields, key)
+    if (url) {
+      return {
+        url,
+        alt: fieldMediaAlt(fields, key),
+        width: fieldMediaSize(fields, key, 'width'),
+        height: fieldMediaSize(fields, key, 'height'),
+      }
+    }
+  }
+  return undefined
 }
 
 export const tagNames = (post: PublicPost): string[] =>

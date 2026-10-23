@@ -11,7 +11,7 @@
 
 import type {PublicPost, SpecialPage} from '../types/type'
 import {ArrayService} from './ArrayService'
-import {fieldString, postSeo, safely} from './apiClient'
+import {fieldString, postSeo, safely, shareImage} from './apiClient'
 import {publicApi} from './publicApi'
 
 const toSpecialPage = (post: PublicPost): SpecialPage => ({
@@ -28,6 +28,7 @@ const toSpecialPage = (post: PublicPost): SpecialPage => ({
   updatedAt: post.lastUpdatedAt.slice(0, 10),
   body: post.fields.body,
   seo: postSeo(post.fields),
+  shareImage: shareImage(post.fields, ['ogImage']),
 })
 
 // Special pages (legal pages such as the privacy policy) are a "page" content type, made in the

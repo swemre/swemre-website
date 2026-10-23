@@ -36,7 +36,7 @@ export default function ProjectPage() {
       : (project?.seo.seoTitle ?? project?.title ?? 'Project not found'),
     {
       description: project?.seo.seoDescription ?? project?.summary,
-      image: project?.seo.ogImageUrl ?? project?.coverUrl,
+      image: project?.shareImage,
     },
   )
 

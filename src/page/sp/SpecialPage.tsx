@@ -28,7 +28,7 @@ export default function SpecialPage() {
     loading
       ? undefined
       : (page?.seo.seoTitle ?? page?.title ?? 'Page not found'),
-    {description: page?.summary, image: page?.seo.ogImageUrl},
+    {description: page?.summary, image: page?.shareImage},
   )
 
   if (loading) {
