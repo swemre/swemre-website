@@ -406,11 +406,16 @@ description, language `en`, `managingEditor` and `webMaster`
 | `link[rel=canonical]`        | `siteConfig.url` + current path without trailing slash (`https://swemre.com/` for `/`) |
 | `og:url`                     | same as canonical                                                   |
 | `og:image`                   | page image (`ogImage`, else article/project cover), else the site settings' `defaultOgImage`, else `siteConfig.url` + `avatarLarge` |
-| `twitter:card`               | `summary_large_image` with a page image, else `summary`             |
+| `og:type`                    | `article` on article pages, else `website`                          |
+| `og:site_name`               | `siteConfig.brand`                                                  |
+| `og:image:width`, `og:image:height`, `og:image:alt` | the chosen image's `width`, `height` and `altText` when the media field has them; the avatar fallback is 384×384 with alt "Emre" |
+| `article:published_time`, `article:modified_time` | article pages only: `publishedAt` and `lastUpdatedAt` (ISO) |
+| `twitter:card`               | `summary` for the avatar fallback, else `summary_large_image`       |
+| `twitter:image:alt`          | same as `og:image:alt`                                              |
 | `twitter:title`, `twitter:description`, `twitter:image` | same as `og:title`, `og:description`, `og:image` |
 
 Missing tags are created in `document.head`; existing ones are updated in
-place. The same tags, with the same values, are in the static HTML of every
+place; optional tags the page does not set are removed. The same tags, with the same values, are in the static HTML of every
 pre-rendered route: `dist/index.html` for `/` and `dist/<route>/index.html`
 for `/articles`, `/projects`, `/articles/<slug>`, `/projects/<slug>` and
 `/sp/<slug>` (SRS-PRE-01). A host serving the build answers `/<route>` with
@@ -448,3 +453,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | IF-20 public API client and site environment (ADR-017) | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 publication bodies, `term` filter, forms on v1 | Claude, for swemre review |
+| 2026-10-23 | IF-19: `og:type`, `og:site_name`, `og:image:width/height/alt`, `article:published_time/modified_time`, `twitter:image:alt` (SRS-GEN-10) | Claude, for swemre review |

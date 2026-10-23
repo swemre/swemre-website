@@ -10,7 +10,7 @@
  */
 
 import type {siteConfig} from '../config/site'
-import type {DocumentMeta, DocumentTags} from '../types/type'
+import type {DocumentMeta, DocumentTags, ShareImage} from '../types/type'
 
 // Shared with scripts/prerender.mjs, which loads it with Node type stripping, so it has no
 // runtime imports. pathname is a route path; the URL never ends with a slash except "/"
@@ -19,16 +19,22 @@ export function documentTags(
   pathname: string,
   title: string | undefined,
   meta: DocumentMeta,
-  defaultImage: string,
+  defaultImage: ShareImage,
 ): DocumentTags {
   const path = pathname.replace(/\/+$/, '') || '/'
+  const image = meta.image ?? defaultImage
   return {
     title: title ? `${title} · ${site.brand}` : site.brand,
     description:
       meta.description ||
       `Portfolio, articles and projects of ${site.name}, ${site.jobTitle.toLowerCase()}.`,
     url: `${site.url}${path}`,
-    image: meta.image || defaultImage,
-    twitterCard: meta.image ? 'summary_large_image' : 'summary',
+    image,
+    ogType: meta.article ? 'article' : 'website',
+    // The square avatar fallback reads better as a small card than cropped wide
+    twitterCard: image.url.endsWith(site.avatarLarge)
+      ? 'summary'
+      : 'summary_large_image',
+    article: meta.article,
   }
 }

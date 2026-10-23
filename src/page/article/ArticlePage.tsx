@@ -45,7 +45,11 @@ export default function ArticlePage() {
         : (article?.seo.seoTitle ?? article?.title ?? 'Article not found'),
     {
       description: article?.seo.seoDescription ?? article?.summary,
-      image: article?.seo.ogImageUrl ?? article?.coverUrl,
+      image: article?.shareImage,
+      article: article && {
+        publishedTime: article.createdAt,
+        modifiedTime: article.updatedAt,
+      },
     },
   )
 

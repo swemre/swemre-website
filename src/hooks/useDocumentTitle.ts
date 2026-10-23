@@ -28,6 +28,19 @@ function setMeta(attribute: 'name' | 'property', key: string, value: string) {
   element.content = value
 }
 
+// Optional tags are removed when the page has no value, so they never go stale
+function setOptionalMeta(
+  attribute: 'name' | 'property',
+  key: string,
+  value: string | number | undefined,
+) {
+  if (value === undefined || value === '') {
+    document.head.querySelector(`meta[${attribute}="${key}"]`)?.remove()
+  } else {
+    setMeta(attribute, key, String(value))
+  }
+}
+
 function setCanonical(href: string) {
   let element = document.head.querySelector<HTMLLinkElement>(
     'link[rel="canonical"]',
@@ -43,15 +56,15 @@ function setCanonical(href: string) {
 export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
   const {pathname} = useLocation()
   const settings = useSiteSettings()
-  const {description, image} = meta
+  const {description, image, article} = meta
 
   useEffect(() => {
     const tags = documentTags(
       siteConfig,
       pathname,
       title,
-      {description, image},
-      settings.defaultOgImageUrl,
+      {description, image, article},
+      settings.defaultOgImage,
     )
     document.title = tags.title
     setMeta('name', 'description', tags.description)
@@ -59,10 +72,25 @@ export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
     setMeta('property', 'og:title', tags.title)
     setMeta('property', 'og:description', tags.description)
     setMeta('property', 'og:url', tags.url)
-    setMeta('property', 'og:image', tags.image)
+    setMeta('property', 'og:type', tags.ogType)
+    setMeta('property', 'og:image', tags.image.url)
+    setOptionalMeta('property', 'og:image:width', tags.image.width)
+    setOptionalMeta('property', 'og:image:height', tags.image.height)
+    setOptionalMeta('property', 'og:image:alt', tags.image.alt)
+    setOptionalMeta(
+      'property',
+      'article:published_time',
+      tags.article?.publishedTime,
+    )
+    setOptionalMeta(
+      'property',
+      'article:modified_time',
+      tags.article?.modifiedTime,
+    )
     setMeta('name', 'twitter:card', tags.twitterCard)
     setMeta('name', 'twitter:title', tags.title)
     setMeta('name', 'twitter:description', tags.description)
-    setMeta('name', 'twitter:image', tags.image)
-  }, [title, description, image, pathname, settings.defaultOgImageUrl])
+    setMeta('name', 'twitter:image', tags.image.url)
+    setOptionalMeta('name', 'twitter:image:alt', tags.image.alt)
+  }, [title, description, image, article, pathname, settings.defaultOgImage])
 }

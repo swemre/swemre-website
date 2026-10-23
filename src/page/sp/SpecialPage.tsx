@@ -31,7 +31,7 @@ export default function SpecialPage() {
       : error
         ? 'Content could not be loaded'
         : (page?.seo.seoTitle ?? page?.title ?? 'Page not found'),
-    {description: page?.summary, image: page?.seo.ogImageUrl},
+    {description: page?.summary, image: page?.shareImage},
   )
 
   if (loading) {

@@ -18,6 +18,7 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
+  shareImage,
   tagNames,
 } from './apiClient'
 import {publicApi} from './publicApi'
@@ -39,6 +40,7 @@ const toProject = (post: PublicPost): Project => ({
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
   seo: postSeo(post.fields),
+  shareImage: shareImage(post.fields, ['ogImage', 'cover']),
 })
 
 // Projects are the "project" content type of the website; the site only reads them.

@@ -18,6 +18,7 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
+  shareImage,
   tagNames,
 } from './apiClient'
 import {publicApi} from './publicApi'
@@ -29,6 +30,7 @@ const toArticle = (post: PublicPost): Article => ({
   summary: fieldString(post.fields, 'summary') ?? '',
   author: post.author,
   createdAt: post.publishedAt,
+  updatedAt: post.lastUpdatedAt,
   readingTime: fieldNumber(post.fields, 'readingTime') ?? 1,
   tags: tagNames(post),
   body: post.fields.body,
@@ -37,6 +39,7 @@ const toArticle = (post: PublicPost): Article => ({
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
   seo: postSeo(post.fields),
+  shareImage: shareImage(post.fields, ['ogImage', 'cover']),
 })
 
 // Articles are the "article" content type of the website. The site only reads them, so the

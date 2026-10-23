@@ -26,8 +26,8 @@ import {
 } from 'node:fs'
 import {dirname, join} from 'node:path'
 import {siteEnv} from '../src/config/env.ts'
-import {siteConfig} from '../src/config/site.ts'
-import {fieldMediaUrl, fieldString} from '../src/services/apiClient.ts'
+import {defaultShareImage, siteConfig} from '../src/config/site.ts'
+import {fieldString, shareImage} from '../src/services/apiClient.ts'
 import {publicApi} from '../src/services/publicApi.ts'
 import {documentTags} from '../src/utils/documentTags.ts'
 
@@ -53,9 +53,11 @@ const detailRoute = (folder, post) => ({
     description:
       fieldString(post.fields, 'seoDescription') ??
       fieldString(post.fields, 'summary'),
-    image:
-      fieldMediaUrl(post.fields, 'ogImage') ??
-      fieldMediaUrl(post.fields, 'cover'),
+    image: shareImage(post.fields, ['ogImage', 'cover']),
+    article:
+      folder === 'articles'
+        ? {publishedTime: post.publishedAt, modifiedTime: post.lastUpdatedAt}
+        : undefined,
   },
 })
 
@@ -67,7 +69,7 @@ const specialRoute = post => ({
     description:
       fieldString(post.fields, 'summary') ??
       fieldString(post.fields, 'seoDescription'),
-    image: fieldMediaUrl(post.fields, 'ogImage'),
+    image: shareImage(post.fields, ['ogImage']),
   },
 })
 
@@ -79,8 +81,8 @@ async function loadRoutes() {
     publicApi.listPosts('page', {sortBy: 'title', direction: 'ASC'}),
   ])
   const defaultImage =
-    fieldMediaUrl(settings[0]?.fields ?? {}, 'defaultOgImage') ??
-    `${siteConfig.url}${siteConfig.avatarLarge}`
+    shareImage(settings[0]?.fields ?? {}, ['defaultOgImage']) ??
+    defaultShareImage
   const routes = [
     {path: '/', meta: {}},
     {path: '/articles', title: 'Articles', meta: {}},
@@ -94,7 +96,7 @@ async function loadRoutes() {
 
 const MANAGED_TAGS = [
   /<meta\b[^>]*\bname="description"[^>]*>\s*/g,
-  /<meta\b[^>]*\bproperty="og:(title|description|url|image)"[^>]*>\s*/g,
+  /<meta\b[^>]*\bproperty="(og|article):[^"]*"[^>]*>\s*/g,
   /<meta\b[^>]*\bname="twitter:[^"]*"[^>]*>\s*/g,
   /<link\b[^>]*\brel="canonical"[^>]*>\s*/g,
 ]
@@ -113,19 +115,29 @@ function shellParts(html) {
 
 function headTags(tags) {
   const meta = (attribute, key, value) =>
-    `<meta ${attribute}="${key}" content="${escapeHtml(value)}" />`
+    value === undefined || value === ''
+      ? []
+      : [`<meta ${attribute}="${key}" content="${escapeHtml(value)}" />`]
   return [
     `<title>${escapeHtml(tags.title)}</title>`,
-    meta('name', 'description', tags.description),
+    ...meta('name', 'description', tags.description),
     `<link rel="canonical" href="${escapeHtml(tags.url)}" />`,
-    meta('property', 'og:title', tags.title),
-    meta('property', 'og:description', tags.description),
-    meta('property', 'og:url', tags.url),
-    meta('property', 'og:image', tags.image),
-    meta('name', 'twitter:card', tags.twitterCard),
-    meta('name', 'twitter:title', tags.title),
-    meta('name', 'twitter:description', tags.description),
-    meta('name', 'twitter:image', tags.image),
+    ...meta('property', 'og:type', tags.ogType),
+    ...meta('property', 'og:site_name', siteConfig.brand),
+    ...meta('property', 'og:title', tags.title),
+    ...meta('property', 'og:description', tags.description),
+    ...meta('property', 'og:url', tags.url),
+    ...meta('property', 'og:image', tags.image.url),
+    ...meta('property', 'og:image:width', tags.image.width),
+    ...meta('property', 'og:image:height', tags.image.height),
+    ...meta('property', 'og:image:alt', tags.image.alt),
+    ...meta('property', 'article:published_time', tags.article?.publishedTime),
+    ...meta('property', 'article:modified_time', tags.article?.modifiedTime),
+    ...meta('name', 'twitter:card', tags.twitterCard),
+    ...meta('name', 'twitter:title', tags.title),
+    ...meta('name', 'twitter:description', tags.description),
+    ...meta('name', 'twitter:image', tags.image.url),
+    ...meta('name', 'twitter:image:alt', tags.image.alt),
   ].join('\n    ')
 }
 
