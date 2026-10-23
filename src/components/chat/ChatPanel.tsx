@@ -13,7 +13,7 @@ import {useEffect, useRef, useState, type KeyboardEvent} from 'react'
 import {siteConfig} from '../../config/site'
 import {useChat} from '../../hooks/useChat'
 import {useSound} from '../../hooks/useSound'
-import type {Conversation} from '../../types/type'
+import type {ChatPresence, Conversation} from '../../types/type'
 import {buttonClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
 import {Icon} from '../Icon'
@@ -173,6 +173,16 @@ function ConversationView({conversation}: {conversation: Conversation}) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
+      {chat.presence === 'unreachable' && (
+        <p
+          role="status"
+          className="flex items-center gap-2 border-b border-border-muted bg-attention-muted px-4 py-2 text-xs text-fg"
+        >
+          <Icon name="warning" size={13} className="text-attention" />
+          The chat server cannot be reached. Your messages are kept here and
+          sent when it is back.
+        </p>
+      )}
       {chat.presence === 'offline' && (
         <p className="flex items-center gap-2 border-b border-border-muted bg-attention-muted px-4 py-2 text-xs text-fg">
           <Icon name="clock" size={13} className="text-attention" />
@@ -273,6 +283,12 @@ function ConversationView({conversation}: {conversation: Conversation}) {
   )
 }
 
+const presenceLabel: Record<ChatPresence, string> = {
+  online: 'Online',
+  offline: 'Offline · replies later',
+  unreachable: 'Server not reachable · messages wait here',
+}
+
 export function ChatPanel() {
   const chat = useChat()
   const active = chat.active
@@ -297,7 +313,7 @@ export function ChatPanel() {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{siteConfig.name}</p>
           <p className="truncate text-xs text-cover-fg/75">
-            {chat.presence === 'online' ? 'Online' : 'Offline · replies later'}
+            {presenceLabel[chat.presence]}
           </p>
         </div>
         <button

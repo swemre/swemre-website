@@ -18,7 +18,6 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
-  safely,
   tagNames,
 } from './apiClient'
 import {publicApi} from './publicApi'
@@ -48,24 +47,20 @@ export class ArticleService extends ArrayService<Article> {
   }
 
   override async findAll(): Promise<Article[]> {
-    return safely(async () => {
-      const posts = await publicApi.listPosts('article', {
-        size: 100,
-        sortBy: 'publishedAt',
-        direction: 'DESC',
-      })
-      return posts.map(toArticle)
-    }, [])
+    const posts = await publicApi.listPosts('article', {
+      size: 100,
+      sortBy: 'publishedAt',
+      direction: 'DESC',
+    })
+    return posts.map(toArticle)
   }
 
   override async findById(id: string): Promise<Article | undefined> {
     return (await this.findAll()).find(article => article.id === id)
   }
 
-  findBySlug(slug: string): Promise<Article | undefined> {
-    return safely(async () => {
-      const post = await publicApi.getPost('article', slug)
-      return post ? toArticle(post) : undefined
-    }, undefined)
+  async findBySlug(slug: string): Promise<Article | undefined> {
+    const post = await publicApi.getPost('article', slug)
+    return post ? toArticle(post) : undefined
   }
 }

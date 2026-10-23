@@ -13,6 +13,7 @@ import {useState, type ChangeEvent, type FormEvent} from 'react'
 import {Icon} from '../components/Icon'
 import {useService} from '../hooks/useService'
 import {useSound} from '../hooks/useSound'
+import {ApiError} from '../services/publicApi'
 import type {CallbackFormErrors, CallbackFormInput} from '../types/type'
 import {buttonClass} from '../utils/buttonClass'
 import {FormField, inputClass} from './FormField'
@@ -27,7 +28,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
   const [values, setValues] = useState<CallbackFormInput>(EMPTY)
   const [errors, setErrors] = useState<CallbackFormErrors>({})
   const [status, setStatus] = useState<
-    'idle' | 'submitting' | 'done' | 'failed'
+    'idle' | 'submitting' | 'done' | 'failed' | 'unreachable'
   >('idle')
 
   const onChange =
@@ -57,9 +58,9 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
       await contactForms.submitCallbackRequest(values)
       sound.play('success')
       setStatus('done')
-    } catch {
+    } catch (error) {
       sound.play('error')
-      setStatus('failed')
+      setStatus(error instanceof ApiError ? 'failed' : 'unreachable')
     }
   }
 
@@ -134,6 +135,12 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
         {status === 'failed' && (
           <p role="alert" className="mb-4 text-sm text-danger">
             The request could not be sent. Please try again later.
+          </p>
+        )}
+        {status === 'unreachable' && (
+          <p role="alert" className="mb-4 text-sm text-danger">
+            The server cannot be reached. Check your connection and try again;
+            what you entered is kept.
           </p>
         )}
       </div>
