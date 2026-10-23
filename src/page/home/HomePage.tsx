@@ -21,6 +21,7 @@ import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
 import {useResumeModal} from '../../hooks/useResumeModal'
 import {useService} from '../../hooks/useService'
+import {useSiteSettings} from '../../hooks/useSiteSettings'
 import {HomeTemplate} from '../../templates/HomeTemplate'
 import {buttonClass, fillClass, shineClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
@@ -49,6 +50,7 @@ function Loading() {
 export default function HomePage() {
   useDocumentTitle()
   const requests = useResumeModal()
+  const settings = useSiteSettings()
   const articles = useFindAll(useService('article'))
   const projects = useFindAll(useService('project'))
   const songs = useFindAll(useService('song'))
@@ -99,7 +101,7 @@ export default function HomePage() {
           </span>
         </>
       }
-      tagline={siteConfig.tagline}
+      tagline={settings.tagline}
       actions={
         <>
           <button
@@ -222,7 +224,7 @@ export default function HomePage() {
             Request my resume
           </button>
           <a
-            href={`mailto:${siteConfig.email}`}
+            href={`mailto:${settings.contactEmail}`}
             className={buttonClass(
               'ghost',
               'lg',
@@ -230,7 +232,7 @@ export default function HomePage() {
             )}
           >
             <Icon name="mail" />
-            {siteConfig.email}
+            {settings.contactEmail}
           </a>
         </div>
       </section>

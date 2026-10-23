@@ -13,6 +13,7 @@ import type {SpecialPage} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
   fieldString,
+  postSeo,
   publicRequest,
   safely,
   workspacePath,
@@ -24,12 +25,16 @@ const toSpecialPage = (post: PublicPost): SpecialPage => ({
   id: String(post.id),
   slug: post.slug,
   title: post.title,
-  summary: fieldString(post.fields, 'summary') ?? '',
+  summary:
+    fieldString(post.fields, 'summary') ??
+    fieldString(post.fields, 'seoDescription') ??
+    '',
   version: fieldString(post.fields, 'version') ?? '1.0',
   effectiveDate:
     fieldString(post.fields, 'effectiveDate') ?? post.publishedAt.slice(0, 10),
   updatedAt: post.lastUpdatedAt.slice(0, 10),
   body: post.fields.body,
+  seo: postSeo(post.fields),
 })
 
 // Special pages (legal pages such as the privacy policy) are a "page" content type, made in the

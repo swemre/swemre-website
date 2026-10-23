@@ -13,10 +13,10 @@ import {useEffect} from 'react'
 import {useLocation} from 'react-router-dom'
 import {siteConfig} from '../config/site'
 import type {DocumentMeta} from '../types/type'
+import {useSiteSettings} from './useSiteSettings'
 
 const defaults = {
   description: `Portfolio, articles and projects of ${siteConfig.name}, ${siteConfig.jobTitle.toLowerCase()}.`,
-  image: `${siteConfig.url}${siteConfig.avatarLarge}`,
 }
 
 function setMeta(attribute: 'name' | 'property', key: string, value: string) {
@@ -33,6 +33,7 @@ function setMeta(attribute: 'name' | 'property', key: string, value: string) {
 
 export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
   const {pathname} = useLocation()
+  const settings = useSiteSettings()
   const {description, image} = meta
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
       ? `${title} · ${siteConfig.brand}`
       : siteConfig.brand
     const text = description || defaults.description
-    const picture = image || defaults.image
+    const picture = image || settings.defaultOgImageUrl
     document.title = fullTitle
     setMeta('name', 'description', text)
     setMeta('property', 'og:title', fullTitle)
@@ -48,5 +49,5 @@ export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
     setMeta('property', 'og:url', `${siteConfig.url}${pathname}`)
     setMeta('property', 'og:image', picture)
     setMeta('name', 'twitter:card', image ? 'summary_large_image' : 'summary')
-  }, [title, description, image, pathname])
+  }, [title, description, image, pathname, settings.defaultOgImageUrl])
 }

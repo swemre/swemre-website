@@ -31,8 +31,13 @@ export default function ProjectPage() {
   const articles = useFindAll(useService('article'))
 
   useDocumentTitle(
-    loading ? undefined : (project?.title ?? 'Project not found'),
-    {description: project?.summary, image: project?.coverUrl},
+    loading
+      ? undefined
+      : (project?.seo.seoTitle ?? project?.title ?? 'Project not found'),
+    {
+      description: project?.seo.seoDescription ?? project?.summary,
+      image: project?.seo.ogImageUrl ?? project?.coverUrl,
+    },
   )
 
   if (loading) {

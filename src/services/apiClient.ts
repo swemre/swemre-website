@@ -9,6 +9,8 @@
  * Contact: emre@swemre.com
  */
 
+import type {PostSeo} from '../types/type'
+
 // The website only calls the public endpoints of swemre-website-api
 export const apiBase: string =
   import.meta.env.VITE_API_BASE ?? 'http://localhost:8080/api'
@@ -73,6 +75,12 @@ const mediaValue = (
     ? (value as Record<string, unknown>)
     : undefined
 }
+
+export const postSeo = (fields: Record<string, unknown>): PostSeo => ({
+  seoTitle: fieldString(fields, 'seoTitle'),
+  seoDescription: fieldString(fields, 'seoDescription'),
+  ogImageUrl: fieldMediaUrl(fields, 'ogImage'),
+})
 
 // Without altText the cover is decorative and keeps alt=""
 export const fieldMediaAlt = (

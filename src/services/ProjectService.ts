@@ -17,6 +17,7 @@ import {
   fieldMediaUrl,
   fieldNumber,
   fieldString,
+  postSeo,
   publicRequest,
   safely,
   tagNames,
@@ -41,6 +42,7 @@ const toProject = (post: PublicPost): Project => ({
   coverAlt: fieldMediaAlt(post.fields, 'cover'),
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
+  seo: postSeo(post.fields),
 })
 
 // Projects are the "project" content type of the website; the site only reads them.

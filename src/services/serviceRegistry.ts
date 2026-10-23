@@ -15,6 +15,7 @@ import {ChatService} from './ChatService'
 import {ContactFormService} from './ContactFormService'
 import {ProjectService} from './ProjectService'
 import {SongService} from './SongService'
+import {SiteSettingsService} from './SiteSettingsService'
 import {SpecialPageService} from './SpecialPageService'
 import {createSearchService} from './searchSources'
 
@@ -24,6 +25,7 @@ const entityServices = {
   contactForm: new ContactFormService(),
   project: new ProjectService(),
   song: new SongService(),
+  siteSettings: new SiteSettingsService(),
   specialPage: new SpecialPageService(),
 }
 

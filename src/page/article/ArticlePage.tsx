@@ -37,8 +37,13 @@ export default function ArticlePage() {
   }, [id])
 
   useDocumentTitle(
-    loading ? undefined : (article?.title ?? 'Article not found'),
-    {description: article?.summary, image: article?.coverUrl},
+    loading
+      ? undefined
+      : (article?.seo.seoTitle ?? article?.title ?? 'Article not found'),
+    {
+      description: article?.seo.seoDescription ?? article?.summary,
+      image: article?.seo.ogImageUrl ?? article?.coverUrl,
+    },
   )
 
   if (loading) {
