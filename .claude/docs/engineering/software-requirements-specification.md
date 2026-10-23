@@ -217,6 +217,10 @@ features). No backend, no cookies, no analytics.
 | SRS-RES-07  | In both forms, editing a field shall clear that field's error, and a submission with invalid fields shall move focus to the first invalid field in form order. | T | P2 | UX-W19 |
 | SRS-RES-08  | The dialog header of both forms shall leave room for the close button, so the title and subtitle never run under it. | I, D | P3 | UX-W18 |
 | SRS-RES-09  | When a form submission fails without an answer from the server (network error), the form shall say "The server cannot be reached. Check your connection and try again; what you entered is kept." instead of the generic failure. | T | P1 | PRS-000333 |
+| SRS-RES-10  | Every form shall hold a hidden honeypot field (`website`, out of the tab order and hidden from assistive technology). When it is filled the form shall show its confirmation without sending anything. A 429 answer shall show "Too many requests. Please wait a few minutes and try again." | T | P1 | PRS-000307 |
+| SRS-RES-11  | Under each form's buttons a line shall link to the privacy policy, opening in a new tab with a visible ↗ and an announced "(opens in a new tab)", so the dialog and its input stay as they are. | T | P2 | PRS-000303 |
+| SRS-RES-12  | The call back phone field shall accept an optional leading +, digits, spaces, dots, dashes and brackets with 7 to 15 digits, else show "Please enter a phone number with digits only, for example +31 6 1234 5678." The form shall offer an optional best time (morning, afternoon, evening) and an optional note (at most 500 characters), sent as `preferredTime` and `note` only when set; the confirmation repeats the number and the time. | T | P2 | PRS-000309 |
+| SRS-RES-13  | "Send a message" (home contact section and footer) shall open a dialog with full name, email and message (at least 10 characters), sent to the workspace's `contact` form with the same validation, failure, honeypot and privacy rules as the other forms; the confirmation names the reply address. | T | P2 | PRS-000306 |
 
 ### 3.10 Theme (THM)
 
@@ -320,7 +324,7 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-10  | Only `services/publicApi.ts` shall build public API paths and request headers; services and build scripts shall use its typed methods. | I | P1 |
 | SRS-MNT-11  | The API base, workspace key, channel key, read key, site URL, locale and read timeout shall come from the build's `VITE_*` environment through `config/env.ts`, with the defaults in `config/siteDefaults.ts`; `index.html`, the bundle and the RSS and sitemap scripts shall use the same values. | T | P1 |
 | SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
-| SRS-MNT-13  | With a channel key, articles, projects, songs, pages and site settings shall be read from public API v2 for that channel in the configured locale, with the read key as `X-Read-Key` (only on v2 requests); without one, and for form submissions, chat and page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
+| SRS-MNT-13  | With a channel key, articles, projects, songs, pages and site settings shall be read from public API v2 for that channel in the configured locale, and form submissions and chat shall go there too, with the read key as `X-Read-Key` (only on v2 requests) and a chat's visitor token as `X-Visitor-Token`; without a socket the chat shall poll for replies every 15 s. Without a channel key, and for page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -357,3 +361,5 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: RES-09 | Claude, for swemre review |
+| 2026-10-24 | Forms batch: added RES-10 (PRS-000307), RES-11 (PRS-000303), RES-12 (PRS-000309), RES-13 (PRS-000306) | Claude, for swemre review |
+| 2026-10-24 | MNT-13: forms and chat on v2 | Claude, for swemre review |

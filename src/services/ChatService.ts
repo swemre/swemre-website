@@ -10,6 +10,8 @@
  */
 
 import type {
+  ChatApiConversation,
+  ChatApiMessage,
   ChatAuthor,
   ChatMessage,
   ChatPresence,
@@ -22,18 +24,6 @@ const GREETING =
   "Hi, I'm Emre. I'm not online right now, but leave a message and I'll get back to you as soon as I can."
 
 const GREETING_ID = 'greeting'
-
-interface ApiMessage {
-  id: number
-  author: 'VISITOR' | 'OWNER'
-  text: string
-  sentAt: string
-}
-
-interface ApiConversation {
-  token: string
-  messages: ApiMessage[]
-}
 
 const message = (
   author: ChatAuthor,
@@ -48,7 +38,7 @@ const message = (
   delivery,
 })
 
-const fromApi = (apiMessage: ApiMessage): ChatMessage => ({
+const fromApi = (apiMessage: ChatApiMessage): ChatMessage => ({
   id: `remote-${apiMessage.id}`,
   author: apiMessage.author === 'OWNER' ? 'owner' : 'visitor',
   text: apiMessage.text,
@@ -66,7 +56,10 @@ const markSending = (item: ChatMessage): ChatMessage =>
 
 // Local messages are kept after the server's list: the greeting is never stored by the API,
 // and a message that has not been accepted yet stays until a later request delivers it.
-const merge = (local: ChatMessage[], remote: ApiMessage[]): ChatMessage[] => [
+const merge = (
+  local: ChatMessage[],
+  remote: ChatApiMessage[],
+): ChatMessage[] => [
   ...local.filter(item => item.id === GREETING_ID),
   ...remote.map(fromApi),
   ...local.filter(unsent),
@@ -74,11 +67,12 @@ const merge = (local: ChatMessage[], remote: ApiMessage[]): ChatMessage[] => [
 
 // What the conversation's socket sends: a new message, or the owner coming online or going away
 export type ChatSocketEvent =
-  | {type: 'message'; message: ApiMessage}
+  | {type: 'message'; message: ChatApiMessage}
   | {type: 'presence'; online: boolean}
   | {type: 'connected'}
 
 const RECONNECT_DELAYS_MS = [1_000, 2_000, 5_000, 10_000, 30_000]
+const POLL_MS = 15_000
 
 export class ChatService extends LocalStorageService<Conversation> {
   private readonly delivering = new Map<string, Promise<void>>()
@@ -207,17 +201,15 @@ export class ChatService extends LocalStorageService<Conversation> {
   private async post(
     publicToken: string | undefined,
     text: string,
-  ): Promise<ApiConversation> {
-    return publicApi.sendChatMessage<ApiConversation>(publicToken, text)
+  ): Promise<ChatApiConversation> {
+    return publicApi.sendChatMessage(publicToken, text)
   }
 
   private async sync(id: string): Promise<void> {
     const conversation = this.rows.find(row => row.id === id)
     if (!conversation?.publicToken) return
     try {
-      const remote = await publicApi.getConversation<ApiConversation>(
-        conversation.publicToken,
-      )
+      const remote = await publicApi.getConversation(conversation.publicToken)
       const current = this.rows.find(row => row.id === id)
       if (!remote || !current) return
       await this.update(id, {
@@ -235,6 +227,7 @@ export class ChatService extends LocalStorageService<Conversation> {
     onEvent: (event: ChatSocketEvent) => void,
   ): () => void {
     const url = publicApi.conversationSocketUrl(publicToken)
+    if (!url) return this.poll(publicToken, onEvent)
     let socket: WebSocket | null = null
     let attempt = 0
     let timer: number | undefined
@@ -271,8 +264,32 @@ export class ChatService extends LocalStorageService<Conversation> {
     }
   }
 
+  // Without a socket (public API v2) new messages are fetched every POLL_MS instead
+  private poll(
+    publicToken: string,
+    onEvent: (event: ChatSocketEvent) => void,
+  ): () => void {
+    let stopped = false
+    const check = async () => {
+      try {
+        const remote = await publicApi.getConversation(publicToken)
+        if (stopped || !remote) return
+        for (const item of remote.messages)
+          onEvent({type: 'message', message: item})
+      } catch {
+        // The next check tries again
+      }
+    }
+    onEvent({type: 'connected'})
+    const timer = window.setInterval(() => void check(), POLL_MS)
+    return () => {
+      stopped = true
+      window.clearInterval(timer)
+    }
+  }
+
   // A message pushed over the socket joins the stored conversation once
-  async receive(id: string, apiMessage: ApiMessage): Promise<void> {
+  async receive(id: string, apiMessage: ChatApiMessage): Promise<void> {
     const conversation = this.rows.find(row => row.id === id)
     if (!conversation) return
     const received = fromApi(apiMessage)

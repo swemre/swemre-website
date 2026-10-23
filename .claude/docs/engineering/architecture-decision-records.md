@@ -240,9 +240,11 @@ decision is marked Superseded with a link to its replacement.
   parameters, newest first) with `X-Read-Key`; the client maps each
   publication to the v1 post shape (cover, excerpt and body into `fields`,
   `kind` to `taxonomy`) and sorts by title where a page asks for it. Without
-  a channel key everything stays on v1. Forms, chat and page views stay on
-  v1 until v2 serves them (docs/public-api-v2.md lists them as coming
-  next).
+  a channel key everything stays on v1. Form submissions and chat use v2
+  too: a v2 conversation is kept as `<id>.<visitor token>`, the token goes in
+  `X-Visitor-Token`, and as v2 has no socket or presence the chat polls for
+  replies every 15 s and shows the owner as away. Page views stay on v1
+  until v2 serves them (1.1.0-ALPHA).
 
 ## Change log
 
@@ -253,3 +255,4 @@ decision is marked Superseded with a link to its replacement.
 | 2026-10-23 | ADR-017 public API client and site environment | Claude, for swemre review |
 | 2026-10-23 | ADR-017: public API v2 for content and forms when a channel key is set | Claude, for swemre review |
 | 2026-10-23 | ADR-017: aligned with docs/public-api-v2.md (forms stay on v1, publication mapping, term filter) | Claude, for swemre review |
+| 2026-10-24 | ADR-017: forms and chat on v2 | Claude, for swemre review |

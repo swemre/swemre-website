@@ -355,6 +355,9 @@ not be heard in the headless environment).
 | TC-RES-06   | SRS-RES-07                | Both forms: submit with only the second field invalid; then all empty; then type in an invalid field | Focus on the second field; focus on the first field; that field's error disappears, others stay | Designed |
 | TC-RES-07   | SRS-RES-08                | Open both dialogs at 360 px and 1920 px; inspect the header                                     | Title and subtitle end left of the close button (header `pr-14`) | Designed |
 | TC-RES-08   | SRS-RES-09                | Both forms with `fetch` rejecting (network error); then with an `ApiError(500)` | Unreachable message, fields kept; then the generic "could not be sent" message | Designed |
+| TC-RES-09   | SRS-RES-10, RES-11        | Each form: fill the hidden `website` field through the DOM and submit valid values; then a submission answered 429; follow the privacy link | Confirmation shown and no request sent; "Too many requests…" alert; the policy opens in a new tab, the dialog keeps its input | Designed |
+| TC-RES-10   | SRS-RES-12                | Phone `+31 6 1234 5678`, `06-12345678`, `(020) 123 4567` pass; `call me`, `12345`, 16 digits fail; pick Evening and a note; submit | Valid ones accepted; the message on the others; request body has `preferredTime: 'evening'` and `note`; confirmation "…on <number> in the evening." | Designed |
+| TC-RES-11   | SRS-RES-13                | Open "Send a message" from home and from the footer at 375, 768 and 1280 px, light and dark, keyboard only; submit empty, then valid | Errors per field with focus on the first; then "Message sent" naming the email; POST to `forms/contact/submissions` | Designed |
 | TC-THM-01   | SRS-THM-01, THM-02        | Stored `dark` → render; toggle                                                                  | `data-theme="dark"`, then `light`; storage updated      | Designed |
 | TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`; storage still empty                     | Designed |
 | TC-THM-03   | SRS-THM-02                | Empty storage, `matchMedia` light; fire a `change` to dark; then toggle; then fire `change` to light | `data-theme` becomes `dark` with nothing stored; toggle stores `light` and applies it; the later system change is ignored | Designed |
@@ -558,3 +561,4 @@ relative-luminance formula).
 | 2026-10-23 | PRS-000333: added TC-GEN-03, TC-CHAT-12, TC-RES-08 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: TC-CHAT-12 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: TC-RES-08 | Claude, for swemre review |
+| 2026-10-24 | Forms batch: added TC-RES-09 to TC-RES-11 | Claude, for swemre review |

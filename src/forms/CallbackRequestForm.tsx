@@ -13,13 +13,24 @@ import {useState, type ChangeEvent, type FormEvent} from 'react'
 import {Icon} from '../components/Icon'
 import {useService} from '../hooks/useService'
 import {useSound} from '../hooks/useSound'
-import {ApiError} from '../services/publicApi'
-import type {CallbackFormErrors, CallbackFormInput} from '../types/type'
+import type {
+  CallbackFormErrors,
+  CallbackFormInput,
+  FormStatus,
+} from '../types/type'
 import {buttonClass} from '../utils/buttonClass'
+import {failureStatus, filledHoneypot} from '../utils/formSubmission'
 import {FormField, inputClass} from './FormField'
+import {Honeypot, PrivacyNote, SubmitError} from './FormExtras'
 import {validateCallbackRequest} from './validateCallbackRequest'
 
-const EMPTY: CallbackFormInput = {fullName: '', phone: '', topic: ''}
+const EMPTY: CallbackFormInput = {
+  fullName: '',
+  phone: '',
+  topic: '',
+  preferredTime: '',
+  note: '',
+}
 const FIELDS = Object.keys(EMPTY) as (keyof CallbackFormInput)[]
 
 export function CallbackRequestForm({onDone}: {onDone: () => void}) {
@@ -27,13 +38,15 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
   const sound = useSound()
   const [values, setValues] = useState<CallbackFormInput>(EMPTY)
   const [errors, setErrors] = useState<CallbackFormErrors>({})
-  const [status, setStatus] = useState<
-    'idle' | 'submitting' | 'done' | 'failed' | 'unreachable'
-  >('idle')
+  const [status, setStatus] = useState<FormStatus>('idle')
 
   const onChange =
     (field: keyof CallbackFormInput) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (
+      event: ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >,
+    ) => {
       const value = event.target.value
       setValues(current => ({...current, [field]: value}))
       setErrors(current =>
@@ -53,6 +66,11 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
       if (element instanceof HTMLElement) element.focus()
       return
     }
+    // A bot filled the hidden field: it sees the usual confirmation, nothing is sent
+    if (filledHoneypot(form)) {
+      setStatus('done')
+      return
+    }
     setStatus('submitting')
     try {
       await contactForms.submitCallbackRequest(values)
@@ -60,7 +78,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
       setStatus('done')
     } catch (error) {
       sound.play('error')
-      setStatus(error instanceof ApiError ? 'failed' : 'unreachable')
+      setStatus(failureStatus(error))
     }
   }
 
@@ -75,7 +93,10 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
         </h2>
         <p className="mt-2 mb-6 text-sm text-fg-muted">
           Thanks, {values.fullName.trim().split(' ')[0]}. I will call you on{' '}
-          {values.phone.trim()}.
+          <span className="font-semibold text-fg-strong">
+            {values.phone.trim()}
+          </span>
+          {values.preferredTime ? ` in the ${values.preferredTime}` : ''}.
         </p>
         <button
           type="button"
@@ -118,6 +139,8 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
             value={values.phone}
             onChange={onChange('phone')}
             autoComplete="tel"
+            inputMode="tel"
+            placeholder="+31 6 1234 5678"
             aria-invalid={Boolean(errors.phone)}
             className={inputClass}
           />
@@ -132,20 +155,35 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
             className={`${inputClass} resize-y`}
           />
         </FormField>
-        {status === 'failed' && (
-          <p role="alert" className="mb-4 text-sm text-danger">
-            The request could not be sent. Please try again later.
-          </p>
-        )}
-        {status === 'unreachable' && (
-          <p role="alert" className="mb-4 text-sm text-danger">
-            The server cannot be reached. Check your connection and try again;
-            what you entered is kept.
-          </p>
-        )}
+        <FormField label="Best time to call (optional)">
+          <select
+            name="preferredTime"
+            value={values.preferredTime}
+            onChange={onChange('preferredTime')}
+            className={inputClass}
+          >
+            <option value="">Any time</option>
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+          </select>
+        </FormField>
+        <FormField label="Note (optional)" error={errors.note}>
+          <textarea
+            rows={2}
+            name="note"
+            value={values.note}
+            onChange={onChange('note')}
+            aria-invalid={Boolean(errors.note)}
+            className={`${inputClass} resize-y`}
+          />
+        </FormField>
+        <SubmitError status={status} />
+        <Honeypot />
       </div>
 
-      <div className="flex justify-end gap-2 border-t border-border-muted bg-surface-muted px-6 py-3">
+      <div className="flex flex-wrap justify-end gap-2 border-t border-border-muted bg-surface-muted px-6 py-3">
+        <PrivacyNote />
         <button
           type="button"
           onClick={onDone}

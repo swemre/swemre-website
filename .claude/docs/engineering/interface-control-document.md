@@ -314,8 +314,10 @@ a tap on a queued message.
 | ---------------- | --------------------------------------------------------------- | ----------------------------------------------- |
 | `listPosts`      | `GET /public/v2/channels/<c>/publications?content-type=&locale=&size=&term=` → `{items, total, page, size}` (newest first; sorted by title in the client when asked); each item mapped to `PublicPost`: `cover` (with `alt` as `altText`), `excerpt` (as `summary`) and `body` into `fields`, term `kind` as `taxonomy`, `updatedAt` as `lastUpdatedAt` | `GET /public/v1/workspaces/<w>/posts?type=&size=&sort-by=&direction=` |
 | `getPost`        | `GET .../publications/<slug>?locale=`, `undefined` on 404 or when the content type differs; adds `locale` and `languageVersions` | `GET .../posts/<type>/<slug>`                   |
-| `submitForm`     | v1 until v2 serves forms                                        | `POST .../forms/<form>/submissions`             |
-| chat, presence, page views | v1 only until v2 defines them                         | `.../conversations...`, `.../presence`, `.../page-views` |
+| `submitForm`     | `POST .../forms/<form-key>/submissions` → 201 `{submittedAt}`; 429 is the shared rate limit | `POST .../forms/<form>/submissions`             |
+| chat             | `POST .../conversations` `{text}` → `{id, visitorToken, messages}` (kept as token `<id>.<visitorToken>`); `GET` and `POST .../conversations/<id>/messages` with `X-Visitor-Token`; `sender` `MEMBER` shown as the owner; no socket: polled every 15 s | `.../conversations...` and the socket |
+| presence         | none: always away                                               | `GET .../presence`                              |
+| page views       | v1 until 1.1.0-ALPHA                                            | `POST .../page-views`                           |
 
 A 401 (`CHANNEL_READ_DENIED`: unknown channel, missing or wrong read key)
 rejects with `ApiError(401)`. Not used yet: `GET .../terms?kind=&locale=`.
@@ -454,3 +456,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 publication bodies, `term` filter, forms on v1 | Claude, for swemre review |
 | 2026-10-23 | IF-19: `og:type`, `og:site_name`, `og:image:width/height/alt`, `article:published_time/modified_time`, `twitter:image:alt` (SRS-GEN-10) | Claude, for swemre review |
+| 2026-10-24 | IF-20: forms and chat on v2 | Claude, for swemre review |
