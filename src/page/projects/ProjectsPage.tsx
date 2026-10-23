@@ -17,12 +17,15 @@ import {SidebarNav} from '../../components/SidebarNav'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
 import {useService} from '../../hooks/useService'
+import type {DocumentMeta} from '../../types/type'
 import {ListTemplate} from '../../templates/ListTemplate'
 import {buttonClass} from '../../utils/buttonClass'
 import {articleNavItem} from '../../utils/navItems'
 
+const LIST_META: DocumentMeta = {schema: {kind: 'list'}}
+
 export default function ProjectsPage() {
-  useDocumentTitle('Projects')
+  useDocumentTitle('Projects', LIST_META)
   const projects = useFindAll(useService('project'))
   const articles = useFindAll(useService('article'))
   const list = projects.data ?? []

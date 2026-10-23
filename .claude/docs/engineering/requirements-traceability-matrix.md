@@ -31,6 +31,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `utils/documentTags.ts`, `index.html` defaults | TC-GEN-01, TC-MAN-05, TC-PRE-01 | Unverified (canonical and Twitter tags added by PRS-000311; canonical, `og:url` and no duplicates seen in the browser 2026-10-23) |
 | SRS-GEN-10   | §4.8a         | `utils/documentTags.ts`, `useDocumentTitle`, `apiClient.shareImage`, `config/site.ts` `defaultShareImage`, `prerender.mjs` | TC-GEN-04 | Manual (Verified 2026-10-23: pre-rendered article file and runtime tags in the browser, removal on navigation) |
+| SRS-GEN-11   | §4.8a         | `utils/documentTags.ts` `structuredData`, `useDocumentTitle` `setJsonLd`, page `schema` meta, `prerender.mjs` | TC-GEN-05 | Manual (Verified 2026-10-23: pre-rendered article and runtime home/article in the browser); Google Rich Results Test Unverified until deployed |
 | SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
 | SRS-GEN-08   | §4.1, §6      | `components/ErrorBoundary.tsx`, `SiteLayout`                 | TC-GEN-02                 | Manual (Verified in browser 2026-10-23, forced render error in the chat launcher) |
 | SRS-GEN-09   | §6            | `hooks/useAsyncData.ts`, `components/LoadError.tsx`, pages, `SearchService` | TC-GEN-03 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
@@ -250,3 +251,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: RES-09 row | Claude, for swemre review |
+| 2026-10-23 | PRS-000313: GEN-11 row | Claude, for swemre review |

@@ -560,7 +560,18 @@ export interface DocumentMeta {
   image?: ShareImage
   /** Set on articles: `og:type` becomes `article` with these ISO times. */
   article?: {publishedTime: string; modifiedTime: string}
+  /** What the page is, for its JSON-LD; pages without it get none. */
+  schema?: PageSchema
 }
+
+export type PageSchema =
+  | {kind: 'home'}
+  | {kind: 'list'}
+  | {kind: 'article'; author: string}
+  | {kind: 'project'; url?: string; repoUrl?: string; year?: number}
+
+/** A schema.org node, written as JSON-LD. */
+export type JsonLd = Record<string, unknown>
 
 export interface DocumentTags {
   title: string
@@ -570,6 +581,7 @@ export interface DocumentTags {
   ogType: 'website' | 'article'
   twitterCard: 'summary' | 'summary_large_image'
   article?: {publishedTime: string; modifiedTime: string}
+  jsonLd?: JsonLd
 }
 
 export interface ResumeModalContextValue {

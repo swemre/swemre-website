@@ -50,6 +50,7 @@ export default function ArticlePage() {
         publishedTime: article.createdAt,
         modifiedTime: article.updatedAt,
       },
+      schema: article && {kind: 'article', author: article.author},
     },
   )
 
