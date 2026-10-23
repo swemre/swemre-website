@@ -9,17 +9,10 @@
  * Contact: emre@swemre.com
  */
 
-import type {SpecialPage} from '../types/type'
+import type {PublicPost, SpecialPage} from '../types/type'
 import {ArrayService} from './ArrayService'
-import {
-  fieldString,
-  postSeo,
-  publicRequest,
-  safely,
-  workspacePath,
-  type PagedContent,
-  type PublicPost,
-} from './apiClient'
+import {fieldString, postSeo, safely} from './apiClient'
+import {publicApi} from './publicApi'
 
 const toSpecialPage = (post: PublicPost): SpecialPage => ({
   id: String(post.id),
@@ -47,10 +40,12 @@ export class SpecialPageService extends ArrayService<SpecialPage> {
 
   override async findAll(): Promise<SpecialPage[]> {
     return safely(async () => {
-      const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=page&size=100&sort-by=title&direction=ASC`,
-      )
-      return (page?.content ?? []).map(toSpecialPage)
+      const posts = await publicApi.listPosts('page', {
+        size: 100,
+        sortBy: 'title',
+        direction: 'ASC',
+      })
+      return posts.map(toSpecialPage)
     }, [])
   }
 
@@ -60,9 +55,7 @@ export class SpecialPageService extends ArrayService<SpecialPage> {
 
   findBySlug(slug: string): Promise<SpecialPage | undefined> {
     return safely(async () => {
-      const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/page/${encodeURIComponent(slug)}`,
-      )
+      const post = await publicApi.getPost('page', slug)
       return post ? toSpecialPage(post) : undefined
     }, undefined)
   }

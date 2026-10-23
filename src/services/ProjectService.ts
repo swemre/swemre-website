@@ -9,7 +9,7 @@
  * Contact: emre@swemre.com
  */
 
-import type {Project} from '../types/type'
+import type {Project, PublicPost} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
   fieldMediaAlt,
@@ -18,13 +18,10 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
-  publicRequest,
   safely,
   tagNames,
-  workspacePath,
-  type PagedContent,
-  type PublicPost,
 } from './apiClient'
+import {publicApi} from './publicApi'
 
 const toProject = (post: PublicPost): Project => ({
   id: String(post.id),
@@ -53,12 +50,12 @@ export class ProjectService extends ArrayService<Project> {
 
   override async findAll(): Promise<Project[]> {
     return safely(async () => {
-      const page = await publicRequest<PagedContent<PublicPost>>(
-        `${workspacePath}/posts?type=project&size=100&sort-by=publishedAt&direction=DESC`,
-      )
-      return (page?.content ?? [])
-        .map(toProject)
-        .sort((a, b) => b.year - a.year)
+      const posts = await publicApi.listPosts('project', {
+        size: 100,
+        sortBy: 'publishedAt',
+        direction: 'DESC',
+      })
+      return posts.map(toProject).sort((a, b) => b.year - a.year)
     }, [])
   }
 
@@ -68,9 +65,7 @@ export class ProjectService extends ArrayService<Project> {
 
   findBySlug(slug: string): Promise<Project | undefined> {
     return safely(async () => {
-      const post = await publicRequest<PublicPost>(
-        `${workspacePath}/posts/project/${encodeURIComponent(slug)}`,
-      )
+      const post = await publicApi.getPost('project', slug)
       return post ? toProject(post) : undefined
     }, undefined)
   }

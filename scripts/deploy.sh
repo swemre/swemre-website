@@ -9,6 +9,8 @@
 #   SSH_KEY             private key for the server, for example ~/.ssh/swemre-deploy
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
 #   VITE_WORKSPACE_KEY  the workspace the site reads, default swemre-website
+#   VITE_SITE_URL       where the site is served, default https://swemre.com
+#   (.env.example lists the other VITE_* settings)
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
 #   SKIP_INSTALL=1      keeps the installed packages, for example while a dev server is running
 # swemre-blocks must sit next to this project. The build writes public/rss.xml from the

@@ -160,6 +160,11 @@ text never sits on the plain canvas (SRS-LAY-08).
    SearchService (register(source) → search(query))  — not an entity service
 ```
 
+- `services/publicApi.ts` (ADR-017) is the only module that knows public
+  API paths and headers; services call its typed methods and the RSS, sitemap and
+  pre-render scripts import it too. `config/env.ts` reads `SiteEnv` from
+  `import.meta.env` in the bundle and from `process.env` in Node; one build
+  serves one website. `apiClient.ts` keeps only the field helpers.
 - `serviceRegistry.ts` instantiates each service once; `createSearchService`
   registers all sources against those instances.
 - `ServiceContext` defaults to the registry; `ServiceProvider` can inject a
@@ -529,3 +534,4 @@ Full trace: SWE-DOC-007.
 | 2026-10-23 | PRS-000332: error boundaries around the page outlet and the dock (§4.1, §6) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: `SkipLink` and `useRouteFocus` (skip link, focus and title announcement on route change, scroll restore on back/forward); `main.css` hides the focus ring on programmatic `tabindex=-1` targets (`main`, `main h1`) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: canonical and Twitter tags through `documentTags`, §4.10a route pre-render, preview plugin | Claude, for swemre review |
+| 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |

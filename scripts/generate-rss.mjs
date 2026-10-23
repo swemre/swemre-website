@@ -16,13 +16,13 @@
 // If the API cannot be reached, the existing public/rss.xml is kept and the script exits 0,
 // so `dev` and `build` still work offline. Fails (exit 1) when the feed log itself is invalid.
 import {existsSync, mkdirSync, writeFileSync} from 'node:fs'
+import {siteEnv} from '../src/config/env.ts'
 import {siteConfig} from '../src/config/site.ts'
 import {feedDatabase} from '../src/database/feedDatabase.ts'
+import {publicApi} from '../src/services/publicApi.ts'
 
 const FEED_PATH = '/rss.xml'
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?Z$/
-const apiBase = process.env.VITE_API_BASE ?? 'http://localhost:8080/api'
-const workspaceKey = process.env.VITE_WORKSPACE_KEY ?? 'swemre-website'
 
 const escape = text =>
   String(text)
@@ -37,16 +37,8 @@ const absolute = link =>
 
 const errors = []
 
-async function fetchPublished(path) {
-  const response = await fetch(`${apiBase}${path}`, {
-    headers: {Accept: 'application/json'},
-  })
-  // 404: the workspace has no such content type yet, so it has nothing to announce
-  if (response.status === 404) return []
-  if (!response.ok) throw new Error(`${path} answered ${response.status}`)
-  const page = await response.json()
-  return page.content ?? []
-}
+const fetchPublished = type =>
+  publicApi.listPosts(type, {sortBy: 'publishedAt', direction: 'DESC'})
 
 // A text field of a post; the API leaves empty fields out
 const fieldText = (post, key) =>
@@ -60,12 +52,8 @@ const termNames = post =>
 
 // Each API item becomes one feed entry; its publishedAt is the moment it went live
 async function fetchApiItems() {
-  const articles = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=article&size=100&sort-by=publishedAt&direction=DESC`,
-  )
-  const projects = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=project&size=100&sort-by=publishedAt&direction=DESC`,
-  )
+  const articles = await fetchPublished('article')
+  const projects = await fetchPublished('project')
 
   const articleItems = articles.map(article => {
     const link = absolute(`/articles/${article.slug}`)
@@ -93,9 +81,7 @@ async function fetchApiItems() {
     }
   })
 
-  const songs = await fetchPublished(
-    `/public/v1/workspaces/${workspaceKey}/posts?type=song&size=100&sort-by=publishedAt&direction=DESC`,
-  )
+  const songs = await fetchPublished('song')
   const songItems = songs.map(song => {
     const artist = fieldText(song, 'artist') || song.author
     const spotifyUrl = fieldText(song, 'spotifyUrl')
@@ -149,7 +135,7 @@ try {
   apiItems = await fetchApiItems()
 } catch (error) {
   console.warn(
-    `rss: swemre-website-api not reachable at ${apiBase} (${error.message}); keeping the existing public/rss.xml`,
+    `rss: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing public/rss.xml`,
   )
   process.exit(existsSync('public/rss.xml') ? 0 : 1)
 }

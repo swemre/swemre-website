@@ -361,6 +361,10 @@ not be heard in the headless environment).
 | TC-LGL-01   | SRS-LGL-01, LGL-02        | Render `SpecialPage` at `/sp/privacy-policy`                                                    | Version, effective and updated dates; numbered contents | Designed |
 | TC-LGL-02   | SRS-LGL-04                | Render `SpecialPage` at an unknown slug                                                         | `NotFound` with "This page is not available right now.", a `mailto:` link to the contact email and a link to `/` | Designed |
 | TC-FTR-01   | SRS-FTR-01, LGL-03        | Render `Footer`                                                                                 | Social links; RSS link `/rss.xml`; privacy link         | Designed |
+| TC-API-01   | SRS-MNT-10                | Load `/articles/<slug>`, open the chat and send a message; list the API requests. Run `npm run rss` and `npm run sitemap` against the same API before and after the change | Same request URLs as before the change; RSS (ignoring `lastBuildDate`) and sitemap identical | Designed |
+| TC-API-02   | SRS-MNT-11                | `readSiteEnv` with an empty source, then with every variable set (site URL with a trailing slash, timeout `abc`); build with `VITE_SITE_URL=https://example.test/ VITE_LOCALE=de` | Defaults from `siteDefaults`; values trimmed, slash dropped, default timeout; `dist/index.html` has `lang="de"` and `og:url` `https://example.test/` | Designed |
+| TC-API-03   | SRS-MNT-12                | `createPublicApi` with `timeoutMs: 50` against a server that never answers; call `listPosts` | Rejects with a timeout error after about 50 ms | Designed |
+| TC-API-04   | SRS-MNT-13                | `createPublicApi` with channel `swemre`, read key `rk`, locale `en` against a mock serving the bodies of docs/public-api-v2.md: list articles with `term: 'notes'` (newest first) and songs (by title), get a slug, the same slug as another content type and a missing slug, submit a form, ask presence; then read key `bad`; then no channel key | v2 `/public/v2/channels/swemre/publications?content-type=article&locale=en&size=100&term=notes` and `/publications/<slug>?locale=en` with `X-Read-Key: rk`; `fields.cover.altText` from `alt`, `fields.summary` from `excerpt`, `fields.body` and `languageVersions` on the detail, terms with `taxonomy`; other type and missing slug `undefined`; form, presence on v1 without the header; 401 rejects with `ApiError(401)`; without a channel key the v1 `/posts?type=` path | Designed |
 
 ## 5. End-to-end tests (L4, Playwright)
 
@@ -542,3 +546,6 @@ relative-luminance formula).
 | 2026-10-23 | PRS-000332: added TC-GEN-02 | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: added TC-E2E-13 (skip link, route focus, scroll restore) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: added TC-PRE-01; updated TC-GEN-01 (canonical, Twitter tags, trailing slash) | Claude, for swemre review |
+| 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |
+| 2026-10-23 | PRS-000443: added TC-API-04 | Claude, for swemre review |
+| 2026-10-23 | TC-API-04: documented v2 bodies, term filter, forms on v1 | Claude, for swemre review |

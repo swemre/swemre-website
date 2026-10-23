@@ -10,6 +10,7 @@
  */
 
 import type {SocialLink} from '../types/type'
+import {siteEnv} from './env.ts'
 
 // TODO(swemre): confirm the social URLs.
 export const siteConfig = {
@@ -19,7 +20,7 @@ export const siteConfig = {
   avatar: '/images/avatar-96.png',
   avatarLarge: '/images/avatar-384.png',
   jobTitle: 'Software Engineer',
-  url: 'https://swemre.com',
+  url: siteEnv.siteUrl,
   email: 'emre@swemre.com',
   tagline:
     'I build fast, accessible web applications and care about the details that make software feel simple.',

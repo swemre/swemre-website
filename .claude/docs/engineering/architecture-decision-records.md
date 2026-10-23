@@ -213,9 +213,43 @@ decision is marked Superseded with a link to its replacement.
   content is still rendered client-side (search engines that run
   JavaScript only).
 
+## ADR-017 One typed public API client and one site environment per build
+
+- **Status**: Proposed (1.0.0-ALPHA, foundation for PRS-000443)
+- **Context**: Every service, the analytics call and the RSS and sitemap
+  scripts built their own `/public/v1/workspaces/<key>/...` paths and read
+  `VITE_API_BASE` and `VITE_WORKSPACE_KEY` on their own; the site URL was a
+  constant. The platform makes the website one channel of its workspace,
+  read with a channel key and a read key under `/api/public/v2`, and a
+  workspace may run several websites.
+- **Decision**: `config/env.ts` reads the build's environment once
+  (`readSiteEnv`) into `SiteEnv`: API base, workspace key, channel key, read
+  key, site URL, locale and read timeout, with defaults in
+  `config/siteDefaults.ts`. It works in the bundle (`import.meta.env`) and
+  in the Node build scripts (`process.env`). `services/publicApi.ts` is the
+  only module that knows public API paths and headers; services and scripts
+  call its typed methods (`listPosts`, `getPost`, `submitForm`, chat,
+  `recordPageView`). Reads time out after `timeoutMs` and throw. A read key
+  is sent as `X-Read-Key` only when configured. `index.html` takes the site
+  URL and language from the same variables.
+- **Consequences**: Moving to the channel API changes one file. One build
+  serves one website; another website of the workspace is another build
+  with its own variables. With `VITE_CHANNEL_KEY` set, publications come
+  from public API v2 (`/public/v2/channels/<channel>/publications`, pages
+  `{items, total, page, size}`, `locale`, `content-type` and `term`
+  parameters, newest first) with `X-Read-Key`; the client maps each
+  publication to the v1 post shape (cover, excerpt and body into `fields`,
+  `kind` to `taxonomy`) and sorts by title where a page asks for it. Without
+  a channel key everything stays on v1. Forms, chat and page views stay on
+  v1 until v2 serves them (docs/public-api-v2.md lists them as coming
+  next).
+
 ## Change log
 
 | Date       | Change                          | Author                    |
 | ---------- | ------------------------------- | ------------------------- |
 | 2026-10-15 | Records written for M0 to M4    | Claude, for swemre review |
 | 2026-10-23 | ADR-016 post-build pre-render of route meta tags (PRS-000311) | Claude, for swemre review |
+| 2026-10-23 | ADR-017 public API client and site environment | Claude, for swemre review |
+| 2026-10-23 | ADR-017: public API v2 for content and forms when a channel key is set | Claude, for swemre review |
+| 2026-10-23 | ADR-017: aligned with docs/public-api-v2.md (forms stay on v1, publication mapping, term filter) | Claude, for swemre review |

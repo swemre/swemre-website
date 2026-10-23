@@ -14,10 +14,9 @@
 // special pages of the website in swemre-website-api. If the API cannot be reached, the existing
 // public/sitemap.xml is kept and the script exits 0, so `dev` and `build` still work offline.
 import {existsSync, mkdirSync, writeFileSync} from 'node:fs'
+import {siteEnv} from '../src/config/env.ts'
 import {siteConfig} from '../src/config/site.ts'
-
-const apiBase = process.env.VITE_API_BASE ?? 'http://localhost:8080/api'
-const workspaceKey = process.env.VITE_WORKSPACE_KEY ?? 'swemre-website'
+import {publicApi} from '../src/services/publicApi.ts'
 
 const escape = text =>
   String(text)
@@ -25,17 +24,8 @@ const escape = text =>
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
 
-async function fetchPublished(type) {
-  const response = await fetch(
-    `${apiBase}/public/v1/workspaces/${workspaceKey}/posts?type=${type}&size=100&sort-by=publishedAt&direction=DESC`,
-    {headers: {Accept: 'application/json'}},
-  )
-  // 404: the workspace has no such content type, so there is nothing to list
-  if (response.status === 404) return []
-  if (!response.ok) throw new Error(`${type} answered ${response.status}`)
-  const page = await response.json()
-  return page.content ?? []
-}
+const fetchPublished = type =>
+  publicApi.listPosts(type, {sortBy: 'publishedAt', direction: 'DESC'})
 
 const entry = (path, lastModified) => ({path, lastModified})
 
@@ -55,7 +45,7 @@ try {
   ]
 } catch (error) {
   console.warn(
-    `sitemap: swemre-website-api not reachable at ${apiBase} (${error.message}); keeping the existing public/sitemap.xml`,
+    `sitemap: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing public/sitemap.xml`,
   )
   process.exit(existsSync('public/sitemap.xml') ? 0 : 1)
 }
