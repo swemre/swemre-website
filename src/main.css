@@ -286,6 +286,10 @@
     @apply rounded-xs outline-2 outline-offset-2 outline-primary;
   }
 
+  :is(main, main h1)[tabindex='-1']:focus-visible {
+    @apply outline-none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
