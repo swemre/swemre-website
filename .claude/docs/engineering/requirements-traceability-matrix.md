@@ -26,7 +26,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | ------------ | ------------- | ------------------------------------------------------------ | ------------------------- | ----------------- |
 | SRS-GEN-01   | §3.1, §9      | `vite.config.ts`, `package.json`                             | TC-MNT-02                 | Pass (BLD)        |
 | SRS-GEN-02   | §4.1          | `templates/SiteLayout.tsx`                                   | TC-E2E-01                 | Pass (INSP, SS)   |
-| SRS-GEN-03   | §4.1, §4.2    | `components/NotFound.tsx`, `App.tsx`                         | TC-ART-09, TC-MAN-05      | Manual (Verified in browser 2026-10-23: not-found title, W20) |
+| SRS-GEN-03   | §4.1, §4.2    | `components/NotFound.tsx`, `hooks/useNoIndex.ts`, `App.tsx` | TC-ART-09, TC-MAN-05      | Manual (Verified in browser 2026-10-23: not-found title, W20; `noindex` added and removed, PRS-000312) |
 | SRS-GEN-04   | §4.1          | `hooks/useRouteFocus.ts`                                     | TC-E2E-01, TC-E2E-13      | Manual (Verified in browser 2026-10-23: top on new path, back restores, PRS-000321); async pages Unverified |
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `utils/documentTags.ts`, `index.html` defaults | TC-GEN-01, TC-MAN-05, TC-PRE-01 | Unverified (canonical and Twitter tags added by PRS-000311; canonical, `og:url` and no duplicates seen in the browser 2026-10-23) |
@@ -136,6 +136,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-PRE-01   | §4.10a        | `scripts/prerender.mjs`, `utils/documentTags.ts`, `package.json` `postbuild` | TC-PRE-01 a, d, f | Manual (a, d 2026-10-23); runtime equality f Unverified |
 | SRS-PRE-02   | §4.10a        | `prerender.mjs` `removeDetailPages`, `shellParts`, slug check | TC-PRE-01 b, c, g         | Manual (b, c 2026-10-23); g Designed |
 | SRS-PRE-03   | §4.10a, §6    | `prerender.mjs` offline branch, `swemre-prerendered-routes`  | TC-PRE-01 d, e            | Manual (2026-10-23); production serving Unverified (deploy change) |
+| SRS-PRE-04   | §4.10a        | swemre-website-api `deploy/traefik-dynamic.yml` (`site-pages`), Garage error document, `public/favicon.ico` | TC-PRE-02 | Manual (404 and favicon checked against local Traefik and Garage containers for swemre-website-api#7); production Unverified |
 | SRS-SND-01   | §4.7a         | `SoundProvider` pointer/key classification                   | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-02   | §4.7a         | `SoundProvider` `soundForKey`                                | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-03   | §4.7a         | `Modal`, `ChatPanel`, `ResumeRequestForm`                    | TC-SND-03                 | Designed          |
@@ -233,3 +234,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | PRS-000332: rows for GEN-07, GEN-08 | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: GEN-04 row changed, A11Y-09 and A11Y-10 added, coverage update | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: rows SRS-PRE-01 to PRE-03, SRS-GEN-06 back to Unverified for the new tags | Claude, for swemre review |
+| 2026-10-23 | PRS-000312: GEN-03 row, PRE-04 row | Claude, for swemre review |
