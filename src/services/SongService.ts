@@ -11,7 +11,7 @@
 
 import type {PublicPost, Song} from '../types/type'
 import {ArrayService} from './ArrayService'
-import {fieldMediaUrl, fieldString, safely} from './apiClient'
+import {fieldMediaUrl, fieldString} from './apiClient'
 import {publicApi} from './publicApi'
 
 // open.spotify.com/track/<id>?si=... becomes <id>; a bare id is kept as it is
@@ -36,14 +36,12 @@ export class SongService extends ArrayService<Song> {
   }
 
   override async findAll(): Promise<Song[]> {
-    return safely(async () => {
-      const posts = await publicApi.listPosts('song', {
-        size: 100,
-        sortBy: 'title',
-        direction: 'ASC',
-      })
-      return posts.map(toSong).filter(song => song.spotifyId !== '')
-    }, [])
+    const posts = await publicApi.listPosts('song', {
+      size: 100,
+      sortBy: 'title',
+      direction: 'ASC',
+    })
+    return posts.map(toSong).filter(song => song.spotifyId !== '')
   }
 
   override async findById(id: string): Promise<Song | undefined> {

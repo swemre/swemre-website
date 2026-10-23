@@ -18,8 +18,8 @@ export abstract class ArrayService<
   private listCache?: Promise<T[]>
 
   // With cacheList the subclass's findAll runs once per session; callers share the in-flight
-  // request and get their own copy of the list. An empty list is not kept, because the API
-  // services also answer [] when the API is unreachable.
+  // request and get their own copy of the list. A failed load is not kept, so the next call
+  // asks again; neither is an empty list, so content published during the session shows up.
   protected constructor(rows: T[], cacheList = false) {
     this.rows = rows
     if (!cacheList) return
