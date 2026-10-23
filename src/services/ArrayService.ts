@@ -15,9 +15,28 @@ export abstract class ArrayService<
   T extends Entity,
 > implements SwemreService<T> {
   protected readonly rows: T[]
+  private listCache?: Promise<T[]>
 
-  protected constructor(rows: T[]) {
+  // With cacheList the subclass's findAll runs once per session; callers share the in-flight
+  // request and get their own copy of the list. An empty list is not kept, because the API
+  // services also answer [] when the API is unreachable.
+  protected constructor(rows: T[], cacheList = false) {
     this.rows = rows
+    if (!cacheList) return
+    const load = this.findAll.bind(this) as () => Promise<T[]>
+    this.findAll = () => {
+      const pending = (this.listCache ??= load().then(
+        list => {
+          if (list.length === 0) this.listCache = undefined
+          return list
+        },
+        (error: unknown) => {
+          this.listCache = undefined
+          throw error
+        },
+      ))
+      return pending.then(list => [...list])
+    }
   }
 
   findAll(): Promise<T[]> {

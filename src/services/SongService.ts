@@ -39,7 +39,7 @@ const toSong = (post: PublicPost): Song => ({
 // Songs are the "song" content type of the website, listed in the "Songs I liked" box
 export class SongService extends ArrayService<Song> {
   constructor() {
-    super([])
+    super([], true)
   }
 
   override async findAll(): Promise<Song[]> {

@@ -37,7 +37,7 @@ const toSpecialPage = (post: PublicPost): SpecialPage => ({
 // Without that type every special page is not found.
 export class SpecialPageService extends ArrayService<SpecialPage> {
   constructor() {
-    super([])
+    super([], true)
   }
 
   override async findAll(): Promise<SpecialPage[]> {
