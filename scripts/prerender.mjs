@@ -31,7 +31,7 @@ import {fieldMediaUrl, fieldString} from '../src/services/apiClient.ts'
 import {publicApi} from '../src/services/publicApi.ts'
 import {documentTags} from '../src/utils/documentTags.ts'
 
-const DIST = 'dist'
+const DIST = process.env.DIST_DIR || 'dist'
 const DETAIL_FOLDERS = ['articles', 'projects', 'sp']
 const SLUG = /^[a-z0-9][a-z0-9-]*$/i
 

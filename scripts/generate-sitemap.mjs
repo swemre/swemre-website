@@ -18,6 +18,10 @@ import {siteEnv} from '../src/config/env.ts'
 import {siteConfig} from '../src/config/site.ts'
 import {publicApi} from '../src/services/publicApi.ts'
 
+// OUT_DIR=dist writes into an existing build (npm run refresh)
+const OUT_DIR = process.env.OUT_DIR || 'public'
+const OUT_FILE = `${OUT_DIR}/sitemap.xml`
+
 const escape = text =>
   String(text)
     .replaceAll('&', '&amp;')
@@ -45,9 +49,9 @@ try {
   ]
 } catch (error) {
   console.warn(
-    `sitemap: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing public/sitemap.xml`,
+    `sitemap: swemre-website-api not reachable at ${siteEnv.apiBase} (${error.message}); keeping the existing ${OUT_FILE}`,
   )
-  process.exit(existsSync('public/sitemap.xml') ? 0 : 1)
+  process.exit(existsSync(OUT_FILE) ? 0 : 1)
 }
 
 const entries = [entry('/'), entry('/articles'), entry('/projects'), ...posts]
@@ -71,6 +75,6 @@ ${urlXml}
 </urlset>
 `
 
-mkdirSync('public', {recursive: true})
-writeFileSync('public/sitemap.xml', xml)
-console.log(`sitemap: wrote ${entries.length} url(s) to public/sitemap.xml`)
+mkdirSync(OUT_DIR, {recursive: true})
+writeFileSync(OUT_FILE, xml)
+console.log(`sitemap: wrote ${entries.length} url(s) to ${OUT_FILE}`)

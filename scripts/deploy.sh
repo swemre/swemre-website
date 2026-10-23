@@ -36,5 +36,18 @@ echo "Copying the build to $SSH_HOST:$REMOTE_BUILD"
 tar -czf - -C dist . | "${SSH[@]}" "$SSH_HOST" \
   "rm -rf '$REMOTE_BUILD' && mkdir -p '$REMOTE_BUILD' && tar -xzf - -C '$REMOTE_BUILD'"
 
+# The server keeps the build fresh between deploys (deploy/refresh-site.sh): it reruns the
+# rss, sitemap and pre-render scripts, which need only Node and these sources
+REMOTE_REFRESH="$REMOTE_DIR/deploy/site-refresh"
+echo "Copying the refresh scripts to $SSH_HOST:$REMOTE_REFRESH"
+tar -czf - scripts src package.json | "${SSH[@]}" "$SSH_HOST"   "rm -rf '$REMOTE_REFRESH' && mkdir -p '$REMOTE_REFRESH' && tar -xzf - -C '$REMOTE_REFRESH'"
+printf 'VITE_API_BASE=%s
+VITE_WORKSPACE_KEY=%s
+VITE_SITE_URL=%s
+VITE_CHANNEL_KEY=%s
+VITE_READ_KEY=%s
+VITE_LOCALE=%s
+'   "$VITE_API_BASE" "${VITE_WORKSPACE_KEY:-}" "${VITE_SITE_URL:-}" "${VITE_CHANNEL_KEY:-}"   "${VITE_READ_KEY:-}" "${VITE_LOCALE:-}" | "${SSH[@]}" "$SSH_HOST" "cat > '$REMOTE_REFRESH/site.env'"
+
 echo "Publishing"
 "${SSH[@]}" "$SSH_HOST" "cd '$REMOTE_DIR/deploy' && ./publish-site.sh site-build"
