@@ -62,6 +62,31 @@ Status: Designed.
 
 Status: Designed.
 
+**TC-SVC-03** List cache (SRS-PERF-05)
+
+| Step | Action                                                                 | Expected                                         |
+| ---- | ---------------------------------------------------------------------- | ------------------------------------------------ |
+| 1    | Subclass with `cacheList = true` whose `findAll` is a spy resolving `[a, b]` |                                           |
+| 2    | Call `findAll()` twice without awaiting, then once more after both resolve | Spy called once; all three resolve to `[a, b]` |
+| 3    | Push to the first returned array, call `findAll()`                      | Still `[a, b]` (copy per caller)                 |
+| 4    | New instance, spy resolves `[]` first, then `[a]`                        | First call `[]`; second call runs the spy again and returns `[a]` |
+| 5    | New instance, spy rejects first, then resolves `[a]`                     | First call rejects; second call returns `[a]`    |
+| 6    | Subclass with `cacheList` omitted                                        | Spy called on every call                         |
+
+Status: Designed.
+
+**TC-SVC-04** Form submission confirmation (SRS-RES-03, RES-06), with
+`fetch` stubbed:
+
+| Case | API answer                         | `submitResumeRequest` / `submitCallbackRequest` |
+| ---- | ---------------------------------- | ----------------------------------------------- |
+| a    | 201 `{submittedAt: '…Z'}`          | Resolves; `createdAt` equals `submittedAt`; posted body has trimmed `fields` |
+| b    | 404 (form missing)                 | Rejects with `ApiError` status 404              |
+| c    | 500 `{message: 'x'}`               | Rejects with `ApiError` status 500, message `x` |
+| d    | `fetch` rejects (offline)          | Rejects                                         |
+
+Status: Designed.
+
 **TC-ART-01** ArticleService ordering and lookup (SRS-ART-03, ART-02)
 
 1. `findAll()` → sorted by `createdAt` descending.
@@ -97,8 +122,15 @@ Status: Designed.
 4. `toggleFavorite(id)` → `favorited: true`; other fields unchanged.
 5. Subscribed listener called once per write.
 
-**TC-ART-04** View registration (SRS-ART-11): `registerView(id)` twice →
-`views: 2`, `lastViewedAt` is an ISO string equal to the faked time.
+**TC-ART-04** View registration (SRS-ART-11), fresh module and empty
+`sessionStorage` per case:
+
+| Case | Setup / action                                                    | Expected                                    |
+| ---- | ----------------------------------------------------------------- | ------------------------------------------- |
+| a    | `registerView(id)` twice                                           | `views: 1`; `lastViewedAt` equals the faked time; `swemre:viewed-articles` = `["<id>"]` |
+| b    | `sessionStorage` already holds `["<id>"]` (reload), `registerView(id)` | `views` unchanged                       |
+| c    | `registerView(a)`, `registerView(b)`                               | Both counted once; the session list holds both ids |
+| d    | `sessionStorage.getItem` throws; `registerView(id)` twice          | `views: 1` (once per page load), no throw   |
 
 **TC-ART-05** Cross-tab sync (SRS-ART-13): dispatch a `StorageEvent` with
 key `swemre:article-interactions` and new value → subscriber called; next
@@ -124,7 +156,13 @@ Status: all Designed.
 | `gen serv` | "Generic Service Layer"                    | 170                |
 
 **TC-SRCH-02** Ordering and limit: 25 matching documents, `limit` 20 → 20
-results, scores non-increasing. Empty query → first 20 documents, score 0.
+results, scores non-increasing.
+
+**TC-SRCH-06** Empty-query default list (SRS-SRCH-08): register Pages (3
+items, no `featured`), Articles (8 items, `featured: 5`) and Projects
+(2 items, `featured: 0`); `search('')` and `search('   ')` → the 3 pages
+then the first 5 articles in `findAll` order, no projects, score 0. With
+every source empty → `[]`, and the dialog shows "Nothing to show yet".
 
 **TC-SRCH-03** Registration (SRS-SRCH-05): register a new source of a test
 `Searchable` type → its items appear with the given category, subtitle and
@@ -157,8 +195,9 @@ Status: Designed.
 **TC-CHAT-01** Start (SRS-CHAT-04): `start()` → conversation titled
 "New conversation", one `owner` message, delivery `sent`, persisted.
 
-**TC-CHAT-02** Send while offline (SRS-CHAT-06): `send(id, 'Hello')` →
-visitor message with delivery `queued`; `updatedAt` advanced.
+**TC-CHAT-02** Enqueue (SRS-CHAT-10): `enqueue(id, 'Hello')` → last
+message is the visitor's with delivery `sending`; `updatedAt` advanced; no
+request made yet. Presence `offline` does not change this.
 
 **TC-CHAT-03** Title rule (SRS-CHAT-05)
 
@@ -168,11 +207,23 @@ visitor message with delivery `queued`; `updatedAt` advanced.
 | 41 characters              | First 40, trimmed, then `…` |
 | Second message             | Title unchanged             |
 
-**TC-CHAT-04** Ordering: two conversations, send to the older one →
-`findAll()` returns it first.
+**TC-CHAT-04** Ordering: two conversations, enqueue to the older one →
+`list()` returns it first.
 
-**TC-CHAT-05** Unknown id: `send('missing', 'x')` → `undefined`, storage
+**TC-CHAT-05** Unknown id: `enqueue('missing', 'x')` → `undefined`, storage
 unchanged.
+
+**TC-CHAT-08** Delivery (SRS-CHAT-10 to CHAT-12), `fetch` stubbed:
+
+| Case | Setup / action                                                         | Expected                                         |
+| ---- | ---------------------------------------------------------------------- | ------------------------------------------------ |
+| a    | New conversation, `enqueue`, `deliver`; API answers `{token, messages}` | One POST to `/conversations`; `publicToken` stored; message replaced by the server copy, `sent` |
+| b    | Conversation with a token, API rejects                                 | POST to `/conversations/<token>/message`; message `queued` |
+| c    | Two queued messages; `markSending(id)` then `deliver(id)`, API ok       | `markSending` → `true`, both `sending`; two POSTs in order; both `sent` |
+| d    | First POST fails with two unsent messages                              | One POST only; both `queued`                     |
+| e    | `deliver(id)` twice without awaiting, one unsent message               | Exactly one POST for it                          |
+| f    | Storage holds a `sending` message; construct the service               | It is `queued`; `pending()` lists the conversation |
+| g    | Nothing unsent; `markSending(id)`                                      | `false`, storage unchanged                       |
 
 Status: all Designed.
 
@@ -191,6 +242,24 @@ four listed problems; `public/rss.xml` unchanged. Status: Manual pass
 
 **TC-RSS-03** Stable output (SRS-RSS-05): run `npm run rss` twice →
 byte-identical files. Status: Designed.
+
+**TC-MAP-01** Sitemap generation (SRS-MAP-01, MAP-02), against a local
+stub API (`VITE_API_BASE` pointing at it):
+
+| Case | Stub answers                                              | Expected                                           |
+| ---- | --------------------------------------------------------- | -------------------------------------------------- |
+| a    | 2 articles, 1 project, `page` type 404                     | Exit 0; valid XML; `/`, `/articles`, `/projects`, 2 article and 1 project URLs; `lastmod` = date of `lastUpdatedAt`; no `/sp/` URL |
+| b    | A slug containing `&`                                      | `&amp;` in `loc`                                   |
+| c    | API not listening, `public/sitemap.xml` exists            | Warning; exit 0; file unchanged                    |
+| d    | API not listening, no `public/sitemap.xml`                | Exit 1                                             |
+| e    | `article` answers 500                                      | Treated as unreachable (case c or d)               |
+
+Also run `npm run dev` and `npm run build` once each: the sitemap step runs
+after RSS. Status: Designed.
+
+**TC-MAP-02** robots.txt (SRS-MAP-03): inspect `public/robots.txt` → allows
+`/` for every agent and names `https://swemre.com/sitemap.xml`. Status:
+Pass by inspection 2026-10-23.
 
 ### 3.7 Sound
 
@@ -233,25 +302,45 @@ not be heard in the headless environment).
 | ----------- | ------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- | -------- |
 | TC-NAV-01   | SRS-NAV-02, NAV-03        | Render `Navbar` in a `MemoryRouter` at `/articles`                                              | Logo link to `/`; three links; Articles has active style; search, resume and theme buttons present | Designed |
 | TC-NAV-02   | SRS-NAV-05                | Same, viewport class check: click "Toggle menu"                                                  | Mobile nav appears; `aria-expanded="true"`; clicking a link closes it | Designed |
-| TC-HOME-01  | SRS-HOME-01 to HOME-03    | Render `HomePage` with fake services (7 articles, 2 projects, 3 songs)                          | Title text exact; `tel:` href; 5 article rows max; 2 project rows; 3 song rows | Designed |
+| TC-NAV-03   | SRS-NAV-06                | Open the mobile menu; press Escape. Open; `pointerdown` on `document.body`. Open; `pointerdown` inside the menu. Open; navigate programmatically to `/projects` | Closed, focus on "Toggle menu"; closed; stays open; closed | Designed |
+| TC-HOME-01  | SRS-HOME-01 to HOME-03    | Render `HomePage` with fake services (7 articles, 2 projects, 3 songs)                          | Title text exact; "Request a call back" opens the call back dialog; no `tel:` link; 5 article rows max; 2 project rows; 3 song rows | Designed |
+| TC-HOME-02  | SRS-HOME-05               | Render `HomePage` with (a) 1 article, 0 projects, 0 songs; (b) services still loading; (c) all empty | (a) only "Articles 01"; (b) three `--` counts; (c) no stats `<dl>` | Designed |
+| TC-HOME-03  | SRS-HOME-06               | Render `ArticleShowcase` with 1 article, then 3, at 1280 px                                     | 1: wrapper `lg:col-span-12`, card `lg:flex-row`; 3: `lg:col-span-7` plus the reading list | Designed |
 | TC-ART-07   | SRS-ART-04, ART-05        | Render `ArticlesPage` at `/articles?tag=react`                                                  | Only react articles; tag button pressed; "Saved only" with one favorited → one row | Designed |
 | TC-ART-08   | SRS-ART-06, ART-09        | Render `ArticlePage` at a known slug                                                            | Breadcrumb, tags, `h1`, summary, author, date, reading time, Like, Save, view count, sidebars | Designed |
-| TC-ART-09   | SRS-ART-10, GEN-03        | `ArticlePage` at unknown slug; `App` at `/nope`                                                 | "Article not found" + link; "Page not found" + link     | Designed |
-| TC-ART-10   | SRS-ART-11                | Render `ArticlePage` in `StrictMode`                                                           | `views` = 1 after mount                                  | Designed |
+| TC-ART-09   | SRS-ART-10, PRJ-05, GEN-03 | `ArticlePage` and `ProjectPage` at unknown slugs; `App` at `/nope`                             | Same `NotFound` view: "404", "Article not found" / "Project not found" + back link, `document.title` "Article not found · SWEMRE" etc.; "Page not found" + link to `/`, title "Page not found · SWEMRE" | Designed |
+| TC-ART-10   | SRS-ART-11                | Render `ArticlePage` in `StrictMode`; unmount and mount again in the same session               | `views` = 1 after the first mount and still 1 after the second | Designed |
 | TC-ART-11   | SRS-ART-07                | Render `DocsLayout` with an MDX body containing two `h2` and one `h3`                           | TOC lists three entries with matching ids and levels    | Designed |
+| TC-ART-12   | SRS-LAY-08                | `ArticlePage` and `ProjectPage` with a loader that never settles, then one resolving `undefined` | `HeaderBand` (`aria-hidden`) rendered above "Loading…" and above the not-found view | Designed |
+| TC-ART-13   | SRS-ART-15, PRJ-07, A11Y-08 | `ArticleTemplate` / `ProjectTemplate` / `CoverImage` with a cover `{url, altText: 'A', width: 1600, height: 900}`, then without `altText`, then without a cover | `<img>` in the header with `alt="A"`, `width=1600`, `height=900`; `alt=""`; no header image | Designed |
+| TC-ART-14   | SRS-ART-16                | `DocsLayout` with two headings, viewport below 1280 px; then with no headings                   | Closed `<details>` "On this page" before the body; opening lists both headings; no `<details>` without headings | Designed |
+| TC-ART-15   | SRS-ART-17                | `ArticlesPage` with tags at 768 px; click a chip                                                | Chip row above the list ("All" + tags with counts), sidebar hidden; chip `aria-pressed`, `?tag=` updated, list filtered | Designed |
 | TC-PRJ-02   | SRS-PRJ-03                | `ProjectTemplate` with and without `url`/`repoUrl`                                              | Buttons shown only when URLs exist; `rel="noreferrer noopener"` | Designed |
+| TC-PRJ-03   | SRS-PRJ-08                | `ProjectsPage` with a loading, then an empty project list                                       | "Loading…" only, then "No projects yet" with a link to `/articles`, no grid | Designed |
+| TC-PRJ-04   | SRS-PRJ-09, LAY-09        | `ProjectsPage` with projects and articles; then no articles. `SidebarNav` with one empty and one filled section | Sidebar has only "Articles"; no `<aside>`; only the filled section's heading | Designed |
 | TC-SRCH-04  | SRS-SRCH-01, SRCH-04      | Render `SearchDialogProvider`; press Ctrl+K; type; ArrowDown; Enter                              | Dialog opens; selection moves; navigate called with the right path; Escape closes | Designed |
 | TC-SRCH-05  | SRS-SRCH-01               | Focus an input; press "/"                                                                        | Dialog does **not** open                                | Designed |
+| TC-SRCH-07  | SRS-SRCH-07               | Search service whose `search('a')` resolves at once and `search('ab')` waits; type "a", then "b"; press Enter before `ab` settles | After "b": no result rows, Enter does nothing; rows appear when `ab` settles | Designed |
 | TC-PLY-01   | SRS-PLY-02, PLY-03, PLY-08 | `PlayerProvider` with stubbed iFrame API; toggle song A; toggle A; toggle B                     | Script injected once on first toggle; `createController` once; `togglePlay` on A again; `loadUri` + `play` for B | Designed |
 | TC-PLY-02   | SRS-PLY-06                | After TC-PLY-01, call `close()`                                                                 | `destroy` called; `current` null; panel hidden          | Designed |
 | TC-PLY-03   | SRS-PLY-07                | Script `onerror` fires                                                                          | `failed` true; panel renders fallback iframe with the embed URL | Designed |
-| TC-CHAT-06  | SRS-CHAT-01, CHAT-02, CHAT-08 | Render `Dock` with a song playing; click launcher                                          | Chat panel opens; player collapsed; "New conversation" creates and opens one; delete removes it | Designed |
+| TC-CHAT-06  | SRS-CHAT-01, CHAT-02, CHAT-08 | Render `Dock` with a song playing; click launcher                                          | Chat panel opens; player collapsed; "New conversation" creates and opens one; delete (after confirming) removes it | Designed |
+| TC-CHAT-09  | SRS-CHAT-06, CHAT-10, CHAT-11 | Presence `offline`; send "hi" with a delivery that waits; then let it fail; then press the bubble (click and Enter) with the API answering | New banner text; bubble at once with "Sending…"; then "Not sent · tap to retry" as a `<button>` named "Retry sending: hi"; after retry check mark | Designed |
+| TC-CHAT-10  | SRS-CHAT-12               | One queued message; (a) fire window `online`; (b) close and open the panel; (c) socket stub fires `onopen` | Each triggers one delivery attempt; never two POSTs for the same message | Designed |
+| TC-CHAT-11  | SRS-CHAT-13               | Conversation list: press delete, then Cancel; press delete, Escape; press delete, Delete. Repeat with `pointer: coarse` emulated | Confirmation row with Cancel focused; row back; row back; conversation removed. Delete button visible without hover on coarse pointers and on keyboard focus | Designed |
 | TC-CHAT-07  | SRS-CHAT-07               | In a conversation, type "hi", Enter; type "a", Shift+Enter, "b", Enter; press Enter on empty     | Two messages: "hi", "a\nb"; no empty message            | Designed |
 | TC-RES-02   | SRS-RES-01, RES-03        | Click navbar CTA; fill valid values; submit                                                    | Modal open; `submitResumeRequest` called once with trimmed values; confirmation shows first name and email | Designed |
 | TC-RES-03   | SRS-RES-02                | Submit empty form                                                                               | Three field errors, focusable, no service call          | Designed |
+| TC-RES-04   | SRS-RES-05                | Resume form with `submitResumeRequest` rejecting; submit valid values; then let it resolve and submit again | Alert "The request could not be sent. Please try again later.", `error` sound, fields and button enabled; second submit shows the confirmation | Designed |
+| TC-RES-05   | SRS-RES-06, RES-03        | Call back form with `submitCallbackRequest` rejecting (as for a 404); then resolving              | Error shown, no "Call back requested"; then the confirmation | Designed |
+| TC-RES-06   | SRS-RES-07                | Both forms: submit with only the second field invalid; then all empty; then type in an invalid field | Focus on the second field; focus on the first field; that field's error disappears, others stay | Designed |
+| TC-RES-07   | SRS-RES-08                | Open both dialogs at 360 px and 1920 px; inspect the header                                     | Title and subtitle end left of the close button (header `pr-14`) | Designed |
 | TC-THM-01   | SRS-THM-01, THM-02        | Stored `dark` → render; toggle                                                                  | `data-theme="dark"`, then `light`; storage updated      | Designed |
-| TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`                                          | Designed |
+| TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`; storage still empty                     | Designed |
+| TC-THM-03   | SRS-THM-02                | Empty storage, `matchMedia` light; fire a `change` to dark; then toggle; then fire `change` to light | `data-theme` becomes `dark` with nothing stored; toggle stores `light` and applies it; the later system change is ignored | Designed |
+| TC-GEN-01   | SRS-GEN-05, GEN-06        | Component calling `useDocumentTitle('X', {description: 'D', image: 'I'})` at `/articles/x`; then `useDocumentTitle()` at `/` | Title "X · SWEMRE", description and `og:description` "D", `og:image` "I", `og:url` ends `/articles/x`, `twitter:card` `summary_large_image`; then "SWEMRE", site description, avatar image, `summary`; no duplicate meta elements | Designed |
 | TC-LGL-01   | SRS-LGL-01, LGL-02        | Render `SpecialPage` at `/sp/privacy-policy`                                                    | Version, effective and updated dates; numbered contents | Designed |
+| TC-LGL-02   | SRS-LGL-04                | Render `SpecialPage` at an unknown slug                                                         | `NotFound` with "This page is not available right now.", a `mailto:` link to the contact email and a link to `/` | Designed |
 | TC-FTR-01   | SRS-FTR-01, LGL-03        | Render `Footer`                                                                                 | Social links; RSS link `/rss.xml`; privacy link         | Designed |
 
 ## 5. End-to-end tests (L4, Playwright)
@@ -263,7 +352,7 @@ not be heard in the headless environment).
 | 1    | Open `/`                                           | Title visible; no vertical scrollbar at 1920×1080 (HOME-04) |
 | 2    | Click first article in the Articles list           | URL `/articles/<slug>`; window scrolled to top; band visible |
 | 3    | Click "Save"                                       | Button pressed state                                        |
-| 4    | Reload                                             | Still saved; views = 2                                      |
+| 4    | Reload                                             | Still saved; views = 1 (same session, SRS-ART-11)           |
 | 5    | Open `/articles`, click "Saved only"               | Exactly that article listed                                 |
 
 ### TC-E2E-02 Search journey (SRS-SRCH-01 to SRCH-04)
@@ -307,9 +396,20 @@ iframe with `/embed/track/<id>` appears.
 
 ### TC-E2E-07 Chat persistence (SRS-CHAT-02, CHAT-03, CHAT-06)
 
-Open chat, start a conversation, send "Hello there", reload, reopen → the
-conversation is listed with title "Hello there" and the message shows
-"Queued".
+With the chat API routes aborted: open chat, start a conversation, send
+"Hello there", reload, reopen → the conversation is listed with title
+"Hello there" and the message shows "Not sent · tap to retry". Unblock the
+routes and go online (`context.setOffline(false)`) → the message is posted
+once and shows the check mark.
+
+### TC-E2E-12 Phone layout (SRS-LAY-07, CHAT-14)
+
+At 375×812 (mobile emulation): scroll `/` and `/articles` to the bottom →
+footer text and hero stats are not covered by the dock. Open chat → the
+panel fills the viewport, padded by the safe-area insets; `document
+.documentElement.style.overflow` is `hidden` and wheel/touch scrolling does
+not move the page; close → `overflow` restored. Resize to 768 px with chat
+open → floating panel, page scrolls again.
 
 ### TC-E2E-08 No storage (SRS-CMP-03)
 
@@ -365,6 +465,29 @@ fg-on-emphasis/primary-solid, cover-fg/band-via) compute the WCAG ratio in
 both themes and record it in Appendix A. Pairs for body text need ≥ 4.5:1;
 large text and UI components ≥ 3:1.
 
+### TC-MAN-05 UX fixes browser check (2026-10-23)
+
+Browser check by the lead for the website UX tickets. Verified in browser
+2026-10-23:
+
+| Ticket | Requirement      | Observed                                                          |
+| ------ | ---------------- | ----------------------------------------------------------------- |
+| W1     | SRS-RES-06       | Call back request against a missing form shows the error, not "Call back requested" |
+| W18    | SRS-RES-08       | Call back dialog subtitle stays clear of the close button         |
+| W19    | SRS-RES-07       | Invalid submit moves focus to the first invalid field             |
+| W5     | SRS-ART-15       | Article page shows its cover in the header                        |
+| W4     | SRS-LAY-08       | Article not-found page draws the band behind the navbar           |
+| W6     | SRS-HOME-05      | Hero stats show only counts above zero                            |
+| W7     | SRS-HOME-06      | A single article spans the full width                             |
+| W8     | SRS-PRJ-08       | Projects page shows the empty state                               |
+| W9     | SRS-LAY-09       | Empty sidebar section is not shown                                |
+| W11    | SRS-ART-16       | Collapsible "On this page" below `xl`                             |
+| W20    | SRS-GEN-03       | Not-found page sets the "Page not found" title                    |
+| W24    | SRS-GEN-06       | Description and Open Graph tags are set per page                  |
+
+Every other UX fix (W2, W3, W10, W12 to W17, W21 to W23, W25, W26) is not
+yet verified in a browser; their test cases above are Designed.
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x
@@ -385,3 +508,4 @@ relative-luminance formula).
 | Date       | Change         | Author                    |
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
+| 2026-10-23 | UX fixes: added TC-SVC-03, TC-SVC-04, TC-SRCH-06, TC-SRCH-07, TC-CHAT-08 to TC-CHAT-11, TC-MAP-01, TC-MAP-02, TC-NAV-03, TC-HOME-02, TC-HOME-03, TC-ART-12 to TC-ART-15, TC-PRJ-03, TC-PRJ-04, TC-RES-04 to TC-RES-07, TC-THM-03, TC-GEN-01, TC-LGL-02, TC-E2E-12, TC-MAN-05; updated TC-ART-04, TC-ART-09, TC-ART-10, TC-SRCH-02, TC-CHAT-02, TC-CHAT-04 to TC-CHAT-06, TC-HOME-01, TC-THM-02, TC-E2E-01, TC-E2E-07 | Claude, for swemre review |

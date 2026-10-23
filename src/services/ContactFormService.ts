@@ -17,7 +17,7 @@ import type {
   ContactFormInput,
 } from '../types/type'
 import {ArrayService} from './ArrayService'
-import {publicRequest, workspacePath} from './apiClient'
+import {ApiError, publicRequest, workspacePath} from './apiClient'
 
 interface SubmittedFormDto {
   submittedAt: string
@@ -27,6 +27,22 @@ interface SubmittedFormDto {
 const CV_REQUEST_FORM = 'cv-request'
 const CALLBACK_REQUEST_FORM = 'callback-request'
 
+// publicRequest answers a 404 with undefined; for a submission that means the form does not
+// exist, so no confirmation is a failure.
+async function submitForm(
+  form: string,
+  fields: Record<string, string>,
+): Promise<SubmittedFormDto> {
+  const submitted = await publicRequest<SubmittedFormDto>(
+    `${workspacePath}/forms/${form}/submissions`,
+    {method: 'POST', body: {fields}},
+  )
+  if (!submitted) {
+    throw new ApiError(404, `Form ${form} did not confirm the submission`)
+  }
+  return submitted
+}
+
 export class ContactFormService extends ArrayService<ContactForm> {
   constructor() {
     super(contactFormDatabase)
@@ -35,19 +51,11 @@ export class ContactFormService extends ArrayService<ContactForm> {
   // The API keeps the submission; the site only needs confirmation that it was stored.
   // A failure is thrown so the form shows an error instead of a false success.
   async submitResumeRequest(input: ContactFormInput): Promise<ContactForm> {
-    const submitted = await publicRequest<SubmittedFormDto>(
-      `${workspacePath}/forms/${CV_REQUEST_FORM}/submissions`,
-      {
-        method: 'POST',
-        body: {
-          fields: {
-            fullName: input.fullName.trim(),
-            email: input.email.trim(),
-            reason: input.reason.trim(),
-          },
-        },
-      },
-    )
+    const submitted = await submitForm(CV_REQUEST_FORM, {
+      fullName: input.fullName.trim(),
+      email: input.email.trim(),
+      reason: input.reason.trim(),
+    })
 
     return {
       id: crypto.randomUUID(),
@@ -55,7 +63,7 @@ export class ContactFormService extends ArrayService<ContactForm> {
       fullName: input.fullName.trim(),
       email: input.email.trim(),
       reason: input.reason.trim(),
-      createdAt: submitted?.submittedAt ?? new Date().toISOString(),
+      createdAt: submitted.submittedAt ?? new Date().toISOString(),
     }
   }
 
@@ -63,19 +71,11 @@ export class ContactFormService extends ArrayService<ContactForm> {
   async submitCallbackRequest(
     input: CallbackFormInput,
   ): Promise<CallbackRequest> {
-    const submitted = await publicRequest<SubmittedFormDto>(
-      `${workspacePath}/forms/${CALLBACK_REQUEST_FORM}/submissions`,
-      {
-        method: 'POST',
-        body: {
-          fields: {
-            fullName: input.fullName.trim(),
-            phone: input.phone.trim(),
-            topic: input.topic.trim(),
-          },
-        },
-      },
-    )
+    const submitted = await submitForm(CALLBACK_REQUEST_FORM, {
+      fullName: input.fullName.trim(),
+      phone: input.phone.trim(),
+      topic: input.topic.trim(),
+    })
 
     return {
       id: crypto.randomUUID(),
@@ -83,7 +83,7 @@ export class ContactFormService extends ArrayService<ContactForm> {
       fullName: input.fullName.trim(),
       phone: input.phone.trim(),
       topic: input.topic.trim(),
-      createdAt: submitted?.submittedAt ?? new Date().toISOString(),
+      createdAt: submitted.submittedAt ?? new Date().toISOString(),
     }
   }
 }

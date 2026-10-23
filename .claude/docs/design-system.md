@@ -38,7 +38,7 @@ variants for colours. A `dark:` custom variant exists for rare non-colour cases.
 | Fonts    | `font-sans` (Inter Variable, self-hosted via `@fontsource-variable/inter`, system fallback), `font-heading`, `font-mono` |
 | Text     | `text-2xs` … `text-7xl`, plus `text-reading` (article body), each with a paired line height |
 | Containers | `page` 108rem (content), `wide` 150rem (navbar/footer), `reading` 75ch (doc column incl. header; ≈ 65 to 75 characters per line), `sidebar` `clamp(14rem, 14vw, 19rem)`, `hero` 64rem, `measure` 48rem (ledes), `search` 20rem, `dialog` / `palette` / `dock` (fluid `min(…, 100vw - 2rem)`), `bubble` 80%. Use as `max-w-*`, `w-*`, `basis-*` |
-| Spacing  | `nav` (navbar height), `sticky` (sticky offset), `band` (header band, `clamp(9rem, 18vh, 11rem)`), `band-cell` (band grid), `glow-lg` / `glow-md` / `glow-sm` (aurora glow sizes), `embed` (Spotify embed, 152 px), `dialog-top`, `palette` (search max height), `chat` (chat panel height). Use as `h-*`, `pt-*`, `top-*`, `mt-*`, `max-h-*` |
+| Spacing  | `nav` (navbar height), `sticky` (sticky offset), `band` (header band, `clamp(9rem, 18vh, 11rem)`), `band-cell` (band grid), `glow-lg` / `glow-md` / `glow-sm` (aurora glow sizes), `embed` (Spotify embed, 152 px), `dialog-top`, `palette` (search max height), `chat` (chat panel height), `dock-clear` (4.5rem of room under the footer and the home hero stats for the dock on phones), `safe-top` / `safe-bottom` (`env(safe-area-inset-*)`, 0 without notch; the phone chat sheet and the dock). Use as `h-*`, `pt-*`, `pb-*`, `mb-*`, `top-*`, `mt-*`, `max-h-*` |
 | Motion   | `animate-pop`, `animate-fade`, `animate-eq` (equalizer bars), `animate-rise` (entrance slide, movement only so content never stays hidden), `animate-drift` (aurora glows). `prefers-reduced-motion` turns motion off |
 
 Examples: `bg-surface border border-border rounded-lg shadow-sm`,
@@ -117,11 +117,20 @@ band the header has `data-tone="cover"`; children restyle through
 ## Sidebars
 
 `components/SidebarNav.tsx` renders titled link sections with an optional
-"All" link (`moreTo`). Article pages list Articles + Projects, project pages
-list Projects + Articles, the articles index has Topics + Projects, the
-projects index has Projects + Articles. Links come from `projectNavItem` and
+"All" link (`moreTo`). Sections without items are not rendered, and a nav
+with no filled section renders nothing, so no heading ever stands alone.
+Article pages list Articles + Projects, project pages list Projects +
+Articles, the articles index has Topics + Projects, and the projects index
+lists **Articles only** (the projects are already the page's grid); without
+articles it has no sidebar. Links come from `projectNavItem` and
 `articleNavItem` in `utils/navItems.ts` and point at `/projects/<slug>` and
 `/articles/<slug>`.
+
+Below `lg`, `ListTemplate` moves the sidebar after the content; the articles
+index hides it instead (`sidebarFromLg`) and shows the topics as a
+horizontally scrolling chip row above the list. Below `xl`, where the docs
+layout has no TOC column, article and project pages show "On this page" as a
+collapsible `<details>` box above the body.
 
 ## Code highlighting
 
@@ -141,15 +150,18 @@ set from `data-theme`. Code fences need a language (` ```ts `).
 The home page scrolls. A full-height hero on the band backdrop holds text
 only (no avatar): a mono kicker, the job title with the name in blue gradient
 text, the tagline, "Request a call back" (white) and "Request my resume"
-(translucent), and live counts of articles, projects and songs. Below it,
+(translucent), and live counts of articles, projects and songs (only lists
+that are loading or have items; no stats row when none). Below it,
 numbered sections (`components/HomeSection.tsx`): 01 articles
 (`components/home/ArticleShowcase.tsx`: the latest as a large cover feature, the
-next three as a reading list with thumbnails), 02 projects
+next three as a reading list with thumbnails; a single article spans the full
+width with the cover beside the text from `lg`), 02 projects
 (`components/home/ProjectShowcase.tsx`: alternating case-study rows with the
 cover in a browser frame, summary, a body excerpt, year, stack and live host,
 and Case study, Live site and Source buttons), 03 songs, and 04 a contact panel
-on the band backdrop. `components/CoverImage.tsx` shows a cover or, without
-one, the title initials on the band gradient. Every layout stacks on phones,
+on the band backdrop. `components/CoverImage.tsx` shows a cover (with the
+media alt text and width/height when the API gives them) or, without one,
+the title initials on the band gradient. Every layout stacks on phones,
 adapts at tablet width and reaches its full layout at `lg`. The phone number is not shown; "Request a call
 back" opens `forms/CallbackRequestForm.tsx` through `useResumeModal().openCallback`.
 The owner's avatar is used only by the chat launcher and chat panel

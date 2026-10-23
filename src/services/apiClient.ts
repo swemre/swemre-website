@@ -64,6 +64,34 @@ export const fieldMediaUrl = (
   return url.startsWith('http') ? url : `${apiBase}${url}`
 }
 
+const mediaValue = (
+  fields: Record<string, unknown>,
+  key: string,
+): Record<string, unknown> | undefined => {
+  const value = fields[key]
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : undefined
+}
+
+// Without altText the cover is decorative and keeps alt=""
+export const fieldMediaAlt = (
+  fields: Record<string, unknown>,
+  key: string,
+): string | undefined => {
+  const alt = mediaValue(fields, key)?.altText
+  return typeof alt === 'string' && alt.trim() !== '' ? alt.trim() : undefined
+}
+
+export const fieldMediaSize = (
+  fields: Record<string, unknown>,
+  key: string,
+  dimension: 'width' | 'height',
+): number | undefined => {
+  const size = mediaValue(fields, key)?.[dimension]
+  return typeof size === 'number' && size > 0 ? size : undefined
+}
+
 export const tagNames = (post: PublicPost): string[] =>
   post.terms.filter(term => term.taxonomy === 'TAG').map(term => term.name)
 

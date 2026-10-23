@@ -12,10 +12,27 @@
 import type {ArticleInteraction, ArticleInteractionState} from '../types/type'
 
 const KEY = 'swemre:article-interactions'
+const SESSION_KEY = 'swemre:viewed-articles'
 const EMPTY: ArticleInteraction = {views: 0, liked: false, favorited: false}
 
 const listeners = new Set<() => void>()
 let cache: ArticleInteractionState | null = null
+const viewedThisLoad = new Set<string>()
+
+function firstViewThisSession(id: string): boolean {
+  if (viewedThisLoad.has(id)) return false
+  viewedThisLoad.add(id)
+  try {
+    const seen = JSON.parse(
+      sessionStorage.getItem(SESSION_KEY) ?? '[]',
+    ) as string[]
+    if (seen.includes(id)) return false
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify([...seen, id]))
+  } catch {
+    // Session storage unavailable: fall back to once per page load.
+  }
+  return true
+}
 
 function read(): ArticleInteractionState {
   if (cache) return cache
@@ -67,9 +84,11 @@ export const articleInteractionStore = {
   readOne: (id: string): ArticleInteraction => read()[id] ?? EMPTY,
   toggleLike: (id: string) => update(id, c => ({liked: !c.liked})),
   toggleFavorite: (id: string) => update(id, c => ({favorited: !c.favorited})),
-  registerView: (id: string) =>
+  registerView: (id: string) => {
+    if (!firstViewThisSession(id)) return
     update(id, c => ({
       views: c.views + 1,
       lastViewedAt: new Date().toISOString(),
-    })),
+    }))
+  },
 }

@@ -19,31 +19,48 @@ import {FormField, inputClass} from './FormField'
 import {validateResumeRequest} from './validateResumeRequest'
 
 const EMPTY: ContactFormInput = {fullName: '', email: '', reason: ''}
+const FIELDS = Object.keys(EMPTY) as (keyof ContactFormInput)[]
 
 export function ResumeRequestForm({onDone}: {onDone: () => void}) {
   const contactForms = useService('contactForm')
   const sound = useSound()
   const [values, setValues] = useState<ContactFormInput>(EMPTY)
   const [errors, setErrors] = useState<ContactFormErrors>({})
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'done'>('idle')
+  const [status, setStatus] = useState<
+    'idle' | 'submitting' | 'done' | 'failed'
+  >('idle')
 
   const onChange =
     (field: keyof ContactFormInput) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setValues(current => ({...current, [field]: event.target.value}))
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = event.target.value
+      setValues(current => ({...current, [field]: value}))
+      setErrors(current =>
+        current[field] ? {...current, [field]: undefined} : current,
+      )
+    }
 
-  const onSubmit = async (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    const form = event.currentTarget
     const found = validateResumeRequest(values)
     setErrors(found)
-    if (Object.keys(found).length > 0) {
+    const firstInvalid = FIELDS.find(field => found[field])
+    if (firstInvalid) {
       sound.play('error')
+      const element = form.elements.namedItem(firstInvalid)
+      if (element instanceof HTMLElement) element.focus()
       return
     }
     setStatus('submitting')
-    await contactForms.submitResumeRequest(values)
-    sound.play('success')
-    setStatus('done')
+    try {
+      await contactForms.submitResumeRequest(values)
+      sound.play('success')
+      setStatus('done')
+    } catch {
+      sound.play('error')
+      setStatus('failed')
+    }
   }
 
   if (status === 'done') {
@@ -72,7 +89,7 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <div className="border-b border-border-muted px-6 pt-6 pb-4">
+      <div className="border-b border-border-muted pt-6 pr-14 pb-4 pl-6">
         <h2 className="text-xl font-semibold text-fg-strong">
           Request my resume
         </h2>
@@ -84,6 +101,7 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
       <div className="px-6 pt-5 pb-1">
         <FormField label="Full name" error={errors.fullName}>
           <input
+            name="fullName"
             value={values.fullName}
             onChange={onChange('fullName')}
             autoComplete="name"
@@ -94,6 +112,7 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
         <FormField label="Email address" error={errors.email}>
           <input
             type="email"
+            name="email"
             value={values.email}
             onChange={onChange('email')}
             autoComplete="email"
@@ -104,12 +123,18 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
         <FormField label="Why would you like my resume?" error={errors.reason}>
           <textarea
             rows={4}
+            name="reason"
             value={values.reason}
             onChange={onChange('reason')}
             aria-invalid={Boolean(errors.reason)}
             className={`${inputClass} resize-y`}
           />
         </FormField>
+        {status === 'failed' && (
+          <p role="alert" className="mb-4 text-sm text-danger">
+            The request could not be sent. Please try again later.
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 border-t border-border-muted bg-surface-muted px-6 py-3">

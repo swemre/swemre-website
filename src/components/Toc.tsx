@@ -17,10 +17,12 @@ export function Toc({
   headings,
   title = 'On this page',
   numbered = false,
+  showTitle = true,
 }: {
   headings: TocHeading[]
   title?: string
   numbered?: boolean
+  showTitle?: boolean
 }) {
   const active = useActiveHeading(headings)
   if (headings.length === 0) return null
@@ -30,7 +32,9 @@ export function Toc({
   )
   return (
     <nav aria-label={title} className="text-sm">
-      <p className="mb-3 text-xs font-semibold text-fg-strong">{title}</p>
+      {showTitle && (
+        <p className="mb-3 text-xs font-semibold text-fg-strong">{title}</p>
+      )}
       <ul className="border-l border-border-muted">
         {headings.map((heading, i) => {
           return (

@@ -16,17 +16,25 @@ import {cn} from '../utils/cn'
 export function CoverImage({
   src,
   title,
+  alt,
+  width,
+  height,
   className,
 }: {
   src?: string
   title: string
+  alt?: string
+  width?: number
+  height?: number
   className?: string
 }) {
   if (src) {
     return (
       <img
         src={src}
-        alt=""
+        alt={alt ?? ''}
+        width={width}
+        height={height}
         loading="lazy"
         decoding="async"
         className={cn(

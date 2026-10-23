@@ -11,18 +11,21 @@
 
 import type {ReactNode} from 'react'
 import {BandBackdrop} from '../components/BandBackdrop'
+import {cn} from '../utils/cn'
 
 export function ListTemplate({
   title,
   lede,
   toolbar,
   sidebar,
+  sidebarFromLg = false,
   children,
 }: {
   title: string
   lede: string
   toolbar?: ReactNode
   sidebar?: ReactNode
+  sidebarFromLg?: boolean
   children: ReactNode
 }) {
   return (
@@ -43,7 +46,12 @@ export function ListTemplate({
       </div>
       <div className="mx-auto grid w-full max-w-page gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[var(--container-sidebar)_minmax(0,1fr)] lg:px-8">
         {sidebar ? (
-          <aside className="max-lg:order-last lg:sticky lg:top-sticky lg:self-start">
+          <aside
+            className={cn(
+              'lg:sticky lg:top-sticky lg:self-start',
+              sidebarFromLg ? 'max-lg:hidden' : 'max-lg:order-last',
+            )}
+          >
             {sidebar}
           </aside>
         ) : null}

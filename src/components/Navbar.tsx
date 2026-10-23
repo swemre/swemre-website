@@ -9,8 +9,8 @@
  * Contact: emre@swemre.com
  */
 
-import {useState} from 'react'
-import {Link, NavLink} from 'react-router-dom'
+import {useEffect, useRef, useState} from 'react'
+import {Link, NavLink, useLocation} from 'react-router-dom'
 import {useResumeModal} from '../hooks/useResumeModal'
 import {useScrolled} from '../hooks/useScrolled'
 import {buttonClass} from '../utils/buttonClass'
@@ -38,11 +38,41 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
   const scrolled = useScrolled()
   const resume = useResumeModal()
   const [menuOpen, setMenuOpen] = useState(false)
+  const {pathname} = useLocation()
+  const [menuPath, setMenuPath] = useState(pathname)
+  const headerRef = useRef<HTMLElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
   const closeMenu = () => setMenuOpen(false)
   const solid = scrolled || menuOpen
 
+  if (menuPath !== pathname) {
+    setMenuPath(pathname)
+    setMenuOpen(false)
+  }
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      toggleRef.current?.focus()
+    }
+    const onPointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [menuOpen])
+
   return (
     <header
+      ref={headerRef}
       data-tone={overCover && !solid ? 'cover' : 'default'}
       className={cn(
         'group/nav fixed inset-x-0 top-0 z-30 border-b transition-[background-color,border-color,box-shadow] duration-200',
@@ -92,6 +122,7 @@ export function Navbar({overCover = false}: {overCover?: boolean}) {
           </button>
           <ThemeSwitch />
           <button
+            ref={toggleRef}
             type="button"
             aria-label="Toggle menu"
             aria-expanded={menuOpen}

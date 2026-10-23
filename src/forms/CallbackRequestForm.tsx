@@ -19,6 +19,7 @@ import {FormField, inputClass} from './FormField'
 import {validateCallbackRequest} from './validateCallbackRequest'
 
 const EMPTY: CallbackFormInput = {fullName: '', phone: '', topic: ''}
+const FIELDS = Object.keys(EMPTY) as (keyof CallbackFormInput)[]
 
 export function CallbackRequestForm({onDone}: {onDone: () => void}) {
   const contactForms = useService('contactForm')
@@ -31,15 +32,24 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
 
   const onChange =
     (field: keyof CallbackFormInput) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setValues(current => ({...current, [field]: event.target.value}))
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = event.target.value
+      setValues(current => ({...current, [field]: value}))
+      setErrors(current =>
+        current[field] ? {...current, [field]: undefined} : current,
+      )
+    }
 
-  const onSubmit = async (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    const form = event.currentTarget
     const found = validateCallbackRequest(values)
     setErrors(found)
-    if (Object.keys(found).length > 0) {
+    const firstInvalid = FIELDS.find(field => found[field])
+    if (firstInvalid) {
       sound.play('error')
+      const element = form.elements.namedItem(firstInvalid)
+      if (element instanceof HTMLElement) element.focus()
       return
     }
     setStatus('submitting')
@@ -79,7 +89,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <div className="border-b border-border-muted px-6 pt-6 pb-4">
+      <div className="border-b border-border-muted pt-6 pr-14 pb-4 pl-6">
         <h2 className="text-xl font-semibold text-fg-strong">
           Request a call back
         </h2>
@@ -92,6 +102,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
       <div className="px-6 pt-5 pb-1">
         <FormField label="Full name" error={errors.fullName}>
           <input
+            name="fullName"
             value={values.fullName}
             onChange={onChange('fullName')}
             autoComplete="name"
@@ -102,6 +113,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
         <FormField label="Phone number" error={errors.phone}>
           <input
             type="tel"
+            name="phone"
             value={values.phone}
             onChange={onChange('phone')}
             autoComplete="tel"
@@ -112,6 +124,7 @@ export function CallbackRequestForm({onDone}: {onDone: () => void}) {
         <FormField label="What is the call about?" error={errors.topic}>
           <textarea
             rows={3}
+            name="topic"
             value={values.topic}
             onChange={onChange('topic')}
             aria-invalid={Boolean(errors.topic)}

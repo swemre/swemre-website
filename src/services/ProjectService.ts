@@ -12,6 +12,8 @@
 import type {Project} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
+  fieldMediaAlt,
+  fieldMediaSize,
   fieldMediaUrl,
   fieldNumber,
   fieldString,
@@ -36,12 +38,15 @@ const toProject = (post: PublicPost): Project => ({
   repoUrl: fieldString(post.fields, 'repoUrl'),
   body: post.fields.body,
   coverUrl: fieldMediaUrl(post.fields, 'cover'),
+  coverAlt: fieldMediaAlt(post.fields, 'cover'),
+  coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
+  coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
 })
 
 // Projects are the "project" content type of the website; the site only reads them.
 export class ProjectService extends ArrayService<Project> {
   constructor() {
-    super([])
+    super([], true)
   }
 
   override async findAll(): Promise<Project[]> {

@@ -25,7 +25,9 @@ Traceability to design and tests is in SWE-DOC-007.
 ### 1.3 Sources
 
 `OWN-n` refers to the owner's numbered requests in the project history (see
-the SVD change history). `STD` means a standard from SWE-DOC-000.
+the SVD change history). `STD` means a standard from SWE-DOC-000. `UX-Wn`
+refers to ticket Wn in `portfolio/WEBSITE-UX-TICKETS.md` (website UX
+review, 2026-10-23).
 
 ### 1.4 Definitions
 
@@ -80,9 +82,13 @@ features). No backend, no cookies, no analytics.
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-GEN-01  | The system shall be delivered as static files produced by `npm run build`, with no server-side code.                                                              | I    | P1   | OWN-1  |
 | SRS-GEN-02  | Every route shall render inside one shared layout containing the navbar, the page outlet, the footer and the dock.                                                 | I, D | P1   | OWN-3  |
-| SRS-GEN-03  | An unknown route shall render a "Page not found" view with a link to `/`.                                                                                          | T    | P2   | OWN-3  |
+| SRS-GEN-03  | An unknown route shall render the shared not-found view (`components/NotFound.tsx`: "404" kicker, "Page not found" heading, a link to `/`) and set the document title to "Page not found · SWEMRE". Article, project and special-page not-found states shall use the same view. | T    | P2   | OWN-3, UX-W20 |
 | SRS-GEN-04  | On every route change the window shall scroll to the top.                                                                                                          | T    | P2   | OWN-5  |
-| SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · swemre`.                                                                                           | T    | P3   | Design |
+| SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · SWEMRE`; pages without a title (home) shall use `SWEMRE`.                                          | T    | P3   | Design |
+| SRS-GEN-06  | Each page shall set the `description` meta tag and the Open Graph tags `og:title`, `og:description`, `og:url` (site URL + current path) and `og:image`, plus `twitter:card`. Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
+| SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
+| SRS-LAY-08  | Article and project pages shall draw the header band while their content is loading and when it is not found, so the transparent navbar of band routes always sits over a band. | T, D | P1 | UX-W4 |
+| SRS-LAY-09  | Sidebar navigation sections without items shall not be rendered; a sidebar whose sections are all empty shall render nothing. | T | P2 | UX-W9 |
 | SRS-LAY-01  | Page content containers shall span the viewport width minus side gutters, capped at `--container-page` (108rem = 1728 px). | I, D | P1 | OWN-8 |
 | SRS-LAY-02  | The navbar and footer containers shall span the viewport width minus gutters, capped at `--container-wide` (150rem = 2400 px). | I, D | P1   | OWN-8  |
 | SRS-LAY-03  | The article and project column (header block and body) shall be capped at `--container-reading` (75ch), giving about 65 to 75 characters per line, with at least 3.5rem (lg) and 5rem (xl) between it and the sidebars.                                                                                       | I    | P2   | OWN-8  |
@@ -99,15 +105,18 @@ features). No backend, no cookies, no analytics.
 | SRS-NAV-03  | The navbar shall contain a search trigger, a "Request my resume" button (viewports ≥ 640 px) and a theme switch.                    | T    | P1   | OWN-3  |
 | SRS-NAV-04  | On band routes and on the home page the navbar shall be transparent with light text while the page is not scrolled, and solid after scrolling.           | D    | P2   | OWN-5  |
 | SRS-NAV-05  | Below 768 px a menu button shall toggle a mobile navigation that includes the resume button.                                        | T    | P2   | Design |
+| SRS-NAV-06  | The open mobile navigation shall close on Escape (returning focus to the menu button), on a pointer press outside the navbar and on every route change. | T | P2 | UX-W16 |
 
 ### 3.3 Home (HOME)
 
 | ID          | Requirement                                                                                                         | Ver. | Pri. | Source |
 | ----------- | ------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-HOME-01 | The home page shall show the owner's avatar, the title "Software Engineer - Emre" and a one-sentence tagline on the primary-tone gradient and grid background. The browser title shall be "SWEMRE" (pages: "<page> · SWEMRE").                 | T    | P1   | OWN-3  |
-| SRS-HOME-02 | The home page shall show a phone button using a `tel:` link and a "Request my resume" button.                        | T    | P1   | OWN-3  |
+| SRS-HOME-02 | The home page shall show a "Request a call back" button (opens the call back form) and a "Request my resume" button. No phone number shall be shown or shipped in `siteConfig`. | T, I | P1 | OWN-3, UX-W26 |
 | SRS-HOME-03 | The home page shall show three lists side by side (≥ 768 px): articles, projects and songs I liked, at most five items each, each with a link to its index page where one exists. | T | P1 | OWN-3 |
 | SRS-HOME-04 | On viewports ≥ 1024 px the home page shall fit in one screen without vertical page scrolling.                        | D    | P2   | OWN-3  |
+| SRS-HOME-05 | The hero stats shall show a count only for lists that are still loading (shown as `--`) or hold at least one item; when no count remains, the stats row shall not be rendered. | T | P2 | UX-W6 |
+| SRS-HOME-06 | When only one article exists, the featured article card shall span the full width of the articles section from 1024 px, with the cover beside the text. | T, D | P3 | UX-W7 |
 
 ### 3.4 Articles (ART)
 
@@ -122,11 +131,14 @@ features). No backend, no cookies, no analytics.
 | SRS-ART-07  | The article page shall show a table of contents built from the body's `h2` and `h3` headings and highlight the heading in view.      | T, D | P2   | OWN-4  |
 | SRS-ART-08  | The article page shall show previous and next article links, ordered by date.                                                      | T    | P3   | OWN-5  |
 | SRS-ART-09  | The article page shall show a left sidebar listing articles (current one marked) and projects.                                     | T    | P2   | OWN-5  |
-| SRS-ART-10  | An unknown article slug shall render "Article not found" with a link to `/articles`.                                               | T    | P2   | Design |
-| SRS-ART-11  | Opening an article shall increment its view count once per page visit, including under React StrictMode.                           | T    | P1   | OWN-1  |
+| SRS-ART-10  | An unknown article slug shall render the not-found view (SRS-GEN-03) below the header band, titled "Article not found", with a link to `/articles`; the document title shall be "Article not found · SWEMRE". | T | P2 | Design, UX-W20 |
+| SRS-ART-11  | Opening an article shall increment its view count at most once per browser session (article ids recorded in `sessionStorage` under `swemre:viewed-articles`), including under React StrictMode and on reload; without `sessionStorage` it shall count once per page load. | T | P1 | OWN-1, UX-W21 |
 | SRS-ART-12  | Like and save shall toggle per article and persist in `localStorage` under `swemre:article-interactions`.                          | T    | P1   | OWN-1  |
 | SRS-ART-13  | Interaction state shall update in all open tabs when changed in one tab.                                                           | T    | P3   | Design |
 | SRS-ART-14  | Code blocks shall be syntax-highlighted at build time in both themes.                                                              | I, D | P2   | OWN-4  |
+| SRS-ART-15  | When the article has a cover, the article page shall show it at the end of the header block (below the meta row), full column width, with the media alt text and the file's width and height. | T, D | P2 | UX-W5 |
+| SRS-ART-16  | Below 1280 px (`xl`), article and project pages with headings shall show a collapsible "On this page" table of contents above the body, closed by default. | T, D | P2 | UX-W11 |
+| SRS-ART-17  | Below 1024 px (`lg`), the articles index shall show the topic filter as a horizontally scrolling chip row ("All" plus one chip per tag, with counts) above the list, and shall hide the sidebar. | T, D | P2 | UX-W10 |
 
 ### 3.5 Projects (PRJ)
 
@@ -136,8 +148,11 @@ features). No backend, no cookies, no analytics.
 | SRS-PRJ-02  | The projects index shall list projects as cards, newest year first.                                            | T    | P1   | OWN-3  |
 | SRS-PRJ-03  | The project page shall show breadcrumbs, year, tags, title, summary and "Live site" / "Source" buttons when the URLs exist, below the header band. | T | P1 | OWN-7, OWN-8 |
 | SRS-PRJ-04  | The project page shall show a sidebar (projects with the current one marked, then articles), a table of contents and previous/next links. | T | P2 | OWN-5, OWN-7 |
-| SRS-PRJ-05  | An unknown project slug shall render "Project not found" with a link to `/projects`.                           | T    | P2   | Design |
+| SRS-PRJ-05  | An unknown project slug shall render the not-found view (SRS-GEN-03) below the header band, titled "Project not found", with a link to `/projects`. | T | P2 | Design, UX-W20 |
 | SRS-PRJ-06  | One project page shall explain this website and its structure.                                                 | I    | P2   | OWN-8  |
+| SRS-PRJ-07  | When the project has a cover, the project page shall show it at the end of the header block, as in SRS-ART-15. | T, D | P2 | UX-W5 |
+| SRS-PRJ-08  | When the project list has loaded and is empty, the projects index shall show an empty state ("No projects yet") with a link to `/articles`. | T | P2 | UX-W8 |
+| SRS-PRJ-09  | The projects index sidebar shall list articles only (the projects are already the page content); without articles the sidebar shall be omitted. | T, I | P3 | UX-W9 |
 
 ### 3.6 Search (SRCH)
 
@@ -149,6 +164,8 @@ features). No backend, no cookies, no analytics.
 | SRS-SRCH-04  | Arrow keys shall move the selection, Enter shall activate it and Escape shall close the dialog.                      | T    | P1   | OWN-4  |
 | SRS-SRCH-05  | Any type extending `Searchable` shall become searchable by registering one `SearchSource`, without changing the dialog. | I | P1 | OWN-4 |
 | SRS-SRCH-06  | Activating a song result shall play the song in the dock.                                                            | T    | P3   | Design |
+| SRS-SRCH-07  | The dialog shall show only results of the current query; while a new query is being searched no earlier results shall be listed or activated by Enter. | T | P1 | UX-W15 |
+| SRS-SRCH-08  | An empty query shall list a default set: all pages and the five newest articles, no projects, songs or legal pages. When there is nothing to list the dialog shall say "Nothing to show yet" instead of "No results". | T | P2 | UX-W15 |
 
 ### 3.7 Music player (PLY)
 
@@ -168,14 +185,19 @@ features). No backend, no cookies, no analytics.
 | ID           | Requirement                                                                                                     | Ver. | Pri. | Source |
 | ------------ | --------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-CHAT-01  | The dock shall show a rounded-square launcher with the owner's avatar and a presence indicator on its top corner that opens and closes the chat panel.        | T    | P1   | OWN-7  |
-| SRS-CHAT-02  | The chat panel shall list conversations newest first, allow starting a new one, opening one and deleting one.    | T    | P1   | OWN-7  |
+| SRS-CHAT-02  | The chat panel shall list conversations newest first, allow starting a new one, opening one and deleting one (with confirmation, SRS-CHAT-13). | T | P1 | OWN-7 |
 | SRS-CHAT-03  | Conversations shall persist in `localStorage` under `swemre:chat-conversations`.                                 | T    | P1   | OWN-7  |
 | SRS-CHAT-04  | A new conversation shall start with a greeting message from the owner.                                           | T    | P2   | OWN-7  |
 | SRS-CHAT-05  | The first visitor message shall become the conversation title, truncated to 40 characters with an ellipsis.      | T    | P3   | Design |
-| SRS-CHAT-06  | While presence is `offline`, visitor messages shall be stored with delivery `queued` and the panel shall say the owner is offline. | T | P1 | OWN-7 |
+| SRS-CHAT-06  | While presence is `offline`, the panel shall say that the owner is offline, that messages are still delivered and that he will reply in the conversation later ("Emre is offline. Your messages are delivered and he will reply here later."). Presence shall not hold messages back. | T | P1 | OWN-7, UX-W13 |
 | SRS-CHAT-07  | Enter shall send a message; Shift+Enter shall insert a newline; empty messages shall not be sent.                | T    | P2   | Design |
 | SRS-CHAT-08  | While the chat panel is open, the player shall collapse.                                                         | T    | P3   | Design |
 | SRS-CHAT-09  | When a backend exists, presence shall reflect the owner's real status and messages shall be delivered (`sent`).  | T    | P2   | OWN-7 (future) |
+| SRS-CHAT-10  | A sent visitor message shall appear at once with delivery `sending` (dimmed, "Sending…"), before the API answers, and change to `sent` (check mark) when the API has stored it. | T | P1 | UX-W13 |
+| SRS-CHAT-11  | A message the API did not accept (unreachable or refused) shall become `queued`, shown as "Not sent · tap to retry"; activating it (pointer or keyboard) shall retry the conversation's unsent messages. | T | P1 | UX-W13 |
+| SRS-CHAT-12  | Unsent messages shall be retried automatically when the conversation's socket (re)connects, when the browser fires `online` and when the chat panel opens. Messages shall be posted one at a time in order, never twice, and a message still `sending` when the page closed shall be `queued` on the next load. | T | P1 | UX-W13 |
+| SRS-CHAT-13  | Deleting a conversation shall ask for confirmation in the row ("Delete "<title>"?", Cancel focused, Escape cancels). The delete button shall be visible on hover and keyboard focus, and always on coarse (touch) pointers. | T | P2 | UX-W14 |
+| SRS-CHAT-14  | Below 640 px the open chat panel shall be a full-screen sheet that respects the top and bottom safe-area insets, and the page behind it shall not scroll while it is open. | T, D | P2 | UX-W12 |
 
 ### 3.9 Resume request (RES)
 
@@ -183,15 +205,19 @@ features). No backend, no cookies, no analytics.
 | ----------- | ------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-RES-01  | Both "Request my resume" buttons shall open one shared modal with fields full name, email and reason.    | T    | P1   | OWN-3  |
 | SRS-RES-02  | Validation shall require full name ≥ 2 characters, a syntactically valid email and reason ≥ 10 characters (trimmed), showing a message per invalid field. | T | P1 | OWN-3 |
-| SRS-RES-03  | A valid submission shall be stored through `ContactFormService.submitResumeRequest` and show a confirmation naming the visitor's first name and email. | T | P1 | OWN-3 |
+| SRS-RES-03  | A valid submission shall be sent through `ContactFormService.submitResumeRequest` and show a confirmation naming the visitor's first name and email only after the API confirms it; a missing confirmation (404 or empty answer) shall count as a failure. | T | P1 | OWN-3, UX-W1 |
 | SRS-RES-04  | The modal shall close with Escape, the close button or a click on the backdrop.                          | T    | P2   | Design |
+| SRS-RES-05  | When a resume request fails, the form shall play the error sound, show "The request could not be sent. Please try again later." as an alert and return to an editable state so the visitor can submit again. | T | P1 | UX-W2 |
+| SRS-RES-06  | The call back form ("Request a call back": full name, phone, topic) shall follow the same rules: it is sent through `ContactFormService.submitCallbackRequest`, shows its confirmation only after the API confirms the submission, and shows an error otherwise. | T | P1 | UX-W1 |
+| SRS-RES-07  | In both forms, editing a field shall clear that field's error, and a submission with invalid fields shall move focus to the first invalid field in form order. | T | P2 | UX-W19 |
+| SRS-RES-08  | The dialog header of both forms shall leave room for the close button, so the title and subtitle never run under it. | I, D | P3 | UX-W18 |
 
 ### 3.10 Theme (THM)
 
 | ID          | Requirement                                                                                                 | Ver. | Pri. | Source |
 | ----------- | ----------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-THM-01  | The site shall support a light and a dark theme, toggled from the navbar.                                     | T    | P1   | OWN-3  |
-| SRS-THM-02  | The initial theme shall be the stored choice (`swemre:theme`), otherwise the system preference.               | T    | P1   | Design |
+| SRS-THM-02  | The theme shall be the visitor's explicit choice stored under `swemre:theme`, which is written only when the visitor toggles the theme. Without a stored choice the theme shall follow the system preference (`prefers-color-scheme`), including changes while the page is open. | T | P1 | Design, UX-W17 |
 | SRS-THM-03  | The theme shall be applied before first paint, so the page never flashes the wrong theme.                    | I, D | P2   | Design |
 
 ### 3.11 Legal pages (LGL)
@@ -201,8 +227,9 @@ features). No backend, no cookies, no analytics.
 | SRS-LGL-01  | Special pages shall be served at `/sp/:slug` from `src/page/sp/<slug>.mdx`.                      | T    | P1   | OWN-3  |
 | SRS-LGL-02  | Special pages shall show version, effective date, last-updated date, numbered sections and a contents list. | T | P2 | OWN-3 |
 | SRS-LGL-03  | The footer shall link to the privacy policy.                                                     | T    | P1   | OWN-3  |
+| SRS-LGL-04  | An unknown or unavailable special page shall render the not-found view (SRS-GEN-03) with "This page is not available right now." and the contact email address. | T | P2 | UX-W3 |
 
-### 3.12 Feeds and footer (RSS, FTR)
+### 3.12 Feeds, sitemap and footer (RSS, MAP, FTR)
 
 | ID          | Requirement                                                                                       | Ver. | Pri. | Source |
 | ----------- | ------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
@@ -212,6 +239,9 @@ features). No backend, no cookies, no analytics.
 | SRS-RSS-04  | Feed generation shall fail when an article, project or song has no feed entry, a reference does not resolve, an id repeats or a date is not ISO 8601 UTC. | T | P1 | OWN-11 |
 | SRS-RSS-05  | `lastBuildDate` shall equal the newest item's date, so regenerating unchanged data produces an identical file. | T | P3 | OWN-11 |
 | SRS-RSS-06  | Project skills (`new-article`, `new-project`, `new-song`) shall add the feed entry through the `add-rss-item` skill. | I | P2 | OWN-11 |
+| SRS-MAP-01  | `npm run sitemap` shall run before every `dev` and `build` and write `public/sitemap.xml` (sitemaps.org 0.9) listing `/`, `/articles`, `/projects` and every published article, project and special page of the workspace, each published post with `<lastmod>` (date part of `lastUpdatedAt`). A content type the API answers with 404 shall contribute no URLs. | T | P2 | UX-W25 |
+| SRS-MAP-02  | When the API cannot be reached, the sitemap script shall keep the existing `public/sitemap.xml` and exit 0, or exit 1 when no sitemap exists yet. | T | P2 | UX-W25 |
+| SRS-MAP-03  | `public/robots.txt` shall allow all crawlers and name `https://swemre.com/sitemap.xml`. | I | P2 | UX-W25 |
 | SRS-FTR-01  | The footer shall show icon-only social links on the left and icon-only RSS and privacy links plus the copyright on the right; every icon link shall have an accessible name and a tooltip.  | T    | P1   | OWN-3  |
 
 ### 3.13 Sound (SND)
@@ -239,6 +269,7 @@ features). No backend, no cookies, no analytics.
 | SRS-A11Y-05  | Dialogs shall use the native `<dialog>` element in modal mode, trapping focus and closing on Escape. | I, T | P1 |
 | SRS-A11Y-06  | Decorative elements (header band, equalizer) shall be hidden from assistive technology.           | I    | P2   |
 | SRS-A11Y-07  | Automated axe checks shall report no serious or critical violations on any route.                 | T    | P2   |
+| SRS-A11Y-08  | Cover images shall use the media field's `altText` as `alt` (empty `alt` when it has none, as a decorative image) and carry the file's `width` and `height` when the API returns them (UX-W23). | T, I | P2 |
 
 ### 4.2 Performance (PERF)
 
@@ -248,6 +279,7 @@ features). No backend, no cookies, no analytics.
 | SRS-PERF-02  | Largest Contentful Paint should be under 2.5 s on a mid-range phone over a 4G profile (Lighthouse). | T | P2 |
 | SRS-PERF-03  | Cumulative Layout Shift should stay under 0.1 on every route.                                | T    | P2   |
 | SRS-PERF-04  | Search over all registered sources shall return results in under 50 ms for 500 documents.   | A, T | P3   |
+| SRS-PERF-05  | The article, project, song and special-page services shall load their list (`findAll`) from the API at most once per page session: concurrent callers share one request, each caller gets its own copy, and an empty or failed result is not kept, so the next call asks again (UX-W22). | T | P2 |
 
 ### 4.3 Security and privacy (SEC)
 
@@ -289,7 +321,7 @@ features). No backend, no cookies, no analytics.
 | SRS-FUT-01  | Resume requests shall be delivered to the owner by email or stored server-side.              |
 | SRS-FUT-02  | Chat shall deliver messages to the owner in real time and show real presence (SRS-CHAT-09).  |
 | SRS-FUT-03  | Interaction counts (views, likes) may be aggregated server-side across visitors.            |
-| SRS-FUT-04  | Pages should be pre-rendered for search engines and link previews (Open Graph tags).        |
+| SRS-FUT-04  | Pages should be pre-rendered for search engines and link previews. Per-page Open Graph tags are set client-side today (SRS-GEN-06); previews that do not run JavaScript still see the defaults in `index.html`. |
 
 ## Change log
 
@@ -297,3 +329,4 @@ features). No backend, no cookies, no analytics.
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft from the implemented baseline and owner requests OWN-1 to OWN-8 | Claude, for swemre review |
 | 2026-10-15 | OWN-9 to OWN-11: narrower containers, 75ch reading measure, sound design (SND), feed log and skills (RSS-03 to RSS-06) | Claude, for swemre review |
+| 2026-10-23 | Website UX fixes (UX-W1 to UX-W26). Changed: GEN-03, GEN-05, HOME-02, ART-10, ART-11, PRJ-05, CHAT-02, CHAT-06, RES-03, THM-02, FUT-04. Added: GEN-06, LAY-07 to LAY-09, NAV-06, HOME-05, HOME-06, ART-15 to ART-17, PRJ-07 to PRJ-09, SRCH-07, SRCH-08, CHAT-10 to CHAT-14, RES-05 to RES-08, LGL-04, MAP-01 to MAP-03, A11Y-08, PERF-05 | Claude, for swemre review |

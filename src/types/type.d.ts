@@ -74,6 +74,11 @@ export interface Article extends Searchable {
   /** Blocks of the rich text body field, as the API returns them. */
   body?: unknown
   coverUrl?: string
+  coverAlt?: string
+  /** Pixels, of the original file. */
+  coverWidth?: number
+  /** Pixels, of the original file. */
+  coverHeight?: number
 }
 
 export interface Project extends Searchable {
@@ -87,6 +92,11 @@ export interface Project extends Searchable {
   /** Blocks of the rich text body field, as the API returns them. */
   body?: unknown
   coverUrl?: string
+  coverAlt?: string
+  /** Pixels, of the original file. */
+  coverWidth?: number
+  /** Pixels, of the original file. */
+  coverHeight?: number
 }
 
 export interface Song extends Searchable {
@@ -177,6 +187,8 @@ export interface SearchSource<T extends Searchable> {
   action(item: T): SearchAction
   subtitle?(item: T): string | undefined
   keywords?(item: T): string[]
+  /** How many items the empty query lists: all when omitted, none when 0. */
+  featured?: number
 }
 
 export interface SearchDocument {
@@ -280,8 +292,8 @@ export interface ChatMessage {
   text: string
   /** ISO 8601, UTC. */
   sentAt: string
-  /** `queued` until a backend accepts it. */
-  delivery: 'queued' | 'sent'
+  /** `sending` while posted, `queued` when the API could not be reached, `sent` once stored. */
+  delivery: 'sending' | 'queued' | 'sent'
 }
 
 export interface Conversation extends Entity {
@@ -306,6 +318,7 @@ export interface ChatContextValue {
   select: (id: string | null) => void
   start: () => void
   send: (text: string) => void
+  retry: (id: string) => void
   remove: (id: string) => void
 }
 
@@ -375,6 +388,11 @@ export type ThemeMode = 'light' | 'dark'
 export interface ThemeContextValue {
   mode: ThemeMode
   toggle: () => void
+}
+
+export interface DocumentMeta {
+  description?: string
+  image?: string
 }
 
 export interface ResumeModalContextValue {

@@ -10,8 +10,9 @@
  */
 
 import {useCallback} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 import {ContentBody} from '../../components/ContentBody'
+import {NotFound} from '../../components/NotFound'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useService} from '../../hooks/useService'
@@ -23,27 +24,20 @@ export default function SpecialPage() {
   const loader = useCallback(() => service.findBySlug(slug), [service, slug])
   const {data: page, loading} = useAsyncData(loader)
 
-  useDocumentTitle(page?.title)
+  useDocumentTitle(loading ? undefined : (page?.title ?? 'Page not found'), {
+    description: page?.summary,
+  })
 
   if (loading) {
     return (
-      <main className="mx-auto w-full max-w-page px-8 py-10 text-fg-muted">
+      <main className="mx-auto w-full max-w-page flex-1 px-4 py-10 text-fg-muted sm:px-6 lg:px-8">
         Loading…
       </main>
     )
   }
 
   if (!page) {
-    return (
-      <main className="mx-auto w-full max-w-page px-8 py-16">
-        <h1 className="text-3xl font-semibold text-fg-strong">
-          Page not found
-        </h1>
-        <Link to="/" className="mt-4 inline-block text-primary">
-          Back to home
-        </Link>
-      </main>
-    )
+    return <NotFound message="This page is not available right now." contact />
   }
 
   return (

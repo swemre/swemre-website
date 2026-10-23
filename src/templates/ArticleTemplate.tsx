@@ -49,6 +49,12 @@ export function ArticleTemplate({
             ))}
             title={article.title}
             summary={article.summary}
+            cover={{
+              src: article.coverUrl,
+              alt: article.coverAlt,
+              width: article.coverWidth,
+              height: article.coverHeight,
+            }}
             meta={
               <>
                 <span className="inline-flex items-center gap-2">

@@ -19,8 +19,12 @@ import type {
 
 export class SearchService {
   private readonly loaders: SearchDocumentLoader[] = []
+  private readonly featured = new Map<string, number>()
 
   register<T extends Searchable>(source: SearchSource<T>): this {
+    if (source.featured !== undefined) {
+      this.featured.set(source.category, source.featured)
+    }
     this.loaders.push(async () =>
       (await source.load()).map(item => ({
         key: `${source.category}:${item.id}`,
@@ -46,7 +50,15 @@ export class SearchService {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
 
     if (terms.length === 0) {
-      return documents.slice(0, limit).map(document => ({document, score: 0}))
+      const shown = new Map<string, number>()
+      return documents
+        .filter(document => {
+          const count = shown.get(document.category) ?? 0
+          shown.set(document.category, count + 1)
+          return count < (this.featured.get(document.category) ?? Infinity)
+        })
+        .slice(0, limit)
+        .map(document => ({document, score: 0}))
     }
 
     return documents

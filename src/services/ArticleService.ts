@@ -12,6 +12,8 @@
 import type {Article} from '../types/type'
 import {ArrayService} from './ArrayService'
 import {
+  fieldMediaAlt,
+  fieldMediaSize,
   fieldMediaUrl,
   fieldNumber,
   fieldString,
@@ -34,13 +36,16 @@ const toArticle = (post: PublicPost): Article => ({
   tags: tagNames(post),
   body: post.fields.body,
   coverUrl: fieldMediaUrl(post.fields, 'cover'),
+  coverAlt: fieldMediaAlt(post.fields, 'cover'),
+  coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
+  coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
 })
 
 // Articles are the "article" content type of the website. The site only reads them, so the
 // inherited write methods of ArrayService are not used.
 export class ArticleService extends ArrayService<Article> {
   constructor() {
-    super([])
+    super([], true)
   }
 
   override async findAll(): Promise<Article[]> {

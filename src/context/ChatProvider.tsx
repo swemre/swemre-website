@@ -9,7 +9,7 @@
  * Contact: emre@swemre.com
  */
 
-import {useEffect, useState, type ReactNode} from 'react'
+import {useCallback, useEffect, useState, type ReactNode} from 'react'
 import {useService} from '../hooks/useService'
 import type {ChatPresence, Conversation} from '../types/type'
 import {ChatContext} from './ChatContext'
@@ -33,7 +33,36 @@ export function ChatProvider({children}: {children: ReactNode}) {
     }
   }, [chat])
 
-  const refresh = async () => setConversations(await chat.findAll())
+  const refresh = useCallback(
+    async () => setConversations(await chat.list()),
+    [chat],
+  )
+
+  const deliver = useCallback(
+    async (id: string) => {
+      await chat.deliver(id)
+      await refresh()
+    },
+    [chat, refresh],
+  )
+
+  const retry = useCallback(
+    async (id: string) => {
+      if (!(await chat.markSending(id))) return
+      await refresh()
+      await deliver(id)
+    },
+    [chat, refresh, deliver],
+  )
+
+  const retryAll = useCallback(() => {
+    for (const id of chat.pending()) void retry(id)
+  }, [chat, retry])
+
+  useEffect(() => {
+    window.addEventListener('online', retryAll)
+    return () => window.removeEventListener('online', retryAll)
+  }, [retryAll])
 
   // One socket per conversation that exists on the server: owner replies and the owner's
   // presence arrive while the page is open, without reloading
@@ -46,17 +75,24 @@ export function ChatProvider({children}: {children: ReactNode}) {
     const stops = tokens.split(',').map(entry => {
       const [id, publicToken] = entry.split(':')
       return chat.connect(publicToken, event => {
+        if (event.type === 'connected') {
+          void retry(id)
+          return
+        }
         if (event.type === 'presence') {
           setPresence(event.online ? 'online' : 'offline')
           return
         }
-        void chat
-          .receive(id, event.message)
-          .then(async () => setConversations(await chat.findAll()))
+        void chat.receive(id, event.message).then(refresh)
       })
     })
     return () => stops.forEach(stop => stop())
-  }, [chat, tokens])
+  }, [chat, tokens, retry, refresh])
+
+  const open = () => {
+    setIsOpen(true)
+    retryAll()
+  }
 
   const start = () => {
     void chat.start().then(async conversation => {
@@ -68,7 +104,11 @@ export function ChatProvider({children}: {children: ReactNode}) {
   const send = (text: string) => {
     const trimmed = text.trim()
     if (!activeId || !trimmed) return
-    void chat.send(activeId, trimmed).then(refresh)
+    const id = activeId
+    void chat.enqueue(id, trimmed).then(async () => {
+      await refresh()
+      await deliver(id)
+    })
   }
 
   const remove = (id: string) => {
@@ -85,12 +125,13 @@ export function ChatProvider({children}: {children: ReactNode}) {
         presence,
         conversations,
         active: conversations.find(c => c.id === activeId) ?? null,
-        open: () => setIsOpen(true),
+        open,
         close: () => setIsOpen(false),
-        toggle: () => setIsOpen(open => !open),
+        toggle: () => (isOpen ? setIsOpen(false) : open()),
         select: setActiveId,
         start,
         send,
+        retry: id => void retry(id),
         remove,
       }}
     >

@@ -68,7 +68,7 @@ Outside `src/`: `scripts/` (license headers, RSS generator), `public/`
 | `/projects`        | `ProjectsPage` | `ListTemplate`      | Yes         |
 | `/projects/:slug`  | `ProjectPage`  | `ProjectTemplate`   | Yes         |
 | `/sp/:slug`        | `SpecialPage`  | `CorporateTemplate` | No          |
-| `*`                | inline 404     |                     | No          |
+| `*`                | `NotFound`     |                     | No          |
 
 All routes render inside `SiteLayout` (fixed `Navbar`, `Footer`, `Dock`).
 
@@ -76,7 +76,7 @@ All routes render inside `SiteLayout` (fixed `Navbar`, `Footer`, `Dock`).
 
 Fits one screen without scrolling at `lg` (≥ 1024 px; `SiteLayout` sets
 `lg:h-dvh lg:overflow-hidden` on `/`); below that it flows and scrolls. Hero
-(title, sentence, `tel:` button, "Request my resume" button) above three
+(title, sentence, "Request a call back" button, "Request my resume" button) above three
 list columns: articles, projects, songs I liked (five items each). The navbar
 has the same resume CTA beside the theme switch; both open one shared modal.
 

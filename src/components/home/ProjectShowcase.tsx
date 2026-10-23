@@ -64,6 +64,9 @@ function ProjectRow({project, index}: {project: Project; index: number}) {
         <div className="aspect-[16/10] overflow-hidden bg-inset">
           <CoverImage
             src={project.coverUrl}
+            alt={project.coverAlt}
+            width={project.coverWidth}
+            height={project.coverHeight}
             title={project.title}
             className="group-hover/project:scale-105"
           />

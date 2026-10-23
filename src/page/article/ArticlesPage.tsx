@@ -73,6 +73,26 @@ export default function ArticlesPage() {
     </button>
   )
 
+  const tagChip = (label: string, tag: string | null, count: number) => (
+    <button
+      key={label}
+      type="button"
+      onClick={() => setTag(tag)}
+      aria-pressed={activeTag === tag}
+      className={cn(
+        'inline-flex shrink-0 items-center gap-2 rounded-sm border px-3 py-1.5 text-sm whitespace-nowrap transition-colors',
+        activeTag === tag
+          ? 'border-primary/40 bg-primary-muted font-medium text-primary'
+          : 'border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg-strong',
+      )}
+    >
+      {label}
+      <span className="text-xs text-fg-subtle">{count}</span>
+    </button>
+  )
+
+  const projectItems = (projects.data ?? []).map(p => projectNavItem(p))
+
   return (
     <ListTemplate
       title="Articles"
@@ -92,6 +112,7 @@ export default function ArticlesPage() {
           Saved only
         </button>
       }
+      sidebarFromLg
       sidebar={
         <div className="space-y-6">
           <nav aria-label="Filter by topic">
@@ -110,13 +131,22 @@ export default function ArticlesPage() {
                 title: 'Projects',
                 icon: 'repo',
                 moreTo: '/projects',
-                items: (projects.data ?? []).map(p => projectNavItem(p)),
+                items: projectItems,
               },
             ]}
           />
         </div>
       }
     >
+      {tags.length > 0 && (
+        <nav
+          aria-label="Filter by topic"
+          className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:hidden"
+        >
+          {tagChip('All', null, all.length)}
+          {tags.map(([tag, count]) => tagChip(tag, tag, count))}
+        </nav>
+      )}
       <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
         <div className="flex items-center gap-2 border-b border-border-muted px-6 py-3.5 text-sm">
           <span className="font-semibold text-fg-strong">

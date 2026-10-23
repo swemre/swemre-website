@@ -27,8 +27,9 @@ export function useSearchResults(query: string) {
     }
   }, [search, query])
 
+  const current = settled?.query === query
   return {
-    results: settled?.results ?? [],
-    loading: settled?.query !== query,
+    results: current ? settled.results : [],
+    loading: !current,
   }
 }

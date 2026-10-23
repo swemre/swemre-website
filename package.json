@@ -11,8 +11,9 @@
     "checkstyle": "eslint . && prettier --check . && node scripts/license-headers.mjs --check",
     "checkstyle:fix": "eslint . --fix && prettier --write . && node scripts/license-headers.mjs --fix",
     "rss": "node --experimental-strip-types --no-warnings scripts/generate-rss.mjs",
-    "predev": "npm run rss",
-    "prebuild": "npm run rss",
+    "sitemap": "node --experimental-strip-types --no-warnings scripts/generate-sitemap.mjs",
+    "predev": "npm run rss && npm run sitemap",
+    "prebuild": "npm run rss && npm run sitemap",
     "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {

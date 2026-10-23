@@ -11,7 +11,7 @@
 
 import type {SocialLink} from '../types/type'
 
-// TODO(swemre): replace the placeholder phone number and confirm social URLs.
+// TODO(swemre): confirm the social URLs.
 export const siteConfig = {
   name: 'Emre',
   brand: 'SWEMRE',
@@ -21,8 +21,6 @@ export const siteConfig = {
   jobTitle: 'Software Engineer',
   url: 'https://swemre.com',
   email: 'emre@swemre.com',
-  phoneDisplay: '+31 000 000 000',
-  phoneHref: 'tel:+31000000000',
   tagline:
     'I build fast, accessible web applications and care about the details that make software feel simple.',
   rssPath: '/rss.xml',

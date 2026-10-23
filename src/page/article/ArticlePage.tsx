@@ -9,9 +9,11 @@
  * Contact: emre@swemre.com
  */
 
-import {useCallback, useEffect, useRef} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {useCallback, useEffect} from 'react'
+import {useParams} from 'react-router-dom'
 import {ContentBody} from '../../components/ContentBody'
+import {HeaderBand} from '../../components/HeaderBand'
+import {NotFound} from '../../components/NotFound'
 import {SidebarNav} from '../../components/SidebarNav'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
@@ -28,36 +30,37 @@ export default function ArticlePage() {
   const {data: article, loading} = useAsyncData(loader)
   const all = useFindAll(service)
   const projects = useFindAll(useService('project'))
-  const counted = useRef<string | null>(null)
 
   const id = article?.id
   useEffect(() => {
-    // Ref guard keeps StrictMode's double-invoked effect from counting twice.
-    if (!id || counted.current === id) return
-    counted.current = id
-    articleInteractionStore.registerView(id)
+    if (id) articleInteractionStore.registerView(id)
   }, [id])
 
-  useDocumentTitle(article?.title)
+  useDocumentTitle(
+    loading ? undefined : (article?.title ?? 'Article not found'),
+    {description: article?.summary, image: article?.coverUrl},
+  )
 
   if (loading) {
     return (
-      <main className="mx-auto w-full max-w-page px-8 pt-sticky text-fg-muted">
-        Loading…
-      </main>
+      <>
+        <HeaderBand />
+        <main className="mx-auto w-full max-w-page flex-1 px-4 py-10 text-fg-muted sm:px-6 lg:px-8">
+          Loading…
+        </main>
+      </>
     )
   }
 
   if (!article) {
     return (
-      <main className="mx-auto w-full max-w-page px-8 pt-sticky pb-16">
-        <h1 className="text-3xl font-semibold text-fg-strong">
-          Article not found
-        </h1>
-        <Link to="/articles" className="mt-4 inline-block text-primary">
-          Back to articles
-        </Link>
-      </main>
+      <NotFound
+        band
+        title="Article not found"
+        message="This article does not exist or has been removed."
+        backTo="/articles"
+        backLabel="Back to articles"
+      />
     )
   }
 

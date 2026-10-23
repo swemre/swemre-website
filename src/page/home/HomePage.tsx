@@ -70,11 +70,15 @@ export default function HomePage() {
   const number = (key: keyof typeof visible | 'contact') =>
     pad((key === 'contact' ? order.length : order.indexOf(key)) + 1)
 
-  const stats: Array<[string, number | undefined]> = [
-    ['Articles', articles.data?.length],
-    ['Projects', projects.data?.length],
-    ['Songs', songs.data?.length],
-  ]
+  const stats = (
+    [
+      ['Articles', articles],
+      ['Projects', projects],
+      ['Songs', songs],
+    ] as const
+  )
+    .filter(([, list]) => list.loading || (list.data?.length ?? 0) > 0)
+    .map(([label, list]) => [label, list.data?.length] as const)
 
   return (
     <HomeTemplate
@@ -119,21 +123,23 @@ export default function HomePage() {
         </>
       }
       stats={
-        <dl className="grid grid-cols-3 border-t border-cover-fg/15 pt-6">
-          {stats.map(([label, count]) => (
-            <div
-              key={label}
-              className="border-l border-cover-fg/15 pl-4 first:border-l-0 first:pl-0"
-            >
-              <dt className="font-mono text-2xs tracking-[0.2em] text-cover-fg/50 uppercase">
-                {label}
-              </dt>
-              <dd className="mt-1 font-mono text-2xl font-semibold text-cover-fg">
-                {count === undefined ? '--' : pad(count)}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        stats.length > 0 && (
+          <dl className="grid auto-cols-fr grid-flow-col border-t border-cover-fg/15 pt-6">
+            {stats.map(([label, count]) => (
+              <div
+                key={label}
+                className="border-l border-cover-fg/15 pl-4 first:border-l-0 first:pl-0"
+              >
+                <dt className="font-mono text-2xs tracking-[0.2em] text-cover-fg/50 uppercase">
+                  {label}
+                </dt>
+                <dd className="mt-1 font-mono text-2xl font-semibold text-cover-fg">
+                  {count === undefined ? '--' : pad(count)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )
       }
     >
       {visible.articles && (

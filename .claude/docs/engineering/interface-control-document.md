@@ -36,6 +36,9 @@ disagree, the code wins and this document is corrected.
 | IF-14   | Backend chat API                  | Future           | TBD                   | `ChatService`          |
 | IF-15   | Feed log (`feedDatabase`)         | Data file        | Owner, `add-rss-item` skill | `generate-rss.mjs` |
 | IF-16   | Sound API and `data-sound` attributes | Internal API / markup | `SoundProvider`, `soundEngine` | Components |
+| IF-17   | Sitemap and `robots.txt`          | External (crawlers) | `generate-sitemap.mjs`, `public/robots.txt` | Search engines |
+| IF-18   | Public form submissions           | HTTP (swemre-website-api) | API `forms/<form>/submissions` | `ContactFormService` |
+| IF-19   | Document metadata (`<title>`, description, Open Graph) | External (link previews) | `useDocumentTitle`, `index.html` | Browsers, link previewers |
 
 ## 3. Internal software interfaces
 
@@ -67,6 +70,11 @@ interface SwemreService<T extends Entity> {
 Every operation is asynchronous even when in memory, so an HTTP
 implementation can replace it without caller changes.
 
+List cache: a service constructed with `cacheList = true` (`ArticleService`,
+`ProjectService`, `SongService`, `SpecialPageService`) runs its `findAll`
+request once per page session. Callers share the in-flight request and each
+receives its own copy; an empty result or a rejection is not cached.
+
 Entity-specific extensions:
 
 | Service              | Extra members                                                   |
@@ -74,8 +82,8 @@ Entity-specific extensions:
 | `ArticleService`     | `findAll` sorted by `createdAt` descending; `findBySlug(slug)`; `getBody(slug): ComponentType \| undefined` |
 | `ProjectService`     | `findAll` sorted by `year` descending; `findBySlug`; `getBody`   |
 | `SpecialPageService` | `findBySlug`; `getBody`                                          |
-| `ContactFormService` | `submitResumeRequest(input: ContactFormInput): Promise<ContactForm>` |
-| `ChatService`        | `findAll` sorted by `updatedAt` descending; `presence(): Promise<ChatPresence>`; `start(): Promise<Conversation>`; `send(id, text): Promise<Conversation \| undefined>` |
+| `ContactFormService` | `submitResumeRequest(input: ContactFormInput): Promise<ContactForm>`; `submitCallbackRequest(input: CallbackFormInput): Promise<CallbackRequest>`. Both reject (`ApiError`) unless the API confirms the submission (IF-18) |
+| `ChatService`        | `findAll` syncs stored conversations with the API, then sorted by `updatedAt` descending; `list()` the same without the API; `presence(): Promise<ChatPresence>`; `start(): Promise<Conversation>`; `enqueue(id, text)` appends a `sending` visitor message; `deliver(id): Promise<void>` posts unsent messages in order (calls serialised per conversation), failures leave them `queued`; `markSending(id): Promise<boolean>` (false when nothing is unsent); `pending(): string[]` ids with unsent messages; `connect(publicToken, onEvent)` returns a stop function, events `message`, `presence`, `connected`; `receive(id, message)` |
 | `SongService`        | none                                                             |
 
 ### 3.2 IF-03 Service lookup
@@ -104,6 +112,18 @@ interface AsyncResult<T> {
 Contract: the loader passed to `useAsyncData` must be referentially stable
 (`useCallback`); a new function identity starts a new load.
 
+```ts
+interface DocumentMeta {
+  description?: string
+  image?: string
+}
+
+function useDocumentTitle(title?: string, meta?: DocumentMeta): void
+```
+
+Sets the document title and the IF-19 meta tags on every change of title,
+description, image or route path (see §7c).
+
 ### 3.3 IF-04 Search
 
 ```ts
@@ -125,12 +145,18 @@ interface SearchSource<T extends Searchable> {
   action(item: T): SearchAction
   subtitle?(item: T): string
   keywords?(item: T): string[]
+  featured?: number // items the empty query lists: all when omitted, none when 0
 }
 ```
 
 `SearchService.register(source)` returns `this` (chainable).
 `search(query, limit = 20)` returns `SearchResult[]` (`{document, score}`),
-best first. Empty query returns the first `limit` documents unscored.
+best first. An empty query returns, unscored and in registration order, the
+first `featured` items of each source (all for a source without `featured`),
+capped at `limit`. Current settings: Pages all, Articles 5, Projects, Songs
+I liked and Legal 0. `useSearchResults(query)` returns results only for the
+query that produced them; while a new query is searched, `results` is empty
+and `loading` is true.
 
 Registered sources (order = display order): Pages, Articles, Projects,
 Songs I liked, Legal.
@@ -140,9 +166,9 @@ Songs I liked, Legal.
 | Context               | Value type                  | Members                                                                 |
 | --------------------- | --------------------------- | ----------------------------------------------------------------------- |
 | `ServiceContext`      | `ServiceMap`                | see 3.2                                                                  |
-| `ThemeContext`        | `ThemeContextValue`         | `mode: 'light' \| 'dark'`, `toggle()`                                   |
+| `ThemeContext`        | `ThemeContextValue`         | `mode: 'light' \| 'dark'` (stored choice, otherwise the live system preference), `toggle()` (stores the new choice) |
 | `PlayerContext`       | `PlayerContextValue`        | `current`, `isPaused`, `failed`, `collapsed`, `attachHost(el)`, `toggle(song)`, `togglePlayback()`, `setCollapsed(b)`, `close()` |
-| `ChatContext`         | `ChatContextValue`          | `isOpen`, `presence`, `conversations`, `active`, `open()`, `close()`, `toggle()`, `select(id \| null)`, `start()`, `send(text)`, `remove(id)` |
+| `ChatContext`         | `ChatContextValue`          | `isOpen`, `presence`, `conversations`, `active`, `open()`, `close()`, `toggle()`, `select(id \| null)`, `start()`, `send(text)`, `retry(id)`, `remove(id)`; `open()` and opening through `toggle()` also retry every conversation with unsent messages |
 | `SearchDialogContext` | `SearchDialogContextValue`  | `open()`, `close()`                                                      |
 | `ResumeModalContext`  | `ResumeModalContextValue`   | `open()`, `close()`                                                      |
 
@@ -202,10 +228,16 @@ All keys are prefixed `swemre:`. Values are JSON unless stated.
 
 | Key                            | Owner                     | Schema                                                                                      | Written when                    |
 | ------------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------- |
-| `swemre:theme`                 | `ThemeProvider`, `index.html` | plain string `light` \| `dark`                                                           | Theme toggled or first load     |
+| `swemre:theme`                 | `ThemeProvider` (writes), `index.html` (reads) | plain string `light` \| `dark`; absent means "follow the system"                  | Theme toggled only              |
 | `swemre:article-interactions`  | `ArticleInteractionStore` | `{[articleId]: {views: number, liked: boolean, favorited: boolean, lastViewedAt?: ISO string}}` | View, like, save                |
 | `swemre:sound-muted`           | `SoundProvider`           | plain string `true` \| `false`                                                             | Mute toggled                    |
-| `swemre:chat-conversations`    | `ChatService`             | `Conversation[]`: `{id, title, createdAt, updatedAt, messages: ChatMessage[]}`; `ChatMessage` = `{id, author: 'visitor' \| 'owner', text, sentAt: ISO, delivery: 'queued' \| 'sent'}` | Start, send, delete |
+| `swemre:chat-conversations`    | `ChatService`             | `Conversation[]`: `{id, title, createdAt, updatedAt, messages: ChatMessage[]}`; `ChatMessage` = `{id, author: 'visitor' \| 'owner', text, sentAt: ISO, delivery: 'sending' \| 'queued' \| 'sent'}`; `sending` read back on load becomes `queued` | Start, send, delivery change, delete |
+
+`sessionStorage` (per tab session):
+
+| Key                         | Owner                     | Schema                         | Written when                          |
+| --------------------------- | ------------------------- | ------------------------------ | ------------------------------------- |
+| `swemre:viewed-articles`    | `ArticleInteractionStore` | JSON `string[]` of article ids | First view of an article in the session |
 
 Rules:
 
@@ -245,9 +277,27 @@ Proposed contract so the UI does not change:
 | Operation        | Proposed endpoint                       | Maps to                   |
 | ---------------- | --------------------------------------- | ------------------------- |
 | Owner presence   | `GET /api/chat/presence` → `{status}`   | `ChatService.presence()`  |
-| Send message     | `POST /api/chat/conversations/:id/messages` | `ChatService.send()`; delivery `sent` on 2xx |
+| Send message     | `POST /api/chat/conversations/:id/messages` | `ChatService.deliver()`; delivery `sent` on 2xx |
 | Receive replies  | WebSocket or SSE `/api/chat/stream`     | New `ChatContext` event   |
 | Flush queue      | On reconnect, send `queued` messages in order | `ChatService`        |
+
+As built (2026-10-23), `ChatService` posts the first message to
+`<workspacePath>/conversations` (which creates the conversation and returns
+its token) and later messages to
+`<workspacePath>/conversations/<token>/message`, both `{text}`. A thrown
+error or a 404 (`publicRequest` returns `undefined`) leaves the message and
+every later unsent one `queued`. The queue is flushed one message at a time
+on the socket's `connected` event, the window `online` event, panel open and
+a tap on a queued message.
+
+### 6.4 IF-18 Public form submissions
+
+| Item       | Value                                                                         |
+| ---------- | ----------------------------------------------------------------------------- |
+| Endpoint   | `POST <apiBase><workspacePath>/forms/<form>/submissions`, JSON `{fields: {...}}` (trimmed strings) |
+| Forms      | `cv-request` (`fullName`, `email`, `reason`); `callback-request` (`fullName`, `phone`, `topic`) |
+| Success    | 2xx with `{submittedAt, ...}`; the service resolves with the stored record     |
+| Failure    | 404 or empty answer: `ApiError(404, "Form <form> did not confirm the submission")`; other non-2xx: `ApiError(status, message)`; network error: rejected `fetch`. Every failure rejects, and the form shows its error |
 
 ## 7. IF-11 RSS feed and IF-15 feed log
 
@@ -295,6 +345,41 @@ description, language `en`, `managingEditor` and `webMaster`
 | `data-sound-enter="none"`   | On a text field: silence Enter (the field's handler plays a sound)       |
 | `aria-pressed`              | Selects `toggle-on` (currently false) or `toggle-off` (currently true)   |
 
+## 7b. IF-17 Sitemap and robots.txt
+
+`/sitemap.xml` is generated by `scripts/generate-sitemap.mjs`
+(`npm run sitemap`, also in `predev` and `prebuild`; never edit
+`public/sitemap.xml` by hand).
+
+| Item        | Contract                                                                        |
+| ----------- | ------------------------------------------------------------------------------- |
+| Format      | XML, UTF-8, `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`       |
+| URLs        | `<siteConfig.url>/`, `/articles`, `/projects` (no `lastmod`), then `/articles/<slug>`, `/projects/<slug>`, `/sp/<slug>` for each published post |
+| `lastmod`   | `YYYY-MM-DD`, the date part of the post's `lastUpdatedAt`                         |
+| Input       | `GET <VITE_API_BASE>/public/v1/workspaces/<VITE_WORKSPACE_KEY>/posts?type=<article\|project\|page>&size=100&sort-by=publishedAt&direction=DESC` (defaults `http://localhost:8080/api`, `swemre-website`); 404 for a type means no URLs |
+| Escaping    | `&`, `<`, `>` in `loc`                                                            |
+| Offline     | API unreachable or non-2xx: warning, existing file kept, exit 0; exit 1 when no `public/sitemap.xml` exists |
+| Limit       | At most 100 posts per type (one page)                                             |
+
+`public/robots.txt`: `User-agent: *`, `Allow: /`,
+`Sitemap: https://swemre.com/sitemap.xml`.
+
+## 7c. IF-19 Document metadata
+
+| Tag                          | Value                                                              |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `<title>`                    | `<title> · SWEMRE`, or `SWEMRE` without a title                     |
+| `meta[name=description]`     | page description, else "Portfolio, articles and projects of Emre, software engineer." |
+| `og:title`                   | same as `<title>`                                                   |
+| `og:description`             | same as description                                                 |
+| `og:url`                     | `siteConfig.url` + current path                                     |
+| `og:image`                   | page image (article/project cover), else `siteConfig.url` + `avatarLarge` |
+| `twitter:card`               | `summary_large_image` with a page image, else `summary`             |
+
+Missing tags are created in `document.head`; existing ones (from
+`index.html`) are updated in place. `index.html` keeps static defaults for
+clients that do not run JavaScript.
+
 ## 8. IF-12 Design tokens
 
 The token names in `src/main.css` are an interface: components depend on
@@ -307,10 +392,11 @@ containers, spacing, motion. Reference: `../design-system.md`.
 
 | Script            | Contract                                                           |
 | ----------------- | ------------------------------------------------------------------ |
-| `dev`             | RSS, then Vite dev server on port 5173                              |
-| `build`           | RSS, `tsc -b`, `vite build` → `dist/`; non-zero exit on any error   |
+| `dev`             | RSS, sitemap, then Vite dev server on port 5173                     |
+| `build`           | RSS, sitemap, `tsc -b`, `vite build` → `dist/`; non-zero exit on any error |
 | `preview`         | Serve `dist/`                                                       |
 | `rss`             | Validate the feed log and regenerate `public/rss.xml`; exit 1 on problems |
+| `sitemap`         | Regenerate `public/sitemap.xml` from the API (IF-17); exit 0 offline when a sitemap exists, else 1 |
 | `lint`            | ESLint only                                                         |
 | `checkstyle`      | ESLint, Prettier check, license check; read-only; non-zero on any issue |
 | `checkstyle:fix`  | Same with fixes applied                                             |
@@ -320,3 +406,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | Date       | Change         | Author                    |
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial draft  | Claude, for swemre review |
+| 2026-10-23 | UX fixes: list cache, `submitCallbackRequest` and confirmation rule (IF-18), chat delivery members and `retry`, `SearchSource.featured`, `DocumentMeta` (IF-19), theme written only on toggle, `swemre:viewed-articles`, sitemap and robots (IF-17), `sitemap` script | Claude, for swemre review |

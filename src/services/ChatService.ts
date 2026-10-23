@@ -59,23 +59,38 @@ const fromApi = (apiMessage: ApiMessage): ChatMessage => ({
 const titleFrom = (text: string) =>
   text.length > 40 ? `${text.slice(0, 40).trimEnd()}…` : text
 
+const unsent = (item: ChatMessage) => item.delivery !== 'sent'
+
+const markSending = (item: ChatMessage): ChatMessage =>
+  item.delivery === 'queued' ? {...item, delivery: 'sending'} : item
+
 // Local messages are kept after the server's list: the greeting is never stored by the API,
-// and a message that failed to send stays queued until the next successful request.
+// and a message that has not been accepted yet stays until a later request delivers it.
 const merge = (local: ChatMessage[], remote: ApiMessage[]): ChatMessage[] => [
   ...local.filter(item => item.id === GREETING_ID),
   ...remote.map(fromApi),
-  ...local.filter(item => item.delivery === 'queued'),
+  ...local.filter(unsent),
 ]
 
 // What the conversation's socket sends: a new message, or the owner coming online or going away
 export type ChatSocketEvent =
-  {type: 'message'; message: ApiMessage} | {type: 'presence'; online: boolean}
+  | {type: 'message'; message: ApiMessage}
+  | {type: 'presence'; online: boolean}
+  | {type: 'connected'}
 
 const RECONNECT_DELAYS_MS = [1_000, 2_000, 5_000, 10_000, 30_000]
 
 export class ChatService extends LocalStorageService<Conversation> {
+  private readonly delivering = new Map<string, Promise<void>>()
+
   constructor() {
     super('swemre:chat-conversations')
+    // A message still sending when the page was closed waits for the next retry
+    for (const conversation of this.rows) {
+      conversation.messages = conversation.messages.map(item =>
+        item.delivery === 'sending' ? {...item, delivery: 'queued'} : item,
+      )
+    }
   }
 
   // Refreshes every stored conversation so owner replies appear when the widget loads
@@ -85,8 +100,7 @@ export class ChatService extends LocalStorageService<Conversation> {
         .filter(conversation => conversation.publicToken)
         .map(conversation => this.sync(conversation.id)),
     )
-    const all = await super.findAll()
-    return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    return this.list()
   }
 
   async presence(): Promise<ChatPresence> {
@@ -111,52 +125,100 @@ export class ChatService extends LocalStorageService<Conversation> {
     })
   }
 
-  async send(id: string, text: string): Promise<Conversation | undefined> {
+  // The conversations as stored on this device, newest first, without asking the API
+  async list(): Promise<Conversation[]> {
+    const all = await super.findAll()
+    return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+
+  // Adds the visitor's message at once as sending; deliver() then posts it
+  async enqueue(id: string, text: string): Promise<Conversation | undefined> {
     const conversation = await this.findById(id)
     if (!conversation) return undefined
-
-    const now = new Date().toISOString()
     const firstFromVisitor = !conversation.messages.some(
       item => item.author === 'visitor',
     )
-    const title = firstFromVisitor ? titleFrom(text) : conversation.title
+    return this.update(id, {
+      title: firstFromVisitor ? titleFrom(text) : conversation.title,
+      updatedAt: new Date().toISOString(),
+      messages: [
+        ...conversation.messages.map(markSending),
+        message('visitor', text, 'sending'),
+      ],
+    })
+  }
 
-    try {
-      if (!conversation.publicToken) {
-        const created = await publicRequest<ApiConversation>(
-          `${workspacePath}/conversations`,
-          {method: 'POST', body: {text}},
-        )
-        if (!created) throw new Error('conversation was not created')
-        return this.update(id, {
-          publicToken: created.token,
-          title,
-          updatedAt: now,
-          messages: merge(conversation.messages, created.messages),
+  // Shows queued messages as sending again before deliver() retries them
+  async markSending(id: string): Promise<boolean> {
+    const conversation = await this.findById(id)
+    if (!conversation?.messages.some(unsent)) return false
+    await this.update(id, {messages: conversation.messages.map(markSending)})
+    return true
+  }
+
+  pending(): string[] {
+    return this.rows
+      .filter(conversation => conversation.messages.some(unsent))
+      .map(conversation => conversation.id)
+  }
+
+  // Posts every unsent message of the conversation in order. Calls run one after another, so a
+  // retry while a send is in flight never posts the same message twice.
+  deliver(id: string): Promise<void> {
+    const next = (this.delivering.get(id) ?? Promise.resolve()).then(() =>
+      this.flush(id),
+    )
+    this.delivering.set(id, next)
+    void next.finally(() => {
+      if (this.delivering.get(id) === next) this.delivering.delete(id)
+    })
+    return next
+  }
+
+  private async flush(id: string): Promise<void> {
+    for (;;) {
+      const conversation = this.rows.find(row => row.id === id)
+      const next = conversation?.messages.find(unsent)
+      if (!conversation || !next) return
+      try {
+        const remote = await this.post(conversation.publicToken, next.text)
+        const current = this.rows.find(row => row.id === id)
+        if (!current) return
+        await this.update(id, {
+          publicToken: remote.token,
+          updatedAt: new Date().toISOString(),
+          messages: merge(
+            current.messages.filter(item => item.id !== next.id),
+            remote.messages,
+          ),
         })
+      } catch {
+        // The API is unreachable or refused the message: keep it, and the rest, queued
+        const current = this.rows.find(row => row.id === id)
+        if (!current) return
+        await this.update(id, {
+          messages: current.messages.map(item =>
+            unsent(item) ? {...item, delivery: 'queued'} : item,
+          ),
+        })
+        return
       }
-
-      const updated = await publicRequest<ApiConversation>(
-        `${workspacePath}/conversations/${conversation.publicToken}/message`,
-        {method: 'POST', body: {text}},
-      )
-      if (!updated) throw new Error('conversation was not found')
-      return this.update(id, {
-        title,
-        updatedAt: now,
-        messages: merge(conversation.messages, updated.messages),
-      })
-    } catch {
-      // The API is unreachable or refused the message: keep it visible as queued
-      return this.update(id, {
-        title,
-        updatedAt: now,
-        messages: [
-          ...conversation.messages,
-          message('visitor', text, 'queued'),
-        ],
-      })
     }
+  }
+
+  // A conversation only exists on the server after its first message, which creates it
+  private async post(
+    publicToken: string | undefined,
+    text: string,
+  ): Promise<ApiConversation> {
+    const remote = await publicRequest<ApiConversation>(
+      publicToken
+        ? `${workspacePath}/conversations/${publicToken}/message`
+        : `${workspacePath}/conversations`,
+      {method: 'POST', body: {text}},
+    )
+    if (!remote) throw new Error('conversation was not found')
+    return remote
   }
 
   private async sync(id: string): Promise<void> {
@@ -166,9 +228,10 @@ export class ChatService extends LocalStorageService<Conversation> {
       const remote = await publicRequest<ApiConversation>(
         `${workspacePath}/conversations/${conversation.publicToken}`,
       )
-      if (!remote) return
+      const current = this.rows.find(row => row.id === id)
+      if (!remote || !current) return
       await this.update(id, {
-        messages: merge(conversation.messages, remote.messages),
+        messages: merge(current.messages, remote.messages),
       })
     } catch {
       // Keep the stored copy when the API cannot be reached
@@ -192,6 +255,7 @@ export class ChatService extends LocalStorageService<Conversation> {
       socket = new WebSocket(url)
       socket.onopen = () => {
         attempt = 0
+        onEvent({type: 'connected'})
       }
       socket.onmessage = event => {
         try {
@@ -226,9 +290,9 @@ export class ChatService extends LocalStorageService<Conversation> {
     await this.update(id, {
       updatedAt: received.sentAt,
       messages: [
-        ...conversation.messages.filter(item => item.delivery !== 'queued'),
+        ...conversation.messages.filter(item => !unsent(item)),
         received,
-        ...conversation.messages.filter(item => item.delivery === 'queued'),
+        ...conversation.messages.filter(unsent),
       ],
     })
   }
