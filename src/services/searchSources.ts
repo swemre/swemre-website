@@ -29,6 +29,7 @@ export function createSearchService(
       load: () => services.article.findAll(),
       action: article => ({kind: 'navigate', to: `/articles/${article.slug}`}),
       keywords: article => [article.author],
+      featured: 5,
     })
     .register({
       category: 'Projects',
@@ -36,6 +37,7 @@ export function createSearchService(
       load: () => services.project.findAll(),
       action: project => ({kind: 'navigate', to: `/projects/${project.slug}`}),
       subtitle: project => `${project.year} · ${project.summary}`,
+      featured: 0,
     })
     .register({
       category: 'Songs I liked',
@@ -44,11 +46,13 @@ export function createSearchService(
       action: song => ({kind: 'play-song', song}),
       subtitle: song => song.artist,
       keywords: song => [song.artist, 'music', 'spotify'],
+      featured: 0,
     })
     .register({
       category: 'Legal',
       icon: 'book',
       load: () => services.specialPage.findAll(),
       action: page => ({kind: 'navigate', to: `/sp/${page.slug}`}),
+      featured: 0,
     })
 }

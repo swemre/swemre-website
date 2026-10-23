@@ -111,7 +111,7 @@ function SearchPanel({onClose}: {onClose: () => void}) {
       >
         {!loading && flat.length === 0 && (
           <p className="px-3 py-10 text-center text-sm text-fg-muted">
-            No results for “{query}”
+            {query.trim() ? `No results for “${query}”` : 'Nothing to show yet'}
           </p>
         )}
         {groups.map((group, g) => (
