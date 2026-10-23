@@ -12,6 +12,8 @@
 import {useEffect} from 'react'
 import {matchPath, Outlet, useLocation} from 'react-router-dom'
 import {Dock} from '../components/Dock'
+import {ErrorBoundary} from '../components/ErrorBoundary'
+import {ErrorPage} from '../components/ErrorPage'
 import {Footer} from '../components/Footer'
 import {Navbar} from '../components/Navbar'
 import {recordPageView} from '../services/analytics'
@@ -43,10 +45,18 @@ export function SiteLayout() {
       <div
         className={cn('flex min-h-0 flex-1 flex-col', !overCover && 'pt-nav')}
       >
-        <Outlet />
+        <ErrorBoundary
+          scope="page"
+          fallback={<ErrorPage />}
+          resetKey={pathname}
+        >
+          <Outlet />
+        </ErrorBoundary>
       </div>
       <Footer />
-      <Dock />
+      <ErrorBoundary scope="dock" fallback={null}>
+        <Dock />
+      </ErrorBoundary>
     </div>
   )
 }
