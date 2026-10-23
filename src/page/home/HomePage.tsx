@@ -15,6 +15,7 @@ import {ArticleShowcase} from '../../components/home/ArticleShowcase'
 import {ProjectShowcase} from '../../components/home/ProjectShowcase'
 import {Icon} from '../../components/Icon'
 import {ListBox} from '../../components/ListBox'
+import {LoadError} from '../../components/LoadError'
 import {SongRow} from '../../components/SongRow'
 import {siteConfig} from '../../config/site'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
@@ -22,7 +23,7 @@ import {useFindAll} from '../../hooks/useFindAll'
 import {useResumeModal} from '../../hooks/useResumeModal'
 import {useService} from '../../hooks/useService'
 import {useSiteSettings} from '../../hooks/useSiteSettings'
-import type {DocumentMeta} from '../../types/type'
+import type {AsyncResult, DocumentMeta} from '../../types/type'
 import {HomeTemplate} from '../../templates/HomeTemplate'
 import {buttonClass, fillClass, shineClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
@@ -50,6 +51,9 @@ function Loading() {
 
 const HOME_META: DocumentMeta = {schema: {kind: 'home'}}
 
+const showSection = (list: AsyncResult<unknown[]>, shown: unknown[]) =>
+  list.loading || list.error !== undefined || shown.length > 0
+
 export default function HomePage() {
   useDocumentTitle(undefined, HOME_META)
   const requests = useResumeModal()
@@ -62,12 +66,12 @@ export default function HomePage() {
   const featuredProjects = (projects.data ?? []).slice(0, 3)
   const playlist = (songs.data ?? []).slice(0, 6)
 
-  // A section stays while it loads and disappears when its list is empty, so an empty
-  // workspace shows only the hero and the contact panel; numbers follow the visible sections
+  // A section stays while it loads or after a failed load and disappears when its list is
+  // empty, so an empty workspace shows only the hero and the contact panel; numbers follow the visible sections
   const visible = {
-    articles: articles.loading || latestArticles.length > 0,
-    projects: projects.loading || featuredProjects.length > 0,
-    songs: songs.loading || playlist.length > 0,
+    articles: showSection(articles, latestArticles),
+    projects: showSection(projects, featuredProjects),
+    songs: showSection(songs, playlist),
   }
   const order = (Object.keys(visible) as Array<keyof typeof visible>).filter(
     key => visible[key],
@@ -155,6 +159,9 @@ export default function HomePage() {
           moreTo="/articles"
         >
           {articles.loading && <Loading />}
+          {articles.error !== undefined && (
+            <LoadError onRetry={articles.retry} />
+          )}
           <ArticleShowcase articles={latestArticles} />
         </HomeSection>
       )}
@@ -167,6 +174,9 @@ export default function HomePage() {
           moreTo="/projects"
         >
           {projects.loading && <Loading />}
+          {projects.error !== undefined && (
+            <LoadError onRetry={projects.retry} />
+          )}
           <ProjectShowcase projects={featuredProjects} />
         </HomeSection>
       )}
@@ -182,6 +192,11 @@ export default function HomePage() {
               What plays while I work. Pick a track to listen right here.
             </p>
             <ListBox title="Playlist" icon="spotify" divided={false}>
+              {songs.error !== undefined && (
+                <li className="p-2">
+                  <LoadError onRetry={songs.retry} />
+                </li>
+              )}
               {songs.loading && (
                 <li className="px-4 py-3 text-sm text-fg-muted">Loading…</li>
               )}

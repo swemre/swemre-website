@@ -109,8 +109,7 @@ export function visitorSessionId(): string {
   }
 }
 
-// Pages wait for their loader to settle, so a failed request must still resolve.
-// A missing API shows empty lists and "not found" pages instead of a spinner.
+// For data that has a sensible default (site settings): a failed request resolves with it
 export async function safely<T>(
   load: () => Promise<T>,
   fallback: T,

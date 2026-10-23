@@ -26,7 +26,7 @@ export class SearchService {
       this.featured.set(source.category, source.featured)
     }
     this.loaders.push(async () =>
-      (await source.load()).map(item => ({
+      (await source.load().catch(() => [])).map(item => ({
         key: `${source.category}:${item.id}`,
         category: source.category,
         icon: source.icon,
