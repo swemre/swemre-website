@@ -210,6 +210,7 @@ export default function HomePage() {
 
       <section
         aria-label="Contact"
+        data-band
         className="relative isolate animate-rise overflow-hidden rounded-lg border border-border px-6 py-16 sm:px-12 lg:py-20"
       >
         <BandBackdrop />

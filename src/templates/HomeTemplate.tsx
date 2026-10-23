@@ -28,8 +28,11 @@ export function HomeTemplate({
   children: ReactNode
 }) {
   return (
-    <main className="flex-1">
-      <section className="relative isolate flex min-h-dvh flex-col pt-nav">
+    <main id="main" className="flex-1">
+      <section
+        data-band
+        className="relative isolate flex min-h-dvh flex-col pt-nav"
+      >
         <BandBackdrop />
         <div className="mx-auto flex w-full max-w-page flex-1 animate-rise flex-col justify-center px-4 py-16 sm:px-6 lg:px-8">
           {kicker}

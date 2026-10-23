@@ -29,8 +29,8 @@ export function ListTemplate({
   children: ReactNode
 }) {
   return (
-    <main className="flex-1">
-      <div className="relative isolate pt-nav">
+    <main id="main" className="flex-1">
+      <div data-band className="relative isolate pt-nav">
         <BandBackdrop />
         <div className="mx-auto flex w-full max-w-page animate-rise flex-wrap items-end justify-between gap-4 px-4 pt-14 pb-12 sm:px-6 lg:px-8 lg:pt-20">
           <div>

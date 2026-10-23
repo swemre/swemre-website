@@ -39,7 +39,10 @@ export function NotFound({
   return (
     <>
       {band && <HeaderBand />}
-      <main className="mx-auto w-full max-w-page flex-1 animate-rise px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <main
+        id="main"
+        className="mx-auto w-full max-w-page flex-1 animate-rise px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      >
         <p className="font-mono text-xs font-medium tracking-[0.2em] text-primary uppercase">
           404
         </p>
@@ -50,7 +53,10 @@ export function NotFound({
         {contact && (
           <p className="mt-3 max-w-measure text-fg-muted">
             Questions? Write to{' '}
-            <a href={`mailto:${contactEmail}`} className="text-primary">
+            <a
+              href={`mailto:${contactEmail}`}
+              className="text-primary underline underline-offset-2"
+            >
               {contactEmail}
             </a>
             .

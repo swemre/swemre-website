@@ -274,7 +274,7 @@ features). No backend, no cookies, no analytics.
 | ID           | Requirement                                                                                     | Ver. | Pri. |
 | ------------ | ----------------------------------------------------------------------------------------------- | ---- | ---- |
 | SRS-A11Y-01  | All interactive elements shall be reachable and operable by keyboard.                            | T    | P1   |
-| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring).                       | I, T | P1   |
+| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring; on the blue bands and the transparent navbar over them the ring takes the band text colour).                       | I, T | P1   |
 | SRS-A11Y-03  | Text and essential UI shall meet WCAG 2.2 AA contrast in both themes.                            | A, T | P1   |
 | SRS-A11Y-04  | Icon-only buttons shall have an accessible name.                                                 | I, T | P1   |
 | SRS-A11Y-05  | Dialogs shall use the native `<dialog>` element in modal mode, trapping focus and closing on Escape. | I, T | P1 |
@@ -358,4 +358,5 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: RES-09 | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: A11Y-02 ring colour on the bands | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: added GEN-11 (JSON-LD) | Claude, for swemre review |
