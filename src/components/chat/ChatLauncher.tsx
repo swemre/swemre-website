@@ -33,7 +33,8 @@ export function ChatLauncher() {
       )}
       {!chat.isOpen && (
         <span className="pointer-events-none absolute right-full mr-3 hidden rounded-sm bg-fg-strong px-2.5 py-1 text-xs font-medium whitespace-nowrap text-canvas shadow-md group-hover:block">
-          Chat with Emre · {chat.presence === 'online' ? 'online' : 'offline'}
+          Chat with Emre ·{' '}
+          {chat.presence === 'unreachable' ? 'not reachable' : chat.presence}
         </span>
       )}
     </button>

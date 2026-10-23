@@ -10,7 +10,7 @@
  */
 
 import {siteEnv} from '../config/env.ts'
-import type {PostSeo, PublicPost} from '../types/type'
+import type {PostSeo, PublicPost, ShareImage} from '../types/type'
 
 export const fieldString = (
   fields: Record<string, unknown>,
@@ -73,6 +73,25 @@ export const fieldMediaSize = (
   return typeof size === 'number' && size > 0 ? size : undefined
 }
 
+// The first of the media fields that is set, as a link preview image
+export const shareImage = (
+  fields: Record<string, unknown>,
+  keys: string[],
+): ShareImage | undefined => {
+  for (const key of keys) {
+    const url = fieldMediaUrl(fields, key)
+    if (url) {
+      return {
+        url,
+        alt: fieldMediaAlt(fields, key),
+        width: fieldMediaSize(fields, key, 'width'),
+        height: fieldMediaSize(fields, key, 'height'),
+      }
+    }
+  }
+  return undefined
+}
+
 export const tagNames = (post: PublicPost): string[] =>
   post.terms.filter(term => term.taxonomy === 'TAG').map(term => term.name)
 
@@ -90,8 +109,7 @@ export function visitorSessionId(): string {
   }
 }
 
-// Pages wait for their loader to settle, so a failed request must still resolve.
-// A missing API shows empty lists and "not found" pages instead of a spinner.
+// For data that has a sensible default (site settings): a failed request resolves with it
 export async function safely<T>(
   load: () => Promise<T>,
   fallback: T,

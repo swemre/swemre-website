@@ -107,7 +107,7 @@ export class ChatService extends LocalStorageService<Conversation> {
     try {
       return (await publicApi.presence()) ? 'online' : 'offline'
     } catch {
-      return 'offline'
+      return 'unreachable'
     }
   }
 
