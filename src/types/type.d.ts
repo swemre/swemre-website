@@ -49,11 +49,16 @@ export interface ServiceMap {
 export interface AsyncResult<T> {
   data: T | undefined
   loading: boolean
+  /** Set when the loader rejected (API down, timeout, server error). */
+  error: unknown
+  retry: () => void
 }
 
 export interface AsyncSettled<T> {
   loader: () => Promise<T>
-  data: T
+  attempt: number
+  data?: T
+  error?: unknown
 }
 
 // ---------- public api ----------
@@ -443,7 +448,8 @@ export interface PlayerContextValue {
 
 export type ChatAuthor = 'visitor' | 'owner'
 
-export type ChatPresence = 'online' | 'offline'
+/** `unreachable`: the chat server did not answer the presence check. */
+export type ChatPresence = 'online' | 'offline' | 'unreachable'
 
 export interface ChatMessage {
   id: string

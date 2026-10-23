@@ -12,6 +12,7 @@
 import {Link} from 'react-router-dom'
 import {useSiteSettings} from '../hooks/useSiteSettings'
 import {useDocumentTitle} from '../hooks/useDocumentTitle'
+import {useNoIndex} from '../hooks/useNoIndex'
 import {buttonClass} from '../utils/buttonClass'
 import {HeaderBand} from './HeaderBand'
 import {Icon} from './Icon'
@@ -33,6 +34,7 @@ export function NotFound({
 }) {
   const {contactEmail} = useSiteSettings()
   useDocumentTitle(title)
+  useNoIndex()
 
   return (
     <>

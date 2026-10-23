@@ -26,13 +26,14 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | ------------ | ------------- | ------------------------------------------------------------ | ------------------------- | ----------------- |
 | SRS-GEN-01   | §3.1, §9      | `vite.config.ts`, `package.json`                             | TC-MNT-02                 | Pass (BLD)        |
 | SRS-GEN-02   | §4.1          | `templates/SiteLayout.tsx`                                   | TC-E2E-01                 | Pass (INSP, SS)   |
-| SRS-GEN-03   | §4.1, §4.2    | `components/NotFound.tsx`, `App.tsx`                         | TC-ART-09, TC-MAN-05      | Manual (Verified in browser 2026-10-23: not-found title, W20) |
+| SRS-GEN-03   | §4.1, §4.2    | `components/NotFound.tsx`, `hooks/useNoIndex.ts`, `App.tsx` | TC-ART-09, TC-MAN-05      | Manual (Verified in browser 2026-10-23: not-found title, W20; `noindex` added and removed, PRS-000312) |
 | SRS-GEN-04   | §4.1          | `hooks/useRouteFocus.ts`                                     | TC-E2E-01, TC-E2E-13      | Manual (Verified in browser 2026-10-23: top on new path, back restores, PRS-000321); async pages Unverified |
 | SRS-GEN-05   | §4.8a         | `hooks/useDocumentTitle.ts`, page calls                      | TC-GEN-01, TC-ART-08      | Unverified (format now `· SWEMRE`) |
 | SRS-GEN-06   | §4.8a         | `useDocumentTitle`, `utils/documentTags.ts`, `index.html` defaults | TC-GEN-01, TC-MAN-05, TC-PRE-01 | Unverified (canonical and Twitter tags added by PRS-000311; canonical, `og:url` and no duplicates seen in the browser 2026-10-23) |
 | SRS-GEN-10   | §4.8a         | `utils/documentTags.ts`, `useDocumentTitle`, `apiClient.shareImage`, `config/site.ts` `defaultShareImage`, `prerender.mjs` | TC-GEN-04 | Manual (Verified 2026-10-23: pre-rendered article file and runtime tags in the browser, removal on navigation) |
 | SRS-GEN-07   | §4.1, §6      | `components/ErrorBoundary.tsx`, `components/ErrorPage.tsx`, `SiteLayout` | TC-GEN-02 | Manual (Verified in browser 2026-10-23, forced render error) |
 | SRS-GEN-08   | §4.1, §6      | `components/ErrorBoundary.tsx`, `SiteLayout`                 | TC-GEN-02                 | Manual (Verified in browser 2026-10-23, forced render error in the chat launcher) |
+| SRS-GEN-09   | §6            | `hooks/useAsyncData.ts`, `components/LoadError.tsx`, pages, `SearchService` | TC-GEN-03 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
 | SRS-LAY-01   | §4.9          | `main.css` `--container-page`, all `max-w-page` users        | TC-E2E-03                 | Pass (SS at 1920); 3440 cap Designed |
 | SRS-LAY-02   | §4.9          | `Navbar`, `Footer` `max-w-wide`                              | TC-E2E-03                 | Pass (SS at 1920) |
 | SRS-LAY-03   | §4.5          | `DocsLayout` `max-w-reading`                                 | TC-E2E-03                 | Pass (INSP)       |
@@ -110,6 +111,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-CHAT-12  | §4.7          | `ChatProvider` (`online`, `connected`, `open`), `ChatService` constructor, `deliver` chain | TC-CHAT-08, TC-CHAT-10, TC-E2E-07 | Unverified (W13) |
 | SRS-CHAT-13  | §4.7          | `ConversationRow`                                            | TC-CHAT-11                | Unverified (W14) |
 | SRS-CHAT-14  | §4.7          | `ChatPanel` `max-sm:` sheet, `Dock` `usePhoneScrollLock`     | TC-E2E-12                 | Unverified (W12) |
+| SRS-CHAT-15  | §6            | `ChatService.presence`, `ChatPanel`, `ChatLauncher` | TC-CHAT-12 | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) |
 | SRS-RES-01   | §4.1          | `ResumeModalProvider`, `ResumeRequestModal`                  | TC-RES-02                 | Designed          |
 | SRS-RES-02   | §4.1          | `forms/validateResumeRequest.ts`                             | TC-RES-01, TC-RES-03      | Designed          |
 | SRS-RES-03   | §4.3          | `ResumeRequestForm`, `ContactFormService.submitForm`         | TC-RES-02, TC-SVC-04      | Unverified (W1, resume path) |
@@ -118,6 +120,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-RES-06   | §4.3, §6      | `CallbackRequestForm`, `ContactFormService.submitForm`       | TC-RES-05, TC-SVC-04, TC-MAN-05 | Manual (Verified in browser 2026-10-23: call back error shown, W1) |
 | SRS-RES-07   | §10           | `ResumeRequestForm`, `CallbackRequestForm` `onChange`, `onSubmit` | TC-RES-06, TC-MAN-05      | Manual (Verified in browser 2026-10-23: focus to first invalid field, W19); error clearing on edit Unverified |
 | SRS-RES-08   | §10           | form headers `pr-14`                                         | TC-RES-07, TC-MAN-05      | Manual (Verified in browser 2026-10-23: header room, W18) |
+| SRS-RES-09   | §6            | `CallbackRequestForm`, `ResumeRequestForm` | TC-RES-08               | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) (resume form) |
 | SRS-THM-01   | §4.8          | `ThemeProvider`, `ThemeSwitch`                               | TC-THM-01                 | Pass (SS both themes) |
 | SRS-THM-02   | §4.8          | `ThemeProvider` (`chosen ?? system`), `index.html`           | TC-THM-01 to TC-THM-03    | Unverified (W17) |
 | SRS-THM-03   | §4.8          | `index.html` inline script                                   | inspection                | Pass (INSP)       |
@@ -137,6 +140,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-PRE-01   | §4.10a        | `scripts/prerender.mjs`, `utils/documentTags.ts`, `package.json` `postbuild` | TC-PRE-01 a, d, f | Manual (a, d 2026-10-23); runtime equality f Unverified |
 | SRS-PRE-02   | §4.10a        | `prerender.mjs` `removeDetailPages`, `shellParts`, slug check | TC-PRE-01 b, c, g         | Manual (b, c 2026-10-23); g Designed |
 | SRS-PRE-03   | §4.10a, §6    | `prerender.mjs` offline branch, `swemre-prerendered-routes`  | TC-PRE-01 d, e            | Manual (2026-10-23); production serving Unverified (deploy change) |
+| SRS-PRE-04   | §4.10a        | swemre-website-api `deploy/traefik-dynamic.yml` (`site-pages`), Garage error document, `public/favicon.ico` | TC-PRE-02 | Manual (404 and favicon checked against local Traefik and Garage containers for swemre-website-api#7); production Unverified |
 | SRS-SND-01   | §4.7a         | `SoundProvider` pointer/key classification                   | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-02   | §4.7a         | `SoundProvider` `soundForKey`                                | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-03   | §4.7a         | `Modal`, `ChatPanel`, `ResumeRequestForm`                    | TC-SND-03                 | Designed          |
@@ -238,7 +242,11 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | PRS-000332: rows for GEN-07, GEN-08 | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: GEN-04 row changed, A11Y-09 and A11Y-10 added, coverage update | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: rows SRS-PRE-01 to PRE-03, SRS-GEN-06 back to Unverified for the new tags | Claude, for swemre review |
+| 2026-10-23 | PRS-000312: GEN-03 row, PRE-04 row | Claude, for swemre review |
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: MNT-12 verified, row for MNT-13 | Claude, for swemre review |
 | 2026-10-23 | MNT-13 status after the v2 contract | Claude, for swemre review |
 | 2026-10-23 | PRS-000314: GEN-10 row | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: RES-09 row | Claude, for swemre review |
