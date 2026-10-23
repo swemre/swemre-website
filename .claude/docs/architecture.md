@@ -357,16 +357,20 @@ CSS variables, so no component uses `dark:` for colour.
 ### 4.8a Document metadata
 
 `useDocumentTitle(title?, meta?)` sets `document.title` (`<title> · SWEMRE`
-or `SWEMRE`) and creates or updates `<meta name="description">`, `og:title`,
-`og:description`, `og:url` (`siteConfig.url` + current `pathname`),
-`og:image` and `twitter:card` in `document.head`. `meta` is
+or `SWEMRE`) and creates or updates `<meta name="description">`,
+`<link rel="canonical">`, `og:title`, `og:description`, `og:url`, `og:image`,
+`twitter:card`, `twitter:title`, `twitter:description` and `twitter:image` in
+`document.head`. The values come from `utils/documentTags.ts`
+(`documentTags(site, pathname, title, meta, defaultImage)`), which has no
+runtime imports so `scripts/prerender.mjs` uses it too; canonical and
+`og:url` are `siteConfig.url` + `pathname` without a trailing slash. `meta` is
 `DocumentMeta` (`description?`, `image?`); without them the site description
 and `siteConfig.avatarLarge` are used, and `twitter:card` is `summary`
 instead of `summary_large_image`. Article and project pages pass their
 summary and cover, special pages their summary, and the detail pages pass no
-title while loading and "… not found" after (SRS-GEN-05, GEN-06). The tags
-are set client-side; `index.html` holds the static defaults for previews that
-do not run JavaScript (SRS-FUT-04).
+title while loading and "… not found" after (SRS-GEN-05, GEN-06). The same
+tags are pre-rendered per route after the build (§4.10a, ADR-016);
+`index.html` holds the defaults for routes without a pre-rendered file.
 
 ### 4.9 Styling system
 
@@ -396,7 +400,37 @@ dev: swemre-rss Vite plugin reruns the script when src/database or src/config ch
 build: tsc -b  →  vite build
   plugins: @tailwindcss/vite → @mdx-js/rollup (remark-gfm, @shikijs/rehype dual theme)
            → @vitejs/plugin-react → babel(React Compiler preset)
+postbuild: scripts/prerender.mjs (npm run prerender; §4.10a)
+preview: swemre-prerendered-routes plugin serves dist/<route>/index.html for /<route>
 ```
+
+### 4.10a Route pre-render (ADR-016)
+
+`scripts/prerender.mjs` reads `dist/index.html` as the shell, cuts out its
+`<title>`, description, canonical, `og:title|description|url|image` and
+`twitter:*` tags, and writes for every route the shell with the tags of
+`documentTags` in place of the `<title>`. Routes: `/` (written back to
+`dist/index.html`), `/articles`, `/projects` and every published article,
+project (`/articles|projects/<slug>`, title `seoTitle` else title,
+description `seoDescription` else `summary`, image `ogImage` else `cover`)
+and special page (`/sp/<slug>`, description `summary` else `seoDescription`,
+image `ogImage` only), mirroring the page components. The default image is
+the site settings' `defaultOgImage`, else the large avatar. Media URLs
+follow `fieldMediaUrl` (relative paths prefixed with `VITE_API_BASE`).
+Before writing, the `index.html` of every folder under `dist/articles`,
+`dist/projects` and `dist/sp` is removed, so unpublished posts lose their
+page; because the shell's managed tags are replaced, not appended, running
+the script again gives the same files (SRS-PRE-02). Lists are read with
+`size=100`, like the RSS and sitemap scripts.
+
+Serving: Garage serves the bucket behind Traefik (swemre-website-api
+`deploy/`). Today the Traefik `spa-index` middleware rewrites every path
+without an extension to `/index.html`, so the pre-rendered files are not
+reached in production until the deploy config serves `/<route>` from
+`<route>/index.html` and falls back to `index.html` only when that object is
+missing (for example a `replacePathRegex` to `/$1/index.html` plus Garage's
+existing `--error-document index.html`, which answers unknown routes with
+the SPA shell and status 404). Unverified on the server.
 
 ## 5. Data design
 
@@ -414,6 +448,7 @@ build: tsc -b  →  vite build
 | Viewed articles | `sessionStorage`            | `swemre:viewed-articles`          | Browser tab session |
 | Article, project, song, special-page lists | Service memory (`ArrayService` list cache) | per service | Page session; not kept when empty |
 | Sitemap       | `public/sitemap.xml` (generated) | URL list                       | Build               |
+| Route pages   | `dist/<route>/index.html` (generated) | route path                | Build or `npm run prerender` |
 | Sound muted   | `localStorage`                | `swemre:sound-muted`              | Browser, persistent |
 | FeedItem      | `database/feedDatabase.ts`    | `id` (permanent)                  | Build               |
 
@@ -434,6 +469,8 @@ Schemas: SWE-DOC-004 §5.
 | Chat message not accepted by the API      | Message `queued` ("Not sent · tap to retry"); retried on tap, socket connect, `online` and panel open |
 | List request fails or returns empty       | Not cached; the next `findAll` asks the API again                 |
 | Sitemap script cannot reach the API       | Existing `public/sitemap.xml` kept (exit 0); exit 1 when there is none |
+| Pre-render cannot reach the API           | Warning, `dist/` unchanged, exit 0; every route serves the `index.html` defaults |
+| Pre-render finds a slug that is not plain | That route is skipped with a warning; it keeps the SPA fallback |
 
 ## 7. Performance design
 
@@ -470,7 +507,7 @@ Schemas: SWE-DOC-004 §5.
 | `SkipLink`, `useRouteFocus`        | GEN-04, A11Y-09, A11Y-10                             |
 | `HeaderBand`, templates, tokens    | LAY-01, LAY-03 to LAY-06, LAY-08, ART-06, ART-15 to ART-17, PRJ-03, PRJ-07 |
 | `NotFound`                         | GEN-03, ART-10, PRJ-05, LGL-04                       |
-| `useDocumentTitle`                 | GEN-05, GEN-06                                       |
+| `useDocumentTitle`, `documentTags` | GEN-05, GEN-06, PRE-01                               |
 | `SidebarNav`, `ProjectsPage`, `HomePage`, `ArticleShowcase` | LAY-09, PRJ-08, PRJ-09, HOME-02, HOME-05, HOME-06 |
 | Services + registry + hooks        | ART-01 to ART-03, PRJ-01, PRJ-02, MNT-06, MNT-09, PERF-05, A11Y-08 |
 | `ArticleInteractionStore`          | ART-11 to ART-13, SEC-06, CMP-03                     |
@@ -482,6 +519,7 @@ Schemas: SWE-DOC-004 §5.
 | `CorporateTemplate`, `SpecialPage` | LGL-*                                                |
 | `scripts/generate-rss.mjs`, `feedDatabase`, `swemre-rss` plugin, skills | RSS-*            |
 | `scripts/generate-sitemap.mjs`, `public/robots.txt` | MAP-*                               |
+| `scripts/prerender.mjs`, `swemre-prerendered-routes` plugin | PRE-*                     |
 | `SoundProvider`, `soundEngine`, `SoundToggle` | SND-*                                     |
 
 Full trace: SWE-DOC-007.
@@ -495,4 +533,5 @@ Full trace: SWE-DOC-007.
 | 2026-10-23 | UX fixes: shared `NotFound`, band while loading, list caching, contact-form failure handling, covers, session view count, search default list, chat delivery states and phone sheet, theme follows the OS, §4.8a document metadata, sitemap step | Claude, for swemre review |
 | 2026-10-23 | PRS-000332: error boundaries around the page outlet and the dock (§4.1, §6) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: `SkipLink` and `useRouteFocus` (skip link, focus and title announcement on route change, scroll restore on back/forward); `main.css` hides the focus ring on programmatic `tabindex=-1` targets (`main`, `main h1`) | Claude, for swemre review |
+| 2026-10-23 | PRS-000311: canonical and Twitter tags through `documentTags`, §4.10a route pre-render, preview plugin | Claude, for swemre review |
 | 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |

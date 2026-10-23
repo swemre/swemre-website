@@ -13,6 +13,8 @@ import react, {reactCompilerPreset} from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import {execFile} from 'node:child_process'
+import {existsSync} from 'node:fs'
+import {join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {defineConfig, loadEnv, type Plugin} from 'vite'
 import {siteDefaults} from './src/config/siteDefaults.ts'
@@ -59,6 +61,28 @@ function siteEnvPlugin(mode: string): Plugin {
   }
 }
 
+// Serves dist/<route>/index.html of scripts/prerender.mjs for /<route> in `vite preview`, like the
+// production server; other routes keep the SPA fallback
+function prerenderedRoutesPlugin(): Plugin {
+  return {
+    name: 'swemre-prerendered-routes',
+    configurePreviewServer(server) {
+      const outDir = server.config.build.outDir
+      server.middlewares.use((request, _response, next) => {
+        const path = request.url?.split('?')[0] ?? '/'
+        if (
+          /^\/[a-z0-9/-]+$/i.test(path) &&
+          !path.endsWith('/') &&
+          existsSync(join(outDir, path, 'index.html'))
+        ) {
+          request.url = `${path}/index.html`
+        }
+        next()
+      })
+    },
+  }
+}
+
 // The block views shared with swemre-press live next to both projects
 const sharedBlocks = fileURLToPath(
   new URL('../swemre-blocks/src/index.ts', import.meta.url),
@@ -74,6 +98,7 @@ export default defineConfig(({mode}) => ({
   plugins: [
     rssPlugin(),
     siteEnvPlugin(mode),
+    prerenderedRoutesPlugin(),
     tailwindcss(),
     react(),
     babel({presets: [reactCompilerPreset()]}),

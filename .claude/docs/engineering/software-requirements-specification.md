@@ -85,7 +85,7 @@ features). No backend, no cookies, no analytics.
 | SRS-GEN-03  | An unknown route shall render the shared not-found view (`components/NotFound.tsx`: "404" kicker, "Page not found" heading, a link to `/`) and set the document title to "Page not found · SWEMRE". Article, project and special-page not-found states shall use the same view. | T    | P2   | OWN-3, UX-W20 |
 | SRS-GEN-04  | On every route change to a new path the window shall scroll to the top. On browser back and forward it shall restore the scroll position the visitor left that history entry at, once the page is tall enough (waiting up to 3 s, stopping on wheel, touch or key input). | T | P2 | OWN-5, PRS-000321 |
 | SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · SWEMRE`; pages without a title (home) shall use `SWEMRE`.                                          | T    | P3   | Design |
-| SRS-GEN-06  | Each page shall set the `description` meta tag and the Open Graph tags `og:title`, `og:description`, `og:url` (site URL + current path) and `og:image`, plus `twitter:card`. Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
+| SRS-GEN-06  | Each page shall set the `description` meta tag, `<link rel="canonical">`, the Open Graph tags `og:title`, `og:description`, `og:url` and `og:image`, and `twitter:card`, `twitter:title`, `twitter:description` and `twitter:image`. Canonical and `og:url` shall be `https://swemre.com` + the current path without a trailing slash (`https://swemre.com/` for the home page). Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
 | SRS-GEN-07  | A render error inside a page shall show an error view inside the layout (navbar and footer kept): "Something went wrong", a Reload button and a link to `/`, with the document title "Something went wrong · SWEMRE". Navigating to another route shall clear it. | T | P1 | PRS-000332 |
 | SRS-GEN-08  | A render error in the dock (chat or player) shall hide the dock and leave the page usable. Every caught render error shall be written to the browser console. | T | P1 | PRS-000332 |
 | SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
@@ -231,7 +231,7 @@ features). No backend, no cookies, no analytics.
 | SRS-LGL-03  | The footer shall link to the privacy policy.                                                     | T    | P1   | OWN-3  |
 | SRS-LGL-04  | An unknown or unavailable special page shall render the not-found view (SRS-GEN-03) with "This page is not available right now." and the contact email address. | T | P2 | UX-W3 |
 
-### 3.12 Feeds, sitemap and footer (RSS, MAP, FTR)
+### 3.12 Feeds, sitemap, pre-render and footer (RSS, MAP, PRE, FTR)
 
 | ID          | Requirement                                                                                       | Ver. | Pri. | Source |
 | ----------- | ------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
@@ -244,6 +244,9 @@ features). No backend, no cookies, no analytics.
 | SRS-MAP-01  | `npm run sitemap` shall run before every `dev` and `build` and write `public/sitemap.xml` (sitemaps.org 0.9) listing `/`, `/articles`, `/projects` and every published article, project and special page of the workspace, each published post with `<lastmod>` (date part of `lastUpdatedAt`). A content type the API answers with 404 shall contribute no URLs. | T | P2 | UX-W25 |
 | SRS-MAP-02  | When the API cannot be reached, the sitemap script shall keep the existing `public/sitemap.xml` and exit 0, or exit 1 when no sitemap exists yet. | T | P2 | UX-W25 |
 | SRS-MAP-03  | `public/robots.txt` shall allow all crawlers and name `https://swemre.com/sitemap.xml`. | I | P2 | UX-W25 |
+| SRS-PRE-01  | `npm run build` shall finish with `npm run prerender`, which writes one HTML file per known route (`/` as `dist/index.html`; `/articles`, `/projects` and every published article, project and special page as `dist/<route>/index.html`) whose head holds the SRS-GEN-06 tags of that route with the same values the page sets at runtime, the site settings' default Open Graph image included. Routes and fields shall come from the public API. | T | P2 | PRS-000311 |
+| SRS-PRE-02  | `npm run prerender` shall be runnable on its own against an existing `dist/`, produce the same files when run twice on unchanged content, and remove the pages of posts no longer published. Slugs that are not plain slugs (`[a-z0-9-]`) shall be skipped with a warning. | T | P2 | PRS-000311 |
+| SRS-PRE-03  | When the API cannot be reached, `npm run prerender` shall warn, change nothing and exit 0, so the build still succeeds. Routes without a pre-rendered file shall keep the SPA fallback. | T | P2 | PRS-000311 |
 | SRS-FTR-01  | The footer shall show icon-only social links on the left and icon-only RSS and privacy links plus the copyright on the right; every icon link shall have an accessible name and a tooltip.  | T    | P1   | OWN-3  |
 
 ### 3.13 Sound (SND)
@@ -329,7 +332,7 @@ features). No backend, no cookies, no analytics.
 | SRS-FUT-01  | Resume requests shall be delivered to the owner by email or stored server-side.              |
 | SRS-FUT-02  | Chat shall deliver messages to the owner in real time and show real presence (SRS-CHAT-09).  |
 | SRS-FUT-03  | Interaction counts (views, likes) may be aggregated server-side across visitors.            |
-| SRS-FUT-04  | Pages should be pre-rendered for search engines and link previews. Per-page Open Graph tags are set client-side today (SRS-GEN-06); previews that do not run JavaScript still see the defaults in `index.html`. |
+| SRS-FUT-04  | Page bodies should be pre-rendered for search engines that do not run JavaScript. The head tags are pre-rendered per route since PRS-000311 (SRS-PRE-01); the body is still rendered client-side. |
 
 ## Change log
 
@@ -340,5 +343,6 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | Website UX fixes (UX-W1 to UX-W26). Changed: GEN-03, GEN-05, HOME-02, ART-10, ART-11, PRJ-05, CHAT-02, CHAT-06, RES-03, THM-02, FUT-04. Added: GEN-06, LAY-07 to LAY-09, NAV-06, HOME-05, HOME-06, ART-15 to ART-17, PRJ-07 to PRJ-09, SRCH-07, SRCH-08, CHAT-10 to CHAT-14, RES-05 to RES-08, LGL-04, MAP-01 to MAP-03, A11Y-08, PERF-05 | Claude, for swemre review |
 | 2026-10-23 | PRS-000332: added GEN-07, GEN-08 (error boundaries) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: changed GEN-04 (back/forward restores scroll); added A11Y-09 (skip link) and A11Y-10 (focus and title announcement on route change) | Claude, for swemre review |
+| 2026-10-23 | PRS-000311: added PRE-01 to PRE-03; changed GEN-06 (canonical, Twitter title, description and image, no trailing slash), FUT-04 | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |

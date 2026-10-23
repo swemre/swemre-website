@@ -13,11 +13,8 @@ import {useEffect} from 'react'
 import {useLocation} from 'react-router-dom'
 import {siteConfig} from '../config/site'
 import type {DocumentMeta} from '../types/type'
+import {documentTags} from '../utils/documentTags'
 import {useSiteSettings} from './useSiteSettings'
-
-const defaults = {
-  description: `Portfolio, articles and projects of ${siteConfig.name}, ${siteConfig.jobTitle.toLowerCase()}.`,
-}
 
 function setMeta(attribute: 'name' | 'property', key: string, value: string) {
   let element = document.head.querySelector<HTMLMetaElement>(
@@ -31,23 +28,41 @@ function setMeta(attribute: 'name' | 'property', key: string, value: string) {
   element.content = value
 }
 
+function setCanonical(href: string) {
+  let element = document.head.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]',
+  )
+  if (!element) {
+    element = document.createElement('link')
+    element.rel = 'canonical'
+    document.head.append(element)
+  }
+  element.href = href
+}
+
 export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
   const {pathname} = useLocation()
   const settings = useSiteSettings()
   const {description, image} = meta
 
   useEffect(() => {
-    const fullTitle = title
-      ? `${title} · ${siteConfig.brand}`
-      : siteConfig.brand
-    const text = description || defaults.description
-    const picture = image || settings.defaultOgImageUrl
-    document.title = fullTitle
-    setMeta('name', 'description', text)
-    setMeta('property', 'og:title', fullTitle)
-    setMeta('property', 'og:description', text)
-    setMeta('property', 'og:url', `${siteConfig.url}${pathname}`)
-    setMeta('property', 'og:image', picture)
-    setMeta('name', 'twitter:card', image ? 'summary_large_image' : 'summary')
+    const tags = documentTags(
+      siteConfig,
+      pathname,
+      title,
+      {description, image},
+      settings.defaultOgImageUrl,
+    )
+    document.title = tags.title
+    setMeta('name', 'description', tags.description)
+    setCanonical(tags.url)
+    setMeta('property', 'og:title', tags.title)
+    setMeta('property', 'og:description', tags.description)
+    setMeta('property', 'og:url', tags.url)
+    setMeta('property', 'og:image', tags.image)
+    setMeta('name', 'twitter:card', tags.twitterCard)
+    setMeta('name', 'twitter:title', tags.title)
+    setMeta('name', 'twitter:description', tags.description)
+    setMeta('name', 'twitter:image', tags.image)
   }, [title, description, image, pathname, settings.defaultOgImageUrl])
 }
