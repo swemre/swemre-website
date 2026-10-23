@@ -18,7 +18,7 @@ import {
   fieldNumber,
   fieldString,
   postSeo,
-  safely,
+  shareImage,
   tagNames,
 } from './apiClient'
 import {publicApi} from './publicApi'
@@ -40,6 +40,7 @@ const toProject = (post: PublicPost): Project => ({
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
   seo: postSeo(post.fields),
+  shareImage: shareImage(post.fields, ['ogImage', 'cover']),
 })
 
 // Projects are the "project" content type of the website; the site only reads them.
@@ -49,24 +50,20 @@ export class ProjectService extends ArrayService<Project> {
   }
 
   override async findAll(): Promise<Project[]> {
-    return safely(async () => {
-      const posts = await publicApi.listPosts('project', {
-        size: 100,
-        sortBy: 'publishedAt',
-        direction: 'DESC',
-      })
-      return posts.map(toProject).sort((a, b) => b.year - a.year)
-    }, [])
+    const posts = await publicApi.listPosts('project', {
+      size: 100,
+      sortBy: 'publishedAt',
+      direction: 'DESC',
+    })
+    return posts.map(toProject).sort((a, b) => b.year - a.year)
   }
 
   override async findById(id: string): Promise<Project | undefined> {
     return (await this.findAll()).find(project => project.id === id)
   }
 
-  findBySlug(slug: string): Promise<Project | undefined> {
-    return safely(async () => {
-      const post = await publicApi.getPost('project', slug)
-      return post ? toProject(post) : undefined
-    }, undefined)
+  async findBySlug(slug: string): Promise<Project | undefined> {
+    const post = await publicApi.getPost('project', slug)
+    return post ? toProject(post) : undefined
   }
 }

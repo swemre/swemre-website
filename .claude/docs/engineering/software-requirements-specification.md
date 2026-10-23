@@ -82,12 +82,15 @@ features). No backend, no cookies, no analytics.
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------ |
 | SRS-GEN-01  | The system shall be delivered as static files produced by `npm run build`, with no server-side code.                                                              | I    | P1   | OWN-1  |
 | SRS-GEN-02  | Every route shall render inside one shared layout containing the navbar, the page outlet, the footer and the dock.                                                 | I, D | P1   | OWN-3  |
-| SRS-GEN-03  | An unknown route shall render the shared not-found view (`components/NotFound.tsx`: "404" kicker, "Page not found" heading, a link to `/`) and set the document title to "Page not found · SWEMRE". Article, project and special-page not-found states shall use the same view. | T    | P2   | OWN-3, UX-W20 |
+| SRS-GEN-03  | An unknown route shall render the shared not-found view (`components/NotFound.tsx`: "404" kicker, "Page not found" heading, a link to `/`) and set the document title to "Page not found · SWEMRE". Article, project and special-page not-found states shall use the same view. While it is shown the head shall hold `<meta name="robots" content="noindex">`, removed when the visitor leaves it. | T    | P2   | OWN-3, UX-W20, PRS-000312 |
 | SRS-GEN-04  | On every route change to a new path the window shall scroll to the top. On browser back and forward it shall restore the scroll position the visitor left that history entry at, once the page is tall enough (waiting up to 3 s, stopping on wheel, touch or key input). | T | P2 | OWN-5, PRS-000321 |
 | SRS-GEN-05  | Each page with a title shall set `document.title` to `<title> · SWEMRE`; pages without a title (home) shall use `SWEMRE`.                                          | T    | P3   | Design |
 | SRS-GEN-06  | Each page shall set the `description` meta tag, `<link rel="canonical">`, the Open Graph tags `og:title`, `og:description`, `og:url` and `og:image`, and `twitter:card`, `twitter:title`, `twitter:description` and `twitter:image`. Canonical and `og:url` shall be `https://swemre.com` + the current path without a trailing slash (`https://swemre.com/` for the home page). Article and project pages shall use their summary and cover (`twitter:card` `summary_large_image`); other pages shall fall back to the site description and the large avatar (`summary`). | T | P2 | UX-W24 |
+| SRS-GEN-10  | Link preview tags (runtime and pre-rendered) shall add `og:type` (`article` on articles with `article:published_time` and `article:modified_time`, else `website`), `og:site_name`, and `og:image:width`, `og:image:height`, `og:image:alt` and `twitter:image:alt` when the chosen image has them. The image is the post's `ogImage`, else its cover (articles, projects), else the site settings' `defaultOgImage`, else the 384 px avatar. `twitter:card` shall be `summary_large_image` for every image but the avatar. Tags a page does not set shall be removed when the visitor navigates. | T | P2 | PRS-000314 |
+| SRS-GEN-11  | Home, the article and project lists and every article and project page shall carry one `<script type="application/ld+json" id="structured-data">` (runtime and pre-rendered) with a schema.org `@graph`: home `WebSite` and `Person` (name, job title, `sameAs` GitHub and LinkedIn); lists a `BreadcrumbList`; articles a `BreadcrumbList` and `BlogPosting` (headline, description, image, `datePublished`, `dateModified`, author); projects a `BreadcrumbList` and `SoftwareSourceCode` with `codeRepository` when there is a repository, else `CreativeWork`. Other pages shall have none. | T | P2 | PRS-000313 |
 | SRS-GEN-07  | A render error inside a page shall show an error view inside the layout (navbar and footer kept): "Something went wrong", a Reload button and a link to `/`, with the document title "Something went wrong · SWEMRE". Navigating to another route shall clear it. | T | P1 | PRS-000332 |
 | SRS-GEN-08  | A render error in the dock (chat or player) shall hide the dock and leave the page usable. Every caught render error shall be written to the browser console. | T | P1 | PRS-000332 |
+| SRS-GEN-09  | When a content request fails or times out (SRS-MNT-12), the list pages, the home sections (articles, projects, songs) and the article, project and special pages shall show "Content could not be loaded" with a Retry button that loads again; an empty workspace shall keep its empty states, so the two look different. The search dialog shall skip a source that fails. | T | P1 | PRS-000333 |
 | SRS-LAY-07  | Below 640 px the layout shall reserve `--spacing-dock-clear` under the footer and under the home hero stats so the dock never covers content, and the dock shall keep clear of the bottom safe-area inset. | D | P2 | UX-W12 |
 | SRS-LAY-08  | Article and project pages shall draw the header band while their content is loading and when it is not found, so the transparent navbar of band routes always sits over a band. | T, D | P1 | UX-W4 |
 | SRS-LAY-09  | Sidebar navigation sections without items shall not be rendered; a sidebar whose sections are all empty shall render nothing. | T | P2 | UX-W9 |
@@ -200,6 +203,7 @@ features). No backend, no cookies, no analytics.
 | SRS-CHAT-12  | Unsent messages shall be retried automatically when the conversation's socket (re)connects, when the browser fires `online` and when the chat panel opens. Messages shall be posted one at a time in order, never twice, and a message still `sending` when the page closed shall be `queued` on the next load. | T | P1 | UX-W13 |
 | SRS-CHAT-13  | Deleting a conversation shall ask for confirmation in the row ("Delete "<title>"?", Cancel focused, Escape cancels). The delete button shall be visible on hover and keyboard focus, and always on coarse (touch) pointers. | T | P2 | UX-W14 |
 | SRS-CHAT-14  | Below 640 px the open chat panel shall be a full-screen sheet that respects the top and bottom safe-area insets, and the page behind it shall not scroll while it is open. | T, D | P2 | UX-W12 |
+| SRS-CHAT-15  | When the presence check fails, the chat shall say the server cannot be reached ("not reachable" on the launcher, a banner in the conversation) instead of "offline"; messages stay queued (SRS-CHAT-11). | T | P1 | PRS-000333 |
 
 ### 3.9 Resume request (RES)
 
@@ -213,6 +217,7 @@ features). No backend, no cookies, no analytics.
 | SRS-RES-06  | The call back form ("Request a call back": full name, phone, topic) shall follow the same rules: it is sent through `ContactFormService.submitCallbackRequest`, shows its confirmation only after the API confirms the submission, and shows an error otherwise. | T | P1 | UX-W1 |
 | SRS-RES-07  | In both forms, editing a field shall clear that field's error, and a submission with invalid fields shall move focus to the first invalid field in form order. | T | P2 | UX-W19 |
 | SRS-RES-08  | The dialog header of both forms shall leave room for the close button, so the title and subtitle never run under it. | I, D | P3 | UX-W18 |
+| SRS-RES-09  | When a form submission fails without an answer from the server (network error), the form shall say "The server cannot be reached. Check your connection and try again; what you entered is kept." instead of the generic failure. | T | P1 | PRS-000333 |
 
 ### 3.10 Theme (THM)
 
@@ -248,6 +253,7 @@ features). No backend, no cookies, no analytics.
 | SRS-PRE-02  | `npm run prerender` shall be runnable on its own against an existing `dist/`, produce the same files when run twice on unchanged content, and remove the pages of posts no longer published. Slugs that are not plain slugs (`[a-z0-9-]`) shall be skipped with a warning. | T | P2 | PRS-000311 |
 | SRS-PRE-03  | When the API cannot be reached, `npm run prerender` shall warn, change nothing and exit 0, so the build still succeeds. Routes without a pre-rendered file shall keep the SPA fallback. | T | P2 | PRS-000311 |
 | SRS-PRE-05  | `npm run refresh` (`node scripts/refresh.mjs <build folder>`) shall rewrite `rss.xml`, `sitemap.xml` and the pre-rendered route pages of an existing build from the public API without rebuilding (the scripts take `OUT_DIR` and `DIST_DIR`), run every step even when one fails and exit non-zero then. The server shall run it every two minutes on the deployed build and upload the build only when an HTML or XML file changed, so publishing, scheduling, unpublishing or deleting a post reaches the site within a few minutes. `lastmod` is the post's last update date. | T | P2 | PRS-000315 |
+| SRS-PRE-04  | The production server shall answer a path that is neither a file, a known route nor a pre-rendered page with HTTP 404 and the SPA shell, which renders the not-found view (SRS-GEN-03); `/favicon.ico` shall be a real icon (`public/favicon.ico`), not the HTML page. | T | P2 | PRS-000312 |
 | SRS-FTR-01  | The footer shall show icon-only social links on the left and icon-only RSS and privacy links plus the copyright on the right; every icon link shall have an accessible name and a tooltip.  | T    | P1   | OWN-3  |
 
 ### 3.13 Sound (SND)
@@ -269,7 +275,7 @@ features). No backend, no cookies, no analytics.
 | ID           | Requirement                                                                                     | Ver. | Pri. |
 | ------------ | ----------------------------------------------------------------------------------------------- | ---- | ---- |
 | SRS-A11Y-01  | All interactive elements shall be reachable and operable by keyboard.                            | T    | P1   |
-| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring).                       | I, T | P1   |
+| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring; on the blue bands and the transparent navbar over them the ring takes the band text colour).                       | I, T | P1   |
 | SRS-A11Y-03  | Text and essential UI shall meet WCAG 2.2 AA contrast in both themes.                            | A, T | P1   |
 | SRS-A11Y-04  | Icon-only buttons shall have an accessible name.                                                 | I, T | P1   |
 | SRS-A11Y-05  | Dialogs shall use the native `<dialog>` element in modal mode, trapping focus and closing on Escape. | I, T | P1 |
@@ -345,7 +351,14 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000332: added GEN-07, GEN-08 (error boundaries) | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: changed GEN-04 (back/forward restores scroll); added A11Y-09 (skip link) and A11Y-10 (focus and title announcement on route change) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: added PRE-01 to PRE-03; changed GEN-06 (canonical, Twitter title, description and image, no trailing slash), FUT-04 | Claude, for swemre review |
+| 2026-10-23 | PRS-000312: GEN-03 noindex on not-found views; added PRE-04 (404 status, favicon.ico) | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |
 | 2026-10-23 | MNT-13: form submissions stay on v1 until v2 serves them | Claude, for swemre review |
 | 2026-10-24 | PRS-000315: added PRE-05 (refresh between deploys) | Claude, for swemre review |
+| 2026-10-23 | PRS-000314: added GEN-10 (og:type, article times, image size and alt, card rule) | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: RES-09 | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: A11Y-02 ring colour on the bands | Claude, for swemre review |
+| 2026-10-23 | PRS-000313: added GEN-11 (JSON-LD) | Claude, for swemre review |

@@ -12,7 +12,7 @@
 import {useEffect} from 'react'
 import {useLocation} from 'react-router-dom'
 import {siteConfig} from '../config/site'
-import type {DocumentMeta} from '../types/type'
+import type {DocumentMeta, JsonLd} from '../types/type'
 import {documentTags} from '../utils/documentTags'
 import {useSiteSettings} from './useSiteSettings'
 
@@ -26,6 +26,33 @@ function setMeta(attribute: 'name' | 'property', key: string, value: string) {
     document.head.append(element)
   }
   element.content = value
+}
+
+// Optional tags are removed when the page has no value, so they never go stale
+function setOptionalMeta(
+  attribute: 'name' | 'property',
+  key: string,
+  value: string | number | undefined,
+) {
+  if (value === undefined || value === '') {
+    document.head.querySelector(`meta[${attribute}="${key}"]`)?.remove()
+  } else {
+    setMeta(attribute, key, String(value))
+  }
+}
+
+function setJsonLd(data: JsonLd | undefined) {
+  const id = 'structured-data'
+  const existing = document.getElementById(id)
+  if (!data) {
+    existing?.remove()
+    return
+  }
+  const element = existing ?? document.createElement('script')
+  element.id = id
+  element.setAttribute('type', 'application/ld+json')
+  element.textContent = JSON.stringify(data)
+  if (!existing) document.head.append(element)
 }
 
 function setCanonical(href: string) {
@@ -43,15 +70,15 @@ function setCanonical(href: string) {
 export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
   const {pathname} = useLocation()
   const settings = useSiteSettings()
-  const {description, image} = meta
+  const {description, image, article, schema} = meta
 
   useEffect(() => {
     const tags = documentTags(
       siteConfig,
       pathname,
       title,
-      {description, image},
-      settings.defaultOgImageUrl,
+      {description, image, article, schema},
+      settings.defaultOgImage,
     )
     document.title = tags.title
     setMeta('name', 'description', tags.description)
@@ -59,10 +86,34 @@ export function useDocumentTitle(title?: string, meta: DocumentMeta = {}) {
     setMeta('property', 'og:title', tags.title)
     setMeta('property', 'og:description', tags.description)
     setMeta('property', 'og:url', tags.url)
-    setMeta('property', 'og:image', tags.image)
+    setMeta('property', 'og:type', tags.ogType)
+    setMeta('property', 'og:image', tags.image.url)
+    setOptionalMeta('property', 'og:image:width', tags.image.width)
+    setOptionalMeta('property', 'og:image:height', tags.image.height)
+    setOptionalMeta('property', 'og:image:alt', tags.image.alt)
+    setOptionalMeta(
+      'property',
+      'article:published_time',
+      tags.article?.publishedTime,
+    )
+    setOptionalMeta(
+      'property',
+      'article:modified_time',
+      tags.article?.modifiedTime,
+    )
     setMeta('name', 'twitter:card', tags.twitterCard)
     setMeta('name', 'twitter:title', tags.title)
     setMeta('name', 'twitter:description', tags.description)
-    setMeta('name', 'twitter:image', tags.image)
-  }, [title, description, image, pathname, settings.defaultOgImageUrl])
+    setMeta('name', 'twitter:image', tags.image.url)
+    setOptionalMeta('name', 'twitter:image:alt', tags.image.alt)
+    setJsonLd(tags.jsonLd)
+  }, [
+    title,
+    description,
+    image,
+    article,
+    schema,
+    pathname,
+    settings.defaultOgImage,
+  ])
 }

@@ -13,18 +13,22 @@ import {useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import {ArticleRow} from '../../components/ArticleRow'
 import {Icon} from '../../components/Icon'
+import {LoadError} from '../../components/LoadError'
 import {SidebarNav} from '../../components/SidebarNav'
 import {useAllArticleInteractions} from '../../hooks/useArticleInteraction'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
 import {useService} from '../../hooks/useService'
+import type {DocumentMeta} from '../../types/type'
 import {ListTemplate} from '../../templates/ListTemplate'
 import {buttonClass} from '../../utils/buttonClass'
 import {cn} from '../../utils/cn'
 import {projectNavItem} from '../../utils/navItems'
 
+const LIST_META: DocumentMeta = {schema: {kind: 'list'}}
+
 export default function ArticlesPage() {
-  useDocumentTitle('Articles')
+  useDocumentTitle('Articles', LIST_META)
   const articles = useFindAll(useService('article'))
   const projects = useFindAll(useService('project'))
   const interactions = useAllArticleInteractions()
@@ -150,7 +154,9 @@ export default function ArticlesPage() {
       <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
         <div className="flex items-center gap-2 border-b border-border-muted px-6 py-3.5 text-sm">
           <span className="font-semibold text-fg-strong">
-            {shown.length} {shown.length === 1 ? 'article' : 'articles'}
+            {articles.error === undefined
+              ? `${shown.length} ${shown.length === 1 ? 'article' : 'articles'}`
+              : 'Articles'}
           </span>
           {activeTag && (
             <button
@@ -166,7 +172,10 @@ export default function ArticlesPage() {
         {articles.loading && (
           <p className="px-5 py-8 text-sm text-fg-muted">Loading…</p>
         )}
-        {!articles.loading && shown.length === 0 && (
+        {articles.error !== undefined && (
+          <LoadError onRetry={articles.retry} className="m-5" />
+        )}
+        {!articles.loading && !articles.error && shown.length === 0 && (
           <p className="px-5 py-10 text-center text-sm text-fg-muted">
             {onlySaved ? 'No saved articles yet.' : 'No articles match.'}
           </p>

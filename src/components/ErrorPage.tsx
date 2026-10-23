@@ -18,7 +18,10 @@ export function ErrorPage() {
   useDocumentTitle('Something went wrong')
 
   return (
-    <main className="mx-auto w-full max-w-page flex-1 animate-rise px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <main
+      id="main"
+      className="mx-auto w-full max-w-page flex-1 animate-rise px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+    >
       <p className="font-mono text-xs font-medium tracking-[0.2em] text-primary uppercase">
         Error
       </p>

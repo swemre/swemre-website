@@ -9,7 +9,7 @@
  * Contact: emre@swemre.com
  */
 
-import type {SocialLink} from '../types/type'
+import type {ShareImage, SocialLink} from '../types/type'
 import {siteEnv} from './env.ts'
 
 // TODO(swemre): confirm the social URLs.
@@ -26,13 +26,23 @@ export const siteConfig = {
     'I build fast, accessible web applications and care about the details that make software feel simple.',
   rssPath: '/rss.xml',
   privacyPath: '/sp/privacy-policy',
+  github: 'https://github.com/swemre',
+  linkedin: 'https://www.linkedin.com/in/swemre',
+}
+
+// Link previews fall back to this when neither the page nor the site settings have an image
+export const defaultShareImage: ShareImage = {
+  url: `${siteConfig.url}${siteConfig.avatarLarge}`,
+  alt: siteConfig.name,
+  width: 384,
+  height: 384,
 }
 
 export const socialLinks: SocialLink[] = [
-  {label: 'GitHub', href: 'https://github.com/swemre', icon: 'github'},
+  {label: 'GitHub', href: siteConfig.github, icon: 'github'},
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/swemre',
+    href: siteConfig.linkedin,
     icon: 'linkedin',
   },
   {label: 'Email', href: 'mailto:emre@swemre.com', icon: 'mail'},

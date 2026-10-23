@@ -31,11 +31,14 @@ export function DocsLayout({
 
   return (
     <div className={`${docsColumns} flex-1 py-10`}>
-      <aside className="hidden lg:sticky lg:top-sticky lg:block lg:max-h-[calc(100dvh-var(--spacing-sticky))] lg:self-start lg:overflow-y-auto">
+      <aside
+        aria-label="Related"
+        className="hidden lg:sticky lg:top-sticky lg:block lg:max-h-[calc(100dvh-var(--spacing-sticky))] lg:self-start lg:overflow-y-auto"
+      >
         {sidebar}
       </aside>
 
-      <main className="min-w-0">
+      <main id="main" className="min-w-0">
         <div className="mx-auto max-w-reading">
           {before}
           {headings.length > 0 && (
@@ -60,7 +63,10 @@ export function DocsLayout({
         </div>
       </main>
 
-      <aside className="hidden xl:sticky xl:top-sticky xl:block xl:self-start">
+      <aside
+        aria-label="On this page"
+        className="hidden xl:sticky xl:top-sticky xl:block xl:self-start"
+      >
         <Toc headings={headings} />
       </aside>
     </div>

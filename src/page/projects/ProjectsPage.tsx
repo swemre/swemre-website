@@ -11,17 +11,21 @@
 
 import {Link} from 'react-router-dom'
 import {Icon} from '../../components/Icon'
+import {LoadError} from '../../components/LoadError'
 import {ProjectCard} from '../../components/ProjectCard'
 import {SidebarNav} from '../../components/SidebarNav'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
 import {useFindAll} from '../../hooks/useFindAll'
 import {useService} from '../../hooks/useService'
+import type {DocumentMeta} from '../../types/type'
 import {ListTemplate} from '../../templates/ListTemplate'
 import {buttonClass} from '../../utils/buttonClass'
 import {articleNavItem} from '../../utils/navItems'
 
+const LIST_META: DocumentMeta = {schema: {kind: 'list'}}
+
 export default function ProjectsPage() {
-  useDocumentTitle('Projects')
+  useDocumentTitle('Projects', LIST_META)
   const projects = useFindAll(useService('project'))
   const articles = useFindAll(useService('article'))
   const list = projects.data ?? []
@@ -49,7 +53,8 @@ export default function ProjectsPage() {
       }
     >
       {projects.loading && <p className="text-sm text-fg-muted">Loading…</p>}
-      {!projects.loading && list.length === 0 && (
+      {projects.error !== undefined && <LoadError onRetry={projects.retry} />}
+      {!projects.loading && !projects.error && list.length === 0 && (
         <div className="flex flex-col items-start gap-4 rounded-lg border border-dashed border-border bg-surface px-6 py-12 sm:items-center sm:px-10 sm:text-center">
           <span className="inline-grid size-10 place-items-center rounded-md bg-primary-muted text-primary">
             <Icon name="repo" size={20} />

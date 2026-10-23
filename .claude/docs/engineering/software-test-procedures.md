@@ -337,7 +337,7 @@ not be heard in the headless environment).
 | TC-HOME-03  | SRS-HOME-06               | Render `ArticleShowcase` with 1 article, then 3, at 1280 px                                     | 1: wrapper `lg:col-span-12`, card `lg:flex-row`; 3: `lg:col-span-7` plus the reading list | Designed |
 | TC-ART-07   | SRS-ART-04, ART-05        | Render `ArticlesPage` at `/articles?tag=react`                                                  | Only react articles; tag button pressed; "Saved only" with one favorited → one row | Designed |
 | TC-ART-08   | SRS-ART-06, ART-09        | Render `ArticlePage` at a known slug                                                            | Breadcrumb, tags, `h1`, summary, author, date, reading time, Like, Save, view count, sidebars | Designed |
-| TC-ART-09   | SRS-ART-10, PRJ-05, GEN-03 | `ArticlePage` and `ProjectPage` at unknown slugs; `App` at `/nope`                             | Same `NotFound` view: "404", "Article not found" / "Project not found" + back link, `document.title` "Article not found · SWEMRE" etc.; "Page not found" + link to `/`, title "Page not found · SWEMRE" | Designed |
+| TC-ART-09   | SRS-ART-10, PRJ-05, GEN-03 | `ArticlePage` and `ProjectPage` at unknown slugs; `App` at `/nope`                             | Same `NotFound` view: "404", "Article not found" / "Project not found" + back link, `document.title` "Article not found · SWEMRE" etc.; "Page not found" + link to `/`, title "Page not found · SWEMRE" | Designed || TC-PRE-02   | SRS-PRE-04, GEN-03        | Against the deployed site: `curl -I /nope`, `/articles/missing`, `/favicon.ico`; open `/nope` in a browser and leave it for `/` | 404 for both paths with the SPA shell; `favicon.ico` 200 `image/x-icon` (or `image/vnd.microsoft.icon`); `meta[name=robots][content=noindex]` present on `/nope` and gone on `/` | Designed |
 | TC-ART-10   | SRS-ART-11                | Render `ArticlePage` in `StrictMode`; unmount and mount again in the same session               | `views` = 1 after the first mount and still 1 after the second | Designed |
 | TC-ART-11   | SRS-ART-07                | Render `DocsLayout` with an MDX body containing two `h2` and one `h3`                           | TOC lists three entries with matching ids and levels    | Designed |
 | TC-ART-12   | SRS-LAY-08                | `ArticlePage` and `ProjectPage` with a loader that never settles, then one resolving `undefined` | `HeaderBand` (`aria-hidden`) rendered above "Loading…" and above the not-found view | Designed |
@@ -357,6 +357,7 @@ not be heard in the headless environment).
 | TC-CHAT-09  | SRS-CHAT-06, CHAT-10, CHAT-11 | Presence `offline`; send "hi" with a delivery that waits; then let it fail; then press the bubble (click and Enter) with the API answering | New banner text; bubble at once with "Sending…"; then "Not sent · tap to retry" as a `<button>` named "Retry sending: hi"; after retry check mark | Designed |
 | TC-CHAT-10  | SRS-CHAT-12               | One queued message; (a) fire window `online`; (b) close and open the panel; (c) socket stub fires `onopen` | Each triggers one delivery attempt; never two POSTs for the same message | Designed |
 | TC-CHAT-11  | SRS-CHAT-13               | Conversation list: press delete, then Cancel; press delete, Escape; press delete, Delete. Repeat with `pointer: coarse` emulated | Confirmation row with Cancel focused; row back; row back; conversation removed. Delete button visible without hover on coarse pointers and on keyboard focus | Designed |
+| TC-CHAT-12  | SRS-CHAT-15               | `presence()` rejects; open the chat, start a conversation | Launcher "Chat with Emre · not reachable", header "Server not reachable · messages wait here", banner "The chat server cannot be reached…" | Designed |
 | TC-CHAT-07  | SRS-CHAT-07               | In a conversation, type "hi", Enter; type "a", Shift+Enter, "b", Enter; press Enter on empty     | Two messages: "hi", "a\nb"; no empty message            | Designed |
 | TC-RES-02   | SRS-RES-01, RES-03        | Click navbar CTA; fill valid values; submit                                                    | Modal open; `submitResumeRequest` called once with trimmed values; confirmation shows first name and email | Designed |
 | TC-RES-03   | SRS-RES-02                | Submit empty form                                                                               | Three field errors, focusable, no service call          | Designed |
@@ -364,11 +365,15 @@ not be heard in the headless environment).
 | TC-RES-05   | SRS-RES-06, RES-03        | Call back form with `submitCallbackRequest` rejecting (as for a 404); then resolving              | Error shown, no "Call back requested"; then the confirmation | Designed |
 | TC-RES-06   | SRS-RES-07                | Both forms: submit with only the second field invalid; then all empty; then type in an invalid field | Focus on the second field; focus on the first field; that field's error disappears, others stay | Designed |
 | TC-RES-07   | SRS-RES-08                | Open both dialogs at 360 px and 1920 px; inspect the header                                     | Title and subtitle end left of the close button (header `pr-14`) | Designed |
+| TC-RES-08   | SRS-RES-09                | Both forms with `fetch` rejecting (network error); then with an `ApiError(500)` | Unreachable message, fields kept; then the generic "could not be sent" message | Designed |
 | TC-THM-01   | SRS-THM-01, THM-02        | Stored `dark` → render; toggle                                                                  | `data-theme="dark"`, then `light`; storage updated      | Designed |
 | TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`; storage still empty                     | Designed |
 | TC-THM-03   | SRS-THM-02                | Empty storage, `matchMedia` light; fire a `change` to dark; then toggle; then fire `change` to light | `data-theme` becomes `dark` with nothing stored; toggle stores `light` and applies it; the later system change is ignored | Designed |
 | TC-GEN-01   | SRS-GEN-05, GEN-06        | Component calling `useDocumentTitle('X', {description: 'D', image: 'I'})` at `/articles/x/`; then `useDocumentTitle()` at `/` | Title "X · SWEMRE", description and `og:description` "D", `og:image` and `twitter:image` "I", canonical and `og:url` `https://swemre.com/articles/x` (no trailing slash), `twitter:title` "X · SWEMRE", `twitter:card` `summary_large_image`; then canonical `https://swemre.com/`, then "SWEMRE", site description, avatar image, `summary`; no duplicate meta elements | Designed |
+| TC-GEN-04   | SRS-GEN-10                | Build with an API holding an article with a 1600×500 cover and no `ogImage`; read `dist/articles/<slug>/index.html`. In the browser open the article, then go to `/projects` | File and runtime: `og:type` `article`, both `article:*` times, `og:image` the cover with width 1600 and height 500, `summary_large_image`. On `/projects`: `og:type` `website`, the avatar with 384×384 and alt, `summary`, no `article:*` tags left | Designed |
+| TC-GEN-05   | SRS-GEN-11                | Build against an API with one article and one project with `repoUrl`; parse the `structured-data` script of `dist/index.html`, `dist/articles/index.html`, the article and the project file. In the browser go from an article to `/` and to `/sp/privacy-policy`. After deploy, run Google's Rich Results Test on home, one article and one project | `WebSite` + `Person` with both `sameAs`; `BreadcrumbList` (2 items); `BreadcrumbList` (3) + `BlogPosting` with both dates; `BreadcrumbList` + `SoftwareSourceCode` with `codeRepository`. Runtime matches and the script is replaced per page and removed on the special page. Rich Results Test: no errors | Designed |
 | TC-GEN-02   | SRS-GEN-07, GEN-08        | Render `SiteLayout` in a `MemoryRouter` with a route element that throws; navigate to `/`. Then make a child of `Dock` throw | "Something went wrong", Reload and "Back to home" with navbar and footer present, title "Something went wrong · SWEMRE", `console.error` called; after navigating the home page renders. Dock gone, page content still rendered | Designed |
+| TC-GEN-03   | SRS-GEN-09                | Services whose `findAll` and `findBySlug` reject; render `ArticlesPage`, `ProjectsPage`, `HomePage`, `ArticlePage`, `ProjectPage`, `SpecialPage`; then make them resolve and press Retry. Repeat with empty lists | "Content could not be loaded" with Retry in each (no "0 articles", no "No projects yet", no not-found view); after Retry the content; with empty lists the empty states and no error | Designed |
 | TC-LGL-01   | SRS-LGL-01, LGL-02        | Render `SpecialPage` at `/sp/privacy-policy`                                                    | Version, effective and updated dates; numbered contents | Designed |
 | TC-LGL-02   | SRS-LGL-04                | Render `SpecialPage` at an unknown slug                                                         | `NotFound` with "This page is not available right now.", a `mailto:` link to the contact email and a link to `/` | Designed |
 | TC-FTR-01   | SRS-FTR-01, LGL-03        | Render `Footer`                                                                                 | Social links; RSS link `/rss.xml`; privacy link         | Designed |
@@ -456,6 +461,19 @@ the session; no uncaught errors in the console.
 Run axe on `/`, `/articles`, an article, `/projects`, a project,
 `/sp/privacy-policy`, with the search dialog open, the resume modal open and
 the chat panel open, in both themes → zero serious or critical violations.
+
+Audit 2026-10-24 (PRS-000322): run in the built-in browser with axe-core
+4.10.2 from cdnjs (tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`,
+`wcag22aa`, `best-practice`) on `/`, `/articles`, an article, `/projects`,
+`/sp/privacy-policy`, `/nope`, both form dialogs, search and chat, light and
+dark. Fixed: `fg-subtle` contrast (3.25:1), skip link without a target (`id="main"`
+on every `<main>`), two unlabelled `<aside>` landmarks on article and project
+pages, mailto links in text without underline. After the fixes no finding
+remains except the sticky list sidebar measured under the translucent navbar
+while axe scrolls it into view (no element on the page has that colour; at rest
+the sidebar sits on the canvas). Allow 3 s after a theme switch: colours
+transition and axe reads them half way. Not covered: screen reader (NVDA)
+pass on the call back form, left to the owner.
 
 ### TC-E2E-10 Keyboard only (SRS-A11Y-01, A11Y-02, A11Y-05)
 
@@ -557,7 +575,14 @@ relative-luminance formula).
 | 2026-10-23 | PRS-000332: added TC-GEN-02 | Claude, for swemre review |
 | 2026-10-23 | PRS-000321: added TC-E2E-13 (skip link, route focus, scroll restore) | Claude, for swemre review |
 | 2026-10-23 | PRS-000311: added TC-PRE-01; updated TC-GEN-01 (canonical, Twitter tags, trailing slash) | Claude, for swemre review |
+| 2026-10-23 | PRS-000312: added TC-PRE-02 | Claude, for swemre review |
 | 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added TC-API-04 | Claude, for swemre review |
 | 2026-10-23 | TC-API-04: documented v2 bodies, term filter, forms on v1 | Claude, for swemre review |
 | 2026-10-24 | PRS-000315: added TC-PRE-03 | Claude, for swemre review |
+| 2026-10-23 | PRS-000314: added TC-GEN-04 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: added TC-GEN-03, TC-CHAT-12, TC-RES-08 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: TC-CHAT-12 | Claude, for swemre review |
+| 2026-10-23 | PRS-000333: TC-RES-08 | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: audit record before TC-E2E-10 | Claude, for swemre review |
+| 2026-10-23 | PRS-000313: added TC-GEN-05 | Claude, for swemre review |

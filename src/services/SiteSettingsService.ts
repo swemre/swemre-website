@@ -9,15 +9,15 @@
  * Contact: emre@swemre.com
  */
 
-import {siteConfig} from '../config/site'
+import {defaultShareImage, siteConfig} from '../config/site'
 import type {SiteSettings} from '../types/type'
-import {fieldMediaUrl, fieldString, safely} from './apiClient'
+import {fieldMediaUrl, fieldString, safely, shareImage} from './apiClient'
 import {publicApi} from './publicApi'
 
 export const defaultSiteSettings: SiteSettings = {
   tagline: siteConfig.tagline,
   contactEmail: siteConfig.email,
-  defaultOgImageUrl: `${siteConfig.url}${siteConfig.avatarLarge}`,
+  defaultOgImage: defaultShareImage,
 }
 
 // The "site-settings" content type holds a single entry; empty fields keep the defaults
@@ -33,9 +33,9 @@ export class SiteSettingsService {
         contactEmail:
           fieldString(fields, 'contactEmail') ??
           defaultSiteSettings.contactEmail,
-        defaultOgImageUrl:
-          fieldMediaUrl(fields, 'defaultOgImage') ??
-          defaultSiteSettings.defaultOgImageUrl,
+        defaultOgImage:
+          shareImage(fields, ['defaultOgImage']) ??
+          defaultSiteSettings.defaultOgImage,
         logoUrl: fieldMediaUrl(fields, 'logo'),
       }
     }, defaultSiteSettings)
