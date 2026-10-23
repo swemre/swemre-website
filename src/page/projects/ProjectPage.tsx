@@ -10,8 +10,10 @@
  */
 
 import {useCallback} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 import {ContentBody} from '../../components/ContentBody'
+import {HeaderBand} from '../../components/HeaderBand'
+import {NotFound} from '../../components/NotFound'
 import {SidebarNav} from '../../components/SidebarNav'
 import {useAsyncData} from '../../hooks/useAsyncData'
 import {useDocumentTitle} from '../../hooks/useDocumentTitle'
@@ -28,26 +30,31 @@ export default function ProjectPage() {
   const all = useFindAll(service)
   const articles = useFindAll(useService('article'))
 
-  useDocumentTitle(project?.title)
+  useDocumentTitle(
+    loading ? undefined : (project?.title ?? 'Project not found'),
+    {description: project?.summary, image: project?.coverUrl},
+  )
 
   if (loading) {
     return (
-      <main className="mx-auto w-full max-w-page px-8 pt-sticky text-fg-muted">
-        Loading…
-      </main>
+      <>
+        <HeaderBand />
+        <main className="mx-auto w-full max-w-page flex-1 px-4 py-10 text-fg-muted sm:px-6 lg:px-8">
+          Loading…
+        </main>
+      </>
     )
   }
 
   if (!project) {
     return (
-      <main className="mx-auto w-full max-w-page px-8 pt-sticky pb-16">
-        <h1 className="text-3xl font-semibold text-fg-strong">
-          Project not found
-        </h1>
-        <Link to="/projects" className="mt-4 inline-block text-primary">
-          Back to projects
-        </Link>
-      </main>
+      <NotFound
+        band
+        title="Project not found"
+        message="This project does not exist or has been removed."
+        backTo="/projects"
+        backLabel="Back to projects"
+      />
     )
   }
 

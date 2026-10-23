@@ -11,6 +11,7 @@
 
 import {Link} from 'react-router-dom'
 import type {Article} from '../../types/type'
+import {cn} from '../../utils/cn'
 import {formatDate} from '../../utils/formatDate'
 import {CoverImage} from '../CoverImage'
 import {Icon} from '../Icon'
@@ -28,12 +29,25 @@ function Meta({article}: {article: Article}) {
   )
 }
 
-function FeaturedArticle({article}: {article: Article}) {
+function FeaturedArticle({article, wide}: {article: Article; wide: boolean}) {
   return (
-    <article className="group/feature relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-xl">
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-border-muted bg-inset">
+    <article
+      className={cn(
+        'group/feature relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-xl',
+        wide && 'lg:flex-row',
+      )}
+    >
+      <div
+        className={cn(
+          'relative aspect-[16/9] overflow-hidden border-b border-border-muted bg-inset',
+          wide && 'lg:w-7/12 lg:shrink-0 lg:border-r lg:border-b-0',
+        )}
+      >
         <CoverImage
           src={article.coverUrl}
+          alt={article.coverAlt}
+          width={article.coverWidth}
+          height={article.coverHeight}
           title={article.title}
           className="group-hover/feature:scale-105"
         />
@@ -42,7 +56,12 @@ function FeaturedArticle({article}: {article: Article}) {
           Latest
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-6 sm:p-8">
+      <div
+        className={cn(
+          'flex flex-1 flex-col p-6 sm:p-8',
+          wide && 'lg:justify-center lg:p-10',
+        )}
+      >
         <Meta article={article} />
         <Link
           to={`/articles/${article.slug}`}
@@ -53,7 +72,12 @@ function FeaturedArticle({article}: {article: Article}) {
         <p className="mt-4 max-w-measure text-base leading-7 text-fg-muted">
           {article.summary}
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-2 sm:mt-auto">
+        <div
+          className={cn(
+            'mt-6 flex flex-wrap items-center justify-between gap-4 pt-2 sm:mt-auto',
+            wide && 'lg:mt-8',
+          )}
+        >
           <div className="flex flex-wrap gap-2">
             {article.tags.map(tag => (
               <TagLabel key={tag}>{tag}</TagLabel>
@@ -80,6 +104,9 @@ function ArticleListItem({article}: {article: Article}) {
         <div className="relative order-last aspect-square w-20 shrink-0 overflow-hidden rounded-md border border-border-muted bg-inset sm:w-28 md:order-first md:aspect-[16/10] md:w-full lg:aspect-[4/3] lg:w-32 xl:w-40">
           <CoverImage
             src={article.coverUrl}
+            alt={article.coverAlt}
+            width={article.coverWidth}
+            height={article.coverHeight}
             title={article.title}
             className="group-hover/item:scale-110 [&_span]:text-xl"
           />
@@ -106,8 +133,8 @@ export function ArticleShowcase({articles}: {articles: Article[]}) {
   if (!featured) return null
   return (
     <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
-      <div className="lg:col-span-7">
-        <FeaturedArticle article={featured} />
+      <div className={rest.length > 0 ? 'lg:col-span-7' : 'lg:col-span-12'}>
+        <FeaturedArticle article={featured} wide={rest.length === 0} />
       </div>
       {rest.length > 0 && (
         <div className="lg:col-span-5">

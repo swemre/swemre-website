@@ -55,6 +55,12 @@ export function ProjectTemplate({
             }
             title={project.title}
             summary={project.summary}
+            cover={{
+              src: project.coverUrl,
+              alt: project.coverAlt,
+              width: project.coverWidth,
+              height: project.coverHeight,
+            }}
             actions={
               (project.url || project.repoUrl) && (
                 <div className="flex flex-wrap gap-2">

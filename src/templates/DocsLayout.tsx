@@ -10,6 +10,7 @@
  */
 
 import {useRef, type ReactNode} from 'react'
+import {Icon} from '../components/Icon'
 import {Toc} from '../components/Toc'
 import {useHeadings} from '../hooks/useHeadings'
 import {docsColumns} from '../utils/layout'
@@ -37,6 +38,21 @@ export function DocsLayout({
       <main className="min-w-0">
         <div className="mx-auto max-w-reading">
           {before}
+          {headings.length > 0 && (
+            <details className="group mb-8 rounded-lg border border-border bg-surface shadow-xs xl:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-fg-strong [&::-webkit-details-marker]:hidden">
+                On this page
+                <Icon
+                  name="chevron-down"
+                  size={16}
+                  className="text-fg-muted transition-transform duration-200 group-open:rotate-180"
+                />
+              </summary>
+              <div className="border-t border-border-muted px-4 py-3">
+                <Toc headings={headings} showTitle={false} />
+              </div>
+            </details>
+          )}
           <div ref={bodyRef} className="text-reading">
             {children}
           </div>

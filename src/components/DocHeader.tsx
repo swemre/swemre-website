@@ -19,6 +19,7 @@ export function DocHeader({
   summary,
   meta,
   actions,
+  cover,
 }: {
   crumbs: Array<{label: string; to?: string}>
   badges?: ReactNode
@@ -26,6 +27,7 @@ export function DocHeader({
   summary: string
   meta?: ReactNode
   actions?: ReactNode
+  cover?: {src?: string; alt?: string; width?: number; height?: number}
 }) {
   return (
     <header className="mb-10 animate-rise border-b border-border-muted pb-8">
@@ -44,6 +46,17 @@ export function DocHeader({
           </div>
           {actions}
         </div>
+      )}
+      {cover?.src && (
+        <img
+          src={cover.src}
+          alt={cover.alt ?? ''}
+          width={cover.width}
+          height={cover.height}
+          decoding="async"
+          fetchPriority="high"
+          className="mt-8 h-auto w-full rounded-lg border border-border-muted bg-inset shadow-sm"
+        />
       )}
     </header>
   )

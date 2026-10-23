@@ -41,7 +41,7 @@ export function HomeTemplate({
           </p>
           <div className="mt-10 flex flex-wrap gap-3">{actions}</div>
         </div>
-        <div className="mx-auto w-full max-w-page px-4 pb-8 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-page px-4 pb-8 max-sm:pb-dock-clear sm:px-6 lg:px-8">
           {stats}
         </div>
       </section>

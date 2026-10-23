@@ -15,9 +15,11 @@ import {cn} from '../utils/cn'
 import {Icon} from './Icon'
 
 export function SidebarNav({sections}: {sections: SidebarNavSection[]}) {
+  const filled = sections.filter(section => section.items.length > 0)
+  if (filled.length === 0) return null
   return (
     <nav aria-label="Site sections" className="space-y-6 text-sm">
-      {sections.map(section => (
+      {filled.map(section => (
         <div key={section.title}>
           <p className="mb-2 flex items-center gap-2 px-3 text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
             <Icon name={section.icon} size={14} className="text-fg-subtle" />
