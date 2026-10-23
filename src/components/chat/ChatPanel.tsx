@@ -73,13 +73,49 @@ function ConversationList() {
 
 function ConversationRow({conversation}: {conversation: Conversation}) {
   const chat = useChat()
+  const [confirming, setConfirming] = useState(false)
   const last = conversation.messages[conversation.messages.length - 1]
+
+  if (confirming) {
+    return (
+      <li
+        className="flex items-center gap-2 bg-danger-muted px-4 py-3"
+        onKeyDown={event => {
+          if (event.key === 'Escape') {
+            event.stopPropagation()
+            setConfirming(false)
+          }
+        }}
+      >
+        <span className="min-w-0 flex-1 truncate text-sm text-fg-strong">
+          Delete “{conversation.title}”?
+        </span>
+        <button
+          type="button"
+          autoFocus
+          onClick={() => setConfirming(false)}
+          data-sound="cancel"
+          className={buttonClass('ghost', 'sm')}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => chat.remove(conversation.id)}
+          className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-danger px-3 text-sm font-medium text-fg-on-emphasis hover:opacity-90"
+        >
+          <Icon name="trash" size={13} /> Delete
+        </button>
+      </li>
+    )
+  }
+
   return (
     <li className="group relative">
       <button
         type="button"
         onClick={() => chat.select(conversation.id)}
-        className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-muted"
+        className="flex w-full items-start gap-3 py-3 pr-12 pl-4 text-left transition-colors hover:bg-surface-muted"
       >
         <OwnerAvatar size="sm" />
         <span className="min-w-0 flex-1">
@@ -99,11 +135,11 @@ function ConversationRow({conversation}: {conversation: Conversation}) {
       </button>
       <button
         type="button"
-        onClick={() => chat.remove(conversation.id)}
+        onClick={() => setConfirming(true)}
         aria-label={`Delete "${conversation.title}"`}
-        className="absolute top-3 right-3 hidden size-7 place-items-center rounded-sm bg-overlay text-fg-muted shadow-xs group-hover:inline-grid hover:text-danger focus-visible:inline-grid"
+        className="absolute top-1/2 right-3 inline-grid size-8 -translate-y-1/2 place-items-center rounded-sm text-fg-muted opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-surface-muted hover:text-danger focus-visible:opacity-100 pointer-coarse:opacity-100"
       >
-        <Icon name="trash" size={13} />
+        <Icon name="trash" size={14} />
       </button>
     </li>
   )
@@ -140,49 +176,72 @@ function ConversationView({conversation}: {conversation: Conversation}) {
       {chat.presence === 'offline' && (
         <p className="flex items-center gap-2 border-b border-border-muted bg-attention-muted px-4 py-2 text-xs text-fg">
           <Icon name="clock" size={13} className="text-attention" />
-          Emre is offline. Messages are kept on this device until chat goes
-          live.
+          Emre is offline. Your messages are delivered and he will reply here
+          later.
         </p>
       )}
 
       <div
         ref={scrollRef}
-        className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4"
       >
         {conversation.messages.map(message => {
           const mine = message.author === 'visitor'
+          const queued = mine && message.delivery === 'queued'
+          const bubble = cn(
+            'max-w-bubble rounded-lg px-3 py-2 text-left text-sm whitespace-pre-wrap',
+            mine
+              ? 'rounded-br-xs bg-primary-solid text-cover-fg'
+              : 'rounded-bl-xs bg-surface-muted text-fg-strong',
+            message.delivery === 'sending' && 'opacity-75',
+          )
+          const body = (
+            <>
+              {message.text}
+              <span
+                className={cn(
+                  'mt-1 flex items-center gap-1 text-2xs',
+                  mine ? 'justify-end text-cover-fg/70' : 'text-fg-subtle',
+                )}
+              >
+                {time(message.sentAt)}
+                {mine && message.delivery === 'sending' && (
+                  <span className="inline-flex animate-pulse items-center gap-1">
+                    <Icon name="clock" size={10} /> Sending…
+                  </span>
+                )}
+                {queued && (
+                  <span className="inline-flex items-center gap-1 font-medium text-cover-fg">
+                    <Icon name="warning" size={10} /> Not sent · tap to retry
+                  </span>
+                )}
+                {mine && message.delivery === 'sent' && (
+                  <Icon name="check" size={10} />
+                )}
+              </span>
+            </>
+          )
           return (
             <div
               key={message.id}
               className={cn('flex items-end gap-2', mine && 'justify-end')}
             >
               {!mine && <OwnerAvatar size="sm" />}
-              <div
-                className={cn(
-                  'max-w-bubble rounded-lg px-3 py-2 text-sm whitespace-pre-wrap',
-                  mine
-                    ? 'rounded-br-xs bg-primary-solid text-cover-fg'
-                    : 'rounded-bl-xs bg-surface-muted text-fg-strong',
-                )}
-              >
-                {message.text}
-                <span
+              {queued ? (
+                <button
+                  type="button"
+                  onClick={() => chat.retry(conversation.id)}
+                  aria-label={`Retry sending: ${message.text}`}
                   className={cn(
-                    'mt-1 flex items-center gap-1 text-2xs',
-                    mine ? 'justify-end text-cover-fg/70' : 'text-fg-subtle',
+                    bubble,
+                    'outline-offset-2 hover:bg-primary-solid-hover',
                   )}
                 >
-                  {time(message.sentAt)}
-                  {mine && message.delivery === 'queued' && (
-                    <>
-                      <Icon name="clock" size={10} /> Queued
-                    </>
-                  )}
-                  {mine && message.delivery === 'sent' && (
-                    <Icon name="check" size={10} />
-                  )}
-                </span>
-              </div>
+                  {body}
+                </button>
+              ) : (
+                <div className={bubble}>{body}</div>
+              )}
             </div>
           )
         })}
@@ -221,7 +280,7 @@ export function ChatPanel() {
   return (
     <section
       aria-label="Chat"
-      className="pointer-events-auto flex h-chat w-chat-panel animate-pop flex-col overflow-hidden rounded-md border border-border bg-overlay shadow-xl"
+      className="pointer-events-auto flex animate-pop flex-col overflow-hidden bg-overlay max-sm:fixed max-sm:inset-x-0 max-sm:top-0 max-sm:z-10 max-sm:h-dvh max-sm:w-full max-sm:pt-safe-top max-sm:pb-safe-bottom sm:h-chat sm:w-chat-panel sm:rounded-md sm:border sm:border-border sm:shadow-xl"
     >
       <header className="flex items-center gap-3 bg-primary-solid px-3 py-3 text-cover-fg">
         {active && (
