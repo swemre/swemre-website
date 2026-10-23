@@ -112,7 +112,9 @@ Pages never import `database/` (SRS-MNT-06). Types flow from
 | `App.tsx`                      | `PlayerProvider > ChatProvider > SearchDialogProvider > ResumeModalProvider > Routes`; `*` renders `components/NotFound.tsx` |
 | `components/NotFound.tsx`      | The one not-found view (route, article, project, special page): "404" kicker, title, message, back link; optional `band` (draws `HeaderBand`) and `contact` (shows the email); sets the document title |
 | `components/Navbar.tsx`        | Fixed navbar; the mobile menu closes on Escape (focus back to the toggle), on `pointerdown` outside the header and when `pathname` changes (state reset during render, no effect) |
-| `templates/SiteLayout.tsx`     | Layout route: `Navbar`, `Outlet`, `Footer`, `Dock`; scroll-to-top on route change; decides navbar tone and top padding from `overlayRoutes` |
+| `templates/SiteLayout.tsx`     | Layout route: `SkipLink`, `Navbar`, `Outlet`, `Footer`, `Dock`; decides navbar tone and top padding from `overlayRoutes` |
+| `components/SkipLink.tsx`      | First focusable element: visually hidden "Skip to content" link shown on focus (`sr-only focus:not-sr-only`), focuses `<main>` on activation; renders the polite live region that announces the new title |
+| `hooks/useRouteFocus.ts`       | Route change handling: sets `history.scrollRestoration = 'manual'`, saves `scrollY` per `location.key` on scroll, restores it on `POP` and scrolls to top on a new path; on a new path focuses `main h1` (else `<main>` after 3 s) with `preventScroll`, adding `tabindex=-1` if missing, then returns `document.title` for the live region. Both waits watch DOM mutations (async pages) and give up after 3 s |
 
 Provider order matters: the dock (inside `SiteLayout`) needs player and chat
 context; the search dialog can trigger `play-song`, so it sits inside the
@@ -367,6 +369,8 @@ defines semantic tokens. Layout sizes are tokens (`--container-*`,
 `--spacing-*`), including fluid ones (`clamp()`, `min()`), so components use
 names like `max-w-page`, `w-dock`, `h-band`, never pixel values.
 
+`main.css` base layer also removes the outline on `main` and `main h1` when they carry `tabindex=-1` and are focused programmatically (they are not in the Tab order, so SRS-A11Y-02 still holds).
+
 Token naming caution: a `--spacing-<name>` token generates utilities such as
 `inline-<name>` and `block-<name>`. A token named `grid`, `flex`, `table` or
 `block` would override display utilities (this happened with
@@ -453,7 +457,8 @@ Schemas: SWE-DOC-004 §5.
 
 | Design element                     | Requirements                                         |
 | ---------------------------------- | ---------------------------------------------------- |
-| `SiteLayout`, `Navbar`, `Footer`   | GEN-02, GEN-04, NAV-*, FTR-01, LAY-02                |
+| `SiteLayout`, `Navbar`, `Footer`   | GEN-02, NAV-*, FTR-01, LAY-02                        |
+| `SkipLink`, `useRouteFocus`        | GEN-04, A11Y-09, A11Y-10                             |
 | `HeaderBand`, templates, tokens    | LAY-01, LAY-03 to LAY-06, LAY-08, ART-06, ART-15 to ART-17, PRJ-03, PRJ-07 |
 | `NotFound`                         | GEN-03, ART-10, PRJ-05, LGL-04                       |
 | `useDocumentTitle`                 | GEN-05, GEN-06                                       |
@@ -479,3 +484,4 @@ Full trace: SWE-DOC-007.
 | 2026-10-15 | Owner placeholder replaced with full SDD draft     | Claude, for swemre review |
 | 2026-10-15 | Added §4.7a sound design and the feed log pipeline | Claude, for swemre review |
 | 2026-10-23 | UX fixes: shared `NotFound`, band while loading, list caching, contact-form failure handling, covers, session view count, search default list, chat delivery states and phone sheet, theme follows the OS, §4.8a document metadata, sitemap step | Claude, for swemre review |
+| 2026-10-23 | PRS-000321: `SkipLink` and `useRouteFocus` (skip link, focus and title announcement on route change, scroll restore on back/forward); `main.css` hides the focus ring on programmatic `tabindex=-1` targets (`main`, `main h1`) | Claude, for swemre review |
