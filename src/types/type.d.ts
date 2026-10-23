@@ -87,20 +87,59 @@ export interface PublicPost {
   author: string
   fields: Record<string, unknown>
   terms: {
-    id: number
+    id: number | string
     taxonomy: 'CATEGORY' | 'TAG'
     name: string
     slug: string
   }[]
   publishedAt: string
   lastUpdatedAt: string
+  /** v2 only. */
+  locale?: string
+  /** v2 only: the other published languages of the same work. */
+  languageVersions?: LanguageVersion[]
+}
+
+export interface LanguageVersion {
+  locale: string
+  slug: string
+}
+
+export interface PublicationMedia {
+  id: string
+  url: string
+  alt?: string
+  mimeType?: string
+  width?: number
+  height?: number
+}
+
+// A publication of public API v2 (docs/public-api-v2.md in swemre-website-api)
+export interface Publication {
+  id: string
+  documentId: string
+  workId: string
+  contentType: string
+  locale: string
+  slug: string
+  title: string
+  excerpt?: string
+  author?: string
+  cover: PublicationMedia | null
+  fields: Record<string, unknown>
+  terms: {id: string; kind: 'CATEGORY' | 'TAG'; name: string; slug: string}[]
+  publishedAt: string
+  updatedAt?: string
+  /** Detail only. */
+  body?: unknown
+  languageVersions?: LanguageVersion[]
 }
 
 export interface PagedContent<T> {
   content: T[]
 }
 
-// Public API v2 pages; item bodies are not settled yet (PRS-000436), so they stay loose
+// Public API v2 pages; `page` is zero-based
 export interface PublicPage<T> {
   items: T[]
   total: number
@@ -112,6 +151,8 @@ export interface PostListQuery {
   size?: number
   sortBy?: 'publishedAt' | 'title'
   direction?: 'ASC' | 'DESC'
+  /** Slug of a category or tag the post must have. */
+  term?: string
 }
 
 export interface SubmittedForm {

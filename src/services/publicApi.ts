@@ -13,6 +13,7 @@ import {siteEnv} from '../config/env.ts'
 import type {
   PagedContent,
   PostListQuery,
+  Publication,
   PublicPage,
   PublicApi,
   PublicPost,
@@ -29,31 +30,37 @@ export class ApiError extends Error {
   }
 }
 
-const stringOf = (item: Record<string, unknown>, ...keys: string[]) => {
-  for (const key of keys) {
-    if (typeof item[key] === 'string') return item[key]
+// A v2 publication (docs/public-api-v2.md in swemre-website-api) in the v1 post shape the
+// services read: cover, excerpt and body move into fields, a media `alt` becomes `altText`
+const fromPublication = (item: Publication): PublicPost => {
+  const fields: Record<string, unknown> = {...item.fields}
+  if (item.cover) fields.cover = {...item.cover, altText: item.cover.alt}
+  if (item.excerpt && fields.summary === undefined) {
+    fields.summary = item.excerpt
   }
-  return ''
+  if (item.body !== undefined) fields.body = item.body
+  return {
+    id: item.id,
+    typeKey: item.contentType,
+    slug: item.slug,
+    title: item.title,
+    author: item.author ?? '',
+    fields,
+    terms: (item.terms ?? []).map(term => ({
+      id: term.id,
+      taxonomy: term.kind,
+      name: term.name,
+      slug: term.slug,
+    })),
+    publishedAt: item.publishedAt,
+    lastUpdatedAt: item.updatedAt ?? item.publishedAt,
+    locale: item.locale,
+    languageVersions: item.languageVersions ?? [],
+  }
 }
 
-// v2 publication bodies are not settled yet (PRS-000436); this reads the v1 field names and the
-// likely v2 ones, so pages keep working while the contract lands
-const fromPublication = (
-  item: Record<string, unknown>,
-  type: string,
-): PublicPost => ({
-  id: stringOf(item, 'id'),
-  typeKey: stringOf(item, 'contentType', 'typeKey') || type,
-  slug: stringOf(item, 'slug'),
-  title: stringOf(item, 'title'),
-  author: stringOf(item, 'author'),
-  fields: (item.fields as Record<string, unknown>) ?? {},
-  terms: Array.isArray(item.terms) ? item.terms : [],
-  publishedAt: stringOf(item, 'publishedAt'),
-  lastUpdatedAt:
-    stringOf(item, 'lastUpdatedAt', 'updatedAt') ||
-    stringOf(item, 'publishedAt'),
-})
+const hasTerm = (post: PublicPost, slug: string | undefined) =>
+  !slug || post.terms.some(term => term.slug === slug)
 
 const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
   if (!query.sortBy) return posts
@@ -65,14 +72,13 @@ const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
 }
 
 // Every path of the public API the website and its build scripts use is built here. With a
-// channel key, content and forms come from the channel API (v2); without one, and for chat and
-// page views until v2 has them, from the workspace API (v1)
+// channel key, publications come from the channel API (v2); without one, and for forms, chat and
+// page views until v2 serves them, from the workspace API (v1)
 export function createPublicApi(env: SiteEnv): PublicApi {
   const v1 = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
   const v2 = env.channelKey
     ? `/public/v2/channels/${encodeURIComponent(env.channelKey)}`
     : undefined
-  const content = v2 ?? v1
 
   async function request<T>(
     method: 'GET' | 'POST',
@@ -116,14 +122,12 @@ export function createPublicApi(env: SiteEnv): PublicApi {
           locale: env.locale,
           size: size(query),
         })
-        const page = await request<PublicPage<Record<string, unknown>>>(
+        if (query.term) params.set('term', query.term)
+        const page = await request<PublicPage<Publication>>(
           'GET',
           `${v2}/publications?${params}`,
         )
-        const posts = (page?.items ?? []).map(item =>
-          fromPublication(item, type),
-        )
-        return sortPosts(posts, query)
+        return sortPosts((page?.items ?? []).map(fromPublication), query)
       }
       const params = new URLSearchParams({type, size: size(query)})
       if (query.sortBy) params.set('sort-by', query.sortBy)
@@ -132,16 +136,16 @@ export function createPublicApi(env: SiteEnv): PublicApi {
         'GET',
         `${v1}/posts?${params}`,
       )
-      return page?.content ?? []
+      return (page?.content ?? []).filter(post => hasTerm(post, query.term))
     },
 
     async getPost(type, slug) {
       if (v2) {
-        const item = await request<Record<string, unknown>>(
+        const item = await request<Publication>(
           'GET',
           `${v2}/publications/${encodeURIComponent(slug)}?${new URLSearchParams({locale: env.locale})}`,
         )
-        return item ? fromPublication(item, type) : undefined
+        return item?.contentType === type ? fromPublication(item) : undefined
       }
       return request<PublicPost>(
         'GET',
@@ -153,7 +157,7 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     async submitForm(form, fields) {
       const submitted = await request<SubmittedForm>(
         'POST',
-        `${content}/forms/${encodeURIComponent(form)}/submissions`,
+        `${v1}/forms/${encodeURIComponent(form)}/submissions`,
         {fields},
       )
       if (!submitted) {

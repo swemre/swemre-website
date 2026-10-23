@@ -234,14 +234,15 @@ decision is marked Superseded with a link to its replacement.
   URL and language from the same variables.
 - **Consequences**: Moving to the channel API changes one file. One build
   serves one website; another website of the workspace is another build
-  with its own variables. With `VITE_CHANNEL_KEY` set, content and form
-  submissions use public API v2 (`/public/v2/channels/<channel>/...`, pages
-  `{items, total, page, size}`, `locale` and `content-type` parameters) and
-  send `X-Read-Key`; v2 lists have no sort parameter, so the client sorts.
-  Without a channel key everything stays on v1. Chat and page views stay on
-  v1 until v2 defines them (v2 has only "start a conversation" so far, and a
-  conversation must continue where it started). v2 item bodies are not
-  settled (PRS-000436), so the client maps them loosely to `PublicPost`.
+  with its own variables. With `VITE_CHANNEL_KEY` set, publications come
+  from public API v2 (`/public/v2/channels/<channel>/publications`, pages
+  `{items, total, page, size}`, `locale`, `content-type` and `term`
+  parameters, newest first) with `X-Read-Key`; the client maps each
+  publication to the v1 post shape (cover, excerpt and body into `fields`,
+  `kind` to `taxonomy`) and sorts by title where a page asks for it. Without
+  a channel key everything stays on v1. Forms, chat and page views stay on
+  v1 until v2 serves them (docs/public-api-v2.md lists them as coming
+  next).
 
 ## Change log
 
@@ -251,3 +252,4 @@ decision is marked Superseded with a link to its replacement.
 | 2026-10-23 | ADR-016 post-build pre-render of route meta tags (PRS-000311) | Claude, for swemre review |
 | 2026-10-23 | ADR-017 public API client and site environment | Claude, for swemre review |
 | 2026-10-23 | ADR-017: public API v2 for content and forms when a channel key is set | Claude, for swemre review |
+| 2026-10-23 | ADR-017: aligned with docs/public-api-v2.md (forms stay on v1, publication mapping, term filter) | Claude, for swemre review |

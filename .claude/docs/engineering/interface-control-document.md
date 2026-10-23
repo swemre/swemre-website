@@ -297,7 +297,7 @@ a tap on a queued message.
 | --------------------- | --------------------------- | ---------------------------------------------------- |
 | `VITE_API_BASE`       | `http://localhost:8080/api` | API origin and path prefix                           |
 | `VITE_WORKSPACE_KEY`  | `swemre-website`            | `/public/v1/workspaces/<key>/...`                    |
-| `VITE_CHANNEL_KEY`    | unset                       | The website channel install (lower case); set: content and forms use v2 |
+| `VITE_CHANNEL_KEY`    | unset                       | The website channel install (lower case); set: publications come from v2 |
 | `VITE_READ_KEY`       | unset                       | Sent as `X-Read-Key` on v2 requests; a missing or wrong key gives 401 |
 | `VITE_SITE_URL`       | `https://swemre.com`        | Canonical origin, `og:url`, RSS and sitemap links; trailing slash dropped |
 | `VITE_LOCALE`         | `en`                        | `<html lang>`; `locale` parameter on v2 reads        |
@@ -312,13 +312,14 @@ a tap on a queued message.
 
 | Call             | v2 (channel key set)                                            | v1 (fallback)                                   |
 | ---------------- | --------------------------------------------------------------- | ----------------------------------------------- |
-| `listPosts`      | `GET /public/v2/channels/<c>/publications?content-type=&locale=&size=` → `{items, total, page, size}`, sorted by the client | `GET /public/v1/workspaces/<w>/posts?type=&size=&sort-by=&direction=` |
-| `getPost`        | `GET .../publications/<slug>?locale=`                           | `GET .../posts/<type>/<slug>`                   |
-| `submitForm`     | `POST .../forms/<form-key>/submissions`                         | same path under v1                              |
+| `listPosts`      | `GET /public/v2/channels/<c>/publications?content-type=&locale=&size=&term=` → `{items, total, page, size}` (newest first; sorted by title in the client when asked); each item mapped to `PublicPost`: `cover` (with `alt` as `altText`), `excerpt` (as `summary`) and `body` into `fields`, term `kind` as `taxonomy`, `updatedAt` as `lastUpdatedAt` | `GET /public/v1/workspaces/<w>/posts?type=&size=&sort-by=&direction=` |
+| `getPost`        | `GET .../publications/<slug>?locale=`, `undefined` on 404 or when the content type differs; adds `locale` and `languageVersions` | `GET .../posts/<type>/<slug>`                   |
+| `submitForm`     | v1 until v2 serves forms                                        | `POST .../forms/<form>/submissions`             |
 | chat, presence, page views | v1 only until v2 defines them                         | `.../conversations...`, `.../presence`, `.../page-views` |
 
-Not used yet: `GET .../terms?kind=` and `GET .../media/<id>/file` (media URLs
-arrive as paths in the content and are joined to `VITE_API_BASE`).
+A 401 (`CHANNEL_READ_DENIED`: unknown channel, missing or wrong read key)
+rejects with `ApiError(401)`. Not used yet: `GET .../terms?kind=&locale=`.
+Media URLs arrive as paths and are joined to `VITE_API_BASE`, as in v1.
 
 ### 6.4 IF-18 Public form submissions
 
@@ -446,3 +447,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | PRS-000311: IF-19 canonical, Twitter tags and pre-rendered route pages; `prerender` script, `build` and `preview` contracts | Claude, for swemre review |
 | 2026-10-23 | IF-20 public API client and site environment (ADR-017) | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |
+| 2026-10-23 | IF-20: v2 publication bodies, `term` filter, forms on v1 | Claude, for swemre review |
