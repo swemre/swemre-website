@@ -26,6 +26,8 @@ export const siteConfig = {
     'I build fast, accessible web applications and care about the details that make software feel simple.',
   rssPath: '/rss.xml',
   privacyPath: '/sp/privacy-policy',
+  github: 'https://github.com/swemre',
+  linkedin: 'https://www.linkedin.com/in/swemre',
 }
 
 // Link previews fall back to this when neither the page nor the site settings have an image
@@ -37,10 +39,10 @@ export const defaultShareImage: ShareImage = {
 }
 
 export const socialLinks: SocialLink[] = [
-  {label: 'GitHub', href: 'https://github.com/swemre', icon: 'github'},
+  {label: 'GitHub', href: siteConfig.github, icon: 'github'},
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/swemre',
+    href: siteConfig.linkedin,
     icon: 'linkedin',
   },
   {label: 'Email', href: 'mailto:emre@swemre.com', icon: 'mail'},

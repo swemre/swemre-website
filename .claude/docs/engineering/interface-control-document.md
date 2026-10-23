@@ -412,6 +412,7 @@ description, language `en`, `managingEditor` and `webMaster`
 | `article:published_time`, `article:modified_time` | article pages only: `publishedAt` and `lastUpdatedAt` (ISO) |
 | `twitter:card`               | `summary` for the avatar fallback, else `summary_large_image`       |
 | `twitter:image:alt`          | same as `og:image:alt`                                              |
+| `script#structured-data` (`application/ld+json`) | schema.org `@graph` per SRS-GEN-11; `<` escaped as `\u003c` in the static HTML |
 | `twitter:title`, `twitter:description`, `twitter:image` | same as `og:title`, `og:description`, `og:image` |
 
 Missing tags are created in `document.head`; existing ones are updated in
@@ -454,3 +455,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | IF-20: v2 channel paths, read key and v1 fallback | Claude, for swemre review |
 | 2026-10-23 | IF-20: v2 publication bodies, `term` filter, forms on v1 | Claude, for swemre review |
 | 2026-10-23 | IF-19: `og:type`, `og:site_name`, `og:image:width/height/alt`, `article:published_time/modified_time`, `twitter:image:alt` (SRS-GEN-10) | Claude, for swemre review |
+| 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |

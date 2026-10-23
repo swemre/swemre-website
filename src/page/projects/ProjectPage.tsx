@@ -40,6 +40,12 @@ export default function ProjectPage() {
     {
       description: project?.seo.seoDescription ?? project?.summary,
       image: project?.shareImage,
+      schema: project && {
+        kind: 'project',
+        url: project.url,
+        repoUrl: project.repoUrl,
+        year: project.year,
+      },
     },
   )
 
