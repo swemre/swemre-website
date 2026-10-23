@@ -21,7 +21,7 @@ medium, ≤ 7 low. Approach: **Mitigate**, **Accept**, **Watch**, **Transfer**.
 | RSK-06 | `npm audit` high advisory in dev-only `gts > inquirer > tmp`                                  | 1 | 2 | 2     | Accept   | Not shipped to users; re-check monthly                                        | swemre | Open   |
 | RSK-07 | Layer rule exception: `ArticlePage` imports `articleInteractionStore` directly                 | 2 | 1 | 2     | Accept   | Wrap in a `useRegisterView` hook when touching the page next                  | swemre | Open   |
 | RSK-08 | Spotify artwork URL breaks (CDN path change)                                                 | 2 | 1 | 2     | Mitigate | `onError` fallback to the Spotify icon in `SongRow` and `SpotifyPanel`        | swemre | Open   |
-| RSK-09 | `fg-subtle` on `canvas` in dark mode is 2.90:1, below 3:1                                     | 5 | 2 | 10    | Mitigate | Lighten dark `--color-fg-subtle` (for example `#6e7a87` gives ≈ 3.4:1) and re-measure | swemre | Open |
+| RSK-09 | `fg-subtle` on `canvas` in dark mode is 2.90:1, below 3:1                                     | 5 | 2 | 10    | Mitigate | Lighten dark `--color-fg-subtle` (for example `#6e7a87` gives ≈ 3.4:1) and re-measure | swemre | Closed (PRS-000322) |
 | RSK-10 | Chat messages that fail to send stay on the device until retried                                  | 3 | 2 | 6     | Mitigate | "Not sent · tap to retry" label and automatic retry shipped                    | swemre | Open   |
 | RSK-11 | Resume requests are lost on reload (in-memory service)                                       | 5 | 3 | 15    | Mitigate | **High**: connect a backend or `mailto:` fallback before public launch (SRS-FUT-01) | swemre | Open |
 | RSK-12 | Placeholder content (phone number, example projects) goes live                                | 3 | 3 | 9     | Mitigate | Release checklist R-5; `TODO(swemre)` markers                                 | swemre | Open   |
@@ -41,3 +41,4 @@ medium, ≤ 7 low. Approach: **Mitigate**, **Accept**, **Watch**, **Transfer**.
 | Date       | Change         | Author                    |
 | ---------- | -------------- | ------------------------- |
 | 2026-10-15 | Initial register | Claude, for swemre review |
+| 2026-10-24 | RSK-09 closed: text contrast fixed by PRS-000322 | Claude, for swemre review |

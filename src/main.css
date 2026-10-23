@@ -35,7 +35,7 @@
   --color-fg: #263040; /* body text */
   --color-fg-strong: #101826; /* headings */
   --color-fg-muted: #556175;
-  --color-fg-subtle: #838da0;
+  --color-fg-subtle: #636e82;
   --color-fg-on-emphasis: #ffffff;
 
   --color-border: #d6dce6;
@@ -224,7 +224,7 @@
   --color-fg: #c2cad8;
   --color-fg-strong: #eef2f8;
   --color-fg-muted: #8a95a8;
-  --color-fg-subtle: #5d687c;
+  --color-fg-subtle: #818c9f;
   --color-fg-on-emphasis: #ffffff;
 
   --color-border: #1e293b;
@@ -284,6 +284,11 @@
 
   :focus-visible {
     @apply rounded-xs outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* The primary ring disappears on the dark blue bands; there the ring is the band's text colour */
+  :is([data-band], [data-tone='cover']) :focus-visible {
+    @apply outline-cover-fg;
   }
 
   :is(main, main h1)[tabindex='-1']:focus-visible {

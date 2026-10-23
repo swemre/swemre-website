@@ -150,12 +150,12 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | Requirement  | Design (SDD) | Code / config                              | Test case(s)            | Status (evidence) |
 | ------------ | ------------ | ------------------------------------------ | ----------------------- | ----------------- |
 | SRS-A11Y-01  | §8           | all interactive components                 | TC-E2E-10               | Designed          |
-| SRS-A11Y-02  | §4.9         | `main.css` `:focus-visible`                | TC-E2E-10               | Pass (INSP)       |
-| SRS-A11Y-03  | §4.9         | colour tokens                              | TC-MAN-03               | **Fail** (fg-subtle on canvas, dark: 2.90:1), RSK-09 |
+| SRS-A11Y-02  | §4.9         | `main.css` `:focus-visible`                | TC-E2E-10               | Manual (Verified 2026-10-24: keyboard pass on home; ring is the band text colour on the blue bands and the cover navbar, PRS-000322) |
+| SRS-A11Y-03  | §4.9         | colour tokens                              | TC-MAN-03               | Pass (axe-core 4.10.2 (WCAG 2.0 to 2.2 A/AA) in the browser 2026-10-24: no contrast findings after `fg-subtle` became #636e82 light and #818c9f dark; sticky sidebar under the translucent navbar is an axe artefact, see TC-E2E-09) |
 | SRS-A11Y-04  | §8           | `aria-label` on icon buttons               | TC-E2E-09               | Pass (INSP)       |
 | SRS-A11Y-05  | §8           | `components/Modal.tsx`                     | TC-E2E-10               | Pass (INSP)       |
 | SRS-A11Y-06  | §4.5         | `HeaderBand` `aria-hidden`                 | TC-E2E-04               | Pass (INSP)       |
-| SRS-A11Y-07  | §8           | all routes                                 | TC-E2E-09               | Designed          |
+| SRS-A11Y-07  | §8           | all routes                                 | TC-E2E-09               | Pass (axe-core 4.10.2 (WCAG 2.0 to 2.2 A/AA) in the browser 2026-10-24: home, articles, an article, projects, a special page, 404, both form dialogs, search and chat in light and dark: no serious or critical findings) |
 | SRS-A11Y-08  | §4.3         | `fieldMediaAlt`, `fieldMediaSize`, `CoverImage`, `DocHeader` | TC-ART-13               | Unverified (W23) |
 | SRS-A11Y-09  | §4.1         | `components/SkipLink.tsx`                  | TC-E2E-13               | Manual (Verified in browser 2026-10-23, PRS-000321) |
 | SRS-A11Y-10  | §4.1         | `hooks/useRouteFocus.ts`, `SkipLink` live region | TC-E2E-13         | Manual (Verified in browser 2026-10-23 on static pages, PRS-000321); late article/project headings and screen-reader output Unverified |
@@ -240,3 +240,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: MNT-12 verified, row for MNT-13 | Claude, for swemre review |
 | 2026-10-23 | MNT-13 status after the v2 contract | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: A11Y-02, A11Y-03 (closes the RSK-09 failure), A11Y-07 statuses after the audit | Claude, for swemre review |

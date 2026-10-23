@@ -446,6 +446,19 @@ Run axe on `/`, `/articles`, an article, `/projects`, a project,
 `/sp/privacy-policy`, with the search dialog open, the resume modal open and
 the chat panel open, in both themes → zero serious or critical violations.
 
+Audit 2026-10-24 (PRS-000322): run in the built-in browser with axe-core
+4.10.2 from cdnjs (tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`,
+`wcag22aa`, `best-practice`) on `/`, `/articles`, an article, `/projects`,
+`/sp/privacy-policy`, `/nope`, both form dialogs, search and chat, light and
+dark. Fixed: `fg-subtle` contrast (3.25:1), skip link without a target (`id="main"`
+on every `<main>`), two unlabelled `<aside>` landmarks on article and project
+pages, mailto links in text without underline. After the fixes no finding
+remains except the sticky list sidebar measured under the translucent navbar
+while axe scrolls it into view (no element on the page has that colour; at rest
+the sidebar sits on the canvas). Allow 3 s after a theme switch: colours
+transition and axe reads them half way. Not covered: screen reader (NVDA)
+pass on the call back form, left to the owner.
+
 ### TC-E2E-10 Keyboard only (SRS-A11Y-01, A11Y-02, A11Y-05)
 
 Using only Tab, Shift+Tab, Enter, Space, Escape: reach every navbar control,
@@ -549,3 +562,4 @@ relative-luminance formula).
 | 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added TC-API-04 | Claude, for swemre review |
 | 2026-10-23 | TC-API-04: documented v2 bodies, term filter, forms on v1 | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: audit record before TC-E2E-10 | Claude, for swemre review |

@@ -268,7 +268,7 @@ features). No backend, no cookies, no analytics.
 | ID           | Requirement                                                                                     | Ver. | Pri. |
 | ------------ | ----------------------------------------------------------------------------------------------- | ---- | ---- |
 | SRS-A11Y-01  | All interactive elements shall be reachable and operable by keyboard.                            | T    | P1   |
-| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring).                       | I, T | P1   |
+| SRS-A11Y-02  | Focus shall be visible on every focusable element (`:focus-visible` ring; on the blue bands and the transparent navbar over them the ring takes the band text colour).                       | I, T | P1   |
 | SRS-A11Y-03  | Text and essential UI shall meet WCAG 2.2 AA contrast in both themes.                            | A, T | P1   |
 | SRS-A11Y-04  | Icon-only buttons shall have an accessible name.                                                 | I, T | P1   |
 | SRS-A11Y-05  | Dialogs shall use the native `<dialog>` element in modal mode, trapping focus and closing on Escape. | I, T | P1 |
@@ -347,3 +347,4 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |
 | 2026-10-23 | MNT-13: form submissions stay on v1 until v2 serves them | Claude, for swemre review |
+| 2026-10-24 | PRS-000322: A11Y-02 ring colour on the bands | Claude, for swemre review |
