@@ -252,6 +252,7 @@ features). No backend, no cookies, no analytics.
 | SRS-PRE-01  | `npm run build` shall finish with `npm run prerender`, which writes one HTML file per known route (`/` as `dist/index.html`; `/articles`, `/projects` and every published article, project and special page as `dist/<route>/index.html`) whose head holds the SRS-GEN-06 tags of that route with the same values the page sets at runtime, the site settings' default Open Graph image included. Routes and fields shall come from the public API. | T | P2 | PRS-000311 |
 | SRS-PRE-02  | `npm run prerender` shall be runnable on its own against an existing `dist/`, produce the same files when run twice on unchanged content, and remove the pages of posts no longer published. Slugs that are not plain slugs (`[a-z0-9-]`) shall be skipped with a warning. | T | P2 | PRS-000311 |
 | SRS-PRE-03  | When the API cannot be reached, `npm run prerender` shall warn, change nothing and exit 0, so the build still succeeds. Routes without a pre-rendered file shall keep the SPA fallback. | T | P2 | PRS-000311 |
+| SRS-PRE-05  | `npm run refresh` (`node scripts/refresh.mjs <build folder>`) shall rewrite `rss.xml`, `sitemap.xml` and the pre-rendered route pages of an existing build from the public API without rebuilding (the scripts take `OUT_DIR` and `DIST_DIR`), run every step even when one fails and exit non-zero then. The server shall run it every two minutes on the deployed build and upload the build only when an HTML or XML file changed, so publishing, scheduling, unpublishing or deleting a post reaches the site within a few minutes. `lastmod` is the post's last update date. | T | P2 | PRS-000315 |
 | SRS-PRE-04  | The production server shall answer a path that is neither a file, a known route nor a pre-rendered page with HTTP 404 and the SPA shell, which renders the not-found view (SRS-GEN-03); `/favicon.ico` shall be a real icon (`public/favicon.ico`), not the HTML page. | T | P2 | PRS-000312 |
 | SRS-FTR-01  | The footer shall show icon-only social links on the left and icon-only RSS and privacy links plus the copyright on the right; every icon link shall have an accessible name and a tooltip.  | T    | P1   | OWN-3  |
 
@@ -354,6 +355,7 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | ADR-017: added MNT-10 to MNT-12 (public API client, site environment, read timeout) | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |
 | 2026-10-23 | MNT-13: form submissions stay on v1 until v2 serves them | Claude, for swemre review |
+| 2026-10-24 | PRS-000315: added PRE-05 (refresh between deploys) | Claude, for swemre review |
 | 2026-10-23 | PRS-000314: added GEN-10 (og:type, article times, image size and alt, card rule) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |

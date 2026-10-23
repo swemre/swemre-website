@@ -141,6 +141,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-PRE-01   | §4.10a        | `scripts/prerender.mjs`, `utils/documentTags.ts`, `package.json` `postbuild` | TC-PRE-01 a, d, f | Manual (a, d 2026-10-23); runtime equality f Unverified |
 | SRS-PRE-02   | §4.10a        | `prerender.mjs` `removeDetailPages`, `shellParts`, slug check | TC-PRE-01 b, c, g         | Manual (b, c 2026-10-23); g Designed |
 | SRS-PRE-03   | §4.10a, §6    | `prerender.mjs` offline branch, `swemre-prerendered-routes`  | TC-PRE-01 d, e            | Manual (2026-10-23); production serving Unverified (deploy change) |
+| SRS-PRE-05   | §4.10a        | `scripts/refresh.mjs`, `generate-rss.mjs`, `generate-sitemap.mjs`, `prerender.mjs`, `scripts/deploy.sh`; swemre-website-api `deploy/refresh-site.sh` | TC-PRE-03 | Manual (Verified 2026-10-24: refresh on a build against the local API; refresh-site.sh in a temp folder with a stub upload: a missing page is rewritten and published, an unchanged run uploads nothing); on the server Unverified |
 | SRS-PRE-04   | §4.10a        | swemre-website-api `deploy/traefik-dynamic.yml` (`site-pages`), Garage error document, `public/favicon.ico` | TC-PRE-02 | Manual (404 and favicon checked against local Traefik and Garage containers for swemre-website-api#7); production Unverified |
 | SRS-SND-01   | §4.7a         | `SoundProvider` pointer/key classification                   | TC-SND-01, TC-MAN-04      | Designed          |
 | SRS-SND-02   | §4.7a         | `SoundProvider` `soundForKey`                                | TC-SND-01, TC-MAN-04      | Designed          |
@@ -247,6 +248,7 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | ADR-017: rows for MNT-10 to MNT-12 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: MNT-12 verified, row for MNT-13 | Claude, for swemre review |
 | 2026-10-23 | MNT-13 status after the v2 contract | Claude, for swemre review |
+| 2026-10-24 | PRS-000315: PRE-05 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000314: GEN-10 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
