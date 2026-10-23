@@ -275,6 +275,17 @@ projects or special pages); f Unverified (the local API container refused
 the preview origin through CORS, so the page showed "not found"; canonical
 and `og:url` matched and no tag was duplicated); g Designed.
 
+**TC-PRE-03** Refresh between deploys (SRS-PRE-05):
+
+| Case | Setup                                                     | Expected                                           |
+| ---- | --------------------------------------------------------- | -------------------------------------------------- |
+| a    | Build; delete `dist/rss.xml` and one article page, empty `dist/sitemap.xml`; `npm run refresh` | All three back with current content |
+| b    | swemre-website-api `deploy/refresh-site.sh` in a folder with `site-build`, `site-refresh` and a stub `publish-site.sh`; remove a page, run, run again | First run rewrites the page and publishes; second run publishes nothing |
+| c    | On the server: publish a post in SWE-Press and wait        | Its page, sitemap entry and feed item are live within about two minutes |
+
+Status: a and b Manual pass 2026-10-24 (local API container); c Unverified
+until deployed.
+
 **TC-MAP-02** robots.txt (SRS-MAP-03): inspect `public/robots.txt` → allows
 `/` for every agent and names `https://swemre.com/sitemap.xml`. Status:
 Pass by inspection 2026-10-23.
@@ -549,3 +560,4 @@ relative-luminance formula).
 | 2026-10-23 | ADR-017: added TC-API-01 to TC-API-03 | Claude, for swemre review |
 | 2026-10-23 | PRS-000443: added TC-API-04 | Claude, for swemre review |
 | 2026-10-23 | TC-API-04: documented v2 bodies, term filter, forms on v1 | Claude, for swemre review |
+| 2026-10-24 | PRS-000315: added TC-PRE-03 | Claude, for swemre review |
