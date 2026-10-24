@@ -6,6 +6,8 @@
 # VITE_READ_KEY is the read key of the website channel (public API v2), created in SWE-Press.
 # Needs a Cloudflare API token with the "Workers Scripts: Edit" permission on the account.
 # Without CLOUDFLARE_API_TOKEN, wrangler signs in through the browser instead.
+# The variables can also sit in .env.deploy.local (ignored by git); values already set in the
+# shell win over the file.
 # Optional:
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
 #   VITE_CHANNEL_KEY    the website channel the site reads, default swemre-website
@@ -21,6 +23,18 @@
 # must be reachable.
 set -euo pipefail
 
+cd "$(dirname "$0")/.."
+if [ -f .env.deploy.local ]; then
+  while IFS='=' read -r key value || [ -n "$key" ]; do
+    case "$key" in '' | '#'*) continue ;; esac
+    value="${value%$'\r'}"
+    value="${value/#\~/$HOME}"
+    if [ -z "${!key:-}" ]; then
+      export "$key=$value"
+    fi
+  done < .env.deploy.local
+fi
+
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
@@ -30,7 +44,6 @@ if [ -z "${VITE_READ_KEY:-}" ] && [ "${DRY_RUN:-}" != "1" ]; then
   exit 1
 fi
 
-cd "$(dirname "$0")/.."
 if [ "${SKIP_INSTALL:-}" != "1" ]; then
   npm ci
 fi
