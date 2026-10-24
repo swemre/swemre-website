@@ -13,10 +13,15 @@ import {useState, type ChangeEvent, type FormEvent} from 'react'
 import {Icon} from '../components/Icon'
 import {useService} from '../hooks/useService'
 import {useSound} from '../hooks/useSound'
-import {ApiError} from '../services/publicApi'
-import type {ContactFormErrors, ContactFormInput} from '../types/type'
+import type {
+  ContactFormErrors,
+  ContactFormInput,
+  FormStatus,
+} from '../types/type'
 import {buttonClass} from '../utils/buttonClass'
+import {failureStatus, filledHoneypot} from '../utils/formSubmission'
 import {FormField, inputClass} from './FormField'
+import {Honeypot, PrivacyNote, SubmitError} from './FormExtras'
 import {validateResumeRequest} from './validateResumeRequest'
 
 const EMPTY: ContactFormInput = {fullName: '', email: '', reason: ''}
@@ -27,9 +32,7 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
   const sound = useSound()
   const [values, setValues] = useState<ContactFormInput>(EMPTY)
   const [errors, setErrors] = useState<ContactFormErrors>({})
-  const [status, setStatus] = useState<
-    'idle' | 'submitting' | 'done' | 'failed' | 'unreachable'
-  >('idle')
+  const [status, setStatus] = useState<FormStatus>('idle')
 
   const onChange =
     (field: keyof ContactFormInput) =>
@@ -53,6 +56,11 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
       if (element instanceof HTMLElement) element.focus()
       return
     }
+    // A bot filled the hidden field: it sees the usual confirmation, nothing is sent
+    if (filledHoneypot(form)) {
+      setStatus('done')
+      return
+    }
     setStatus('submitting')
     try {
       await contactForms.submitResumeRequest(values)
@@ -60,7 +68,7 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
       setStatus('done')
     } catch (error) {
       sound.play('error')
-      setStatus(error instanceof ApiError ? 'failed' : 'unreachable')
+      setStatus(failureStatus(error))
     }
   }
 
@@ -131,20 +139,12 @@ export function ResumeRequestForm({onDone}: {onDone: () => void}) {
             className={`${inputClass} resize-y`}
           />
         </FormField>
-        {status === 'failed' && (
-          <p role="alert" className="mb-4 text-sm text-danger">
-            The request could not be sent. Please try again later.
-          </p>
-        )}
-        {status === 'unreachable' && (
-          <p role="alert" className="mb-4 text-sm text-danger">
-            The server cannot be reached. Check your connection and try again;
-            what you entered is kept.
-          </p>
-        )}
+        <SubmitError status={status} />
+        <Honeypot />
       </div>
 
-      <div className="flex justify-end gap-2 border-t border-border-muted bg-surface-muted px-6 py-3">
+      <div className="flex flex-wrap justify-end gap-2 border-t border-border-muted bg-surface-muted px-6 py-3">
+        <PrivacyNote />
         <button
           type="button"
           onClick={onDone}

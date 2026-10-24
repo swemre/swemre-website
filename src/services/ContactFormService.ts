@@ -15,6 +15,7 @@ import type {
   CallbackRequest,
   ContactForm,
   ContactFormInput,
+  MessageFormInput,
 } from '../types/type'
 import {ArrayService} from './ArrayService'
 import {publicApi} from './publicApi'
@@ -22,6 +23,7 @@ import {publicApi} from './publicApi'
 // The form's key in swemre-website-api; its fields are defined in the CMS (Form settings)
 const CV_REQUEST_FORM = 'cv-request'
 const CALLBACK_REQUEST_FORM = 'callback-request'
+const CONTACT_FORM = 'contact'
 
 export class ContactFormService extends ArrayService<ContactForm> {
   constructor() {
@@ -51,10 +53,14 @@ export class ContactFormService extends ArrayService<ContactForm> {
   async submitCallbackRequest(
     input: CallbackFormInput,
   ): Promise<CallbackRequest> {
+    const note = input.note.trim()
+    // The optional fields are sent only when set, so a form without them still accepts the rest
     const submitted = await publicApi.submitForm(CALLBACK_REQUEST_FORM, {
       fullName: input.fullName.trim(),
       phone: input.phone.trim(),
       topic: input.topic.trim(),
+      ...(input.preferredTime && {preferredTime: input.preferredTime}),
+      ...(note && {note}),
     })
 
     return {
@@ -63,7 +69,18 @@ export class ContactFormService extends ArrayService<ContactForm> {
       fullName: input.fullName.trim(),
       phone: input.phone.trim(),
       topic: input.topic.trim(),
+      preferredTime: input.preferredTime,
+      note,
       createdAt: submitted.submittedAt ?? new Date().toISOString(),
     }
+  }
+
+  // The workspace's contact form (fullName, email, message); a failure is thrown
+  async submitMessage(input: MessageFormInput): Promise<void> {
+    await publicApi.submitForm(CONTACT_FORM, {
+      fullName: input.fullName.trim(),
+      email: input.email.trim(),
+      message: input.message.trim(),
+    })
   }
 }

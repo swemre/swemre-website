@@ -221,7 +221,8 @@ export default function HomePage() {
           Let us build something together.
         </h2>
         <p className="mt-4 max-w-measure text-lg text-cover-fg/70">
-          Leave your number and I will call you back, or ask for my resume.
+          Leave your number and I will call you back, ask for my resume or send
+          me a message.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <button
@@ -241,6 +242,15 @@ export default function HomePage() {
           >
             <Icon name="file" />
             Request my resume
+          </button>
+          <button
+            type="button"
+            onClick={requests.openMessage}
+            data-sound="none"
+            className={glassBandButton}
+          >
+            <Icon name="send" />
+            Send a message
           </button>
           <a
             href={`mailto:${settings.contactEmail}`}
