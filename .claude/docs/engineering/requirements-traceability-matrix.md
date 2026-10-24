@@ -73,6 +73,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-ART-15   | §4.5          | `DocHeader` `cover`, `ArticleTemplate`                       | TC-ART-13, TC-MAN-05      | Manual (Verified in browser 2026-10-23, W5) |
 | SRS-ART-16   | §4.5          | `DocsLayout` `<details>`, `Toc showTitle`                    | TC-ART-14, TC-MAN-05      | Manual (Verified in browser 2026-10-23, W11) |
 | SRS-ART-17   | §4.5          | `ArticlesPage` chips, `ListTemplate sidebarFromLg`           | TC-ART-15                 | Unverified (W10) |
+| SRS-ART-18   | §4.5          | `utils/coverPosition.ts`, `CoverImage`, showcases, `main.css` `@source inline` | inspection, build | Manual (2026-10-24: build contains the `object-position` classes); in the browser Unverified until the API stores `coverPosition` |
 | SRS-PRJ-01   | §5            | `projectDatabase.ts`, `page/projects/*.mdx`                  | TC-PRJ-01                 | Pass (INSP)       |
 | SRS-PRJ-02   | §4.3          | `ProjectService.findAll`, `ProjectsPage`                     | TC-PRJ-01                 | Pass (SS)         |
 | SRS-PRJ-03   | §4.5          | `ProjectTemplate`, `DocHeader`                               | TC-PRJ-02                 | Pass (SS)         |
@@ -261,3 +262,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-24 | MNT-13 status: forms and chat on v2 | Claude, for swemre review |
 | 2026-10-24 | PRS-000322: A11Y-02, A11Y-03 (closes the RSK-09 failure), A11Y-07 statuses after the audit | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: GEN-11 row | Claude, for swemre review |
+| 2026-10-24 | PRS-000005: ART-18 row | Claude, for swemre review |

@@ -144,6 +144,7 @@ features). No backend, no cookies, no analytics.
 | SRS-ART-15  | When the article has a cover, the article page shall show it at the end of the header block (below the meta row), full column width, with the media alt text and the file's width and height. | T, D | P2 | UX-W5 |
 | SRS-ART-16  | Below 1280 px (`xl`), article and project pages with headings shall show a collapsible "On this page" table of contents above the body, closed by default. | T, D | P2 | UX-W11 |
 | SRS-ART-17  | Below 1024 px (`lg`), the articles index shall show the topic filter as a horizontally scrolling chip row ("All" plus one chip per tag, with counts) above the list, and shall hide the sidebar. | T, D | P2 | UX-W10 |
+| SRS-ART-18  | Article and project cards that crop the cover (home showcases) shall crop around the post's `coverPosition` (0 top to 100 bottom, set by Reposition in SWE-Press), rounded to steps of 5; without it they stay centred. | T | P2 | PRS-000005 |
 
 ### 3.5 Projects (PRJ)
 
@@ -368,3 +369,4 @@ features). No backend, no cookies, no analytics.
 | 2026-10-24 | MNT-13: forms and chat on v2 | Claude, for swemre review |
 | 2026-10-24 | PRS-000322: A11Y-02 ring colour on the bands | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: added GEN-11 (JSON-LD) | Claude, for swemre review |
+| 2026-10-24 | PRS-000005: added ART-18 (cover focal point) | Claude, for swemre review |
