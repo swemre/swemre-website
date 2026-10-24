@@ -46,10 +46,40 @@ npm run build        # type check and production build into dist/
 
 ## Deploy
 
-The build is a static single page app, served by Garage (open source S3 storage) on the server;
-see `deploy/README.md` in `swemre-website-api`. `scripts/deploy.sh` builds it for the production
-API, copies it to the server over SSH and publishes it there: hashed bundles are cached for a
-year, everything else is revalidated. No storage key is needed on your machine.
+### Cloudflare (from 1.0.0-ALPHA)
+
+The site is a static build with a pre-rendered page per route, served by Cloudflare as static
+assets (`wrangler.jsonc`, no Worker code). `scripts/deploy-cloudflare.sh` builds it for the
+production API, adds `404.html` (the app shell, answered with status 404 for unknown routes) and
+`_headers` (`cloudflare/_headers`: HSTS, nosniff, referrer policy, a year of cache for the hashed
+bundles), then runs `wrangler deploy`.
+
+```bash
+CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... VITE_READ_KEY=... npm run deploy:cloudflare
+```
+
+- `VITE_READ_KEY` is the read key of the website channel (`VITE_CHANNEL_KEY`, default
+  `swemre-website`), created in SWE-Press. The script refuses to deploy without it.
+- The token needs the **Workers Scripts: Edit** permission. Without it, wrangler signs in through
+  the browser.
+- `/articles/foo` serves `articles/foo/index.html`, and `/articles/foo/` redirects to it, so the
+  canonical URLs keep no trailing slash.
+- `DRY_RUN=1` builds and checks the upload without deploying.
+- With `SSH_HOST` (and `SSH_KEY`) it also copies the build and the refresh scripts to the server,
+  where `refresh-site.sh` in `swemre-website-api` keeps the feeds and pre-rendered pages current
+  between deploys.
+
+Once, on the day the site leaves the VPS: in the Cloudflare dashboard, open Workers & Pages >
+swemre-website > Settings > Domains & Routes, add `swemre.com` and `www.swemre.com` as custom
+domains (this replaces their A records), and add a redirect rule from `www.swemre.com/*` to
+`https://swemre.com/${1}`.
+
+### VPS (until 1.0.0-ALPHA)
+
+The build is served by Garage (open source S3 storage) on the server; see `deploy/README.md` in
+`swemre-website-api`. `scripts/deploy.sh` builds it for the production API, copies it to the
+server over SSH and publishes it there: hashed bundles are cached for a year, everything else is
+revalidated. No storage key is needed on your machine.
 
 ```bash
 SSH_HOST=deploy@31.187.76.148 SSH_KEY=~/.ssh/swemre-deploy npm run deploy

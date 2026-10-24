@@ -1,0 +1,20 @@
+// Cloudflare Workers static assets: serves the built site from dist/, no Worker code runs.
+// Deploy with scripts/deploy-cloudflare.sh (npm run deploy:cloudflare), never on its own: the
+// script writes dist/404.html and dist/_headers first.
+{
+  "name": "swemre-website",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // /articles/foo reads the pre-rendered articles/foo/index.html, /articles/foo/ redirects
+    // to it, so the canonical URLs in the pages and sitemap stay without a trailing slash
+    "html_handling": "drop-trailing-slash",
+    // A route without a pre-rendered page gets 404.html (a copy of index.html) with status 404,
+    // and the single page app shows its not found page
+    "not_found_handling": "404-page",
+  },
+  // swemre.com and www.swemre.com are attached once in the dashboard (Workers & Pages >
+  // swemre-website > Settings > Domains & Routes) on the day the site leaves the VPS
+  "workers_dev": true,
+  "preview_urls": false,
+}
