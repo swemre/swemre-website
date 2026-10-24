@@ -1,13 +1,12 @@
 name: CI
 
-# Runs on every branch and pull request, so parallel streams find breakage before review.
+# Runs on every push to any branch, so parallel streams find breakage before review.
 # The build imports the shared blocks from ../swemre-blocks (vite.config.ts and tsconfig), so
 # that repository is checked out next to this one. It is private: BLOCKS_READ_TOKEN is a
 # fine-grained token with read access to the contents of swemre/swemre-blocks.
 on:
   push:
     branches: ['**']
-  pull_request:
 
 concurrency:
   group: ci-${{ github.ref }}
