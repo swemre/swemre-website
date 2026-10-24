@@ -55,12 +55,14 @@ export const postSeo = (fields: Record<string, unknown>): PostSeo => ({
   ogImageUrl: fieldMediaUrl(fields, 'ogImage'),
 })
 
-// Without altText the cover is decorative and keeps alt=""
+// Without alt text the cover is decorative and keeps alt=""; v2 names it alt in media fields
+// (fromPublication renames only the cover's)
 export const fieldMediaAlt = (
   fields: Record<string, unknown>,
   key: string,
 ): string | undefined => {
-  const alt = mediaValue(fields, key)?.altText
+  const media = mediaValue(fields, key)
+  const alt = media?.altText ?? media?.alt
   return typeof alt === 'string' && alt.trim() !== '' ? alt.trim() : undefined
 }
 
@@ -73,7 +75,14 @@ export const fieldMediaSize = (
   return typeof size === 'number' && size > 0 ? size : undefined
 }
 
-// The first of the media fields that is set, as a link preview image
+// The API serves a 1200x630 JPEG crop of an image for link previews (docs/public-api-v2.md in
+// swemre-website-api). It reads the image with the JDK's ImageIO, so only PNG, JPEG and GIF have
+// one; WebP, AVIF, SVG and any other file answer 400 to it
+const OG_VARIANT_TYPES = ['image/png', 'image/jpeg', 'image/gif']
+const API_MEDIA_FILE = /\/media\/[^/?#]+\/file$/
+
+// The first of the media fields that is set, as a link preview image: the API's preview crop
+// when it has one, else the file itself
 export const shareImage = (
   fields: Record<string, unknown>,
   keys: string[],
@@ -81,9 +90,16 @@ export const shareImage = (
   for (const key of keys) {
     const url = fieldMediaUrl(fields, key)
     if (url) {
+      const alt = fieldMediaAlt(fields, key)
+      if (
+        API_MEDIA_FILE.test(url) &&
+        OG_VARIANT_TYPES.includes(String(mediaValue(fields, key)?.mimeType))
+      ) {
+        return {url: `${url}?variant=og`, alt, width: 1200, height: 630}
+      }
       return {
         url,
-        alt: fieldMediaAlt(fields, key),
+        alt,
         width: fieldMediaSize(fields, key, 'width'),
         height: fieldMediaSize(fields, key, 'height'),
       }
