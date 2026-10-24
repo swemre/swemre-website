@@ -37,6 +37,7 @@ const failures: Partial<Record<FormStatus, string>> = {
   unreachable:
     'The server cannot be reached. Check your connection and try again; what you entered is kept.',
   limited: 'Too many requests. Please wait a few minutes and try again.',
+  closed: 'This form is closed.',
 }
 
 export function SubmitError({status}: {status: FormStatus}) {

@@ -9,78 +9,63 @@
  * Contact: emre@swemre.com
  */
 
-import {contactFormDatabase} from '../database/contactFormDatabase'
 import type {
   CallbackFormInput,
-  CallbackRequest,
-  ContactForm,
   ContactFormInput,
   MessageFormInput,
+  SubmittedForm,
 } from '../types/type'
-import {ArrayService} from './ArrayService'
 import {publicApi} from './publicApi'
 
-// The form's key in swemre-website-api; its fields are defined in the CMS (Form settings)
-const CV_REQUEST_FORM = 'cv-request'
-const CALLBACK_REQUEST_FORM = 'callback-request'
-const CONTACT_FORM = 'contact'
+// Each form is a table in the CMS Data section; its key is the table's formKey and the keys
+// listed here are the table's acceptedFieldKeys, so nothing else is posted
+const FORMS = {
+  resume: {
+    key: 'cv-request',
+    accepted: ['fullName', 'email', 'company', 'reason'],
+  },
+  callback: {
+    key: 'callback-request',
+    accepted: ['fullName', 'phone', 'topic', 'preferredTime', 'note'],
+  },
+  message: {key: 'contact', accepted: ['fullName', 'email', 'message']},
+} as const
 
-export class ContactFormService extends ArrayService<ContactForm> {
-  constructor() {
-    super(contactFormDatabase)
+type FormName = keyof typeof FORMS
+
+// Only accepted keys are sent, trimmed; empty optional fields are left out
+const fieldsFor = (name: FormName, input: object): Record<string, string> => {
+  const values = input as Record<string, string | undefined>
+  const fields: Record<string, string> = {}
+  for (const key of FORMS[name].accepted) {
+    const value = values[key]?.trim()
+    if (value) fields[key] = value
+  }
+  return fields
+}
+
+// A failure is thrown so the form shows an error instead of a false success
+async function submit(name: FormName, input: object): Promise<SubmittedForm> {
+  const {key} = FORMS[name]
+  const submitted = await publicApi.submitForm(key, fieldsFor(name, input))
+  if (submitted.ignoredFields?.length) {
+    console.warn(
+      `Form ${key} ignored ${submitted.ignoredFields.join(', ')}; its accepted fields changed in the CMS`,
+    )
+  }
+  return submitted
+}
+
+export class ContactFormService {
+  submitResumeRequest(input: ContactFormInput): Promise<SubmittedForm> {
+    return submit('resume', input)
   }
 
-  // The API keeps the submission; the site only needs confirmation that it was stored.
-  // A failure is thrown so the form shows an error instead of a false success.
-  async submitResumeRequest(input: ContactFormInput): Promise<ContactForm> {
-    const submitted = await publicApi.submitForm(CV_REQUEST_FORM, {
-      fullName: input.fullName.trim(),
-      email: input.email.trim(),
-      reason: input.reason.trim(),
-    })
-
-    return {
-      id: crypto.randomUUID(),
-      kind: 'resume-request',
-      fullName: input.fullName.trim(),
-      email: input.email.trim(),
-      reason: input.reason.trim(),
-      createdAt: submitted.submittedAt ?? new Date().toISOString(),
-    }
+  submitCallbackRequest(input: CallbackFormInput): Promise<SubmittedForm> {
+    return submit('callback', input)
   }
 
-  // A form of its own in the CMS (key callback-request: fullName, phone, topic)
-  async submitCallbackRequest(
-    input: CallbackFormInput,
-  ): Promise<CallbackRequest> {
-    const note = input.note.trim()
-    // The optional fields are sent only when set, so a form without them still accepts the rest
-    const submitted = await publicApi.submitForm(CALLBACK_REQUEST_FORM, {
-      fullName: input.fullName.trim(),
-      phone: input.phone.trim(),
-      topic: input.topic.trim(),
-      ...(input.preferredTime && {preferredTime: input.preferredTime}),
-      ...(note && {note}),
-    })
-
-    return {
-      id: crypto.randomUUID(),
-      kind: 'callback-request',
-      fullName: input.fullName.trim(),
-      phone: input.phone.trim(),
-      topic: input.topic.trim(),
-      preferredTime: input.preferredTime,
-      note,
-      createdAt: submitted.submittedAt ?? new Date().toISOString(),
-    }
-  }
-
-  // The workspace's contact form (fullName, email, message); a failure is thrown
-  async submitMessage(input: MessageFormInput): Promise<void> {
-    await publicApi.submitForm(CONTACT_FORM, {
-      fullName: input.fullName.trim(),
-      email: input.email.trim(),
-      message: input.message.trim(),
-    })
+  submitMessage(input: MessageFormInput): Promise<SubmittedForm> {
+    return submit('message', input)
   }
 }

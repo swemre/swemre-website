@@ -19,7 +19,11 @@ import type {
   FormStatus,
 } from '../types/type'
 import {buttonClass} from '../utils/buttonClass'
-import {failureStatus, filledHoneypot} from '../utils/formSubmission'
+import {
+  failureStatus,
+  filledHoneypot,
+  serverFieldErrors,
+} from '../utils/formSubmission'
 import {FormField, inputClass} from './FormField'
 import {Honeypot, PrivacyNote, SubmitError} from './FormExtras'
 import {validateMessage} from './validateMessage'
@@ -68,6 +72,16 @@ export function MessageForm({onDone}: {onDone: () => void}) {
       setStatus('done')
     } catch (error) {
       sound.play('error')
+      // A value the form's table rejects is shown at its field, as a local error would be
+      const rejected = serverFieldErrors(error, FIELDS)
+      const firstRejected = FIELDS.find(field => rejected[field])
+      if (firstRejected) {
+        setErrors(rejected)
+        setStatus('idle')
+        const element = form.elements.namedItem(firstRejected)
+        if (element instanceof HTMLElement) element.focus()
+        return
+      }
       setStatus(failureStatus(error))
     }
   }
@@ -152,7 +166,7 @@ export function MessageForm({onDone}: {onDone: () => void}) {
         <button
           type="submit"
           data-sound="none"
-          disabled={status === 'submitting'}
+          disabled={status === 'submitting' || status === 'closed'}
           className={buttonClass('primary')}
         >
           {status === 'submitting' ? 'Sending…' : 'Send message'}

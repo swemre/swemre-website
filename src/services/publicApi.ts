@@ -23,11 +23,47 @@ import type {
 
 export class ApiError extends Error {
   readonly status: number
+  /** The error body's `key`, such as FORM_CLOSED or VALIDATION_FAILED. */
+  readonly key?: string
+  /** A 400's field errors as field key → the server's message. */
+  readonly fieldErrors: Record<string, string>
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    key?: string,
+    fieldErrors: Record<string, string> = {},
+  ) {
     super(message)
     this.status = status
+    this.key = key
+    this.fieldErrors = fieldErrors
   }
+}
+
+// The public error body: {key, message, errors: [{field, message}]}
+interface ErrorBody {
+  key?: unknown
+  message?: unknown
+  errors?: unknown
+}
+
+const toApiError = (status: number, statusText: string, json: unknown) => {
+  const body: ErrorBody = json && typeof json === 'object' ? json : {}
+  const fieldErrors: Record<string, string> = {}
+  if (Array.isArray(body.errors)) {
+    for (const item of body.errors as {field?: unknown; message?: unknown}[]) {
+      if (typeof item?.field === 'string' && typeof item.message === 'string') {
+        fieldErrors[item.field] = item.message
+      }
+    }
+  }
+  return new ApiError(
+    status,
+    body.message !== undefined ? String(body.message) : statusText,
+    typeof body.key === 'string' ? body.key : undefined,
+    fieldErrors,
+  )
 }
 
 // A v2 publication (docs/public-api-v2.md in swemre-website-api) in the v1 post shape the
@@ -125,11 +161,7 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     const text = await response.text()
     const json: unknown = text ? JSON.parse(text) : undefined
     if (!response.ok) {
-      const message =
-        json && typeof json === 'object' && 'message' in json
-          ? String((json as {message: unknown}).message)
-          : response.statusText
-      throw new ApiError(response.status, message)
+      throw toApiError(response.status, response.statusText, json)
     }
     return json as T
   }
@@ -159,7 +191,8 @@ export function createPublicApi(env: SiteEnv): PublicApi {
       return item?.contentType === type ? fromPublication(item) : undefined
     },
 
-    // A 404 means the form does not exist, so no confirmation is a failure
+    // The form is a table's REST endpoint: 201 with the new record's id. A 404 means the form
+    // does not exist, so no confirmation is a failure; a closed form answers 403 FORM_CLOSED
     async submitForm(form, fields) {
       const submitted = await request<SubmittedForm>(
         'POST',
