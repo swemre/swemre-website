@@ -68,9 +68,8 @@ export type EnvSource = Record<string, string | boolean | undefined>
 /** Where this website reads from and where it is served; one build per website. */
 export interface SiteEnv {
   apiBase: string
-  workspaceKey: string
-  /** The website channel install (lower case). Set: content is read from public API v2. */
-  channelKey?: string
+  /** The website channel install (lower case) the site reads through public API v2. */
+  channelKey: string
   /** Sent as `X-Read-Key` when set; a read key is public, it only selects the channel. */
   readKey?: string
   /** Absolute, without a trailing slash. */

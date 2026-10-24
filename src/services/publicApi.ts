@@ -11,9 +11,7 @@
 
 import {siteEnv} from '../config/env.ts'
 import type {
-  ChatApiConversation,
   ChatApiMessage,
-  PagedContent,
   PostListQuery,
   Publication,
   PublicPage,
@@ -61,9 +59,6 @@ const fromPublication = (item: Publication): PublicPost => {
   }
 }
 
-const hasTerm = (post: PublicPost, slug: string | undefined) =>
-  !slug || post.terms.some(term => term.slug === slug)
-
 const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
   if (!query.sortBy) return posts
   const key = query.sortBy
@@ -99,14 +94,10 @@ const splitToken = (token: string) => {
   return {id: token.slice(0, dot), visitorToken: token.slice(dot + 1)}
 }
 
-// Every path of the public API the website and its build scripts use is built here. With a
-// channel key, publications, forms and chat use the channel API (v2); without one everything,
-// and page views until v2 serves them, use the workspace API (v1)
+// Every path of the public API the website and its build scripts use is built here: the
+// channel API (v2) of the website's channel, which reads only what was published to it
 export function createPublicApi(env: SiteEnv): PublicApi {
-  const v1 = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
-  const v2 = env.channelKey
-    ? `/public/v2/channels/${encodeURIComponent(env.channelKey)}`
-    : undefined
+  const v2 = `/public/v2/channels/${encodeURIComponent(env.channelKey)}`
 
   async function request<T>(
     method: 'GET' | 'POST',
@@ -119,8 +110,7 @@ export function createPublicApi(env: SiteEnv): PublicApi {
       ...extraHeaders,
     }
     if (body !== undefined) headers['Content-Type'] = 'application/json'
-    // Only the channel API knows the header; on v1 it would fail the CORS preflight
-    if (env.readKey && v2 && path.startsWith(v2)) {
+    if (env.readKey) {
       headers['X-Read-Key'] = env.readKey
     }
     const response = await fetch(`${env.apiBase}${path}`, {
@@ -148,48 +138,32 @@ export function createPublicApi(env: SiteEnv): PublicApi {
 
   return {
     async listPosts(type, query = {}) {
-      if (v2) {
-        const params = new URLSearchParams({
-          'content-type': type,
-          locale: env.locale,
-          size: size(query),
-        })
-        if (query.term) params.set('term', query.term)
-        const page = await request<PublicPage<Publication>>(
-          'GET',
-          `${v2}/publications?${params}`,
-        )
-        return sortPosts((page?.items ?? []).map(fromPublication), query)
-      }
-      const params = new URLSearchParams({type, size: size(query)})
-      if (query.sortBy) params.set('sort-by', query.sortBy)
-      if (query.direction) params.set('direction', query.direction)
-      const page = await request<PagedContent<PublicPost>>(
+      const params = new URLSearchParams({
+        'content-type': type,
+        locale: env.locale,
+        size: size(query),
+      })
+      if (query.term) params.set('term', query.term)
+      const page = await request<PublicPage<Publication>>(
         'GET',
-        `${v1}/posts?${params}`,
+        `${v2}/publications?${params}`,
       )
-      return (page?.content ?? []).filter(post => hasTerm(post, query.term))
+      return sortPosts((page?.items ?? []).map(fromPublication), query)
     },
 
     async getPost(type, slug) {
-      if (v2) {
-        const item = await request<Publication>(
-          'GET',
-          `${v2}/publications/${encodeURIComponent(slug)}?${new URLSearchParams({locale: env.locale})}`,
-        )
-        return item?.contentType === type ? fromPublication(item) : undefined
-      }
-      return request<PublicPost>(
+      const item = await request<Publication>(
         'GET',
-        `${v1}/posts/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
+        `${v2}/publications/${encodeURIComponent(slug)}?${new URLSearchParams({locale: env.locale})}`,
       )
+      return item?.contentType === type ? fromPublication(item) : undefined
     },
 
     // A 404 means the form does not exist, so no confirmation is a failure
     async submitForm(form, fields) {
       const submitted = await request<SubmittedForm>(
         'POST',
-        `${v2 ?? v1}/forms/${encodeURIComponent(form)}/submissions`,
+        `${v2}/forms/${encodeURIComponent(form)}/submissions`,
         {fields},
       )
       if (!submitted) {
@@ -199,81 +173,62 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     },
 
     async presence() {
-      if (v2) return false
-      const status = await request<{online: boolean}>('GET', `${v1}/presence`)
+      const status = await request<{online: boolean}>('GET', `${v2}/presence`)
       return status?.online === true
     },
 
     async sendChatMessage(publicToken, message) {
-      if (v2) {
-        if (!publicToken) {
-          const started = await request<V2Conversation>(
-            'POST',
-            `${v2}/conversations`,
-            {text: message},
-          )
-          if (!started) throw new ApiError(404, 'chat is not available')
-          return {
-            token: `${started.id}.${started.visitorToken}`,
-            messages: started.messages.map(fromV2Message),
-          }
-        }
-        const {id, visitorToken} = splitToken(publicToken)
-        const sent = await request<V2Message>(
+      if (!publicToken) {
+        const started = await request<V2Conversation>(
           'POST',
-          `${v2}/conversations/${encodeURIComponent(id)}/messages`,
+          `${v2}/conversations`,
           {text: message},
-          {'X-Visitor-Token': visitorToken},
         )
-        if (!sent) throw new ApiError(404, 'conversation was not found')
-        return (
-          (await this.getConversation(publicToken)) ?? {
-            token: publicToken,
-            messages: [fromV2Message(sent)],
-          }
-        )
+        if (!started) throw new ApiError(404, 'chat is not available')
+        return {
+          token: `${started.id}.${started.visitorToken}`,
+          messages: started.messages.map(fromV2Message),
+        }
       }
-      const remote = await request<ChatApiConversation>(
+      const {id, visitorToken} = splitToken(publicToken)
+      const sent = await request<V2Message>(
         'POST',
-        publicToken
-          ? `${v1}/conversations/${encodeURIComponent(publicToken)}/message`
-          : `${v1}/conversations`,
+        `${v2}/conversations/${encodeURIComponent(id)}/messages`,
         {text: message},
+        {'X-Visitor-Token': visitorToken},
       )
-      if (!remote) throw new ApiError(404, 'conversation was not found')
-      return remote
+      if (!sent) throw new ApiError(404, 'conversation was not found')
+      return (
+        (await this.getConversation(publicToken)) ?? {
+          token: publicToken,
+          messages: [fromV2Message(sent)],
+        }
+      )
     },
 
     async getConversation(publicToken) {
-      if (v2) {
-        const {id, visitorToken} = splitToken(publicToken)
-        const messages = await request<V2Message[]>(
-          'GET',
-          `${v2}/conversations/${encodeURIComponent(id)}/messages`,
-          undefined,
-          {'X-Visitor-Token': visitorToken},
-        )
-        return (
-          messages && {
-            token: publicToken,
-            messages: messages.map(fromV2Message),
-          }
-        )
-      }
-      return request<ChatApiConversation>(
+      const {id, visitorToken} = splitToken(publicToken)
+      const messages = await request<V2Message[]>(
         'GET',
-        `${v1}/conversations/${encodeURIComponent(publicToken)}`,
+        `${v2}/conversations/${encodeURIComponent(id)}/messages`,
+        undefined,
+        {'X-Visitor-Token': visitorToken},
+      )
+      return (
+        messages && {
+          token: publicToken,
+          messages: messages.map(fromV2Message),
+        }
       )
     },
 
-    conversationSocketUrl(publicToken) {
-      if (v2) return undefined
-      return `${env.apiBase.replace(/^http/, 'ws')}${v1}/conversations/${encodeURIComponent(publicToken)}/ws`
+    // The channel API has no socket yet, so the chat polls
+    conversationSocketUrl() {
+      return undefined
     },
 
-    // v2 page views arrive with analytics in 1.1.0-ALPHA
     async recordPageView(view) {
-      await request('POST', `${v1}/page-views`, view)
+      await request('POST', `${v2}/page-views`, view)
     },
   }
 }
