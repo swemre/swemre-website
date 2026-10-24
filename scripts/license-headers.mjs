@@ -18,6 +18,7 @@ const YEAR = 2026
 const IGNORED_DIRS = new Set([
   'node_modules',
   'dist',
+  '.wrangler',
   '.git',
   '.vscode',
   '.claude',
