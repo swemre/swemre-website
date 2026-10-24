@@ -1,0 +1,42 @@
+name: Checks
+
+# Every branch and pull request: lint, formatting, license headers and the production build.
+# Article pages import swemre-blocks from a sibling folder (tsconfig paths and a vite alias), so
+# the job checks both repositories out side by side. swemre-blocks is private, so reading it
+# needs BLOCKS_READ_TOKEN: a fine-grained token with read access to its contents.
+# The build's RSS, sitemap and prerender steps read the public API; on the runner it cannot be
+# reached, so they keep the committed files and the build still checks the code.
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: swemre-website
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: swemre-website
+      - uses: actions/checkout@v4
+        with:
+          repository: swemre/swemre-blocks
+          token: ${{ secrets.BLOCKS_READ_TOKEN }}
+          path: swemre-blocks
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: swemre-website/package-lock.json
+      - run: npm ci
+      - name: Lint, formatting and license headers
+        run: npm run checkstyle
+      - name: Build
+        run: npm run build
