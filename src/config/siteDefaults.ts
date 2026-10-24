@@ -12,7 +12,8 @@
 // Used when the build's environment leaves a variable unset; see .env.example
 export const siteDefaults = {
   apiBase: 'http://localhost:8080/api',
-  workspaceKey: 'swemre-website',
+  // The website channel the site reads (Channels in the CMS)
+  channelKey: 'swemre-website',
   siteUrl: 'https://swemre.com',
   locale: 'en',
   timeoutMs: 10000,

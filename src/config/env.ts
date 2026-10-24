@@ -23,9 +23,7 @@ export function readSiteEnv(source: EnvSource): SiteEnv {
   const timeout = Number(text(source, 'VITE_API_TIMEOUT_MS'))
   return {
     apiBase: text(source, 'VITE_API_BASE') ?? siteDefaults.apiBase,
-    workspaceKey:
-      text(source, 'VITE_WORKSPACE_KEY') ?? siteDefaults.workspaceKey,
-    channelKey: text(source, 'VITE_CHANNEL_KEY'),
+    channelKey: text(source, 'VITE_CHANNEL_KEY') ?? siteDefaults.channelKey,
     readKey: text(source, 'VITE_READ_KEY'),
     siteUrl: (text(source, 'VITE_SITE_URL') ?? siteDefaults.siteUrl).replace(
       /\/+$/,

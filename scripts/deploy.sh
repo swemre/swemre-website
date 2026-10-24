@@ -8,7 +8,7 @@
 # Optional:
 #   SSH_KEY             private key for the server, for example ~/.ssh/swemre-deploy
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
-#   VITE_WORKSPACE_KEY  the workspace the site reads, default swemre-website
+#   VITE_CHANNEL_KEY    the website channel the site reads, default swemre-website
 #   VITE_SITE_URL       where the site is served, default https://swemre.com
 #   (.env.example lists the other VITE_* settings)
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
@@ -42,12 +42,11 @@ REMOTE_REFRESH="$REMOTE_DIR/deploy/site-refresh"
 echo "Copying the refresh scripts to $SSH_HOST:$REMOTE_REFRESH"
 tar -czf - scripts src package.json | "${SSH[@]}" "$SSH_HOST"   "rm -rf '$REMOTE_REFRESH' && mkdir -p '$REMOTE_REFRESH' && tar -xzf - -C '$REMOTE_REFRESH'"
 printf 'VITE_API_BASE=%s
-VITE_WORKSPACE_KEY=%s
 VITE_SITE_URL=%s
 VITE_CHANNEL_KEY=%s
 VITE_READ_KEY=%s
 VITE_LOCALE=%s
-'   "$VITE_API_BASE" "${VITE_WORKSPACE_KEY:-}" "${VITE_SITE_URL:-}" "${VITE_CHANNEL_KEY:-}"   "${VITE_READ_KEY:-}" "${VITE_LOCALE:-}" | "${SSH[@]}" "$SSH_HOST" "cat > '$REMOTE_REFRESH/site.env'"
+'   "$VITE_API_BASE" "${VITE_SITE_URL:-}" "${VITE_CHANNEL_KEY:-}"   "${VITE_READ_KEY:-}" "${VITE_LOCALE:-}" | "${SSH[@]}" "$SSH_HOST" "cat > '$REMOTE_REFRESH/site.env'"
 
 echo "Publishing"
 "${SSH[@]}" "$SSH_HOST" "cd '$REMOTE_DIR/deploy' && ./publish-site.sh site-build"
