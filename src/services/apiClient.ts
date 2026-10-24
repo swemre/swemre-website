@@ -75,15 +75,10 @@ export const fieldMediaSize = (
   return typeof size === 'number' && size > 0 ? size : undefined
 }
 
-// The API serves a 1200x630 JPEG crop of a raster image for link previews; any other file
-// answers 400 to it (docs/public-api-v2.md in swemre-website-api)
-const OG_VARIANT_TYPES = [
-  'image/png',
-  'image/jpeg',
-  'image/gif',
-  'image/webp',
-  'image/avif',
-]
+// The API serves a 1200x630 JPEG crop of an image for link previews (docs/public-api-v2.md in
+// swemre-website-api). It reads the image with the JDK's ImageIO, so only PNG, JPEG and GIF have
+// one; WebP, AVIF, SVG and any other file answer 400 to it
+const OG_VARIANT_TYPES = ['image/png', 'image/jpeg', 'image/gif']
 const API_MEDIA_FILE = /\/media\/[^/?#]+\/file$/
 
 // The first of the media fields that is set, as a link preview image: the API's preview crop
