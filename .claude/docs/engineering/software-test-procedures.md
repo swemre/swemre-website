@@ -80,10 +80,12 @@ Status: Designed.
 
 | Case | API answer                         | `submitResumeRequest` / `submitCallbackRequest` |
 | ---- | ---------------------------------- | ----------------------------------------------- |
-| a    | 201 `{submittedAt: '…Z'}`          | Resolves; `createdAt` equals `submittedAt`; posted body has trimmed `fields` |
+| a    | 201 `{id, receivedAt, ignoredFields: []}` | Resolves with it; posted body has only the form's accepted keys, trimmed |
 | b    | 404 (form missing)                 | Rejects with `ApiError` status 404              |
 | c    | 500 `{message: 'x'}`               | Rejects with `ApiError` status 500, message `x` |
 | d    | `fetch` rejects (offline)          | Rejects                                         |
+| e    | 403 `{key: 'FORM_CLOSED'}`         | Rejects with `ApiError` status 403, key `FORM_CLOSED` |
+| f    | 400 `{key: 'VALIDATION_FAILED', errors: [{field: 'values.email', message: 'must be an email address'}]}` | Rejects; `fieldErrors` holds `values.email` |
 
 Status: Designed.
 
@@ -369,6 +371,7 @@ not be heard in the headless environment).
 | TC-RES-09   | SRS-RES-10, RES-11        | Each form: fill the hidden `website` field through the DOM and submit valid values; then a submission answered 429; follow the privacy link | Confirmation shown and no request sent; "Too many requests…" alert; the policy opens in a new tab, the dialog keeps its input | Designed |
 | TC-RES-10   | SRS-RES-12                | Phone `+31 6 1234 5678`, `06-12345678`, `(020) 123 4567` pass; `call me`, `12345`, 16 digits fail; pick Evening and a note; submit | Valid ones accepted; the message on the others; request body has `preferredTime: 'evening'` and `note`; confirmation "…on <number> in the evening." | Designed |
 | TC-RES-11   | SRS-RES-13                | Open "Send a message" from home and from the footer at 375, 768 and 1280 px, light and dark, keyboard only; submit empty, then valid | Errors per field with focus on the first; then "Message sent" naming the email; POST to `forms/contact/submissions` | Designed |
+| TC-RES-12   | SRS-RES-14, RES-15        | On a local API with the forms migrated into tables, submit each form at 375, 768 and 1280 px; close one form in the CMS and submit; submit a value the table rejects | Each submission is a record with Status New holding only accepted fields; "This form is closed." with submit disabled; the server's message at the field with focus on it | Designed |
 | TC-THM-01   | SRS-THM-01, THM-02        | Stored `dark` → render; toggle                                                                  | `data-theme="dark"`, then `light`; storage updated      | Designed |
 | TC-THM-02   | SRS-THM-02                | Empty storage; `matchMedia` dark                                                                | Initial `dark`; storage still empty                     | Designed |
 | TC-THM-03   | SRS-THM-02                | Empty storage, `matchMedia` light; fire a `change` to dark; then toggle; then fire `change` to light | `data-theme` becomes `dark` with nothing stored; toggle stores `light` and applies it; the later system change is ignored | Designed |

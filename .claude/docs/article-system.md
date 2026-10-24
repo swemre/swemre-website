@@ -11,10 +11,12 @@ real API can replace the arrays without touching components.
 - `services/LocalStorageService.ts`: array service that persists to
   localStorage after every write (used by `ChatService`).
 - Concrete: `ArticleService`, `ProjectService`, `SongService`,
-  `ContactFormService` (adds `submitResumeRequest` and
-  `submitCallbackRequest`), `SpecialPageService`, `ChatService`. Article,
+  `SpecialPageService`, `ChatService`. Article,
   project and special-page services also expose `findBySlug` and `getBody`
   (lazy MDX component, `services/mdxBodies.ts`).
+- `ContactFormService` is not an array service: `submitResumeRequest`,
+  `submitCallbackRequest` and `submitMessage` post to the form's table
+  endpoint and keep nothing.
 - List caching: `ArticleService`, `ProjectService`, `SongService` and
   `SpecialPageService` call `super([], true)`, so `ArrayService` runs their
   `findAll` once per page session. Callers share the request and each gets
@@ -45,9 +47,9 @@ in `services/`, register it in `serviceRegistry.ts` and add it to
 
 ## "Database"
 
-`src/database/*.ts` are plain exported arrays, mutated by the services. They
-are in memory: **contact-form submissions are lost on reload** until a backend
-exists. Seed data (articles, projects, songs, special pages) is edited
+`src/database/*.ts` are plain exported arrays, mutated by the services. Form
+submissions are not kept here; each one becomes a record in its form's table
+in the API. Seed data (articles, projects, songs, special pages) is edited
 directly in those files.
 
 ## Articles
@@ -105,8 +107,8 @@ including changes while the page is open (`ThemeProvider` listens to
 
 `ResumeModalProvider` owns the modal. `ResumeRequestForm` (`forms/`) validates
 (`validateResumeRequest`), then `ContactFormService.submitResumeRequest`
-sends it to the API form `cv-request` and returns
-`{kind:'resume-request', fullName, email, reason, createdAt}`.
+sends only the table's accepted fields to the API form `cv-request` and
+returns the API's `{id, receivedAt, ignoredFields}`.
 `CallbackRequestForm` does the same with `validateCallbackRequest` and the
 `callback-request` form. Both forms clear a field's error as soon as it is
 edited, focus the first invalid field on submit (inputs carry `name` for
