@@ -4,9 +4,9 @@ name: CI
 # The build imports the shared blocks from ../swemre-blocks (vite.config.ts and tsconfig), so
 # that repository is checked out next to this one. It is private: BLOCKS_READ_TOKEN is a
 # fine-grained token with read access to the contents of swemre/swemre-blocks.
+# Manual only until the BLOCKS_READ_TOKEN secret is added; then the push trigger comes back.
 on:
-  push:
-    branches: ['**']
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
