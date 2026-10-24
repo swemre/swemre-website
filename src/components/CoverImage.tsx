@@ -10,6 +10,7 @@
  */
 
 import {cn} from '../utils/cn'
+import {coverPositionClass} from '../utils/coverPosition'
 
 // A cover fills its parent, which sets the aspect ratio and clips the zoom on hover.
 // Without an image, the title's initials sit on the blue band gradient and grid.
@@ -19,6 +20,7 @@ export function CoverImage({
   alt,
   width,
   height,
+  position,
   className,
 }: {
   src?: string
@@ -26,6 +28,8 @@ export function CoverImage({
   alt?: string
   width?: number
   height?: number
+  /** Focal point, 0 (top) to 100 (bottom). */
+  position?: number
   className?: string
 }) {
   if (src) {
@@ -39,6 +43,7 @@ export function CoverImage({
         decoding="async"
         className={cn(
           'size-full object-cover transition-transform duration-700 ease-out',
+          coverPositionClass(position),
           className,
         )}
       />

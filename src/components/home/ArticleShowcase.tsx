@@ -47,6 +47,7 @@ function FeaturedArticle({article, wide}: {article: Article; wide: boolean}) {
           src={article.coverUrl}
           alt={article.coverAlt}
           width={article.coverWidth}
+          position={article.coverPosition}
           height={article.coverHeight}
           title={article.title}
           className="group-hover/feature:scale-105"
@@ -106,6 +107,7 @@ function ArticleListItem({article}: {article: Article}) {
             src={article.coverUrl}
             alt={article.coverAlt}
             width={article.coverWidth}
+            position={article.coverPosition}
             height={article.coverHeight}
             title={article.title}
             className="group-hover/item:scale-110 [&_span]:text-xl"

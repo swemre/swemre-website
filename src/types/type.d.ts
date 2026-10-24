@@ -237,6 +237,8 @@ export interface Article extends Searchable {
   coverWidth?: number
   /** Pixels, of the original file. */
   coverHeight?: number
+  /** Vertical focal point of the cover, 0 (top) to 100 (bottom), set in the CMS. */
+  coverPosition?: number
   seo: PostSeo
   shareImage?: ShareImage
 }
@@ -257,6 +259,8 @@ export interface Project extends Searchable {
   coverWidth?: number
   /** Pixels, of the original file. */
   coverHeight?: number
+  /** Vertical focal point of the cover, 0 (top) to 100 (bottom), set in the CMS. */
+  coverPosition?: number
   seo: PostSeo
   shareImage?: ShareImage
 }

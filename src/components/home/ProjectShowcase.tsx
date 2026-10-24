@@ -66,6 +66,7 @@ function ProjectRow({project, index}: {project: Project; index: number}) {
             src={project.coverUrl}
             alt={project.coverAlt}
             width={project.coverWidth}
+            position={project.coverPosition}
             height={project.coverHeight}
             title={project.title}
             className="group-hover/project:scale-105"

@@ -39,6 +39,7 @@ const toProject = (post: PublicPost): Project => ({
   coverAlt: fieldMediaAlt(post.fields, 'cover'),
   coverWidth: fieldMediaSize(post.fields, 'cover', 'width'),
   coverHeight: fieldMediaSize(post.fields, 'cover', 'height'),
+  coverPosition: fieldNumber(post.fields, 'coverPosition'),
   seo: postSeo(post.fields),
   shareImage: shareImage(post.fields, ['ogImage', 'cover']),
 })
