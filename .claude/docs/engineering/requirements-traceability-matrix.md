@@ -122,6 +122,10 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-RES-07   | §10           | `ResumeRequestForm`, `CallbackRequestForm` `onChange`, `onSubmit` | TC-RES-06, TC-MAN-05      | Manual (Verified in browser 2026-10-23: focus to first invalid field, W19); error clearing on edit Unverified |
 | SRS-RES-08   | §10           | form headers `pr-14`                                         | TC-RES-07, TC-MAN-05      | Manual (Verified in browser 2026-10-23: header room, W18) |
 | SRS-RES-09   | §6            | `CallbackRequestForm`, `ResumeRequestForm` | TC-RES-08               | Manual (Verified in browser 2026-10-23, API switched off and on through a local proxy) (resume form) |
+| SRS-RES-10   | §6            | `forms/FormExtras.tsx` `Honeypot`, `utils/formSubmission.ts`, the three forms | TC-RES-09 | Manual (Verified in browser 2026-10-24 against the local API); server side of PRS-000307 (rate limit, honeypot drop) Unverified, API |
+| SRS-RES-11   | §6            | `forms/FormExtras.tsx` `PrivacyNote`       | TC-RES-09               | Manual (Verified in browser 2026-10-24 against the local API) |
+| SRS-RES-12   | §6            | `validateCallbackRequest.ts`, `CallbackRequestForm.tsx`, `ContactFormService` | TC-RES-10 | Manual (Verified in browser 2026-10-24 against the local API) |
+| SRS-RES-13   | §6            | `forms/MessageForm.tsx`, `validateMessage.ts`, `ResumeModalProvider`, `Footer`, `HomePage` | TC-RES-11 | Manual (Verified in browser 2026-10-24 against the local API) |
 | SRS-THM-01   | §4.8          | `ThemeProvider`, `ThemeSwitch`                               | TC-THM-01                 | Pass (SS both themes) |
 | SRS-THM-02   | §4.8          | `ThemeProvider` (`chosen ?? system`), `index.html`           | TC-THM-01 to TC-THM-03    | Unverified (W17) |
 | SRS-THM-03   | §4.8          | `index.html` inline script                                   | inspection                | Pass (INSP)       |
@@ -189,7 +193,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-MNT-10   | §4.3         | `services/publicApi.ts`, services, `scripts/generate-*.mjs` | inspection, TC-API-01 | Manual (Verified 2026-10-23: same request URLs in the browser, chat send works; RSS and sitemap output unchanged) |
 | SRS-MNT-11   | §4.3         | `config/env.ts`, `config/siteDefaults.ts`, `vite.config.ts`, `index.html` | TC-API-02 | Manual (Verified 2026-10-23: build with `VITE_SITE_URL` and `VITE_LOCALE` set) |
 | SRS-MNT-12   | §4.3         | `services/publicApi.ts`                    | TC-API-03               | Manual (Verified 2026-10-23 with a local mock server: 200 ms timeout rejected after 212 ms) |
-| SRS-MNT-13   | §4.3         | `services/publicApi.ts`                    | TC-API-04               | Manual (Verified 2026-10-23 against a local mock serving the bodies of docs/public-api-v2.md; not yet against the API's v2 endpoints) |
+| SRS-MNT-13   | §4.3         | `services/publicApi.ts`                    | TC-API-04               | Manual (Verified 2026-10-24 against local mocks of docs/public-api-v2.md: publications, forms incl. 429, chat start, continue, token check; not yet against the API's v2 endpoints) |
 | SRS-CMP-01   | n/a          | whole app                                  | L4 suite (3 engines)    | Open              |
 | SRS-CMP-02   | §4.9         | layout tokens                              | TC-E2E-03               | Pass (SS at 1920); other widths Designed |
 | SRS-CMP-03   | §6           | stores, theme                              | TC-E2E-08               | Designed          |
@@ -253,5 +257,7 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-23 | PRS-000333: rows for GEN-09, CHAT-15, RES-09 | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 row | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: RES-09 row | Claude, for swemre review |
+| 2026-10-24 | Forms batch: rows for RES-10 to RES-13 | Claude, for swemre review |
+| 2026-10-24 | MNT-13 status: forms and chat on v2 | Claude, for swemre review |
 | 2026-10-24 | PRS-000322: A11Y-02, A11Y-03 (closes the RSK-09 failure), A11Y-07 statuses after the audit | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: GEN-11 row | Claude, for swemre review |

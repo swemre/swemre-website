@@ -11,6 +11,8 @@
 
 import {siteEnv} from '../config/env.ts'
 import type {
+  ChatApiConversation,
+  ChatApiMessage,
   PagedContent,
   PostListQuery,
   Publication,
@@ -71,9 +73,35 @@ const sortPosts = (posts: PublicPost[], query: PostListQuery) => {
   )
 }
 
+// Public API v2 chat (docs/public-api-v2.md in swemre-website-api)
+interface V2Message {
+  id: string
+  sender: 'VISITOR' | 'MEMBER'
+  text: string
+  createdAt: string
+}
+
+interface V2Conversation {
+  id: string
+  visitorToken: string
+  messages: V2Message[]
+}
+
+const fromV2Message = (item: V2Message): ChatApiMessage => ({
+  id: item.id,
+  author: item.sender === 'MEMBER' ? 'OWNER' : 'VISITOR',
+  text: item.text,
+  sentAt: item.createdAt,
+})
+
+const splitToken = (token: string) => {
+  const dot = token.indexOf('.')
+  return {id: token.slice(0, dot), visitorToken: token.slice(dot + 1)}
+}
+
 // Every path of the public API the website and its build scripts use is built here. With a
-// channel key, publications come from the channel API (v2); without one, and for forms, chat and
-// page views until v2 serves them, from the workspace API (v1)
+// channel key, publications, forms and chat use the channel API (v2); without one everything,
+// and page views until v2 serves them, use the workspace API (v1)
 export function createPublicApi(env: SiteEnv): PublicApi {
   const v1 = `/public/v1/workspaces/${encodeURIComponent(env.workspaceKey)}`
   const v2 = env.channelKey
@@ -84,8 +112,12 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     method: 'GET' | 'POST',
     path: string,
     body?: unknown,
+    extraHeaders: Record<string, string> = {},
   ): Promise<T | undefined> {
-    const headers: Record<string, string> = {Accept: 'application/json'}
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      ...extraHeaders,
+    }
     if (body !== undefined) headers['Content-Type'] = 'application/json'
     // Only the channel API knows the header; on v1 it would fail the CORS preflight
     if (env.readKey && v2 && path.startsWith(v2)) {
@@ -157,7 +189,7 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     async submitForm(form, fields) {
       const submitted = await request<SubmittedForm>(
         'POST',
-        `${v1}/forms/${encodeURIComponent(form)}/submissions`,
+        `${v2 ?? v1}/forms/${encodeURIComponent(form)}/submissions`,
         {fields},
       )
       if (!submitted) {
@@ -167,14 +199,41 @@ export function createPublicApi(env: SiteEnv): PublicApi {
     },
 
     async presence() {
+      if (v2) return false
       const status = await request<{online: boolean}>('GET', `${v1}/presence`)
       return status?.online === true
     },
 
-    // Chat stays on v1 as a whole: v2 so far defines only starting a conversation, and a
-    // conversation must be continued on the API version that created it
-    async sendChatMessage<T>(publicToken: string | undefined, message: string) {
-      const remote = await request<T>(
+    async sendChatMessage(publicToken, message) {
+      if (v2) {
+        if (!publicToken) {
+          const started = await request<V2Conversation>(
+            'POST',
+            `${v2}/conversations`,
+            {text: message},
+          )
+          if (!started) throw new ApiError(404, 'chat is not available')
+          return {
+            token: `${started.id}.${started.visitorToken}`,
+            messages: started.messages.map(fromV2Message),
+          }
+        }
+        const {id, visitorToken} = splitToken(publicToken)
+        const sent = await request<V2Message>(
+          'POST',
+          `${v2}/conversations/${encodeURIComponent(id)}/messages`,
+          {text: message},
+          {'X-Visitor-Token': visitorToken},
+        )
+        if (!sent) throw new ApiError(404, 'conversation was not found')
+        return (
+          (await this.getConversation(publicToken)) ?? {
+            token: publicToken,
+            messages: [fromV2Message(sent)],
+          }
+        )
+      }
+      const remote = await request<ChatApiConversation>(
         'POST',
         publicToken
           ? `${v1}/conversations/${encodeURIComponent(publicToken)}/message`
@@ -185,14 +244,30 @@ export function createPublicApi(env: SiteEnv): PublicApi {
       return remote
     },
 
-    getConversation<T>(publicToken: string) {
-      return request<T>(
+    async getConversation(publicToken) {
+      if (v2) {
+        const {id, visitorToken} = splitToken(publicToken)
+        const messages = await request<V2Message[]>(
+          'GET',
+          `${v2}/conversations/${encodeURIComponent(id)}/messages`,
+          undefined,
+          {'X-Visitor-Token': visitorToken},
+        )
+        return (
+          messages && {
+            token: publicToken,
+            messages: messages.map(fromV2Message),
+          }
+        )
+      }
+      return request<ChatApiConversation>(
         'GET',
         `${v1}/conversations/${encodeURIComponent(publicToken)}`,
       )
     },
 
     conversationSocketUrl(publicToken) {
+      if (v2) return undefined
       return `${env.apiBase.replace(/^http/, 'ws')}${v1}/conversations/${encodeURIComponent(publicToken)}/ws`
     },
 

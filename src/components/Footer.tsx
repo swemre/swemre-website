@@ -11,12 +11,14 @@
 
 import {Link} from 'react-router-dom'
 import {siteConfig, socialLinks} from '../config/site'
+import {useResumeModal} from '../hooks/useResumeModal'
 import {Icon} from './Icon'
 
 const iconLink =
   'inline-grid size-8 place-items-center rounded-sm text-fg-muted transition-colors hover:bg-primary-muted hover:text-primary hover:no-underline'
 
 export function Footer() {
+  const requests = useResumeModal()
   return (
     <footer className="relative border-t border-border-muted bg-canvas-subtle text-sm">
       <div
@@ -50,6 +52,18 @@ export function Footer() {
             >
               <Icon name="rss" size={16} />
             </a>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={requests.openMessage}
+              data-sound="none"
+              aria-label="Send a message"
+              title="Send a message"
+              className={iconLink}
+            >
+              <Icon name="send" size={16} />
+            </button>
           </li>
           <li>
             <Link

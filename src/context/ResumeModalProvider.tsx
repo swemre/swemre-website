@@ -13,16 +13,20 @@ import {useState, type ReactNode} from 'react'
 import {Modal} from '../components/Modal'
 import {ResumeRequestModal} from '../components/ResumeRequestModal'
 import {CallbackRequestForm} from '../forms/CallbackRequestForm'
+import {MessageForm} from '../forms/MessageForm'
 import {ResumeModalContext} from './ResumeModalContext'
 
 export function ResumeModalProvider({children}: {children: ReactNode}) {
-  const [shown, setShown] = useState<'resume' | 'callback' | null>(null)
+  const [shown, setShown] = useState<'resume' | 'callback' | 'message' | null>(
+    null,
+  )
   const open = () => setShown('resume')
   const openCallback = () => setShown('callback')
+  const openMessage = () => setShown('message')
   const close = () => setShown(null)
 
   return (
-    <ResumeModalContext value={{open, openCallback, close}}>
+    <ResumeModalContext value={{open, openCallback, openMessage, close}}>
       {children}
       <ResumeRequestModal open={shown === 'resume'} onClose={close} />
       <Modal
@@ -31,6 +35,9 @@ export function ResumeModalProvider({children}: {children: ReactNode}) {
         label="Request a call back"
       >
         <CallbackRequestForm onDone={close} />
+      </Modal>
+      <Modal open={shown === 'message'} onClose={close} label="Send a message">
+        <MessageForm onDone={close} />
       </Modal>
     </ResumeModalContext>
   )

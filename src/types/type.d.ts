@@ -170,6 +170,20 @@ export interface PageViewInput {
   sessionId: string
 }
 
+// A conversation as the chat keeps it, whichever API version stored it. On v2 the token is
+// `<conversation id>.<visitor token>`
+export interface ChatApiMessage {
+  id: number | string
+  author: 'VISITOR' | 'OWNER'
+  text: string
+  sentAt: string
+}
+
+export interface ChatApiConversation {
+  token: string
+  messages: ChatApiMessage[]
+}
+
 export interface PublicApi {
   /** Throws on a failed or timed-out request; `[]` when the workspace lacks the type. */
   listPosts(type: string, query?: PostListQuery): Promise<PublicPost[]>
@@ -179,10 +193,15 @@ export interface PublicApi {
     form: string,
     fields: Record<string, string>,
   ): Promise<SubmittedForm>
+  /** v2 has no presence yet: false, so the chat says the owner replies later. */
   presence(): Promise<boolean>
-  sendChatMessage<T>(publicToken: string | undefined, text: string): Promise<T>
-  getConversation<T>(publicToken: string): Promise<T | undefined>
-  conversationSocketUrl(publicToken: string): string
+  sendChatMessage(
+    publicToken: string | undefined,
+    text: string,
+  ): Promise<ChatApiConversation>
+  getConversation(publicToken: string): Promise<ChatApiConversation | undefined>
+  /** v1 only; on v2 the chat polls getConversation instead. */
+  conversationSocketUrl(publicToken: string): string | undefined
   recordPageView(view: PageViewInput): Promise<void>
 }
 
@@ -318,11 +337,15 @@ export interface ContactFormInput {
 
 export type ContactFormErrors = Partial<Record<keyof ContactFormInput, string>>
 
+export type PreferredCallTime = '' | 'morning' | 'afternoon' | 'evening'
+
 export interface CallbackRequest extends Entity {
   kind: 'callback-request'
   fullName: string
   phone: string
   topic: string
+  preferredTime: PreferredCallTime
+  note: string
   /** ISO 8601, UTC. */
   createdAt: string
 }
@@ -331,11 +354,27 @@ export interface CallbackFormInput {
   fullName: string
   phone: string
   topic: string
+  /** Optional; empty when the visitor has no preference. */
+  preferredTime: PreferredCallTime
+  /** Optional. */
+  note: string
 }
 
 export type CallbackFormErrors = Partial<
   Record<keyof CallbackFormInput, string>
 >
+
+export interface MessageFormInput {
+  fullName: string
+  email: string
+  message: string
+}
+
+export type MessageFormErrors = Partial<Record<keyof MessageFormInput, string>>
+
+/** `limited`: the API answered 429; `unreachable`: no answer at all. */
+export type FormStatus =
+  'idle' | 'submitting' | 'done' | 'failed' | 'unreachable' | 'limited'
 
 // ---------- search ----------
 
@@ -587,6 +626,7 @@ export interface DocumentTags {
 export interface ResumeModalContextValue {
   open: () => void
   openCallback: () => void
+  openMessage: () => void
   close: () => void
 }
 
