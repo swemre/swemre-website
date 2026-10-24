@@ -58,6 +58,8 @@ bundles), then runs `wrangler deploy`.
 CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... VITE_READ_KEY=... npm run deploy:cloudflare
 ```
 
+- The variables can also sit in `.env.deploy.local` (ignored by git), one `NAME=value` per line;
+  a variable already set in the shell wins over the file.
 - `VITE_READ_KEY` is the read key of the website channel (`VITE_CHANNEL_KEY`, default
   `swemre-website`), created in SWE-Press. The script refuses to deploy without it.
 - The token needs the **Workers Scripts: Edit** permission. Without it, wrangler signs in through
