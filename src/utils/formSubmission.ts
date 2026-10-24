@@ -25,4 +25,23 @@ export const failureStatus = (error: unknown): FormStatus =>
     ? 'unreachable'
     : error.status === 429
       ? 'limited'
-      : 'failed'
+      : error.status === 403 && error.key === 'FORM_CLOSED'
+        ? 'closed'
+        : 'failed'
+
+// The server's messages for the form's own fields (400 VALIDATION_FAILED); empty otherwise.
+// It names a field as `values.<key>` and words the problem as "is required" or "must be …"
+export const serverFieldErrors = <K extends string>(
+  error: unknown,
+  fields: readonly K[],
+): Partial<Record<K, string>> => {
+  const found: Partial<Record<K, string>> = {}
+  if (!(error instanceof ApiError) || error.status !== 400) return found
+  for (const [path, message] of Object.entries(error.fieldErrors)) {
+    const field = fields.find(key => path === key || path.endsWith(`.${key}`))
+    if (field && !found[field]) {
+      found[field] = `This field ${message.replace(/\.$/, '')}.`
+    }
+  }
+  return found
+}

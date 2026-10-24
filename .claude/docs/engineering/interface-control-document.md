@@ -83,7 +83,7 @@ Entity-specific extensions:
 | `ArticleService`     | `findAll` sorted by `createdAt` descending; `findBySlug(slug)`; `getBody(slug): ComponentType \| undefined` |
 | `ProjectService`     | `findAll` sorted by `year` descending; `findBySlug`; `getBody`   |
 | `SpecialPageService` | `findBySlug`; `getBody`                                          |
-| `ContactFormService` | `submitResumeRequest(input: ContactFormInput): Promise<ContactForm>`; `submitCallbackRequest(input: CallbackFormInput): Promise<CallbackRequest>`. Both reject (`ApiError`) unless the API confirms the submission (IF-18) |
+| `ContactFormService` | `submitResumeRequest(input: ContactFormInput)`, `submitCallbackRequest(input: CallbackFormInput)`, `submitMessage(input: MessageFormInput)`, each `Promise<SubmittedForm>`. Each posts only its table's accepted fields and rejects (`ApiError`) unless the API confirms the submission (IF-18) |
 | `ChatService`        | `findAll` syncs stored conversations with the API, then sorted by `updatedAt` descending; `list()` the same without the API; `presence(): Promise<ChatPresence>`; `start(): Promise<Conversation>`; `enqueue(id, text)` appends a `sending` visitor message; `deliver(id): Promise<void>` posts unsent messages in order (calls serialised per conversation), failures leave them `queued`; `markSending(id): Promise<boolean>` (false when nothing is unsent); `pending(): string[]` ids with unsent messages; `connect(publicToken, onEvent)` returns a stop function, events `message`, `presence`, `connected`; `receive(id, message)` |
 | `SongService`        | none                                                             |
 
@@ -314,7 +314,7 @@ a tap on a queued message.
 | ---------------- | --------------------------------------------------------------- | ----------------------------------------------- |
 | `listPosts`      | `GET /public/v2/channels/<c>/publications?content-type=&locale=&size=&term=` → `{items, total, page, size}` (newest first; sorted by title in the client when asked); each item mapped to `PublicPost`: `cover` (with `alt` as `altText`), `excerpt` (as `summary`) and `body` into `fields`, term `kind` as `taxonomy`, `updatedAt` as `lastUpdatedAt` | `GET /public/v1/workspaces/<w>/posts?type=&size=&sort-by=&direction=` |
 | `getPost`        | `GET .../publications/<slug>?locale=`, `undefined` on 404 or when the content type differs; adds `locale` and `languageVersions` | `GET .../posts/<type>/<slug>`                   |
-| `submitForm`     | `POST .../forms/<form-key>/submissions` → 201 `{submittedAt}`; 429 is the shared rate limit | `POST .../forms/<form>/submissions`             |
+| `submitForm`     | `POST .../forms/<form-key>/submissions` → 201 `{id, receivedAt, ignoredFields}`; 403 `FORM_CLOSED`; 400 `VALIDATION_FAILED`; 429 is the shared rate limit | `POST .../forms/<form>/submissions`             |
 | chat             | `POST .../conversations` `{text}` → `{id, visitorToken, messages}` (kept as token `<id>.<visitorToken>`); `GET` and `POST .../conversations/<id>/messages` with `X-Visitor-Token`; `sender` `MEMBER` shown as the owner; no socket: polled every 15 s | `.../conversations...` and the socket |
 | presence         | none: always away                                               | `GET .../presence`                              |
 | page views       | v1 until 1.1.0-ALPHA                                            | `POST .../page-views`                           |
@@ -328,9 +328,9 @@ Media URLs arrive as paths and are joined to `VITE_API_BASE`, as in v1.
 | Item       | Value                                                                         |
 | ---------- | ----------------------------------------------------------------------------- |
 | Endpoint   | `POST <apiBase><workspacePath>/forms/<form>/submissions`, JSON `{fields: {...}}` (trimmed strings) |
-| Forms      | `cv-request` (`fullName`, `email`, `reason`); `callback-request` (`fullName`, `phone`, `topic`) |
-| Success    | 2xx with `{submittedAt, ...}`; the service resolves with the stored record     |
-| Failure    | 404 or empty answer: `ApiError(404, "Form <form> did not confirm the submission")`; other non-2xx: `ApiError(status, message)`; network error: rejected `fetch`. Every failure rejects, and the form shows its error |
+| Forms      | Each form is a table; only its `acceptedFieldKeys` are posted, empty optional ones left out: `contact` (`fullName`, `email`, `message`); `cv-request` (`fullName`, `email`, `company`, `reason`); `callback-request` (`fullName`, `phone`, `topic`, `preferredTime`, `note`) |
+| Success    | 201 `{id, receivedAt, ignoredFields}`; the service resolves with it and logs a warning when `ignoredFields` is not empty |
+| Failure    | 404 or empty answer: `ApiError(404, "Form <form> did not confirm the submission")`; other non-2xx: `ApiError(status, message, key, fieldErrors)` from the body `{key, message, errors: [{field, message}]}`; 403 `FORM_CLOSED` is the closed form; network error: rejected `fetch`. Every failure rejects, and the form shows its error |
 
 ## 7. IF-11 RSS feed and IF-15 feed log
 
@@ -460,4 +460,5 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-24 | IF-13: `refresh` script; `OUT_DIR` for `rss`/`sitemap`, `DIST_DIR` for `prerender` | Claude, for swemre review |
 | 2026-10-23 | IF-19: `og:type`, `og:site_name`, `og:image:width/height/alt`, `article:published_time/modified_time`, `twitter:image:alt` (SRS-GEN-10) | Claude, for swemre review |
 | 2026-10-24 | IF-20: forms and chat on v2 | Claude, for swemre review |
+| 2026-10-24 | PRS-000565: IF-18 forms post to their table endpoint (accepted fields, `FORM_CLOSED`, field errors) | Claude, for swemre review |
 | 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |
