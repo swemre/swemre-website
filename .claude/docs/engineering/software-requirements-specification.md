@@ -223,6 +223,8 @@ features). No backend, no cookies, no analytics.
 | SRS-RES-11  | Under each form's buttons a line shall link to the privacy policy, opening in a new tab with a visible ↗ and an announced "(opens in a new tab)", so the dialog and its input stay as they are. | T | P2 | PRS-000303 |
 | SRS-RES-12  | The call back phone field shall accept an optional leading +, digits, spaces, dots, dashes and brackets with 7 to 15 digits, else show "Please enter a phone number with digits only, for example +31 6 1234 5678." The form shall offer an optional best time (morning, afternoon, evening) and an optional note (at most 500 characters), sent as `preferredTime` and `note` only when set; the confirmation repeats the number and the time. | T | P2 | PRS-000309 |
 | SRS-RES-13  | "Send a message" (home contact section and footer) shall open a dialog with full name, email and message (at least 10 characters), sent to the workspace's `contact` form with the same validation, failure, honeypot and privacy rules as the other forms; the confirmation names the reply address. | T | P2 | PRS-000306 |
+| SRS-RES-14  | Each form shall post only the fields its table accepts (`acceptedFieldKeys`). When the API answers 403 `FORM_CLOSED`, the form shall show "This form is closed." as an alert and disable its submit button. | T | P2 | PRS-000565 |
+| SRS-RES-15  | When the API rejects a submission with field errors (400 `VALIDATION_FAILED`), each form shall show the server's message at the matching field ("This field …") and move focus to the first one, as for local validation errors. | T | P2 | PRS-000565 |
 
 ### 3.10 Theme (THM)
 
@@ -361,6 +363,7 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000443: added MNT-13 (public API v2 by channel key, v1 fallback) | Claude, for swemre review |
 | 2026-10-23 | MNT-13: form submissions stay on v1 until v2 serves them | Claude, for swemre review |
 | 2026-10-24 | PRS-000315: added PRE-05 (refresh between deploys) | Claude, for swemre review |
+| 2026-10-24 | PRS-000565: added RES-14, RES-15 (forms on the table endpoint) | Claude, for swemre review |
 | 2026-10-23 | PRS-000314: added GEN-10 (og:type, article times, image size and alt, card rule) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: added GEN-09, CHAT-15, RES-09 (unreachable API) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: CHAT-15 | Claude, for swemre review |

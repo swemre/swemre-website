@@ -183,11 +183,16 @@ clears the cache, because the API services also answer `[]` when the API is
 unreachable; the next call then asks again. `findBySlug` and `getBody` are
 unchanged. `ChatService` and `ContactFormService` do not cache.
 
-**Contact forms.** `ContactFormService.submitResumeRequest` and
-`submitCallbackRequest` share `submitForm(form, fields)`, which posts to
-`/forms/<form>/submissions` and throws `ApiError(404)` when `publicRequest`
-returns `undefined` (the form does not exist). Only a confirmed submission
-resolves, so the forms never show a false success (SRS-RES-03, RES-06).
+**Contact forms.** Each form is a table in the CMS Data section.
+`ContactFormService` lists each form's key with its table's
+`acceptedFieldKeys` and posts only those, trimmed, through
+`submitForm(form, fields)` to `/forms/<form>/submissions`; it throws
+`ApiError(404)` when the request returns `undefined` (the form does not
+exist). Only a confirmed submission resolves, so the forms never show a false
+success (SRS-RES-03, RES-06, RES-14). `ApiError` carries the error body's
+`key` and its field errors: 403 `FORM_CLOSED` shows "This form is closed."
+and a 400 `VALIDATION_FAILED` shows the server's message at the field
+(SRS-RES-14, RES-15).
 
 **Covers.** `apiClient.ts` reads a media field's `altText`, `width` and
 `height` (`fieldMediaAlt`, `fieldMediaSize`); `Article` and `Project` carry
@@ -441,7 +446,6 @@ the SPA shell and status 404). Unverified on the server.
 | Song          | `database/songDatabase.ts`    | `id`, `spotifyId`                 | Build               |
 | SpecialPage   | `database/specialPageDatabase.ts` | `slug`                        | Build               |
 | NavigationItem| `database/navigationDatabase.ts` | `id`                           | Build               |
-| ContactForm   | `database/contactFormDatabase.ts` (in memory) | UUID              | Page session        |
 | Interactions  | `localStorage`                | `swemre:article-interactions`     | Browser, persistent |
 | Conversation  | `localStorage`                | `swemre:chat-conversations`       | Browser, persistent |
 | Theme         | `localStorage`                | `swemre:theme` (only after a toggle) | Browser, persistent |
@@ -468,6 +472,8 @@ Schemas: SWE-DOC-004 §5.
 | Presence check fails                      | Chat presence `unreachable`: launcher and header say so, banner in the conversation (SRS-CHAT-15) |
 | Form submission fails without an answer   | Form shows the unreachable message, fields kept (SRS-RES-09) |
 | Resume or call back submission rejects, or the form does not exist (404) | Error sound and alert; the form stays editable for another try (SRS-RES-05, RES-06) |
+| Form closed in the CMS (403 `FORM_CLOSED`) | "This form is closed." alert; submit disabled (SRS-RES-14) |
+| Server rejects a field (400 `VALIDATION_FAILED`) | The server's message at the field, focus on the first one (SRS-RES-15) |
 | Chat message not accepted by the API      | Message `queued` ("Not sent · tap to retry"); retried on tap, socket connect, `online` and panel open |
 | List request fails or returns empty       | Not cached; the next `findAll` asks the API again                 |
 | Sitemap script cannot reach the API       | Existing `public/sitemap.xml` kept (exit 0); exit 1 when there is none |

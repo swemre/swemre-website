@@ -127,6 +127,8 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-RES-11   | §6            | `forms/FormExtras.tsx` `PrivacyNote`       | TC-RES-09               | Manual (Verified in browser 2026-10-24 against the local API) |
 | SRS-RES-12   | §6            | `validateCallbackRequest.ts`, `CallbackRequestForm.tsx`, `ContactFormService` | TC-RES-10 | Manual (Verified in browser 2026-10-24 against the local API) |
 | SRS-RES-13   | §6            | `forms/MessageForm.tsx`, `validateMessage.ts`, `ResumeModalProvider`, `Footer`, `HomePage` | TC-RES-11 | Manual (Verified in browser 2026-10-24 against the local API) |
+| SRS-RES-14   | §6            | `ContactFormService`, `publicApi.ts`, `utils/formSubmission.ts`, `FormExtras.tsx`, the three forms | TC-SVC-04, TC-RES-12 | Unverified (browser check against a stub API 2026-10-24; not run against a local API) |
+| SRS-RES-15   | §6            | `publicApi.ts` (`ApiError.fieldErrors`), `utils/formSubmission.ts` (`serverFieldErrors`), the three forms | TC-RES-12 | Unverified (browser check against a stub API 2026-10-24; not run against a local API) |
 | SRS-THM-01   | §4.8          | `ThemeProvider`, `ThemeSwitch`                               | TC-THM-01                 | Pass (SS both themes) |
 | SRS-THM-02   | §4.8          | `ThemeProvider` (`chosen ?? system`), `index.html`           | TC-THM-01 to TC-THM-03    | Unverified (W17) |
 | SRS-THM-03   | §4.8          | `index.html` inline script                                   | inspection                | Pass (INSP)       |

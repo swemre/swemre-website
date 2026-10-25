@@ -159,8 +159,12 @@ export interface PostListQuery {
   term?: string
 }
 
+/** The record a form submission created in the form's table. */
 export interface SubmittedForm {
-  submittedAt: string
+  id: string
+  receivedAt: string
+  /** Posted keys outside the table's acceptedFieldKeys, which were not stored. */
+  ignoredFields?: string[]
 }
 
 export interface PageViewInput {
@@ -323,15 +327,6 @@ export type ArticleInteractionState = Record<string, ArticleInteraction>
 
 // ---------- forms ----------
 
-export interface ContactForm extends Entity {
-  kind: 'resume-request'
-  fullName: string
-  email: string
-  reason: string
-  /** ISO 8601, UTC. */
-  createdAt: string
-}
-
 export interface ContactFormInput {
   fullName: string
   email: string
@@ -341,17 +336,6 @@ export interface ContactFormInput {
 export type ContactFormErrors = Partial<Record<keyof ContactFormInput, string>>
 
 export type PreferredCallTime = '' | 'morning' | 'afternoon' | 'evening'
-
-export interface CallbackRequest extends Entity {
-  kind: 'callback-request'
-  fullName: string
-  phone: string
-  topic: string
-  preferredTime: PreferredCallTime
-  note: string
-  /** ISO 8601, UTC. */
-  createdAt: string
-}
 
 export interface CallbackFormInput {
   fullName: string
@@ -375,9 +359,15 @@ export interface MessageFormInput {
 
 export type MessageFormErrors = Partial<Record<keyof MessageFormInput, string>>
 
-/** `limited`: the API answered 429; `unreachable`: no answer at all. */
+/** `limited`: the API answered 429; `closed`: 403 FORM_CLOSED; `unreachable`: no answer at all. */
 export type FormStatus =
-  'idle' | 'submitting' | 'done' | 'failed' | 'unreachable' | 'limited'
+  | 'idle'
+  | 'submitting'
+  | 'done'
+  | 'failed'
+  | 'unreachable'
+  | 'limited'
+  | 'closed'
 
 // ---------- search ----------
 
