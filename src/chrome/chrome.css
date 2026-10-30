@@ -18,6 +18,21 @@
 .a2-chrome .a2-palette {
   position: fixed;
 }
+.a2-root > .a2-nav,
+.a2-chrome .a2-nav {
+  transition: transform 0.24s ease;
+}
+.a2-root > .a2-nav.is-hidden,
+.a2-chrome .a2-nav.is-hidden {
+  transform: translateY(-100%);
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .a2-root > .a2-nav,
+  .a2-chrome .a2-nav {
+    transition: none;
+  }
+}
 .a2-chrome .p2-mega {
   max-height: 100vh;
   overflow-y: auto;

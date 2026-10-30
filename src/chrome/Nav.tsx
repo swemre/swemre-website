@@ -12,6 +12,7 @@
 // Nav (V4-Comp-Nav): the full bar on desktop and 4K (logo, Home / Articles / Projects with the
 // mega menus, Search… Ctrl K, Subscribe, EN, theme) and the compact bar on mobile and tablet
 // (logo, search, Subscribe, menu). is-scrolled once the page scrolls past 8 or the menu is open.
+// The bar is not sticky: it slides away while scrolling down and comes back on any scroll up.
 import {useEffect, useState, type MouseEvent} from 'react'
 import {useLocation} from 'react-router-dom'
 import {
@@ -26,15 +27,34 @@ import {
 import type {NavItem} from '../contract/view.ts'
 import {sectionOf, useChrome, type MegaKey} from './context.ts'
 
-function useScrolled(): boolean {
-  const [scrolled, setScrolled] = useState(() => window.scrollY > 8)
+/** Scrolled past 8px, and hidden while the last scroll went down past the bar's height. */
+function useScrollState(): {scrolled: boolean; hidden: boolean} {
+  const [state, setState] = useState(() => ({
+    scrolled: window.scrollY > 8,
+    hidden: false,
+  }))
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 8)
+    let last = window.scrollY
+    const on = () => {
+      const y = window.scrollY
+      const delta = y - last
+      // Ignore sub-pixel jitter and elastic overscroll so the bar does not flicker.
+      if (Math.abs(delta) < 4 && y > 0) return
+      last = y
+      setState(prev => {
+        const hidden =
+          y > 64 && (delta > 0 ? true : delta < 0 ? false : prev.hidden)
+        const scrolled = y > 8
+        return prev.hidden === hidden && prev.scrolled === scrolled
+          ? prev
+          : {scrolled, hidden}
+      })
+    }
     on()
     window.addEventListener('scroll', on, {passive: true})
     return () => window.removeEventListener('scroll', on)
   }, [])
-  return scrolled
+  return state
 }
 
 /** Shows the theme a click switches to (boards: sun on dark, "Switch to light theme"). */
@@ -56,7 +76,9 @@ export function Nav({
   const compact = useCompact()
   const chrome = useChrome()
   const {theme, toggle} = useTheme()
-  const scrolled = useScrolled()
+  const {scrolled, hidden} = useScrollState()
+  const [focused, setFocused] = useState(false)
+  const open = chrome.menu || chrome.mega !== null
   const section = sectionOf(useLocation().pathname)
   const close = () => chrome.closeMega()
   const megaClick = (k: MegaKey) => (e: MouseEvent) => {
@@ -68,9 +90,14 @@ export function Nav({
     <header
       className={cx(
         'a2-nav',
-        (scrolled || chrome.menu || chrome.mega !== null) && 'is-scrolled',
+        (scrolled || open) && 'is-scrolled',
+        hidden && !open && !focused && 'is-hidden',
       )}
       style={{zIndex: 47}}
+      onFocus={() => setFocused(true)}
+      onBlur={e => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false)
+      }}
     >
       <div className="a2-c">
         <Anchor
