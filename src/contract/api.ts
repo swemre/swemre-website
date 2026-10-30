@@ -68,6 +68,8 @@ export interface ApiPublicationSummary {
   seoDescription?: string | null
   canonicalUrl: string | null
   noindex: boolean
+  /** Locales the item is published in on this channel, its own included (SWEPress api#183). */
+  languages?: string[]
 }
 
 /** GET /publications/{slug}. */

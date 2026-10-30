@@ -149,7 +149,12 @@ export function createClient(
           {},
           'undefined',
         )
-      return (await get(locale)) ?? (fallback ? get(fallback) : undefined)
+      if (!fallback) return get(locale)
+      // The default version lists the item's languages, so a missing translation costs no 404.
+      // An API without the list gets the old order: own language, then the default.
+      const base = await get(fallback)
+      if (base?.languages && !base.languages.includes(locale)) return base
+      return (await get(locale)) ?? base
     },
     async terms(kind?: TermKind) {
       const own = (await call<ApiTerm[]>(`/terms${qs({kind, locale})}`))!

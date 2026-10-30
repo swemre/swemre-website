@@ -240,6 +240,7 @@ export function loadMockData(
           canonicalUrl: null,
           noindex: item.noindex ?? false,
           body: {blocks},
+          languages: languageVersions.map(v => v.locale).sort(),
           languageVersions,
         })
       }

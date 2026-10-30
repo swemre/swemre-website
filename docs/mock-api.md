@@ -90,6 +90,7 @@ X-Read-Key: local-mock
       "seoDescription": "…",
       "canonicalUrl": null,
       "noindex": false,
+      "languages": ["en"],
       "languageVersions": [{"locale": "en", "slug": "spring-boot-template"}]
     }
   ],
@@ -356,9 +357,11 @@ with an `en` and a `tr` value. `npm run i18n:check` checks that every key has En
 Seed content is English. An item in a seed file can carry `translations: {"tr": {...}}`, with the
 fields that differ in Turkish. The mock then serves a second publication for it with
 `locale: "tr"`, the same `workId` and `documentId`, and an id ending in `:tr`; both versions list
-each other in `languageVersions`.
+each other in `languageVersions`. Every item, in lists too, carries `languages`: the sorted
+locales it is published in on the channel, its own included (SWEPress api#183).
 
 Only the pages (except `privacy-policy`) and the site settings have Turkish versions. Everything
-else falls back to English: lists merge both languages by `workId`, preferring Turkish, and a
-single page asks for `en` after a `404`. A page shown in English on `/tr` gets a note saying so.
-Those `404`s show in the browser console; they are expected.
+else falls back to English: lists merge both languages by `workId`, preferring Turkish. A
+single page on `/tr` first reads the English version and asks for `tr` only when its `languages`
+list has it, so a missing translation makes no `404`. Against an API without `languages` it asks
+for `tr` first and for `en` after a `404`. A page shown in English on `/tr` gets a note saying so.
