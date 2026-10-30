@@ -171,6 +171,13 @@
   },
   "author.writing": {"en": "Writing", "tr": "Yazılar"},
   "body.sectionLink": {"en": "Link to section", "tr": "Bölüme bağlantı"},
+  "brand.coverage.component": {"en": "Comp", "tr": "Bileşen"},
+  "brand.coverage.e2e": {"en": "E2E", "tr": "U2U"},
+  "brand.coverage.lines": {"en": "Line coverage", "tr": "Satır kapsamı"},
+  "brand.coverage.project": {"en": "Project", "tr": "Proje"},
+  "brand.coverage.unit": {"en": "Unit", "tr": "Birim"},
+  "brand.open": {"en": "Open", "tr": "Aç"},
+  "brand.soon": {"en": "soon", "tr": "yakında"},
   "breadcrumb": {"en": "Breadcrumb", "tr": "İçerik haritası"},
   "copy.copied": {"en": "Copied", "tr": "Kopyalandı"},
   "copy.copiedNote": {

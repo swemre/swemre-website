@@ -8,9 +8,9 @@
     "updatedAt": "2026-10-25T08:00:00Z",
     "fields": {
       "status": "now-building",
-      "version": "v0.9.2",
+      "version": "1.4.0-alpha",
       "year": 2026,
-      "language": "TypeScript",
+      "language": "TypeScript · Java 25",
       "url": "https://press.swemre.com",
       "repoUrl": "https://github.com/swemre/swepress",
       "featured": true,
@@ -26,15 +26,422 @@
         "props": {
           "number": "0x01",
           "eyebrow": "overview",
-          "title": "One editor for every site",
+          "title": "Write once, publish to every channel",
           "hue": "blue",
-          "copy": "Workspaces, documents, media, forms and channels, edited with blocks and published as JSON."
+          "copy": "A workspace owns every document, media file, form and channel. A document goes out to a channel as a post, and each website reads only its own channel."
         }
       },
       {
         "type": "paragraph",
         "props": {
-          "text": "SwePress is the CMS this website is written in. Every site it feeds reads its content through the public API of its own channel."
+          "text": "The editor talks to the admin API with a bearer token. Websites read the public API with a read key, so this site never sees drafts or another channel’s posts. Bodies are stored as blocks, and the same block library draws them in the editor and on the site, so a preview looks like the page."
+        }
+      },
+      {
+        "type": "facts",
+        "props": {
+          "layout": "list",
+          "facts": [
+            {
+              "label": "Editor",
+              "value": "SwePress, the CMS in the browser"
+            },
+            {
+              "label": "Admin API",
+              "value": "/api/v2/workspaces/{id}/…",
+              "code": true
+            },
+            {
+              "label": "Public API",
+              "value": "/api/public/v2/channels/{key}/…",
+              "code": true
+            },
+            {
+              "label": "Content types",
+              "value": "Article, page, project, site settings"
+            },
+            {
+              "label": "Sign-in",
+              "value": "Password or Google, for the owner"
+            }
+          ]
+        }
+      },
+      {
+        "type": "image",
+        "props": {
+          "url": "media:swepress-home",
+          "alt": "SwePress home: the brand checklist, counts for articles, drafts and chats, and the continue-writing list",
+          "caption": "Home: what is live, what is planned, and what needs attention."
+        }
+      },
+      {
+        "type": "image",
+        "props": {
+          "url": "media:swepress-articles",
+          "alt": "SwePress articles list with status badges and a Plan a post action on each row",
+          "caption": "Articles: every document with its language and status."
+        }
+      },
+      {
+        "type": "image",
+        "props": {
+          "url": "media:swepress-planner",
+          "alt": "SwePress planner day view listing the posts published on 26 October 2026",
+          "caption": "Planner: one day, everything that went out."
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "0x1A",
+          "eyebrow": "architecture",
+          "title": "How it fits together",
+          "hue": "blue",
+          "copy": "You only write the main content. SwePress turns it into distributions for each channel, keeps the data that comes back, and anything can read it over REST or MCP."
+        }
+      },
+      {
+        "type": "architecture",
+        "props": {
+          "flow": [
+            {
+              "label": "You write",
+              "items": [
+                {
+                  "tag": "the only thing you create",
+                  "title": "Content",
+                  "copy": "The main document, once, in blocks. One per language.",
+                  "chips": ["article", "page", "project"],
+                  "hue": "peri"
+                }
+              ]
+            },
+            {
+              "label": "SwePress manages",
+              "items": [
+                {
+                  "title": "Distributions",
+                  "copy": "One post per channel, made from the content: a website page with its address, SEO and tags, or a thread, a carousel, a post."
+                },
+                {
+                  "title": "Channels",
+                  "copy": "Where posts go out: swemre.com and the social accounts. Each website channel has its own read key."
+                },
+                {
+                  "title": "Data",
+                  "copy": "What comes back: form entries, sign-ups, contact requests, stored in collections."
+                }
+              ]
+            },
+            {
+              "label": "Anything reads it",
+              "items": [
+                {
+                  "tag": "REST",
+                  "title": "Websites and apps",
+                  "copy": "Public API v2 with the channel’s read key.",
+                  "code": "/api/public/v2/channels/{key}",
+                  "hue": "aqua"
+                },
+                {
+                  "tag": "MCP",
+                  "title": "AI assistants and agents",
+                  "copy": "Read and draft through an MCP server, with the same channel rules.",
+                  "hue": "lilac"
+                }
+              ]
+            }
+          ],
+          "footnote": "form submissions travel back the same way: website → POST /forms/{key}/submissions → Data",
+          "layersTitle": "Under the hood",
+          "layers": [
+            {
+              "label": "Clients",
+              "items": [
+                {
+                  "title": "SwePress editor",
+                  "code": "swemre-press · bearer token · /api/v2",
+                  "hue": "peri"
+                },
+                {
+                  "title": "Websites",
+                  "code": "swemre-website · read key · /api/public/v2",
+                  "hue": "aqua"
+                }
+              ]
+            },
+            {
+              "label": "Edge",
+              "items": [
+                {
+                  "title": "Traefik",
+                  "code": "routing · TLS · IP allowlist on the admin API"
+                }
+              ]
+            },
+            {
+              "label": "Application",
+              "items": [
+                {
+                  "title": "swemre-website-api",
+                  "code": "Spring Boot 4 · Java 25 · one deployable",
+                  "chips": [
+                    "identity",
+                    "workspaces",
+                    "documents",
+                    "media",
+                    "collections",
+                    "channels"
+                  ],
+                  "copy": "modules talk only through clients and outbox events, never each other’s tables",
+                  "hue": "blue"
+                }
+              ]
+            },
+            {
+              "label": "Storage",
+              "items": [
+                {
+                  "title": "PostgreSQL 18",
+                  "code": "one schema per module · Flyway"
+                },
+                {
+                  "title": "Uploads on disk",
+                  "code": "media files, served by id"
+                }
+              ]
+            },
+            {
+              "label": "Hosting",
+              "items": [
+                {
+                  "title": "One VPS · Docker Compose",
+                  "code": "Traefik · service · PostgreSQL"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "02",
+          "eyebrow": "inside this project",
+          "title": "Project pages",
+          "hue": "sky",
+          "copy": "Each part of SwePress has its own page. Start with the architecture if you are new here."
+        }
+      },
+      {
+        "type": "subpages",
+        "props": {
+          "prompt": "ls",
+          "cwd": "~/projects/swepress",
+          "items": [
+            {
+              "title": "Architecture overview",
+              "copy": "How the editor, the API and the websites fit together, and how a post travels from a draft to a page.",
+              "path": "~/swepress/architecture",
+              "icon": "layers"
+            },
+            {
+              "title": "Revisions",
+              "copy": "Every release of the four repositories, newest first, with what changed and what it means for the sites.",
+              "path": "~/swepress/revisions",
+              "icon": "commit"
+            },
+            {
+              "title": "Tests",
+              "copy": "What one verify build runs: Checkstyle, then unit, component and integration tests against a real PostgreSQL.",
+              "path": "~/swepress/tests",
+              "icon": "check-circle"
+            },
+            {
+              "title": "Tech stack",
+              "copy": "Java 25, Spring Boot 4 and PostgreSQL behind; React, TypeScript and Vite in front. Why each one is there.",
+              "path": "~/swepress/tech-stack",
+              "icon": "package"
+            },
+            {
+              "title": "Modules",
+              "copy": "Identity, workspaces, documents, media, collections and channels: one page each, with its schema and its events.",
+              "path": "~/swepress/modules",
+              "icon": "grid",
+              "soon": true
+            },
+            {
+              "title": "Roadmap",
+              "copy": "What SwePress still needs for the V4 site: a page tree per channel, new body blocks and a template per page.",
+              "path": "~/swepress/roadmap",
+              "icon": "map",
+              "soon": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "0b011",
+          "eyebrow": "parts",
+          "title": "Four repositories",
+          "hue": "peri",
+          "copy": "SwePress is the editor and the API. The block library and this website are the first things built on them."
+        }
+      },
+      {
+        "type": "repos",
+        "props": {
+          "items": [
+            {
+              "role": "editor",
+              "version": "1.4.0-alpha",
+              "name": "swemre-press",
+              "copy": "The CMS in the browser: workspaces, content types, the block editor, forms and channels. React, TypeScript, Vite."
+            },
+            {
+              "role": "api",
+              "version": "1.4.0-alpha",
+              "name": "swemre-website-api",
+              "copy": "A Spring Boot modular monolith on Java 25, one PostgreSQL schema per module. Serves the admin and the public API."
+            },
+            {
+              "role": "blocks",
+              "version": "1.0.0-alpha",
+              "name": "swemre-blocks",
+              "copy": "The block model and view shared by the editor and the sites: 16 block types, from paragraph and code to toggle and table."
+            },
+            {
+              "role": "site",
+              "version": "V4",
+              "name": "swemre-website",
+              "copy": "This website. It reads the swemre-website channel through public API v2. React 19, Vite 8, Tailwind 4."
+            }
+          ]
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "04L",
+          "eyebrow": "tests",
+          "title": "Test coverage",
+          "hue": "lilac",
+          "copy": "What the test suites cover across SwePress, per project. The website is left out here; it reads SwePress, it is not part of it."
+        }
+      },
+      {
+        "type": "coverage",
+        "props": {
+          "prompt": "./mvnw verify",
+          "cwd": "~/swepress",
+          "label": "All suites",
+          "badge": "sample numbers",
+          "totals": [
+            {
+              "label": "Unit",
+              "value": 736,
+              "copy": "Fast, no I/O."
+            },
+            {
+              "label": "Component",
+              "value": 185,
+              "copy": "One module, real PostgreSQL."
+            },
+            {
+              "label": "End to end",
+              "value": 42,
+              "copy": "Editor to public API."
+            }
+          ],
+          "rows": [
+            {
+              "name": "swemre-website-api",
+              "tools": "JUnit · Testcontainers",
+              "unit": 412,
+              "component": 96,
+              "e2e": 18,
+              "coverage": 84
+            },
+            {
+              "name": "swemre-press",
+              "tools": "Vitest · Playwright",
+              "unit": 236,
+              "component": 58,
+              "e2e": 24,
+              "coverage": 71
+            },
+            {
+              "name": "swemre-blocks",
+              "tools": "Vitest",
+              "unit": 88,
+              "component": 31,
+              "coverage": 92
+            }
+          ],
+          "footnote": "swemre-website is not counted here."
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "0x05",
+          "eyebrow": "alpha",
+          "title": "Using the alpha",
+          "hue": "mist",
+          "copy": "SwePress is in alpha and I open it to a few people at a time. Ask for access and I reply within two working days."
+        }
+      },
+      {
+        "type": "cta",
+        "props": {
+          "label": "Request access",
+          "href": "/contact?message=I%E2%80%99d%20like%20access%20to%20the%20SwePress%20alpha.%20What%20I%20want%20to%20publish%3A%20",
+          "note": "Opens the contact form with the message below filled in."
+        }
+      },
+      {
+        "type": "steps",
+        "props": {
+          "items": [
+            {
+              "title": "Request access",
+              "copy": "Tell me what you want to publish and where. I set up a workspace for you and send the sign-in by email from emre@swemre.com."
+            },
+            {
+              "title": "Write in the editor",
+              "copy": "Pick a content type (article, page, project), write with blocks, and publish to your website channel."
+            },
+            {
+              "title": "Read it from your site",
+              "copy": "Your site reads its channel with a read key, through public API v2."
+            }
+          ]
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "bash",
+          "variant": "terminal",
+          "title": "read your channel",
+          "code": "$ curl -H \"X-Read-Key: $READ_KEY\" \\\n    https://api.swemre.com/api/public/v2/channels/<key>/publications"
+        }
+      },
+      {
+        "type": "prefill",
+        "props": {
+          "title": "Filled in on the contact form",
+          "path": "/contact",
+          "facts": [
+            {
+              "label": "Message",
+              "value": "I’d like access to the SwePress alpha. What I want to publish: …"
+            }
+          ],
+          "note": "Alpha means things change: releases can break the API, and I say so in the revisions first."
         }
       }
     ]

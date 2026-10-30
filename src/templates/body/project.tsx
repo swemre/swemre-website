@@ -10,12 +10,13 @@
  */
 
 // The project body: one a2-sec per `section` block, as on the project board. Split sections put
-// the number, eyebrow, title, copy, the stack prompt and link cards on the left (4 of 12 columns)
-// and the rest on the right (7 columns from column 6); a section whose content is a card image
-// (the architecture diagram) runs full width under a header row.
-import type {ReactNode} from 'react'
+// the number, eyebrow, title, copy, the section prompt, link cards and the call to action on the
+// left (4 of 12 columns) and the rest on the right (7 columns from column 6); plain images follow
+// the split at full width as screenshots. A section with a card image, an architecture diagram or
+// the project pages runs full width under a header row.
+import type {CSSProperties, ReactNode} from 'react'
 import type {Block, Hue} from '../../contract/blocks.ts'
-import {useViewport} from '../../design/index.tsx'
+import {useTheme, useViewport} from '../../design/index.tsx'
 import {
   Glow,
   Sec,
@@ -24,8 +25,10 @@ import {
   type TextureKind,
 } from '../parts/deco.tsx'
 import {Image, LinkCards, Prompt, SectionNumber, StackItems} from './blocks.tsx'
+import {ArchitectureLink, Cta} from './brand.tsx'
 import {Blocks} from './render.tsx'
 import {Rich} from './rich.tsx'
+import {rgb} from '../parts/vp.ts'
 
 type SectionProps = Extract<Block, {type: 'section'}>['props']
 interface Group {
@@ -58,10 +61,45 @@ function groups(blocks: Block[]): Group[] {
 }
 
 const isWide = (g: Group) =>
-  g.blocks.some(b => b.type === 'image' && b.props.card)
+  g.blocks.some(
+    b =>
+      (b.type === 'image' && b.props.card) ||
+      b.type === 'architecture' ||
+      b.type === 'subpages',
+  )
 
-/** The project body sections. `from` is the hue of the rail above (the hero). */
-export function ProjectBody({blocks, from}: {blocks: Block[]; from: Hue}) {
+const isScreen = (b: Block) => b.type === 'image' && !b.props.card
+
+/** The prompt drawn in the section header, from the stack, coverage or project pages block. */
+function sectionPrompt(blocks: Block[]) {
+  for (const b of blocks) {
+    if (
+      (b.type === 'stack' || b.type === 'coverage' || b.type === 'subpages') &&
+      b.props.prompt
+    )
+      return (
+        <Prompt
+          command={b.props.prompt}
+          cwd={b.type === 'stack' ? undefined : b.props.cwd}
+        />
+      )
+  }
+  return null
+}
+
+/**
+ * The project body sections. `from` is the hue of the rail above (the hero); `host` labels the
+ * browser frame of the first screenshot.
+ */
+export function ProjectBody({
+  blocks,
+  from,
+  host,
+}: {
+  blocks: Block[]
+  from: Hue
+  host?: string
+}) {
   const gs = groups(blocks)
   return (
     <>
@@ -100,7 +138,7 @@ export function ProjectBody({blocks, from}: {blocks: Block[]; from: Hue}) {
               {wide ? (
                 <WideSection g={g} hue={hue} />
               ) : (
-                <SplitSection g={g} hue={hue} />
+                <SplitSection g={g} hue={hue} host={host} />
               )}
             </div>
           </Sec>
@@ -126,13 +164,16 @@ function Header({head, hue}: {head: SectionProps; hue: Hue}) {
   )
 }
 
-function SplitSection({g, hue}: {g: Group; hue: Hue}) {
+function SplitSection({g, hue, host}: {g: Group; hue: Hue; host?: string}) {
   const vp = useViewport()
   const big = vp === 'd' || vp === '4k'
-  const stack = g.blocks.find(b => b.type === 'stack')
-  const prompt = stack?.type === 'stack' ? stack.props.prompt : undefined
+  const prompt = sectionPrompt(g.blocks)
   const links = g.blocks.filter(b => b.type === 'links')
-  const right = g.blocks.filter(b => b.type !== 'links')
+  const ctas = g.blocks.filter(b => b.type === 'cta')
+  const screens = g.blocks.filter(isScreen)
+  const right = g.blocks.filter(
+    b => b.type !== 'links' && b.type !== 'cta' && !isScreen(b),
+  )
   // When the right column opens with prose, the section copy is its lead (overview on the board).
   const copyIsLead = right[0]?.type === 'paragraph' && !!g.head.copy
   const left = (
@@ -149,36 +190,141 @@ function SplitSection({g, hue}: {g: Group; hue: Hue}) {
             </div>
           ) : null,
         )}
+        {ctas.map(b =>
+          b.type === 'cta' ? <Cta key={b.id} p={b.props} /> : null,
+        )}
       </div>
-      {prompt && (
-        <div style={{marginTop: big ? 32 : 24}}>
-          <Prompt command={prompt} />
-        </div>
-      )}
+      {prompt && <div style={{marginTop: big ? 32 : 24}}>{prompt}</div>}
     </>
   )
   const content = (
-    <RightColumn blocks={right} lead={copyIsLead ? g.head.copy : undefined} />
+    <RightColumn
+      blocks={right}
+      hue={hue}
+      lead={copyIsLead ? g.head.copy : undefined}
+    />
   )
-  if (!big) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vp === 'm' ? 48 : 64,
-        }}
-      >
-        <div>{left}</div>
-        <div style={{minWidth: 0}}>{content}</div>
-      </div>
-    )
-  }
-  return (
+  const split = big ? (
     <div className="a2-g12" style={{alignItems: 'start'}}>
       <div style={{gridColumn: '1 / span 4', minWidth: 0}}>{left}</div>
       <div style={{gridColumn: '6 / span 7', minWidth: 0}}>{content}</div>
     </div>
+  ) : (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: vp === 'm' ? 48 : 64,
+      }}
+    >
+      <div>{left}</div>
+      <div style={{minWidth: 0}}>{content}</div>
+    </div>
+  )
+  return (
+    <>
+      {split}
+      {screens.length > 0 && <Screens blocks={screens} host={host} />}
+    </>
+  )
+}
+
+/** Screenshots under the split: the first one large in a browser frame, the rest two by two. */
+function Screens({blocks, host}: {blocks: Block[]; host?: string}) {
+  const vp = useViewport()
+  const [first, ...rest] = blocks.flatMap(b =>
+    b.type === 'image' ? [b.props] : [],
+  )
+  const frame = (radius: number): CSSProperties => ({
+    borderRadius: radius,
+    border: '1px solid var(--a2-line-blue-2)',
+    overflow: 'hidden',
+    boxShadow: 'var(--a2-shadow-card)',
+  })
+  const dot: CSSProperties = {
+    width: 8,
+    height: 8,
+    borderRadius: 9,
+    background: 'var(--a2-line-3)',
+  }
+  return (
+    <>
+      <figure style={{margin: `${{m: 48, t: 64, d: 96, '4k': 96}[vp]}px 0 0`}}>
+        <div
+          className="a2-island"
+          style={{
+            ...frame(12),
+            background: 'var(--a2-code-bg)',
+            boxShadow: `var(--a2-shadow-card),0 0 160px -40px ${rgb('blue', 'calc(0.3 * var(--a2-glow-k))')}`,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              borderBottom: '1px solid var(--a2-line)',
+            }}
+          >
+            <span style={dot} />
+            <span style={dot} />
+            <span style={dot} />
+            {host && (
+              <span className="a2-mono" style={{marginLeft: 16, fontSize: 12}}>
+                {host}
+              </span>
+            )}
+          </div>
+          <ScreenImage p={first} />
+        </div>
+        <ScreenCaption text={first.caption} />
+      </figure>
+      {rest.length > 0 && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${vp === 'm' ? 1 : 2},minmax(0,1fr))`,
+            gap: 32,
+            marginTop: 32,
+          }}
+        >
+          {rest.map((p, i) => (
+            <figure key={i} style={{margin: 0}}>
+              <div className="a2-island" style={frame(10)}>
+                <ScreenImage p={p} />
+              </div>
+              <ScreenCaption text={p.caption} />
+            </figure>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+type ImageProps = Extract<Block, {type: 'image'}>['props']
+
+function ScreenImage({p}: {p: ImageProps}) {
+  const {theme} = useTheme()
+  return (
+    <img
+      src={theme === 'dark' && p.darkUrl ? p.darkUrl : p.url}
+      alt={p.alt}
+      style={{display: 'block', width: '100%', height: 'auto'}}
+    />
+  )
+}
+
+function ScreenCaption({text}: {text?: string}) {
+  if (!text) return null
+  return (
+    <figcaption
+      className="a2-small"
+      style={{marginTop: 16, color: 'var(--a2-text-lo)'}}
+    >
+      {text}
+    </figcaption>
   )
 }
 
@@ -186,7 +332,15 @@ function SplitSection({g, hue}: {g: Group; hue: Hue}) {
  * Right column: leading paragraphs form the prose (the first one as the lead), every other block
  * follows with the section gap above it.
  */
-function RightColumn({blocks, lead}: {blocks: Block[]; lead?: string}) {
+function RightColumn({
+  blocks,
+  hue,
+  lead,
+}: {
+  blocks: Block[]
+  hue: Hue
+  lead?: string
+}) {
   const vp = useViewport()
   const gap = vp === 'd' || vp === '4k' ? 64 : 48
   const proseEnd = blocks.findIndex(b => b.type !== 'paragraph')
@@ -221,7 +375,7 @@ function RightColumn({blocks, lead}: {blocks: Block[]; lead?: string}) {
       b.type === 'stack' ? (
         <StackItems items={b.props.items} />
       ) : (
-        <Blocks blocks={[b]} variant="project" />
+        <Blocks blocks={[b]} variant="project" hue={hue} />
       )
     parts.push(
       parts.length === 0 ? (
@@ -239,6 +393,19 @@ function RightColumn({blocks, lead}: {blocks: Block[]; lead?: string}) {
 function WideSection({g, hue}: {g: Group; hue: Hue}) {
   const vp = useViewport()
   const big = vp === 'd' || vp === '4k'
+  const arch = g.blocks.find(b => b.type === 'architecture')
+  const aside =
+    sectionPrompt(g.blocks) ??
+    (arch?.type === 'architecture' ? <ArchitectureLink p={arch.props} /> : null)
+  // With an aside (the prompt or a link) the copy sits under the title; otherwise it faces it.
+  const copy = g.head.copy && (
+    <p
+      className="a2-body"
+      style={aside ? {marginTop: 16, maxWidth: 620} : {maxWidth: 520}}
+    >
+      {g.head.copy}
+    </p>
+  )
   return (
     <>
       <div
@@ -266,19 +433,18 @@ function WideSection({g, hue}: {g: Group; hue: Hue}) {
             <h2 className="a2-h2" style={{marginTop: 16}}>
               {g.head.title}
             </h2>
+            {aside && copy}
           </div>
         </div>
-        {g.head.copy && (
-          <p className="a2-body" style={{maxWidth: 520}}>
-            {g.head.copy}
-          </p>
-        )}
+        {aside ?? copy}
       </div>
       {g.blocks.map(b =>
         b.type === 'image' ? (
           <Image key={b.id} p={b.props} hue={hue} />
         ) : (
-          <div key={b.id}>{<Blocks blocks={[b]} variant="project" />}</div>
+          <div key={b.id}>
+            <Blocks blocks={[b]} variant="project" hue={hue} />
+          </div>
         ),
       )}
     </>

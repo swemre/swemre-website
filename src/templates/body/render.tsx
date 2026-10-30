@@ -11,7 +11,7 @@
 
 // Block dispatch: renders a run of blocks in the markup of one board variant.
 import type {ReactNode} from 'react'
-import type {Block, RichText} from '../../contract/blocks.ts'
+import type {Block, Hue, RichText} from '../../contract/blocks.ts'
 import {
   BulletList,
   Callout,
@@ -28,11 +28,29 @@ import {
   Timeline,
   type Variant,
 } from './blocks.tsx'
+import {
+  Architecture,
+  Coverage,
+  Cta,
+  Prefill,
+  Repos,
+  Steps,
+  Subpages,
+} from './brand.tsx'
 import {Faq} from '../parts/faq.tsx'
 import {Rich} from './rich.tsx'
 
-/** Renders a run of blocks; consecutive list items become one list. */
-export function Blocks({blocks, variant}: {blocks: Block[]; variant: Variant}) {
+/** Renders a run of blocks; consecutive list items become one list. `hue` colours the brand
+ * components (the section hue on a project page). */
+export function Blocks({
+  blocks,
+  variant,
+  hue = 'blue',
+}: {
+  blocks: Block[]
+  variant: Variant
+  hue?: Hue
+}) {
   const out: ReactNode[] = []
   for (let i = 0; i < blocks.length; i++) {
     const b = blocks[i]
@@ -52,7 +70,7 @@ export function Blocks({blocks, variant}: {blocks: Block[]; variant: Variant}) {
       )
       continue
     }
-    out.push(<BlockView key={b.id} block={b} variant={variant} />)
+    out.push(<BlockView key={b.id} block={b} variant={variant} hue={hue} />)
   }
   return <>{out}</>
 }
@@ -60,9 +78,11 @@ export function Blocks({blocks, variant}: {blocks: Block[]; variant: Variant}) {
 export function BlockView({
   block: b,
   variant,
+  hue = 'blue',
 }: {
   block: Block
   variant: Variant
+  hue?: Hue
 }) {
   switch (b.type) {
     case 'paragraph':
@@ -108,11 +128,25 @@ export function BlockView({
     case 'stack':
       return <StackItems items={b.props.items} />
     case 'links':
-      return <LinkCards p={b.props} hue="blue" />
+      return <LinkCards p={b.props} hue={hue} />
     case 'timeline':
       return <Timeline p={b.props} variant={variant} />
     case 'faq':
       return <Faq items={b.props.items} />
+    case 'architecture':
+      return <Architecture p={b.props} hue={hue} />
+    case 'subpages':
+      return <Subpages p={b.props} />
+    case 'repos':
+      return <Repos p={b.props} />
+    case 'coverage':
+      return <Coverage p={b.props} hue={hue} />
+    case 'steps':
+      return <Steps p={b.props} hue={hue} />
+    case 'cta':
+      return <Cta p={b.props} />
+    case 'prefill':
+      return <Prefill p={b.props} hue={hue} />
   }
 }
 

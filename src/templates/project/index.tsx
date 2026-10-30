@@ -48,6 +48,14 @@ export function ProjectTemplate({route}: TemplateProps) {
   return <ProjectView p={res.data} />
 }
 
+function hostOf(url?: string) {
+  try {
+    return url ? new URL(url).host : undefined
+  } catch {
+    return undefined
+  }
+}
+
 function VersionBadge({version, hue}: {version: string; hue: Hue}) {
   return (
     <span className="a2-badge" style={badgeHue(hue)}>
@@ -192,7 +200,7 @@ function ProjectView({p}: {p: Project}) {
           </div>
         </Sec>
 
-        <ProjectBody blocks={p.body} from="blue" />
+        <ProjectBody blocks={p.body} from="blue" host={hostOf(p.url)} />
 
         {hasRelated && (
           <Sec

@@ -554,19 +554,21 @@ export function FactStrip({title, facts}: {title?: string; facts: Fact[]}) {
   )
 }
 
-/** The shell prompt line: emre@swemre:~$ <command>. */
+/** The shell prompt line: emre@swemre:<cwd>$ <command>. */
 export function Prompt({
   command,
+  cwd = '~',
   style,
 }: {
   command: string
+  cwd?: string
   style?: CSSProperties
 }) {
   return (
     <p className="a2-mono" style={{whiteSpace: 'nowrap', ...style}}>
       <span className="a2-mint">emre@swemre</span>
       <span>:</span>
-      <span className="a2-soft">~</span>
+      <span className="a2-soft">{cwd}</span>
       <span>$ </span>
       <span className="a2-txt">{command}</span>
       <span className="a2-caret" aria-hidden="true" />

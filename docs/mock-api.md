@@ -342,7 +342,7 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 | Type          | Items                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                       |
-| project       | 7. `swemre-website-api` has the full body                                                                                                  |
+| project       | 7. `swemre-website-api` and `swepress` have the full body; `swepress` uses the brand components in `docs/brand-components.md`              |
 | page          | `privacy-policy`                                                                                                                           |
 | site-settings | one item: taglines, contact email, hero copy, newsletter cadence, the liked-songs total, the projects activity strip, socials, maintenance |
 | terms         | 6 categories (`policies` and 5 article categories); 18 tags: 13 article topics (Kotlin has none), 4 project-only tags, `featured`          |
