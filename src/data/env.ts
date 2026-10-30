@@ -23,5 +23,5 @@ export const SITE_URL: string = (
 ).replace(/\/$/, '')
 /** Kept for the deploy scripts; the site takes its language from the URL (src/i18n). */
 export const LOCALE: string = env.VITE_LOCALE ?? 'en'
-/** Dev switches (?state=, ?fault=, ?seed=) work in dev and whenever the mock serves the API. */
+/** Dev switches (?state=, ?fault=) work in dev and whenever the mock serves the API. */
 export const DEV_SWITCHES: boolean = env.DEV || API_MODE === 'mock'

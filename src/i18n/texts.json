@@ -584,25 +584,7 @@
     "en": "{album} album cover",
     "tr": "{album} albüm kapağı"
   },
-  "home.songs.empty.copy": {
-    "en": "The liked-songs playlist is empty right now, so there is nothing to draw from. New picks show up on the next visit.",
-    "tr": "Beğenilen şarkılar listesi şu an boş, seçilecek bir şey yok. Yeni seçimler bir sonraki ziyarette görünür."
-  },
-  "home.songs.empty.title": {
-    "en": "No songs to pick from",
-    "tr": "Seçilecek şarkı yok"
-  },
-  "home.songs.error.copy": {
-    "en": "The picks could not be fetched from Spotify. The rest of the page works; try again in a moment.",
-    "tr": "Seçimler Spotify'dan alınamadı. Sayfanın geri kalanı çalışıyor; birazdan tekrar deneyin."
-  },
-  "home.songs.error.title": {
-    "en": "Spotify did not answer",
-    "tr": "Spotify yanıt vermedi"
-  },
   "home.songs.eyebrow": {"en": "listening", "tr": "dinliyorum"},
-  "home.songs.loading": {"en": "Loading songs", "tr": "Şarkılar yükleniyor"},
-  "home.songs.open": {"en": "Open Spotify", "tr": "Spotify'ı aç"},
   "home.songs.title": {
     "en": "Random picks from my liked songs",
     "tr": "Beğendiğim şarkılardan rastgele seçimler"

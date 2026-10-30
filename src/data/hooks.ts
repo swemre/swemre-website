@@ -30,7 +30,6 @@ import type {
   ProjectSummary,
   SearchResults,
   SiteSettings,
-  Song,
   TermRef,
   Topic,
 } from '../contract/view.ts'
@@ -46,7 +45,6 @@ import {
   toPage,
   toProjectSummary,
   toSettings,
-  toSong,
 } from './adapters.ts'
 import {DEV_SWITCHES} from './env.ts'
 import {
@@ -106,7 +104,7 @@ function settle<T>(
 
 // Shared reads --------------------------------------------------------------------------------
 
-function useList(type: 'article' | 'project' | 'song' | 'page') {
+function useList(type: 'article' | 'project' | 'page') {
   return useResource(...resources.list(type))
 }
 function usePub(slug: string) {
@@ -328,53 +326,6 @@ export function useProject(slug: string): Loadable<Project> {
         }
       }),
     [forced, pub, articles, projects],
-  )
-}
-
-/** Seeded PRNG (mulberry32). */
-function random(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = a
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-const VISIT_SEED = Math.floor(Math.random() * 2 ** 31) + 1
-
-/**
- * name 'songs'. A random pick per visit; ?seed=<n> fixes it, and ?seed=0 takes the first songs in
- * playlist order (the five on the boards).
- */
-export function useSongs(limit = 5): Loadable<Song[]> {
-  const forced = useForced('songs')
-  const list = useList('song')
-  const {search} = useLocation()
-  const seedParam = DEV_SWITCHES
-    ? new URLSearchParams(search).get('seed')
-    : null
-  const seed =
-    seedParam !== null && /^\d+$/.test(seedParam)
-      ? Number(seedParam)
-      : VISIT_SEED
-  return useMemo(
-    () =>
-      settle(forced, [list], () => {
-        const songs = [...data(list)].sort(
-          (a, b) => Number(a.fields.order ?? 0) - Number(b.fields.order ?? 0),
-        )
-        if (seed !== 0) {
-          const rnd = random(seed)
-          for (let i = songs.length - 1; i > 0; i--) {
-            const j = Math.floor(rnd() * (i + 1))
-            ;[songs[i], songs[j]] = [songs[j], songs[i]]
-          }
-        }
-        return songs.slice(0, limit).map(toSong)
-      }),
-    [forced, list, seed, limit],
   )
 }
 

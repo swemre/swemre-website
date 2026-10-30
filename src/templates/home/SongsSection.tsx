@@ -9,20 +9,18 @@
  * Contact: emre@swemre.com
  */
 
-// "0b011 // listening": five random picks from the liked songs (static content, rows open
-// Spotify), the cover fan and the branch rail, with the loading, empty and error boards.
+// "0b011 // listening": five liked songs kept in the site (rows open Spotify), the cover fan and
+// the branch rail.
 import type {CSSProperties} from 'react'
-import type {Loadable, SiteSettings, Song} from '../../contract/view.ts'
+import type {SiteSettings, Song} from '../../contract/view.ts'
 import {SongBars} from './Hero.tsx'
 import {Split} from './kit/layout.tsx'
 import {endGlow, useRailLeft} from './kit/Rail.tsx'
 import {SectionBg} from './kit/SectionBg.tsx'
-import {Skel, StatePanel} from './kit/StatePanel.tsx'
-import {Anchor, Button, Icon, SectionHeader} from './kit/ui.ts'
+import {Anchor, Icon, SectionHeader} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
 import {t} from '../../i18n/index.ts'
 
-const SPOTIFY = 'https://open.spotify.com'
 const lilac = (a: number | string) => `rgb(var(--a2-hue-lilac-rgb) / ${a})`
 
 function SongsRail() {
@@ -331,153 +329,15 @@ function SongRows({songs}: {songs: Song[]}) {
   )
 }
 
-function Loading() {
-  const v = useV()
-  const fan = useFan()
-  const thumb = v(48, 56, 56)
-  const box = v([342, 176], [342, 176], [624, 272])
-  const lefts = v([8, 198, 83], [8, 198, 83], [24, 393, 176])
-  const cards: [number, number, number, number][] = [
-    [lefts[0], fan.top, fan.back, -8],
-    [lefts[1], fan.top, fan.back, 8],
-    [lefts[2], 0, fan.front, 0],
-  ]
-  return (
-    <>
-      <span className="a2-sr" role="status">
-        {t('home.songs.loading')}
-      </span>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: v('center', 'center', 'flex-start'),
-        }}
-      >
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'relative',
-            width: box[0],
-            maxWidth: '100%',
-            height: box[1],
-          }}
-        >
-          {cards.map(([left, top, size, angle], i) => (
-            <Skel
-              key={i}
-              w={size}
-              h={size}
-              r={10}
-              style={{
-                position: 'absolute',
-                left,
-                top,
-                transform: `rotate(${angle}deg)`,
-                opacity: i < 2 ? 0.5 : 1,
-                backgroundColor: 'var(--a2-deck-back)',
-                boxShadow: 'var(--a2-shadow-media)',
-              }}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="a2-rows" style={{marginTop: v(48, 48, 64)}}>
-        {[0, 1, 2, 3, 4].map(i => (
-          <div
-            key={i}
-            aria-hidden="true"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              padding: '16px 0',
-            }}
-          >
-            <Skel w={24} h={12} />
-            <Skel w={thumb} h={thumb} />
-            <div style={{flex: 1}}>
-              <Skel w="42%" h={16} />
-              <Skel w="64%" h={12} style={{marginTop: 8}} />
-            </div>
-            <Skel w={64} h={12} />
-          </div>
-        ))}
-      </div>
-    </>
-  )
-}
-
-function Body({state, spotify}: {state: Loadable<Song[]>; spotify: string}) {
-  const v = useV()
-  switch (state.status) {
-    case 'loading':
-      return <Loading />
-    case 'empty':
-      return (
-        <StatePanel
-          hue="lilac"
-          icon="music"
-          title={t('home.songs.empty.title')}
-          copy={t('home.songs.empty.copy')}
-          command="playlist-sync --liked"
-          result="0 tracks"
-          actions={
-            <Button
-              label={t('home.songs.open')}
-              kind="secondary"
-              iconRight="arrow-up-right"
-              href={spotify}
-            />
-          }
-        />
-      )
-    case 'error':
-      return (
-        <StatePanel
-          icon="cloud-off"
-          title={t('home.songs.error.title')}
-          copy={t('home.songs.error.copy')}
-          command="GET /api/public/v2/channels/swemre/songs"
-          result="502 Bad Gateway"
-          actions={
-            <>
-              <Button
-                label={t('form.retry')}
-                kind="secondary"
-                iconLeft="refresh"
-                onClick={state.retry}
-              />
-              <Button
-                label={t('home.songs.open')}
-                kind="ghost"
-                iconRight="arrow-up-right"
-                href={spotify}
-              />
-            </>
-          }
-        />
-      )
-    case 'ready':
-      return (
-        <>
-          <SongFan songs={state.data} />
-          <div style={{marginTop: v(48, 48, 64)}}>
-            <SongRows songs={state.data} />
-          </div>
-        </>
-      )
-  }
-}
-
 export function SongsSection({
-  state,
+  songs,
   settings,
 }: {
-  state: Loadable<Song[]>
+  songs: Song[]
   settings?: SiteSettings
 }) {
+  const v = useV()
   const total = settings?.likedSongsTotal
-  const picks = state.status === 'ready' ? state.data.length : 5
   return (
     <section className="a2-sec" data-cut aria-labelledby="home-songs">
       <SectionBg
@@ -492,7 +352,12 @@ export function SongsSection({
           spans={[1, 6, 8, 5]}
           reverse
           left={
-            <Body state={state} spotify={settings?.social.spotify ?? SPOTIFY} />
+            <>
+              <SongFan songs={songs} />
+              <div style={{marginTop: v(48, 48, 64)}}>
+                <SongRows songs={songs} />
+              </div>
+            </>
           }
           right={
             <SectionHeader
@@ -504,7 +369,7 @@ export function SongsSection({
               extra={
                 total ? (
                   <span className="a2-mono" style={{fontSize: 12}}>
-                    {t('home.songs.count', {picks, total})}
+                    {t('home.songs.count', {picks: songs.length, total})}
                   </span>
                 ) : undefined
               }

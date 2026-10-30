@@ -6,7 +6,7 @@ the seed files in `mock/seed/*.json`. No backend is needed. The same plugin runs
 `npm run preview`.
 
 **Headless.** SWEPress supplies only real content: articles, projects, real pages (such as
-`privacy-policy`), the site settings and, for now, songs. The routes, the templates and their
+`privacy-policy`) and the site settings. The routes, the templates and their
 text belong to the site. `/`, `/articles`, `/articles/topic/<term>`, `/projects`, `/search`,
 `/newsletter`, `/contact`, `/call-back`, the `/newsletter/thanks|confirmed|unsubscribed` pages and
 `/authors/emre` are built in code and never ask the CMS for a page. Their titles, descriptions and
@@ -33,7 +33,7 @@ disagree, the mock follows the API:
 Copy `.env.example` to `.env.local` and change the values. In `live` mode the plugin is not
 mounted, and every call goes to `VITE_API_BASE`.
 
-The dev switches `?state=`, `?fault=` and `?seed=` work in `dev` and whenever the mode is `mock`.
+The dev switches `?state=` and `?fault=` work in `dev` and whenever the mode is `mock`.
 They do nothing in a live production build.
 
 ## Requests
@@ -51,7 +51,7 @@ Lists publication summaries, newest first. A summary is a publication without it
 
 | Query          | Meaning                                                        |
 | -------------- | -------------------------------------------------------------- |
-| `content-type` | `article`, `project`, `page`, `song`, `site-settings`          |
+| `content-type` | `article`, `project`, `page`, `site-settings`                  |
 | `term`         | a term slug (category or tag)                                  |
 | `page`         | zero-based page number, default `0`                            |
 | `size`         | page size from `1` to `100`, default `20`                      |
@@ -256,14 +256,13 @@ The value is a comma list. Each entry is either `<fault>`, which hits every call
 Resources:
 
 - `publications` (any list)
-- `articles`, `projects`, `pages`, `songs`, `settings` (a list or a single item of that type)
+- `articles`, `projects`, `pages`, `settings` (a list or a single item of that type)
 - `publication` (any single item), or a slug such as `spring-boot-template`
 - `terms`, `redirects`
 - `forms`, or a form key such as `newsletter` or `contact`
 
 ```
 /projects?fault=503                     → the unavailable page
-/?fault=songs:500                       → home with the songs block in its error state
 /articles/spring-boot-template?fault=publication:500 → the error page with a request id
 /contact?fault=forms:429                → the contact form's rate-limit failure
 /newsletter?fault=newsletter:timeout    → the newsletter form times out
@@ -272,10 +271,8 @@ Resources:
 Two more dev switches skip the API altogether:
 
 - `?state=<hook>:<loading|empty|error>` forces a data hook into that state. It takes a comma
-  list. The names are `settings`, `page`, `articles`, `article`, `projects`, `project`, `songs`,
+  list. The names are `settings`, `page`, `articles`, `article`, `projects`, `project`,
   `topic`, `terms`, `author`, `search`, `mega` and `activity`.
-- `?seed=0` shows the boards' five songs in board order. Without it the song order is random on
-  each visit.
 
 ## Content model
 
@@ -284,7 +281,6 @@ Each seed file holds one content type:
 - `articles.json`
 - `projects.json`
 - `pages.json`
-- `songs.json`
 - `settings.json` (`site-settings`)
 
 `terms.json` holds the categories and tags. Seed items are short:
@@ -348,12 +344,11 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 | article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                       |
 | project       | 7. `swemre-website-api` has the full body                                                                                                  |
 | page          | `privacy-policy`                                                                                                                           |
-| song          | 12 liked songs (the site shows 412 from settings); the first five have album art                                                           |
 | site-settings | one item: taglines, contact email, hero copy, newsletter cadence, the liked-songs total, the projects activity strip, socials, maintenance |
 | terms         | 6 categories (`policies` and 5 article categories); 18 tags: 13 article topics (Kotlin has none), 4 project-only tags, `featured`          |
 
-Songs are still the `song` content type. They will move to a SWEPress data table once its
-endpoint is known.
+Songs are not CMS content: the five liked songs on the home page are kept in the site
+(`src/data/songs.json`, album art in `public/images/songs/`).
 
 The articles `typed-api-clients` and `ai-pair-programming`, and the copy of the `tokenset`
 project, are made up to fill the lists. No board shows them in full.

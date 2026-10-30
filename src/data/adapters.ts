@@ -27,7 +27,6 @@ import type {
   ProjectSummary,
   Seo,
   SiteSettings,
-  Song,
   TermRef,
 } from '../contract/view.ts'
 import {api} from './client.ts'
@@ -215,21 +214,6 @@ export function toPage(pub: ApiPublication): Page {
     showPrint: f.showPrint ?? false,
     seo: seoOf(pub),
     crumbs: crumbsOf(pub),
-  }
-}
-
-export function toSong(pub: ApiPublicationSummary): Song {
-  const f = fieldsOf<'song'>(pub)
-  return {
-    slug: pub.slug,
-    title: pub.title,
-    artist: f.artist ?? '',
-    album: f.album,
-    year: f.year,
-    href:
-      f.spotifyUrl ??
-      `https://open.spotify.com/search/${encodeURIComponent(pub.title)}`,
-    artwork: media(f.artwork, f.album ? `${f.album} album cover` : pub.title),
   }
 }
 

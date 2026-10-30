@@ -12,12 +12,8 @@
 // The home page (boards Home, Home-1..3, Home-Scrolled and the Home-<section>-<state> crops).
 // Each data section renders its own loading, empty and error state.
 import type {TemplateProps} from '../../contract/templates.ts'
-import {
-  useArticles,
-  useProjects,
-  useSettings,
-  useSongs,
-} from '../../data/hooks.ts'
+import {SONGS} from '../../data/songs.ts'
+import {useArticles, useProjects, useSettings} from '../../data/hooks.ts'
 import {ArticlesSection} from './ArticlesSection.tsx'
 import {Hero} from './Hero.tsx'
 import {NewsletterSection} from './NewsletterSection.tsx'
@@ -34,16 +30,14 @@ export function HomeTemplate(_props: TemplateProps) {
     settingsState.status === 'ready' ? settingsState.data : undefined
   const articles = useArticles({limit: 4})
   const projects = useProjects()
-  const songs = useSongs(5)
-  const song = songs.status === 'ready' ? songs.data[0] : undefined
   return (
     <>
-      <Hero settings={settings} song={song} />
+      <Hero settings={settings} song={SONGS[0]} />
       <StackSection settings={settings} />
       <ReelStatement />
       <ArticlesSection state={articles} />
       <ProjectsSection state={projects} settings={settings} />
-      <SongsSection state={songs} settings={settings} />
+      <SongsSection songs={SONGS} settings={settings} />
       <PromiseStatement />
       <NewsletterSection />
       <SubscribeSection />

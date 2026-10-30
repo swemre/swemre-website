@@ -41,8 +41,7 @@ export interface ApiTerm {
   related?: string[]
 }
 
-export type ContentTypeKey =
-  'article' | 'project' | 'page' | 'song' | 'site-settings'
+export type ContentTypeKey = 'article' | 'project' | 'page' | 'site-settings'
 
 /** An item of GET /publications. */
 export interface ApiPublicationSummary {
@@ -191,15 +190,6 @@ export interface FieldMap {
     pdfUrl?: string
     showToc?: boolean
     showPrint?: boolean
-  }
-  song: {
-    /** Position in the liked playlist; ?seed=0 picks the first ones in this order. */
-    order?: number
-    artist?: string
-    album?: string
-    year?: number
-    spotifyUrl?: string
-    artwork?: ApiMedia
   }
   'site-settings': {
     tagline?: string

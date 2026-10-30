@@ -45,7 +45,6 @@ const PLURAL: Record<string, string> = {
   article: 'articles',
   project: 'projects',
   page: 'pages',
-  song: 'songs',
   'site-settings': 'settings',
 }
 /** The fixed maintenance window a 503 fault reports (09:00 to 09:30 CET on the test day). */

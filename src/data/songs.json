@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "i-gotta-feeling-black-eyed-peas",
+    "title": "I Gotta Feeling",
+    "artist": "Black Eyed Peas",
+    "album": "The E.N.D.",
+    "year": 2009,
+    "href": "https://open.spotify.com/search/I%20Gotta%20Feeling%20Black%20Eyed%20Peas",
+    "artwork": {
+      "url": "/images/songs/album-the-e-n-d.svg",
+      "alt": "The E.N.D. album cover"
+    }
+  },
+  {
+    "slug": "rock-your-body-justin-timberlake",
+    "title": "Rock Your Body",
+    "artist": "Justin Timberlake",
+    "album": "Justified",
+    "year": 2002,
+    "href": "https://open.spotify.com/search/Rock%20Your%20Body%20Justin%20Timberlake",
+    "artwork": {
+      "url": "/images/songs/album-justified.svg",
+      "alt": "Justified album cover"
+    }
+  },
+  {
+    "slug": "nightcall-kavinsky",
+    "title": "Nightcall",
+    "artist": "Kavinsky",
+    "album": "OutRun",
+    "year": 2013,
+    "href": "https://open.spotify.com/search/Nightcall%20Kavinsky",
+    "artwork": {
+      "url": "/images/songs/album-outrun.svg",
+      "alt": "OutRun album cover"
+    }
+  },
+  {
+    "slug": "breathe-telepopmusik",
+    "title": "Breathe",
+    "artist": "Télépopmusik",
+    "album": "Genetic World",
+    "year": 2001,
+    "href": "https://open.spotify.com/search/Breathe%20T%C3%A9l%C3%A9popmusik",
+    "artwork": {
+      "url": "/images/songs/album-genetic-world.svg",
+      "alt": "Genetic World album cover"
+    }
+  },
+  {
+    "slug": "intro-the-xx",
+    "title": "Intro",
+    "artist": "The xx",
+    "album": "xx",
+    "year": 2009,
+    "href": "https://open.spotify.com/search/Intro%20The%20xx",
+    "artwork": {
+      "url": "/images/songs/album-xx.svg",
+      "alt": "xx album cover"
+    }
+  }
+]
