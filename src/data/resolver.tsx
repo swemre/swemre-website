@@ -38,7 +38,14 @@ import {
   resolvePath,
   type Resolution,
 } from './resolve.ts'
-import {LOCALES, locale, localeHref, t, type Locale} from '../i18n/index.ts'
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  locale,
+  localeHref,
+  t,
+  type Locale,
+} from '../i18n/index.ts'
 
 function setHead(route: ResolvedRoute) {
   const pub = route.publication
@@ -53,19 +60,61 @@ function setHead(route: ResolvedRoute) {
       ? title
       : `${title} · SWEMRE`
   const desc = pub?.seoDescription ?? pub?.excerpt
-  const meta = document.querySelector('meta[name="description"]')
-  if (meta && desc) meta.setAttribute('content', desc)
-  // hreflang: only the languages this publication really has (slugs are shared across them).
-  for (const el of document.querySelectorAll('link[rel="alternate"][hreflang]'))
+  if (desc) setMeta('name', 'description', desc)
+  const url = SITE_URL + localeHref(locale, route.path)
+  setMeta('property', 'og:title', document.title)
+  if (desc) setMeta('property', 'og:description', desc)
+  setMeta('property', 'og:url', url)
+  setMeta('property', 'og:locale', OG_LOCALE[locale])
+  setLink('canonical', url)
+  if (pub?.noindex) setMeta('name', 'robots', 'noindex')
+  else document.querySelector('meta[name="robots"]')?.remove()
+  // hreflang: only the languages this publication really has (slugs are shared across them),
+  // plus x-default on the English address. Pages without versions list every language.
+  for (const el of document.querySelectorAll(
+    'link[rel="alternate"][hreflang], meta[property="og:locale:alternate"]',
+  ))
     el.remove()
-  for (const v of pub?.languageVersions ?? []) {
-    if (!LOCALES.includes(v.locale as Locale)) continue
+  const versions = (
+    pub?.languageVersions?.map(v => v.locale) ?? [...LOCALES]
+  ).filter((l): l is Locale => LOCALES.includes(l as Locale))
+  for (const l of [...versions, 'x-default' as const]) {
+    if (l === 'x-default' && !versions.includes(DEFAULT_LOCALE)) continue
     const link = document.createElement('link')
     link.rel = 'alternate'
-    link.hreflang = v.locale
-    link.href = SITE_URL + localeHref(v.locale as Locale, route.path)
+    link.hreflang = l
+    link.href =
+      SITE_URL + localeHref(l === 'x-default' ? DEFAULT_LOCALE : l, route.path)
     document.head.append(link)
+    if (l !== 'x-default' && l !== locale) {
+      const alt = document.createElement('meta')
+      alt.setAttribute('property', 'og:locale:alternate')
+      alt.content = OG_LOCALE[l]
+      document.head.append(alt)
+    }
   }
+}
+
+const OG_LOCALE: Record<Locale, string> = {en: 'en_GB', tr: 'tr_TR'}
+
+function setMeta(attr: 'name' | 'property', key: string, content: string) {
+  let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
+  if (!el) {
+    el = document.createElement('meta')
+    el.setAttribute(attr, key)
+    document.head.append(el)
+  }
+  el.content = content
+}
+
+function setLink(rel: string, href: string) {
+  let el = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
+  if (!el) {
+    el = document.createElement('link')
+    el.rel = rel
+    document.head.append(el)
+  }
+  el.href = href
 }
 
 export function RouteResolver() {
@@ -119,8 +168,10 @@ export function RouteResolver() {
   const shown =
     current ??
     (resolved && 'route' in resolved.result ? resolved.result : undefined)
+  // First load (or a language switch, which reloads): the nav only, no footer, so the footer
+  // never shows at the top and then jumps down when the page arrives.
   if (!shown || !('route' in shown))
-    return <SiteShell chrome={FULL}>{null}</SiteShell>
+    return <SiteShell chrome={{...FULL, footer: false}}>{null}</SiteShell>
 
   const route: ResolvedRoute = {
     ...shown.route,

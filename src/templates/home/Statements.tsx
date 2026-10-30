@@ -43,10 +43,14 @@ export function ReelStatement() {
       <Rail from="sky" to="blue" node={[191, 263, 352, 560]} label="7a11ca7" />
       <div className="a2-c">
         <div style={{textAlign: 'center'}}>
-          <p className="a2-sr">{t('home.statement.sr')}</p>
+          <p className="a2-sr">
+            {/* The pun stays in English in every language. */}
+            <span lang="en">I write Java, BTW.</span> {t('home.statement.sr')}
+          </p>
           <div
             className="a2-stmt"
             aria-hidden="true"
+            lang="en"
             style={{
               display: 'flex',
               justifyContent: 'center',
@@ -55,9 +59,7 @@ export function ReelStatement() {
               lineHeight: `${line}px`,
             }}
           >
-            {t('home.statement.before') && (
-              <span>{t('home.statement.before')}</span>
-            )}
+            <span>I write</span>
             <span
               style={{
                 position: 'relative',
@@ -125,9 +127,6 @@ export function ReelStatement() {
                 />
               ))}
             </span>
-            {t('home.statement.after') && (
-              <span>{t('home.statement.after')}</span>
-            )}
             <span>,</span>
             <span style={{position: 'relative', display: 'inline-block'}}>
               <span

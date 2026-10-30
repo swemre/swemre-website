@@ -47,6 +47,11 @@ body {
 .a2-root > main {
   flex: 1 0 auto;
   position: relative;
+  /* At least a window tall, so the footer never shows mid-screen while a page loads. */
+  min-height: 100vh;
+}
+.a2-4k.a2-root > main {
+  min-height: calc(100vh / var(--a2-zoom, 2));
 }
 .a2-root > .a2-nav {
   position: fixed;

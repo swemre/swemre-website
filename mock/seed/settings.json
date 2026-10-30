@@ -39,7 +39,7 @@
         "title": "Site ayarları",
         "fields": {
           "tagline": "Yazılım markası",
-          "footerTagline": "Java yazan bir yazılım mühendisinden notlar ve projeler, BTW.",
+          "footerTagline": "Bir yazılım mühendisinden notlar ve projeler. I write Java, BTW.",
           "heroEyebrow": "Yazılım markası",
           "heroLead": "Yıllarca kurumsal yazılım geliştirdim. Şimdi yapay zekâ kullanıyor ve bir Patagonia yeleği almayı düşünüyorum. Düşünmeyi ve problem çözmeyi seviyorum.",
           "latestArticle": "Spring Boot şablonu",

@@ -187,7 +187,7 @@
   "footer.status": {"en": "Status", "tr": "Durum"},
   "footer.tagline": {
     "en": "Notes and projects from a software engineer who writes Java, BTW.",
-    "tr": "Java yazan bir yazılım mühendisinden notlar ve projeler, BTW."
+    "tr": "Bir yazılım mühendisinden notlar ve projeler. I write Java, BTW."
   },
   "form.backHome": {"en": "Back home", "tr": "Ana sayfaya dön"},
   "form.callback.busy": {
@@ -591,16 +591,14 @@
     "en": "Strict mode on, any is banned. Mostly.",
     "tr": "Strict mod açık, any yasak. Çoğunlukla."
   },
-  "home.statement.after": {"en": "", "tr": "yazıyorum"},
-  "home.statement.before": {"en": "I write", "tr": ""},
   "home.statement.favorite": {"en": "favorite", "tr": "favori"},
   "home.statement.label": {
     "en": "My stack, Java and friends",
     "tr": "Teknolojilerim, Java ve arkadaşları"
   },
   "home.statement.sr": {
-    "en": "I write Java, BTW. Also Go, Rust, TypeScript and Python.",
-    "tr": "Java yazıyorum, BTW. Ayrıca Go, Rust, TypeScript ve Python."
+    "en": "Also Go, Rust, TypeScript and Python.",
+    "tr": "Ayrıca Go, Rust, TypeScript ve Python."
   },
   "home.status.problems": {"en": "0 problems", "tr": "0 sorun"},
   "home.status.synced": {"en": "synced 2 min ago", "tr": "2 dk önce eşitlendi"},
