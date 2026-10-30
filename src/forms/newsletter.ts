@@ -10,7 +10,8 @@
  */
 // The newsletter confirm and unsubscribe calls behind /newsletter/confirmed and
 // /newsletter/unsubscribed. Both are form submissions of public API v2 (newsletter-confirm,
-// newsletter-unsubscribe); the confirm answer carries the subscriber in `result`. Owner: agent C.
+// newsletter-unsubscribe); the confirm answer carries the subscriber in `result`. `subscribe` is
+// the sign-up itself, used by the home page's subscribe block. Owner: agent C.
 import {ApiError, type FormValue} from '../contract/api.ts'
 import {api} from '../data/client.ts'
 
@@ -50,6 +51,32 @@ function failure(e: unknown): {
 }
 
 const text = (v: FormValue | undefined) => (typeof v === 'string' ? v : '')
+
+/** Signs up for the newsletter. A 400 comes back with the server's message per field. */
+export async function subscribe(values: Record<string, FormValue>): Promise<
+  | {ok: true; value: {receivedAt: string}}
+  | {
+      ok: false
+      status: number
+      fields: Record<string, string>
+      requestId?: string
+    }
+> {
+  try {
+    const res = await api.submit('newsletter', values)
+    return {ok: true, value: {receivedAt: res.receivedAt}}
+  } catch (e) {
+    const err = e instanceof ApiError ? e : undefined
+    return {
+      ok: false,
+      status: err?.status ?? 0,
+      fields: Object.fromEntries(
+        (err?.body?.errors ?? []).map(x => [x.field, x.message]),
+      ),
+      requestId: err?.body?.requestId,
+    }
+  }
+}
 
 /** Confirms a sign-up from the link in the confirmation email. */
 export async function confirmSubscription(

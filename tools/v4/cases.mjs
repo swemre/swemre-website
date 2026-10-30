@@ -66,7 +66,6 @@ export const CASES = [
     path: '/newsletter/unsubscribed?token=seed',
   },
   {board: 'Contact', path: '/contact', note: 'board has typed sample values'},
-  {board: 'Resume', path: '/resume', note: 'board has typed sample values'},
   {
     board: 'Callback',
     path: '/call-back',

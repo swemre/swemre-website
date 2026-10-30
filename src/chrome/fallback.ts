@@ -36,7 +36,6 @@ export const FOOTER: FooterData = {
       links: [
         {label: 'Send a message', href: '/contact'},
         {label: 'Request a call back', href: '/call-back'},
-        {label: 'Request my resume', href: '/resume'},
       ],
     },
     {

@@ -8,7 +8,7 @@
  *
  * Contact: emre@swemre.com
  */
-// The contact, resume and call back pages (V4-Play-Contact, -Resume, -CallBack): hero with
+// The contact and call back pages (V4-Play-Contact, -CallBack): hero with
 // the squiggle title, then the form as numbered groups (number, title and copy on the left,
 // fields on the right from desktop up), the fixed status slot and the submit row. Success
 // swaps the groups for a "done" group with the receipt. Owner: agent C.

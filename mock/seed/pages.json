@@ -85,19 +85,6 @@
     }
   },
   {
-    "slug": "resume",
-    "title": "Request my resume.",
-    "excerpt": "Tell me who you are and why you need it. I check every request myself and send the PDF to your email within one working day.",
-    "tags": ["layout-form"],
-    "seoTitle": "Resume",
-    "publishedAt": "2026-01-01T08:00:00Z",
-    "fields": {
-      "eyebrow": "// resume.pdf · 2 pages · updated Oct 2026",
-      "lead": "Tell me who you are and why you need it. I check every request myself and send the PDF to your email within one working day.",
-      "formKey": "cv-request"
-    }
-  },
-  {
     "slug": "call-back",
     "title": "Let me call you back.",
     "excerpt": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
@@ -224,7 +211,7 @@
             },
             {
               "label": "Forms",
-              "value": "What you type in the contact, call back and resume forms"
+              "value": "What you type in the contact and call back forms"
             },
             {
               "label": "Newsletter",
@@ -331,7 +318,7 @@
             {
               "version": "v1.3",
               "date": "2026-10-15",
-              "title": "Chat removed; call back and resume requests added to what is recorded.",
+              "title": "Chat removed; call back requests added to what is recorded.",
               "current": true
             },
             {

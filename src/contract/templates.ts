@@ -17,7 +17,7 @@ import type {ApiPublication} from './api.ts'
 /**
  * Who builds which template:
  * - agent B: home, articles, topic, projects, search
- * - agent C: form (newsletter, contact, resume, call back)
+ * - agent C: form (newsletter, contact, call back)
  * - agent D: article, project, author, single, newsletter-status, not-found, error, unavailable
  */
 export type TemplateKey =

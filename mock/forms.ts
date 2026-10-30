@@ -35,14 +35,6 @@ const FORMS: Record<string, Record<string, Rule>> = {
     consent: 'true',
     newsletterOptIn: 'optional',
   },
-  'cv-request': {
-    fullName: 'optional',
-    email: 'optional',
-    company: 'required',
-    reason: 'required',
-    roleOrProject: 'optional',
-    consent: 'true',
-  },
   'callback-request': {
     fullName: 'optional',
     contact: 'contact',

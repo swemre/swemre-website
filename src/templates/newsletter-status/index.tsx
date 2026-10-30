@@ -13,7 +13,10 @@
 // is confirmed or unsubscribed with C's helpers. Confirmed shows the subscription card and the
 // three latest articles; unsubscribed is a full-window status page. An invalid or expired token
 // shows the Single-Page-not-found layout with "This link has expired." and Subscribe again.
+// /newsletter/thanks is the thank-you page after the home page's Subscribe: no token, it asks the
+// reader to confirm from their inbox and shows the latest articles.
 import type {ReactNode} from 'react'
+import {useLocation} from 'react-router-dom'
 import type {TemplateProps} from '../../contract/templates.ts'
 import {useArticles, useSettings} from '../../data/hooks.ts'
 import {NEWSLETTER_TOPICS} from '../../forms/specs.ts'
@@ -35,6 +38,11 @@ import {rgb, usePick} from '../parts/vp.ts'
 import {useTokenOutcome, type Kind} from './token.ts'
 
 export function NewsletterStatusTemplate({route}: TemplateProps) {
+  if (route.path.endsWith('thanks')) return <Thanks />
+  return <TokenStatus route={route} />
+}
+
+function TokenStatus({route}: TemplateProps) {
   const kind: Kind = route.path.endsWith('unsubscribed')
     ? 'unsubscribed'
     : 'confirmed'
@@ -223,9 +231,61 @@ function Unsubscribed() {
 
 const firstName = (name?: string) => name?.trim().split(/\s+/)[0]
 
+/** After Subscribe on the home page; the state carries what was sent (absent on a direct visit). */
+function Thanks() {
+  const sent = useLocation().state as {name?: string; email?: string} | null
+  const name = firstName(sent?.name)
+  return (
+    <div style={{position: 'relative'}}>
+      <StatusHero
+        hue="aqua"
+        railLabel="7hank5"
+        fill={false}
+        mark={
+          <Tile
+            icon="mail"
+            bg="rgb(var(--a2-mint-rgb) / .12)"
+            color="var(--a2-mint)"
+            glow="0 0 24px rgb(var(--a2-mint-rgb) / calc(.25 * var(--a2-glow-k)))"
+          />
+        }
+        markLabel="Thank you"
+        eyebrow="newsletter"
+        detail="thanks"
+        title={
+          <>
+            Thanks for <span className="a2-accent">subscribing.</span>
+          </>
+        }
+        lead={`${name ? `${name}, one` : 'One'} last step: I sent a confirmation link to ${sent?.email ?? 'your inbox'}. Click it and the next letter is on its way.`}
+        actions={
+          <>
+            <Button
+              kind="primary"
+              label="Read the latest articles"
+              iconRight="arrow-right"
+              href="/articles"
+            />
+            <StatusLink to="/">Home</StatusLink>
+          </>
+        }
+        after={
+          <p className="a2-cap" style={{marginTop: 32}}>
+            No email after a few minutes? Check your spam folder, or{' '}
+            <a className="a2-ilink" href="/newsletter">
+              subscribe again
+            </a>
+            .
+          </p>
+        }
+      />
+      <LatestSec />
+    </div>
+  )
+}
+
 function Confirmed({sub}: {sub: Subscriber}) {
   const vp = useViewport()
-  const pick = usePick()
   const big = vp === 'd' || vp === '4k'
   const settings = useSettings()
   const s = settings.status === 'ready' ? settings.data : undefined
@@ -255,7 +315,6 @@ function Confirmed({sub}: {sub: Subscriber}) {
       <FactList facts={facts} />
     </div>
   )
-  const nodeTop = {m: 73, t: 89, d: 120, k: 152}
   return (
     <div style={{position: 'relative'}}>
       <StatusHero
@@ -292,33 +351,44 @@ function Confirmed({sub}: {sub: Subscriber}) {
         }
         after={card}
       />
-      <Sec
-        deco={{
-          rail: {
-            from: 'aqua',
-            hue: 'blue',
-            height: pick(nodeTop) + (big ? 6 : 5),
-          },
-          node: {top: nodeTop, end: true},
-          label: 'c0ffee1',
-          bg: (
-            <>
-              <Glow hue="blue" x="16%" y="40%" a={0.15} />
-              <Glow hue="blue" x="78%" y="20%" a={0.075} size="sm" />
-              <MaskTexture
-                kind="dots"
-                hue="blue"
-                mask={`${pick({m: '300px 260px', t: '480px 400px', d: '600px 480px', k: '720px 560px'})} at 16% 40%`}
-              />
-            </>
-          ),
-        }}
-      >
-        <div className="a2-c">
-          <Latest />
-        </div>
-      </Sec>
+      <LatestSec />
     </div>
+  )
+}
+
+/** "While you wait for the next one": the three latest articles under the status hero. */
+function LatestSec() {
+  const vp = useViewport()
+  const pick = usePick()
+  const big = vp === 'd' || vp === '4k'
+  const nodeTop = {m: 73, t: 89, d: 120, k: 152}
+  return (
+    <Sec
+      deco={{
+        rail: {
+          from: 'aqua',
+          hue: 'blue',
+          height: pick(nodeTop) + (big ? 6 : 5),
+        },
+        node: {top: nodeTop, end: true},
+        label: 'c0ffee1',
+        bg: (
+          <>
+            <Glow hue="blue" x="16%" y="40%" a={0.15} />
+            <Glow hue="blue" x="78%" y="20%" a={0.075} size="sm" />
+            <MaskTexture
+              kind="dots"
+              hue="blue"
+              mask={`${pick({m: '300px 260px', t: '480px 400px', d: '600px 480px', k: '720px 560px'})} at 16% 40%`}
+            />
+          </>
+        ),
+      }}
+    >
+      <div className="a2-c">
+        <Latest />
+      </div>
+    </Sec>
   )
 }
 

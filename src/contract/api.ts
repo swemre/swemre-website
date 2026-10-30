@@ -246,7 +246,6 @@ export interface FieldMap {
 export type FormKey =
   | 'newsletter'
   | 'contact'
-  | 'cv-request'
   | 'callback-request'
   | 'newsletter-confirm'
   | 'newsletter-unsubscribe'

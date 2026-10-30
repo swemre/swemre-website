@@ -1,7 +1,7 @@
 # swemre-website
 
 The personal website at [swemre.com](https://swemre.com): articles, projects, the liked songs, a
-newsletter, and the contact, resume and call back forms. Built with React 19, TypeScript,
+newsletter, and the contact and call back forms. Built with React 19, TypeScript,
 Vite 8 and React Router 7, with plain CSS from the V4 design system (`src/design`).
 
 The site bundles no content. Everything comes from one website channel of **SWEPress public
@@ -47,7 +47,7 @@ npm run dev                  # http://localhost:5173
 | `src/data/`      | API client, cache and hooks, adapters, template rules, route resolver |
 | `src/design/`    | Design tokens, components, site shell                                 |
 | `src/templates/` | One template per page kind                                            |
-| `src/forms/`     | The form template: newsletter, contact, resume and call back          |
+| `src/forms/`     | The form template: newsletter, contact and call back                  |
 | `mock/`          | The mock API plugin, seed content and media                           |
 | `docs/`          | `mock-api.md`                                                         |
 

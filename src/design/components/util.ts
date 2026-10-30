@@ -54,7 +54,7 @@ export function isDocumentLink(href: string): boolean {
 }
 
 /** True for links the router must not handle: other origins, mailto:, tel:, and document
- * links such as /rss.xml or /resume.pdf (plain <a>, same tab). */
+ * links such as /rss.xml or /feed.json (plain <a>, same tab). */
 export function isExternal(href: string): boolean {
   return (
     /^(https?:)?\/\//.test(href) ||

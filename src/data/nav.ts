@@ -51,7 +51,6 @@ function columns(policies: Link[], statusUrl?: string): FooterData['columns'] {
       links: [
         {label: 'Send a message', href: '/contact'},
         {label: 'Request a call back', href: '/call-back'},
-        {label: 'Request my resume', href: '/resume'},
       ],
     },
     {

@@ -152,6 +152,8 @@ it (`api.mediaUrl`). Image URLs inside a body are already absolute paths.
 
 ### POST /forms/{formKey}/submissions
 
+Used by `/newsletter`, `/contact`, `/call-back`, the newsletter confirm and unsubscribe pages, and the home page's Subscribe block, which posts the `newsletter` form directly and then opens `/newsletter/thanks`.
+
 ```http
 POST /api/public/v2/channels/swemre-website/forms/newsletter/submissions
 Content-Type: application/json
@@ -170,7 +172,6 @@ Content-Type: application/json
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `newsletter`             | name, email ★, role, source, topics (string[]), consent ★ (`true`)                                                                      |
 | `contact`                | fullName, email ★, phone, describesYou, foundVia, favouriteLanguage, message ★, consent ★, newsletterOptIn                              |
-| `cv-request`             | fullName, email (checked only when given), company ★, reason ★, roleOrProject, consent ★                                                |
 | `callback-request`       | fullName, contact ★ (an email, or a phone number with 9 or more digits), preferredTime ★ (string[]), timeZone, topic ★, note, consent ★ |
 | `newsletter-confirm`     | token ★. The answer's `result` is the subscriber: `{name, email, topics}`                                                               |
 | `newsletter-unsubscribe` | token or email                                                                                                                          |
@@ -334,7 +335,7 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                       |
 | project       | 7. `swemre-website-api` has the full body                                                                                                  |
-| page          | home, articles, topic, projects, search, newsletter, contact, resume, call-back, confirmed, unsubscribed, privacy-policy                   |
+| page          | home, articles, topic, projects, search, newsletter, contact, call-back, thanks, confirmed, unsubscribed, privacy-policy                   |
 | song          | 12 liked songs (the site shows 412 from settings); the first five have album art                                                           |
 | author        | `emre`                                                                                                                                     |
 | site-settings | one item: taglines, contact email, hero copy, newsletter cadence, the liked-songs total, the projects activity strip, socials, maintenance |

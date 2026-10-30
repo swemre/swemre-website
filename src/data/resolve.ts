@@ -41,8 +41,8 @@ const FIXED: Record<string, TemplateKey> = {
   '/search': 'search',
   '/newsletter': 'form',
   '/contact': 'form',
-  '/resume': 'form',
   '/call-back': 'form',
+  '/newsletter/thanks': 'newsletter-status',
   '/newsletter/confirmed': 'newsletter-status',
   '/newsletter/unsubscribed': 'newsletter-status',
 }

@@ -9,11 +9,13 @@
  * Contact: emre@swemre.com
  */
 
-// "0x05 // subscribe": a copy of the newsletter form. Subscribe carries the typed values to
-// /newsletter, which fills its own form and submits there (spec Q13).
+// "0x05 // subscribe": a copy of the newsletter form. Subscribe checks the email and consent,
+// signs up right here and goes on to the thank-you page (/newsletter/thanks).
 import {useState, type FormEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
+import {EMAIL_RE} from '../../contract/forms.ts'
 import {Checkbox, Chip, Field, useViewport} from '../../design/index.tsx'
+import {subscribe} from '../../forms/index.tsx'
 import {Prompt} from './kit/layout.tsx'
 import {Rail} from './kit/Rail.tsx'
 import {SectionBg} from './kit/SectionBg.tsx'
@@ -50,23 +52,42 @@ export function SubscribeSection() {
   const [foundVia, setFoundVia] = useState('')
   const [topics, setTopics] = useState<string[]>(['java', 'architecture'])
   const [consent, setConsent] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState('')
 
-  const submit = (e?: FormEvent) => {
+  const submit = async (e?: FormEvent) => {
     e?.preventDefault()
-    void navigate('/newsletter', {
-      state: {
-        prefill: {
-          name: fullName,
-          email,
-          role: describesYou,
-          source: foundVia,
-          topics,
-          consent,
-        },
-        submit: true,
-      },
+    if (busy) return
+    const local: Record<string, string> = {}
+    if (!EMAIL_RE.test(email.trim()))
+      local.email = 'Enter a full email address.'
+    if (!consent) local.consent = 'Tick this to subscribe.'
+    setErrors(local)
+    setFailed('')
+    if (Object.keys(local).length) return
+    setBusy(true)
+    const res = await subscribe({
+      name: fullName.trim(),
+      email: email.trim(),
+      role: describesYou,
+      source: foundVia || null,
+      topics,
+      consent,
     })
+    setBusy(false)
+    if (res.ok) {
+      void navigate('/newsletter/thanks', {
+        state: {name: fullName.trim(), email: email.trim(), topics},
+      })
+    } else if (Object.keys(res.fields).length) {
+      setErrors(res.fields)
+    } else {
+      setFailed('Not sent. Try again.')
+    }
   }
+  const fieldState = (key: string) =>
+    errors[key] ? ('error' as const) : busy ? ('busy' as const) : undefined
   const toggle = (key: string) =>
     setTopics(t => (t.includes(key) ? t.filter(k => k !== key) : [...t, key]))
 
@@ -87,6 +108,8 @@ export function SubscribeSection() {
       value={email}
       onChange={setEmail}
       autoComplete="email"
+      state={fieldState('email')}
+      error={errors.email}
     />
   )
   const describes = (
@@ -134,6 +157,8 @@ export function SubscribeSection() {
       name="consent"
       checked={consent}
       onChange={setConsent}
+      state={errors.consent ? 'error' : undefined}
+      error={errors.consent}
       label={
         <>
           Email me new articles and the occasional update. I’ve read the{' '}
@@ -158,6 +183,7 @@ export function SubscribeSection() {
       kind="primary"
       type="submit"
       iconRight="arrow-right"
+      state={busy ? 'busy' : undefined}
       block={block}
       style={block ? undefined : {width: 176}}
     />
@@ -174,6 +200,11 @@ export function SubscribeSection() {
         {chips}
         {check}
         <div>{button(true)}</div>
+        {failed && (
+          <span className="a2-msg" role="status">
+            {failed}
+          </span>
+        )}
       </>
     )
   else if (vp === 't')
@@ -191,6 +222,11 @@ export function SubscribeSection() {
         {chips}
         {check}
         <div>{button()}</div>
+        {failed && (
+          <span className="a2-msg" role="status">
+            {failed}
+          </span>
+        )}
       </>
     )
   else
@@ -210,7 +246,9 @@ export function SubscribeSection() {
           {found}
           <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
             {button()}
-            <span className="a2-msg" />
+            <span className="a2-msg" role="status">
+              {failed}
+            </span>
           </div>
         </div>
         <div
@@ -272,7 +310,7 @@ export function SubscribeSection() {
           <form
             aria-label="Subscribe to the newsletter"
             noValidate
-            onSubmit={submit}
+            onSubmit={e => void submit(e)}
             style={{
               display: 'flex',
               flexDirection: 'column',

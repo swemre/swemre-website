@@ -310,104 +310,6 @@ export const CONTACT: FormDef = {
   },
 }
 
-export const RESUME: FormDef = {
-  key: 'cv-request',
-  route: '/resume',
-  hue: 'aqua',
-  commits: ['cafe5ee', 'beefcab'],
-  fields: [
-    {key: 'fullName', kind: 'text', label: 'Full name', initial: ''},
-    {
-      key: 'email',
-      kind: 'email',
-      label: 'Email',
-      hint: 'The PDF is sent here, nowhere else.',
-      initial: '',
-    },
-    {
-      key: 'company',
-      kind: 'text',
-      label: 'Company',
-      required: true,
-      placeholder: 'Company, or “Independent”',
-      error: 'Enter your company, or “Independent”.',
-      initial: '',
-    },
-    {
-      key: 'reason',
-      kind: 'select',
-      label: 'Reason',
-      required: true,
-      options: opts([
-        'Hiring for a role',
-        'Freelance project',
-        'Conference or talk',
-        'Other',
-      ]),
-      error: 'Choose a reason.',
-      initial: '',
-    },
-    {
-      key: 'roleOrProject',
-      kind: 'text',
-      label: 'Role or project',
-      optional: true,
-      placeholder: 'What the role or project is about',
-      initial: '',
-    },
-    {
-      key: 'consent',
-      kind: 'check',
-      label: 'I agree my details are used to send the resume and to reply.',
-      required: true,
-      error: 'Tick this so I can send it.',
-      summaryLabel: 'Consent',
-      initial: false,
-    },
-  ],
-  groups: [
-    {
-      title: 'About you',
-      copy: 'So I know who is asking.',
-      rows: [{keys: ['fullName', 'email']}],
-    },
-    {
-      title: 'Why you need it',
-      copy: 'A line of context helps me answer well.',
-      rows: [{keys: ['company', 'reason']}, {keys: ['roleOrProject'], gap: 24}],
-    },
-    {
-      title: 'Send',
-      copy: 'One email with the PDF, nothing else.',
-      rows: [{keys: ['consent']}],
-    },
-  ],
-  submitLabel: 'Request resume',
-  submitIcon: 'arrow-right',
-  busyStatus: 'Sending your request. Keep this page open.',
-  failureStatus:
-    'That didn’t send. Nothing was lost, so press Try again or email me.',
-  done: {
-    title: 'Requested',
-    copy: 'The details I use to send it. Nothing else is stored.',
-  },
-  receipt: {
-    title: 'Resume on its way.',
-    copy: v =>
-      `Thanks, ${firstName(v.fullName)}. I check each request myself; the PDF arrives at ${str(v.email) || 'your email'} within one working day.`,
-    items: v => [
-      ['Name', given(v.fullName)],
-      ['Send to', given(v.email)],
-      ['Company', str(v.company)],
-      ['Reason', str(v.reason)],
-      ...(str(v.roleOrProject)
-        ? [['Role', str(v.roleOrProject)] as [string, string]]
-        : []),
-    ],
-    command: () => 'request --resume',
-  },
-}
-
 const SLOTS = [
   {value: 'weekday-mornings', label: 'Weekday mornings'},
   {value: 'weekday-afternoons', label: 'Weekday afternoons'},
@@ -542,7 +444,6 @@ export const CALLBACK: FormDef = {
 export const FORMS: Record<string, FormDef> = {
   newsletter: NEWSLETTER,
   contact: CONTACT,
-  'cv-request': RESUME,
   'callback-request': CALLBACK,
 }
 
