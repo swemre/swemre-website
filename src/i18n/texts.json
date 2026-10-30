@@ -573,8 +573,8 @@
     "tr": "Bülten, bir söz"
   },
   "home.songs.copy": {
-    "en": "Five tracks drawn at random from my Spotify liked songs. Each one opens in Spotify.",
-    "tr": "Spotify'da beğendiğim şarkılardan rastgele seçilmiş beş parça. Her biri Spotify'da açılır."
+    "en": "Five tracks from my Spotify liked songs. Each one opens in Spotify.",
+    "tr": "Spotify'da beğendiğim şarkılardan beş parça. Her biri Spotify'da açılır."
   },
   "home.songs.count": {
     "en": "{picks} of {total} liked songs",
@@ -586,8 +586,8 @@
   },
   "home.songs.eyebrow": {"en": "listening", "tr": "dinliyorum"},
   "home.songs.title": {
-    "en": "Random picks from my liked songs",
-    "tr": "Beğendiğim şarkılardan rastgele seçimler"
+    "en": "Picks from my liked songs",
+    "tr": "Beğendiğim şarkılardan seçimler"
   },
   "home.stack.claude": {
     "en": "My pair programmer. Never asks for a standup.",
