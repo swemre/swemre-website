@@ -744,6 +744,7 @@ function Subscribe({
           </span>
         </div>
         <form
+          autoComplete="off"
           noValidate
           aria-label={t('newsletter.form.label')}
           onSubmit={e => {

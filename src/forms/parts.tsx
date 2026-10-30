@@ -148,17 +148,8 @@ export function FormField({m, f}: {m: Machine; f: FieldSpec}) {
       optional={f.optional}
       required={f.required}
       options={f.options}
-      autoComplete={autoComplete(f)}
     />
   )
-}
-
-function autoComplete(f: FieldSpec): string | undefined {
-  if (f.kind === 'email') return 'email'
-  if (f.kind === 'tel') return 'tel'
-  if (f.key === 'name' || f.key === 'fullName') return 'name'
-  if (f.key === 'company') return 'organization'
-  return undefined
 }
 
 /** The field rows of a group: pairs side by side (one column on mobile), singles full width. */

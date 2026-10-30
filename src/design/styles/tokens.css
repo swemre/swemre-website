@@ -86,7 +86,14 @@
   --a2-hero-glow-1: rgba(104, 152, 230, 0.24);
   --a2-hero-glow-2: rgba(118, 112, 240, 0.14);
   --a2-stmt-glow: rgba(130, 160, 240, 0.07);
-  --a2-btn-glow: rgba(127, 168, 255, 0.75);
+  --a2-btn-glow: rgba(53, 99, 200, 0.28);
+  --a2-btn-bg: #2b4c8f;
+  --a2-btn-bg-hover: #33599f;
+  --a2-btn-text: #e9eefb;
+  --a2-pop-bg: #14171d;
+  --a2-pop-line: rgba(196, 214, 242, 0.14);
+  --a2-pop-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+  --a2-opt-hover: rgba(143, 180, 236, 0.08);
   --a2-panel-glow: rgba(53, 99, 200, 0.35);
   --a2-focus-glow: rgba(61, 111, 216, 0.6);
   --a2-arc-light: rgba(143, 180, 236, 0.26);
@@ -141,7 +148,7 @@
   --a2-focus-ring: rgba(143, 173, 218, 0.16);
   --a2-on-blue: #ffffff;
   --a2-island-bg: rgba(0, 0, 0, 0);
-  --a2-btn-line: rgba(196, 214, 242, 0.5);
+  --a2-btn-line: rgba(143, 180, 236, 0.3);
   --a2-btn2-line: rgba(196, 214, 242, 0.26);
   --a2-focus-ring-2: rgba(143, 173, 218, 0.2);
   --a2-empty-line: rgba(143, 180, 236, 0.22);
@@ -172,7 +179,7 @@
   --a2-shadow-pill: 0 10px 30px -14px rgba(0, 0, 0, 0.8);
   --a2-shadow-stamp: 0 20px 40px -16px rgba(0, 0, 0, 0.9);
   --a2-btn2-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --a2-btn-inset: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --a2-btn-inset: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   --a2-pill-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --a2-tile-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
@@ -247,6 +254,13 @@
   --a2-hero-glow-2: rgba(118, 112, 240, 0.09);
   --a2-stmt-glow: rgba(61, 111, 216, 0.05);
   --a2-btn-glow: rgba(61, 111, 216, 0.35);
+  --a2-btn-bg: #3d6fd8;
+  --a2-btn-bg-hover: #2a55b8;
+  --a2-btn-text: #ffffff;
+  --a2-pop-bg: #ffffff;
+  --a2-pop-line: rgba(12, 13, 16, 0.12);
+  --a2-pop-shadow: 0 24px 48px -16px rgba(20, 32, 70, 0.22);
+  --a2-opt-hover: rgba(12, 13, 16, 0.05);
   --a2-panel-glow: rgba(61, 111, 216, 0.12);
   --a2-focus-glow: rgba(61, 111, 216, 0.25);
   --a2-arc-light: rgba(61, 111, 216, 0.07);

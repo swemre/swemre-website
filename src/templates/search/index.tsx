@@ -200,12 +200,19 @@ function SearchControls({
   }
   return (
     <>
-      <form className="p2-big" role="search" onSubmit={submit}>
+      <form
+        autoComplete="off"
+        className="p2-big"
+        role="search"
+        onSubmit={submit}
+      >
         <Icon name="search" size={22} style={{color: 'var(--a2-link)'}} />
         <input
           ref={input}
           type="search"
           name="q"
+          autoComplete="off"
+          spellCheck={false}
           aria-label={t('qs.placeholder')}
           placeholder={t('qs.placeholder')}
           value={text}

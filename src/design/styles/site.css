@@ -316,6 +316,9 @@ html.a2-locked body {
     --a2-hero-glow-2: rgba(118, 112, 240, 0.09);
     --a2-stmt-glow: rgba(61, 111, 216, 0.05);
     --a2-btn-glow: rgba(61, 111, 216, 0.35);
+    --a2-btn-bg: #3d6fd8;
+    --a2-btn-bg-hover: #2a55b8;
+    --a2-btn-text: #ffffff;
     --a2-panel-glow: rgba(61, 111, 216, 0.12);
     --a2-focus-glow: rgba(61, 111, 216, 0.25);
     --a2-arc-light: rgba(61, 111, 216, 0.07);
@@ -591,5 +594,99 @@ html.a2-locked body {
     --a2-hero-mask: #000;
     --a2-code-bg: #10131a;
     color: var(--a2-text);
+  }
+}
+/* Select: the site's own dropdown (Field kind select). The button fills the control like an input;
+   the listbox opens under the control at its full width. */
+.a2-select {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
+}
+.a2-ctl:has(.a2-select) {
+  position: relative;
+  padding: 0;
+}
+.a2-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  text-align: left;
+  cursor: pointer;
+}
+.a2-select-btn:disabled {
+  cursor: not-allowed;
+}
+.a2-select-val {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.a2-select-btn.is-empty {
+  color: var(--a2-field-ph);
+}
+.a2-select-btn .a2-chev {
+  margin-left: auto;
+  color: var(--a2-text-lo);
+  display: grid;
+  transition: transform 0.16s ease;
+}
+.a2-select.is-open .a2-chev {
+  transform: rotate(180deg);
+}
+.a2-select-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  left: -1px;
+  right: -1px;
+  max-height: 288px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--a2-pop-bg);
+  border: 1px solid var(--a2-pop-line);
+  border-radius: var(--radius-control);
+  box-shadow: var(--a2-pop-shadow);
+  overscroll-behavior: contain;
+}
+.a2-select-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--a2-text);
+  cursor: pointer;
+}
+.a2-select-opt.is-empty {
+  color: var(--a2-field-ph);
+}
+.a2-select-opt.is-active {
+  background: var(--a2-opt-hover);
+  color: var(--a2-text-hi);
+}
+.a2-select-opt[aria-selected='true'] {
+  color: var(--a2-text-hi);
+  font-weight: 500;
+}
+.a2-select-opt[aria-selected='true'] .a2-icon,
+.a2-select-opt[aria-selected='true'] svg {
+  color: var(--a2-link);
+}
+@media (prefers-reduced-motion: reduce) {
+  .a2-select-btn .a2-chev {
+    transition: none;
   }
 }

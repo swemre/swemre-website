@@ -268,6 +268,7 @@ export function MobileMenu() {
           </span>
         </div>
         <form
+          autoComplete="off"
           role="search"
           onSubmit={e => {
             e.preventDefault()

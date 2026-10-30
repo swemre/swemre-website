@@ -157,6 +157,7 @@ export function FormPage({
             </div>
           ) : (
             <form
+              autoComplete="off"
               noValidate
               style={{borderBottom: '1px solid var(--a2-line)'}}
               onSubmit={e => {

@@ -457,7 +457,7 @@ button.a2-chip:hover {
   color: var(--a2-pale);
 }
 .a2-btn.is-primary:hover {
-  background: var(--a2-blue-hover);
+  background: var(--a2-btn-bg-hover);
 }
 .pf-in {
   flex: 1;

@@ -11,9 +11,11 @@
 
 // Field (V4-Comp-Field) and Checkbox (V4-Comp-Checkbox). Every field keeps its fixed 20px message
 // slot (a2-msg) so errors never move anything. States: focus (from the browser, or forced for
-// specimens), error, busy (read-only while sending), disabled.
+// specimens), error, busy (read-only while sending), disabled. Browser autofill and password
+// manager suggestions are off on every field; selects use the site's own dropdown (Select).
 import {useId, type ChangeEvent, type ReactNode, type Ref} from 'react'
 import {Icon, type IconName} from './Icon.tsx'
+import {Select} from './Select.tsx'
 import {cx} from './util.ts'
 import {t} from '../../i18n/index.ts'
 
@@ -24,10 +26,7 @@ export interface FieldProps {
   name: string
   kind?: 'text' | 'email' | 'tel' | 'area' | 'select'
   value?: string
-  onChange?(
-    value: string,
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ): void
+  onChange?(value: string): void
   onBlur?(): void
   placeholder?: string
   state?: FieldState
@@ -40,8 +39,7 @@ export interface FieldProps {
   options?: {value: string; label: string}[]
   icon?: IconName
   id?: string
-  autoComplete?: string
-  inputRef?: Ref<HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement>
+  inputRef?: Ref<HTMLInputElement & HTMLTextAreaElement>
   className?: string
 }
 
@@ -61,7 +59,6 @@ export function Field({
   options = [],
   icon,
   id,
-  autoComplete,
   inputRef,
   className,
 }: FieldProps) {
@@ -85,11 +82,8 @@ export function Field({
     name,
     className: 'pf-in',
     value,
-    onChange: (
-      e: ChangeEvent<
-        HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement
-      >,
-    ) => onChange?.(e.target.value, e),
+    onChange: (e: ChangeEvent<HTMLInputElement & HTMLTextAreaElement>) =>
+      onChange?.(e.target.value),
     onBlur,
     disabled,
     readOnly: busy || undefined,
@@ -98,28 +92,29 @@ export function Field({
     'aria-describedby': msg ? msgId : undefined,
     'aria-busy': busy || undefined,
     ref: inputRef,
+    autoComplete: 'off',
+    autoCorrect: 'off',
+    spellCheck: kind === 'area',
+    'data-1p-ignore': true,
+    'data-lpignore': 'true',
+    'data-form-type': 'other',
   }
   let control: ReactNode
   if (kind === 'area')
     control = <textarea {...common} placeholder={placeholder} />
   else if (kind === 'select')
     control = (
-      <>
-        <select
-          {...common}
-          className={cx('pf-in', !value && 'is-empty')}
-          disabled={disabled || busy}
-        >
-          {options.map(o => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-        <span className="a2-chev">
-          <Icon name="chevron-down" />
-        </span>
-      </>
+      <Select
+        id={fieldId}
+        name={name}
+        value={value}
+        options={options}
+        onChange={onChange}
+        onBlur={onBlur}
+        disabled={disabled || busy}
+        invalid={isError}
+        describedBy={msg ? msgId : undefined}
+      />
     )
   else
     control = (
@@ -127,7 +122,6 @@ export function Field({
         {...common}
         type={kind}
         placeholder={placeholder}
-        autoComplete={autoComplete}
         inputMode={
           kind === 'email' ? 'email' : kind === 'tel' ? 'tel' : undefined
         }

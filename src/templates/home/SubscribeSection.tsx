@@ -107,7 +107,6 @@ export function SubscribeSection() {
       name="fullName"
       value={fullName}
       onChange={setFullName}
-      autoComplete="name"
     />
   )
   const mail = (
@@ -117,7 +116,6 @@ export function SubscribeSection() {
       kind="email"
       value={email}
       onChange={setEmail}
-      autoComplete="email"
       state={fieldState('email')}
       error={errors.email}
     />
@@ -319,6 +317,7 @@ export function SubscribeSection() {
         </div>
         <div style={{marginTop: v(48, 48, 64)}}>
           <form
+            autoComplete="off"
             aria-label={t('newsletter.form.label')}
             noValidate
             onSubmit={e => void submit(e)}

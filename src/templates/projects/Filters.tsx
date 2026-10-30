@@ -80,6 +80,8 @@ export function SearchBox({
           type="search"
           className="pf-in"
           name="q"
+          autoComplete="off"
+          spellCheck={false}
           defaultValue={value}
           placeholder={t('projects.search.placeholder')}
           aria-keyshortcuts="/"

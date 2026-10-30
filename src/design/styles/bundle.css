@@ -518,12 +518,12 @@ fieldset {
   border: 1px solid transparent;
 }
 .a2-btn.is-primary {
-  background: var(--a2-blue);
+  background: var(--a2-btn-bg);
   border-color: var(--a2-btn-line);
-  color: var(--a2-on-blue);
+  color: var(--a2-btn-text);
   box-shadow:
     var(--a2-btn-inset),
-    0 12px 32px -10px var(--a2-btn-glow);
+    0 8px 24px -12px var(--a2-btn-glow);
 }
 .a2-btn.is-secondary {
   background: var(--a2-btn2-bg);
