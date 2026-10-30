@@ -38,6 +38,8 @@ const box = (hue: Hue | undefined, radius = 10): CSSProperties =>
         background: 'var(--a2-card-flat)',
       }
 
+const pctOf = (n: number) => Math.min(100, Math.max(0, n))
+
 const mono12: CSSProperties = {fontSize: 12}
 const h4Small: CSSProperties = {fontSize: 16, lineHeight: '24px'}
 
@@ -551,7 +553,7 @@ export function Coverage({p, hue}: {p: Of<'coverage'>; hue: Hue}) {
       className="a2-mono"
       style={{color: 'var(--a2-text-hi)', width: 40, textAlign: 'right'}}
     >
-      {n}%
+      {pctOf(n)}%
     </span>
   )
   return (
@@ -654,7 +656,7 @@ export function Coverage({p, hue}: {p: Of<'coverage'>; hue: Hue}) {
                     <span
                       style={{
                         display: 'block',
-                        width: `${r.coverage}%`,
+                        width: `${pctOf(r.coverage)}%`,
                         height: '100%',
                         borderRadius: 9,
                         background: hueVar(hue),

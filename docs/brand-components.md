@@ -10,7 +10,7 @@ On a project page, a section with `architecture` or `subpages` runs full width; 
 left column; the `prompt` of `coverage` or `subpages` is drawn in the section header; plain
 images (not `card`) follow the section as screenshots, the first one in a browser frame labelled
 with the host of the project's `url`. `hue` on an architecture box defaults to the section hue
-(`peri` for the first column).
+(`peri` for the first column). `coverage` is a percentage; the renderer clamps it to 0–100.
 
 The `/contact` and `/call-back` forms take text and option values from the query string
 (`/contact?message=…`), so a `cta` can open a filled-in form.
@@ -297,9 +297,7 @@ Label: Test coverage. Children: none.
             "type": "number"
           },
           "coverage": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100
+            "type": "number"
           }
         },
         "required": ["name", "tools", "coverage"]
