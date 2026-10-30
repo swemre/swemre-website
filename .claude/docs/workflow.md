@@ -109,16 +109,19 @@ approver. PRs created with Claude end with the line
   1. Release checklist (SWE-DOC-008 §5.2).
   2. Update the SVD (SWE-DOC-013) and bump `package.json`.
   3. Commit `chore(release): vX.Y.Z`, tag `vX.Y.Z`, push tag.
-  4. Host builds and deploys the tag (planned CI).
+  4. Build and deploy the tag by hand from a local machine (`scripts/deploy.sh` or
+     `scripts/deploy-cloudflare.sh`).
   5. Smoke test production: `/`, one article, search, RSS.
 
-## 6. Deployment (planned)
+## 6. Deployment
+
+No CI/CD. GitHub Actions and every other pipeline (host Git integrations, build hooks,
+preview deploys) are forbidden by the owner. All checks run locally.
 
 | Step        | Detail                                                             |
 | ----------- | ------------------------------------------------------------------ |
-| CI          | GitHub Actions: `npm ci`, `npm run checkstyle`, `npm run build`, tests |
-| Preview     | Every PR gets a preview URL from the host                           |
-| Production  | Tags on `main` deploy to `swemre.com`                               |
+| Checks      | Local only: `npm ci`, `npm run checkstyle`, `npm run build`, tests  |
+| Production  | A tag on `main`, built and deployed by hand with `scripts/deploy*.sh` |
 | Rollback    | Redeploy the previous tag                                           |
 | SPA routing | Host fallback to `index.html` (RSK-15)                              |
 

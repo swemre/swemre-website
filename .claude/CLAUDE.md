@@ -88,6 +88,10 @@ Engineering set (read on demand; index in `docs/engineering/README.md`):
     SRS requirement, the SDD section, the ICD (if an interface changed), the
     test design and the RTM row in the same change. Mark anything you could
     not verify as `Unverified`/`Designed`, never as `Pass`.
+11. **No CI/CD, ever.** GitHub Actions is forbidden, and so is any other
+    pipeline (`.github/workflows`, host Git integrations, build hooks,
+    preview deploys). Never add one; all checks run locally and deploys are
+    run by hand.
 
 ## Gotchas
 
