@@ -43,8 +43,12 @@ export function StatusBadge({
   return building ?? live ?? other
 }
 
+/** A live URL on this site (playlist-sync's songs block) is not a separate site to visit. */
+const ownSite = (url: string) =>
+  new URL(url, 'https://swemre.com').hostname === 'swemre.com'
+
 function ProjectLink({p}: {p: ProjectSummary}) {
-  return p.url ? (
+  return p.url && !ownSite(p.url) ? (
     <TextLink label="Visit site" href={p.url} icon="external" external />
   ) : (
     <TextLink label="View project" href={p.href} />

@@ -37,6 +37,8 @@ export interface ApiTerm {
   /** GET /terms only. */
   publicationCount?: number
   description?: string | null
+  /** Mock extension (not in API v2 yet): related topic slugs, shown for an empty topic. */
+  related?: string[]
 }
 
 export type ContentTypeKey =
@@ -227,6 +229,11 @@ export interface FieldMap {
     statusUrl?: string
     maintenance?: {from: string; until: string} | null
     likedSongsTotal?: number
+    /** The projects activity strip: commits per week, oldest first, and the latest commit. */
+    activity?: {
+      weeks: number[]
+      latest?: {at: Instant; project: string; message: string}
+    }
     social?: {
       github?: string
       youtube?: string

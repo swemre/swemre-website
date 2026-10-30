@@ -54,6 +54,19 @@ body {
 .a2-root > .a2-footer {
   flex: none;
 }
+/* Message fields are 144px like the boards: the control's min-height minus its 16px padding and
+   1px borders (the playables' 118px textarea made it 152px). */
+.a2-ctl.is-area textarea.pf-in {
+  display: block;
+  min-height: 110px;
+}
+/* Placeholders (and a select still on its empty "Choose one" option) use the boards' a2-ph colour. */
+.pf-in::placeholder {
+  color: var(--a2-field-ph);
+}
+select.pf-in.is-empty {
+  color: var(--a2-field-ph);
+}
 img {
   height: auto;
 }

@@ -147,7 +147,13 @@ export function sortProjects(list: ProjectSummary[], sort: ProjSort) {
       (a, b) =>
         (b.year ?? 0) - (a.year ?? 0) || b.updatedAt.localeCompare(a.updatedAt),
     )
-  else s.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  else
+    s.sort(
+      (a, b) =>
+        Number(b.status === 'now-building') -
+          Number(a.status === 'now-building') ||
+        b.updatedAt.localeCompare(a.updatedAt),
+    )
   return s
 }
 
@@ -203,6 +209,12 @@ function subject(f: ProjFilters, skip: Active): string {
   return q ? `${base} matching ${activeLabel(q)}` : base
 }
 
+/** Server-side stacks: a project on one of them is backend work. */
+const BACKEND = new Set(['java', 'kotlin', 'spring-boot', 'postgresql', 'go'])
+const isBackend = (p: ProjectSummary) =>
+  p.stack.some(t => BACKEND.has(t.slug)) ||
+  /^(java|kotlin|go)\b/i.test(p.language ?? '')
+
 /**
  * The empty-state copy for the last restrictive filter: why nothing matches, and what dropping
  * that filter shows. without = the projects that match every other filter.
@@ -219,11 +231,12 @@ export function explain(f: ProjFilters, without: ProjectSummary[]) {
         : ` to see ${n === 2 ? 'both' : 'them'}`
   const who = subject(f, last)
   const allSource = n > 0 && without.every(p => p.sourceAvailable)
+  const backend = n > 0 && without.every(isBackend)
   let why: string
   let it = see
   switch (last.kind) {
     case 'live':
-      why = `None of ${who} has a public deployment yet${allSource ? '; the work is open source instead' : ''}.`
+      why = `None of ${who} has a public deployment yet${allSource ? `; the ${backend ? 'backend ' : ''}work is open source instead` : ''}.`
       // "it" is the open source work.
       if (allSource) it = ' to see it'
       break

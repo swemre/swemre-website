@@ -279,14 +279,18 @@ export function Facets({
       </Group>
       <Hr />
       <Group label="Sort by">
-        <Field
-          label={<span className="a2-sr">Sort by</span>}
-          name="sort"
-          kind="select"
-          value={sort}
-          onChange={v => act.setSort(v as ProjSort)}
-          options={PROJ_SORTS}
-        />
+        {/* The board's sort field has gap 0 and no message slot; Field always draws
+            both (8 + 8 + 20), so pull them back until Field takes noSlot. */}
+        <div style={{marginTop: -8, marginBottom: -28}}>
+          <Field
+            label={<span className="a2-sr">Sort by</span>}
+            name="sort"
+            kind="select"
+            value={sort}
+            onChange={v => act.setSort(v as ProjSort)}
+            options={PROJ_SORTS}
+          />
+        </div>
       </Group>
     </>
   )

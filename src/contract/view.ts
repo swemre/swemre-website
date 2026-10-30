@@ -181,6 +181,14 @@ export interface Topic {
   articles: ArticleSummary[]
   projects: ProjectSummary[]
   others: TermRef[]
+  /** Related topics with their article counts (Articles-empty: Java, Backend, Architecture). */
+  related?: TermRef[]
+}
+/** The projects activity strip (useActivity). */
+export interface Activity {
+  /** Commits per week, oldest first (26 weeks). */
+  weeks: number[]
+  latest?: {at: string; project: string; message: string}
 }
 export interface SiteSettings {
   tagline: string

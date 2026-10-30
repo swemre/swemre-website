@@ -967,20 +967,20 @@ function ExchangePanel({m}: {m: Machine}) {
             </span>
           </div>
           <div style={line} />
-          <div style={line}>{'{'}</div>
+          {/* The real body is {"fields": {...}}; the wrapper shares the first and last lines so
+              the panel keeps the board's line count. */}
           <div style={line}>
-            {'  '}
+            {'{ '}
             {key('fields')}: {'{'}
           </div>
           {entries.map(([k, v], i) => (
             <div key={k} style={line}>
-              {'    '}
+              {'  '}
               {key(k)}: <JsonValue v={v} />
               {i < entries.length - 1 ? ',' : ''}
             </div>
           ))}
-          <div style={line}>{'  }'}</div>
-          <div style={line}>{'}'}</div>
+          <div style={line}>{'} }'}</div>
           <div className="a2-hr" style={{margin: '24px 0'}} />
           <div className="a2-lo">// response</div>
           <div

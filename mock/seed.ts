@@ -28,6 +28,7 @@ export interface SeedTerm {
   slug: string
   name: string
   description?: string
+  related?: string[]
 }
 interface SeedBlock {
   type: string
@@ -158,6 +159,7 @@ export function loadMockData(
     name: t.name,
     slug: t.slug,
     description: t.description ?? null,
+    ...(t.related ? {related: t.related} : {}),
   }))
   const term = (kind: 'CATEGORY' | 'TAG', slug: string): ApiTerm => {
     const t = terms.find(x => x.kind === kind && x.slug === slug)

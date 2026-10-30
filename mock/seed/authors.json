@@ -5,6 +5,7 @@
     "excerpt": "I build Java services and React front ends, and write down what I learn while building them.",
     "publishedAt": "2026-01-01T08:00:00Z",
     "updatedAt": "2026-10-23T08:00:00Z",
+    "cover": "avatar-emre",
     "fields": {
       "name": "Emre",
       "role": "Software engineer",
@@ -23,7 +24,12 @@
       ]
     },
     "body": [
-      {"type": "paragraph", "props": {"text": "I spent years building enterprise Java. Now I build my own products: SwePress, the API behind it and this website, and I write about what I learn on the way."}}
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "I spent years building enterprise Java. Now I build my own products: SwePress, the API behind it and this website, and I write about what I learn on the way."
+        }
+      }
     ]
   }
 ]

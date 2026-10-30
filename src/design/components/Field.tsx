@@ -104,7 +104,11 @@ export function Field({
   else if (kind === 'select')
     control = (
       <>
-        <select {...common} disabled={disabled || busy}>
+        <select
+          {...common}
+          className={cx('pf-in', !value && 'is-empty')}
+          disabled={disabled || busy}
+        >
           {options.map(o => (
             <option key={o.value} value={o.value}>
               {o.label}

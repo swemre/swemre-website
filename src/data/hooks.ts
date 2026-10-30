@@ -17,6 +17,7 @@ import {useMemo} from 'react'
 import {useLocation} from 'react-router-dom'
 import type {ApiPublication, ApiPublicationSummary} from '../contract/api.ts'
 import type {
+  Activity,
   Article,
   ArticleSummary,
   Author,
@@ -116,7 +117,7 @@ const articleSummaries = (items: ApiPublicationSummary[]) =>
 const projectSummaries = (items: ApiPublicationSummary[]) =>
   items.map(toProjectSummary).sort(byProjectOrder)
 
-/** Article topic tags with their article counts, most used first (seed order on ties). */
+/** Article topic tags with their article counts, most used first (terms order on ties). */
 function articleTopics(
   articles: ApiPublicationSummary[],
   tags: {slug: string; name: string}[],
@@ -128,10 +129,8 @@ function articleTopics(
         counts.set(t.slug, (counts.get(t.slug) ?? 0) + 1)
     }
   }
-  const order = new Map<string, number>()
-  articles
-    .flatMap(a => a.terms)
-    .forEach((t, i) => !order.has(t.slug) && order.set(t.slug, i))
+  // Ties keep the order of GET /terms (the CMS's order; the boards follow it).
+  const order = new Map(tags.map((t, i) => [t.slug, i]))
   return [...counts.entries()]
     .sort(
       (a, b) => b[1] - a[1] || (order.get(a[0]) ?? 0) - (order.get(b[0]) ?? 0),
@@ -153,6 +152,21 @@ export function useSettings(): Loadable<SiteSettings> {
   const pub = usePub('site-settings')
   return useMemo(
     () => settle(forced, [pub], () => toSettings(data(pub))),
+    [forced, pub],
+  )
+}
+
+/** name 'activity'. The projects activity strip, from the site settings; empty without weeks. */
+export function useActivity(): Loadable<Activity> {
+  const forced = useForced('activity')
+  const pub = usePub('site-settings')
+  return useMemo(
+    () =>
+      settle(forced, [pub], () => {
+        const a = (data(pub)?.fields as {activity?: Activity} | undefined)
+          ?.activity
+        return a?.weeks?.length ? {weeks: a.weeks, latest: a.latest} : undefined
+      }),
     [forced, pub],
   )
 }
@@ -395,6 +409,13 @@ export function useTopic(term: string): Loadable<Topic> {
             ),
           ),
           others: topics.filter(x => x.slug !== term),
+          related: t.related?.length
+            ? t.related.map(
+                slug =>
+                  topics.find(x => x.slug === slug) ??
+                  termRef(data(tags).find(x => x.slug === slug) ?? t, 0),
+              )
+            : undefined,
         }
       }),
     [forced, articles, projects, tags, term],

@@ -35,7 +35,6 @@ import type {SearchResult} from '../contract/view.ts'
 import {useChrome} from './context.ts'
 import {useFocusTrap, useScrollLock} from './hooks.ts'
 
-const TRY = ['spring', 'kubernetes']
 const PAD = {m: 64, t: 96, d: 96, '4k': 128} as const
 
 function escapeRe(s: string) {
@@ -62,19 +61,6 @@ function lineOf(r: SearchResult) {
   if (r.kind === 'article') return r.summary ?? r.meta ?? ''
   const head = [r.meta, ...r.tags].filter(Boolean).join(' · ')
   return r.summary ? `${head}: ${r.summary}` : head
-}
-
-/** "nothing found" beside a Try chip whose query has no quick matches. */
-function TryChip({q, onPick}: {q: string; onPick(q: string): void}) {
-  const res = useSearch(q)
-  return (
-    <button type="button" className="a2-chip" onClick={() => onPick(q)}>
-      {q}
-      {res.status === 'empty' && (
-        <span className="a2-count">nothing found</span>
-      )}
-    </button>
-  )
 }
 
 export function SearchDialog() {
@@ -178,7 +164,7 @@ export function SearchDialog() {
           {deferred && (
             <span
               className="a2-mono"
-              style={{whiteSpace: 'nowrap'}}
+              style={{whiteSpace: 'nowrap', marginLeft: 'auto'}}
               aria-live="polite"
             >
               {res.status === 'loading'
@@ -186,23 +172,15 @@ export function SearchDialog() {
                 : `${total} ${total === 1 ? 'result' : 'results'}`}
             </span>
           )}
-          {wide ? (
+          {wide && (
             <button
               type="button"
               className="pf-esc"
               onClick={close}
               aria-label="Close search"
+              style={deferred ? undefined : {marginLeft: 'auto'}}
             >
               <Kbd>Esc</Kbd>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="pf-esc pf-x"
-              onClick={close}
-              aria-label="Close search"
-            >
-              <Icon name="x" size={18} />
             </button>
           )}
         </div>
@@ -337,29 +315,6 @@ export function SearchDialog() {
               </p>
             </div>
           )}
-          <div
-            className="a2-cap"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 8,
-              padding: total > 0 || nomatch ? '0 24px 16px' : '16px 24px',
-            }}
-          >
-            <span className="a2-micro">Try</span>
-            {TRY.map(t => (
-              <TryChip
-                key={t}
-                q={t}
-                onPick={v => {
-                  setQ(v)
-                  setActive(0)
-                  input.current?.focus()
-                }}
-              />
-            ))}
-          </div>
         </div>
         <div
           className="a2-cap"
@@ -388,7 +343,7 @@ export function SearchDialog() {
           )}
           <TextLink
             label={
-              nomatch ? `All results for “${deferred}”` : 'See all results'
+              q.trim() ? `All results for “${q.trim()}”` : 'See all results'
             }
             href={q.trim() ? all : '/search'}
             onClick={close}

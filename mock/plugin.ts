@@ -27,6 +27,7 @@ import type {
 } from '../src/contract/api.ts'
 import {loadMockData, type MockData} from './seed.ts'
 import {validateSubmission} from './forms.ts'
+import {buildRss} from './rss.ts'
 
 export interface MockOptions {
   /** VITE_API_BASE as a path, default /api. */
@@ -35,6 +36,8 @@ export interface MockOptions {
   channel?: string
   /** VITE_READ_KEY, default local-mock. */
   readKey?: string
+  /** VITE_SITE_URL, for the links in /rss.xml; default http://localhost:5173. */
+  siteUrl?: string
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -158,12 +161,19 @@ export function createMockMiddleware(
   const apiBase = (opts.apiBase ?? '/api').replace(/\/$/, '')
   const channel = opts.channel ?? 'swemre-website'
   const readKey = opts.readKey ?? 'local-mock'
+  const siteUrl = opts.siteUrl ?? 'http://localhost:5173'
   const prefix = `${apiBase}/public/v2/channels/`
   const load = (): MockData =>
     loadMockData(join(HERE, 'seed'), join(HERE, 'media'), apiBase, channel)
 
   return (req, res, next) => {
     const url = new URL(req.url ?? '/', 'http://mock.local')
+    if (url.pathname === '/rss.xml' && req.method === 'GET') {
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8')
+      res.setHeader('Cache-Control', 'no-store')
+      return res.end(buildRss(load(), siteUrl))
+    }
     if (!url.pathname.startsWith(prefix)) return next()
     handle(req, res, url).catch((e: unknown) => {
       console.error('[mock-api]', e)
@@ -230,7 +240,6 @@ export function createMockMiddleware(
       const terms = data.terms
         .filter(t => !kind || t.kind === kind)
         .filter(t => (t.publicationCount ?? 0) > 0 || t.kind === 'TAG')
-        .sort((a, b) => a.name.localeCompare(b.name))
       return send(res, 200, terms)
     }
     if (method === 'GET' && route === 'redirects')
@@ -367,6 +376,21 @@ export function mockApi(opts: MockOptions = {}): Plugin {
     },
     configurePreviewServer(server) {
       server.middlewares.use(createMockMiddleware(opts))
+    },
+    // The build ships the feed too, so a static mock build has /rss.xml.
+    generateBundle() {
+      const apiBase = (opts.apiBase ?? '/api').replace(/\/$/, '')
+      const data = loadMockData(
+        join(HERE, 'seed'),
+        join(HERE, 'media'),
+        apiBase,
+        opts.channel ?? 'swemre-website',
+      )
+      this.emitFile({
+        type: 'asset',
+        fileName: 'rss.xml',
+        source: buildRss(data, opts.siteUrl ?? 'http://localhost:5173'),
+      })
     },
   }
 }

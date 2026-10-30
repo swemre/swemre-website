@@ -147,6 +147,7 @@ export {
   glyphFor,
   articleHue,
   isExternal,
+  isDocumentLink,
   projectHue,
   projectGlyph,
   relativeTime,

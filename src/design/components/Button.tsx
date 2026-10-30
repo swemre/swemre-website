@@ -12,7 +12,7 @@
 // Button (V4-Comp-Button): 48 high, radius 6; primary, secondary, ghost, danger; busy and
 // disabled. Arrows go right of the label, other icons left. Busy shows the spinner and "Sending…".
 import type {ButtonHTMLAttributes, ReactNode} from 'react'
-import {Anchor} from './Link.tsx'
+import {Anchor, type AnchorProps} from './Link.tsx'
 import {Icon, type IconName} from './Icon.tsx'
 import {cx} from './util.ts'
 
@@ -79,6 +79,7 @@ export function Button({
         className={cls}
         aria-busy={busy || undefined}
         style={rest.style}
+        onClick={rest.onClick as AnchorProps['onClick']}
       >
         {inner}
       </Anchor>

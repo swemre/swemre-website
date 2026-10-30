@@ -59,10 +59,6 @@
   color: var(--a2-text-hi);
   border-color: var(--a2-line-3);
 }
-.a2-cmp .a2-soc {
-  width: 44px;
-  height: 44px;
-}
 .a2-tree a:hover {
   background: var(--a2-tree-bg);
 }

@@ -136,7 +136,7 @@ export function TopicTemplate({route}: TemplateProps) {
           kind={state.status === 'error' ? 'error' : 'empty'}
           retry={state.status === 'error' ? state.retry : undefined}
           filter={{topic: slug, topicName: name, saved: false, more: false}}
-          related={topic?.others.slice(0, 3) ?? []}
+          related={topic?.related ?? topic?.others.slice(0, 3) ?? []}
           onShowAll={() => void navigate('/articles')}
           onTopic={s => void navigate(`/articles/topic/${s}`)}
         />

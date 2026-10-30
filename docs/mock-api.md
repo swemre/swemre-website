@@ -118,6 +118,13 @@ GET /api/public/v2/channels/swemre-website/publications/about
 Returns every category and tag, with `publicationCount`. `?kind=CATEGORY` or `?kind=TAG`
 filters the list, and any other `kind` gets `400`.
 
+- The list keeps the CMS's order, which is the order in `mock/seed/terms.json`. Topics with the
+  same article count are listed in this order, as the boards do (Architecture 4, React 3,
+  Backend 3, …).
+- A tag may carry `related` (topic slugs). The empty Kotlin topic uses it for its "Related
+  topics": `"related": ["java", "backend", "architecture"]`. This field is a mock extension;
+  API v2 does not have it yet, and without it the site shows the three most used topics.
+
 ```json
 [
   {
@@ -176,6 +183,17 @@ Form test addresses:
 
 - An email (or call-back contact) starting with `fail@` gets `504`.
 - One starting with `slow@` is answered after 3 s.
+
+## GET /rss.xml
+
+In mock mode, the plugin also serves the site's feed at `/rss.xml`. It is RSS 2.0, built from
+the seeded articles (`mock/rss.ts`).
+
+- Items are newest first. Each has its title, link, guid, pubDate, author and excerpt, with one
+  `category` per topic.
+- Links start with `VITE_SITE_URL`.
+- `npm run build` in mock mode also writes it to `dist/rss.xml`.
+- In live mode the plugin is off; the feed then comes from the API side.
 
 ## Errors
 
@@ -240,7 +258,7 @@ Two more dev switches skip the API altogether:
 
 - `?state=<hook>:<loading|empty|error>` forces a data hook into that state. It takes a comma
   list. The names are `settings`, `page`, `articles`, `article`, `projects`, `project`, `songs`,
-  `topic`, `terms`, `author`, `search` and `mega`.
+  `topic`, `terms`, `author`, `search`, `mega` and `activity`.
 - `?seed=0` shows the boards' five songs in board order. Without it the song order is random on
   each visit.
 
@@ -264,6 +282,25 @@ Each seed file holds one content type:
 - `media:<name>` stands for a file in `mock/media`.
 
 `mock/seed.ts` turns them into the API's wire shapes. Ids are stable UUIDs made from the names.
+
+### Site settings
+
+The one `site-settings` publication (slug `site-settings`) holds the site-wide values.
+`fields.activity` feeds the projects activity strip (`useActivity()`):
+
+```json
+"activity": {
+  "weeks": [13, 19, 10, 22, 16, 25, 19, 13, 22, 28, 16, 10, 19, 25, 22, 13, 16, 28, 22, 19, 25, 16, 22, 28, 25, 19],
+  "latest": {"at": "2026-10-27T07:12:00Z", "project": "swemre.com", "message": "fix nav focus ring"}
+}
+```
+
+- `weeks` holds 26 weekly commit counts, oldest first.
+- `latest` is the latest commit.
+- Without `weeks`, the hook is empty and the strip is hidden.
+
+The author `emre` has the portrait `mock/media/avatar-emre.png` as its `cover`, the same image
+as `public/images/avatar-384.png`.
 
 ### How a page picks its template
 
@@ -293,15 +330,15 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 
 ### Seed content
 
-| Type          | Items                                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                 |
-| project       | 7. `swemre-website-api` has the full body                                                                                            |
-| page          | home, articles, topic, projects, search, newsletter, contact, resume, call-back, confirmed, unsubscribed, privacy-policy             |
-| song          | 12 liked songs (the site shows 412 from settings); the first five have album art                                                     |
-| author        | `emre`                                                                                                                               |
-| site-settings | one item: taglines, contact email, hero copy, the liked-songs total, socials, maintenance                                            |
-| terms         | 9 categories (site areas and article categories); 26 tags: 13 article topics (Kotlin has none), project-only tags, the reserved tags |
+| Type          | Items                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                       |
+| project       | 7. `swemre-website-api` has the full body                                                                                                  |
+| page          | home, articles, topic, projects, search, newsletter, contact, resume, call-back, confirmed, unsubscribed, privacy-policy                   |
+| song          | 12 liked songs (the site shows 412 from settings); the first five have album art                                                           |
+| author        | `emre`                                                                                                                                     |
+| site-settings | one item: taglines, contact email, hero copy, newsletter cadence, the liked-songs total, the projects activity strip, socials, maintenance |
+| terms         | 9 categories (site areas and article categories); 26 tags: 13 article topics (Kotlin has none), project-only tags, the reserved tags       |
 
 The articles `typed-api-clients` and `ai-pair-programming`, and the copy of the `tokenset`
 project, are made up to fill the lists. No board shows them in full.

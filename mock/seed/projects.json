@@ -3,12 +3,7 @@
     "slug": "swepress",
     "title": "SwePress",
     "excerpt": "The content management system behind swemre.com: workspaces, a block editor, forms and channels.",
-    "tags": [
-      "react",
-      "typescript",
-      "cms",
-      "featured"
-    ],
+    "tags": ["react", "typescript", "cms", "featured"],
     "publishedAt": "2026-01-20T08:00:00Z",
     "updatedAt": "2026-10-25T08:00:00Z",
     "fields": {
@@ -22,10 +17,7 @@
       "order": 1,
       "hue": "peri",
       "glyph": "SP",
-      "related": [
-        "shared-block-model",
-        "swemre-blocks"
-      ],
+      "related": ["shared-block-model", "swemre-blocks"],
       "tagline": "Block editor CMS"
     },
     "body": [
@@ -51,12 +43,7 @@
     "slug": "swemre-website-api",
     "title": "swemre-website-api",
     "excerpt": "The backend of the websites managed from SwePress: a Spring Boot modular monolith with one PostgreSQL schema per module.",
-    "tags": [
-      "java",
-      "spring-boot",
-      "postgresql",
-      "featured"
-    ],
+    "tags": ["java", "spring-boot", "postgresql", "featured"],
     "publishedAt": "2026-02-02T08:00:00Z",
     "updatedAt": "2026-10-26T08:00:00Z",
     "fields": {
@@ -275,11 +262,7 @@
     "slug": "swemre-blocks",
     "title": "swemre-blocks",
     "excerpt": "The block package shared by the SwePress editor and the website renderer.",
-    "tags": [
-      "react",
-      "typescript",
-      "featured"
-    ],
+    "tags": ["react", "typescript", "featured"],
     "publishedAt": "2025-05-12T08:00:00Z",
     "updatedAt": "2026-10-20T08:00:00Z",
     "fields": {
@@ -292,10 +275,7 @@
       "order": 3,
       "hue": "lilac",
       "glyph": "[ ]",
-      "related": [
-        "shared-block-model",
-        "swepress"
-      ],
+      "related": ["shared-block-model", "swepress"],
       "tagline": "Shared block renderer"
     },
     "body": [
@@ -311,12 +291,7 @@
     "slug": "swemre-com",
     "title": "swemre.com",
     "excerpt": "This website: articles, projects, songs and the request forms, built with React 19, Vite and Tailwind CSS.",
-    "tags": [
-      "react",
-      "tailwind-css",
-      "vite",
-      "featured"
-    ],
+    "tags": ["react", "tailwind-css", "vite", "featured"],
     "publishedAt": "2025-03-01T08:00:00Z",
     "updatedAt": "2026-10-27T06:12:00Z",
     "fields": {
@@ -330,10 +305,7 @@
       "order": 4,
       "hue": "sky",
       "glyph": "W",
-      "related": [
-        "dark-mode-css-variables",
-        "vps-traefik-certbot"
-      ],
+      "related": ["dark-mode-css-variables", "vps-traefik-certbot"],
       "tagline": "This website"
     },
     "body": [
@@ -349,11 +321,7 @@
     "slug": "spring-service-template",
     "title": "spring-service-template",
     "excerpt": "The template every new Spring Boot service starts from: feature packages, Flyway, Testcontainers, Checkstyle.",
-    "tags": [
-      "java",
-      "spring-boot",
-      "testing"
-    ],
+    "tags": ["java", "spring-boot", "testing"],
     "publishedAt": "2026-03-10T08:00:00Z",
     "updatedAt": "2026-10-23T08:00:00Z",
     "fields": {
@@ -387,9 +355,7 @@
     "slug": "tokenset",
     "title": "tokenset",
     "excerpt": "Design tokens in one JSON file, built into CSS variables for a dark and a light theme.",
-    "tags": [
-      "css"
-    ],
+    "tags": ["css"],
     "publishedAt": "2025-08-04T08:00:00Z",
     "updatedAt": "2026-08-14T08:00:00Z",
     "fields": {
@@ -403,9 +369,7 @@
       "order": 6,
       "hue": "mist",
       "glyph": "--",
-      "related": [
-        "dark-mode-css-variables"
-      ],
+      "related": ["dark-mode-css-variables"],
       "tagline": "Theme tokens to CSS"
     },
     "body": [
@@ -421,10 +385,7 @@
     "slug": "playlist-sync",
     "title": "playlist-sync",
     "excerpt": "Pulls my Spotify liked songs once a day for the picks on the home page.",
-    "tags": [
-      "typescript",
-      "node-js"
-    ],
+    "tags": ["typescript", "node-js"],
     "publishedAt": "2024-09-15T08:00:00Z",
     "updatedAt": "2026-07-27T08:00:00Z",
     "fields": {

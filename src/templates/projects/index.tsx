@@ -16,7 +16,7 @@
 import {useCallback, useRef, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import type {TemplateProps} from '../../contract/templates.ts'
-import {useProjects} from '../../data/hooks.ts'
+import {useActivity, useProjects} from '../../data/hooks.ts'
 import {Button, Icon, Skeleton} from '../../design/index.tsx'
 import {ListSection, StateLayout} from '../home/kit/list.tsx'
 import {ListHeader} from '../home/kit/ListHeader.tsx'
@@ -38,13 +38,20 @@ import {
   type ProjSort,
   type ProjView,
 } from './model.ts'
-import {HiddenBar, NoMatches, ProjectGrid, SummaryBar} from './Results.tsx'
+import {
+  ActivityStrip,
+  HiddenBar,
+  NoMatches,
+  ProjectGrid,
+  SummaryBar,
+} from './Results.tsx'
 
 const FILTER_KEYS = ['q', 'year', 'stack', 'live', 'source']
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- same props as every template
 export function ProjectsTemplate(_props: TemplateProps) {
   const state = useProjects()
+  const activity = useActivity()
   const [params, setParams] = useSearchParams()
   const all = state.status === 'ready' ? state.data : []
   const stacks = stackFacets(all)
@@ -195,6 +202,11 @@ export function ProjectsTemplate(_props: TemplateProps) {
         onSort={act.setSort}
         onView={nv => patch({view: nv === 'list' ? 'list' : undefined})}
       />
+      {shownList.length > 0 &&
+        activity.status === 'ready' &&
+        activity.data.weeks.length > 0 && (
+          <ActivityStrip data={activity.data} />
+        )}
       <div style={{marginTop: 32}}>
         {shownList.length > 0 ? (
           <ProjectGrid items={shownList} view={view} />

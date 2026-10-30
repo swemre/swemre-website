@@ -15,7 +15,7 @@
 import type {TermRef} from '../../contract/view.ts'
 import {Button, Chip} from '../../design/index.tsx'
 import {ChipRow, ListSection, StateLayout} from '../home/kit/list.tsx'
-import {HashIcon, StateNumber, StatePanel} from '../home/kit/StatePanel.tsx'
+import {StateNumber, StatePanel} from '../home/kit/StatePanel.tsx'
 import type {FilterState} from './model.ts'
 
 export function ArticleStates({
@@ -87,7 +87,7 @@ export function ArticleStates({
   ) : topic ? (
     <StatePanel
       hue="blue"
-      icon={<HashIcon />}
+      icon="hash"
       title={`Nothing on ${name} yet`}
       copy={`No article is tagged ${name} so far. Clear the filter to see everything, or follow the RSS feed to hear when the first one is out.`}
       command={`ls ~/articles --topic ${topic}`}

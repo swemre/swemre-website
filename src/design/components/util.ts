@@ -44,11 +44,22 @@ export function formatDate(iso: string): string {
   const d = new Date(iso)
   return Number.isNaN(d.getTime()) ? iso : DATE.format(d)
 }
+/** A file the server sends as a document (feed, PDF, image...), not a client route. */
+export function isDocumentLink(href: string): boolean {
+  const path = href.split(/[?#]/)[0]
+  // A known list, so slugs with a dot (/topics/next.js) stay routes.
+  return /\.(xml|rss|atom|pdf|txt|json|csv|ics|vcf|zip|png|jpe?g|gif|webp|svg|html?)$/i.test(
+    path,
+  )
+}
+
+/** True for links the router must not handle: other origins, mailto:, tel:, and document
+ * links such as /rss.xml or /resume.pdf (plain <a>, same tab). */
 export function isExternal(href: string): boolean {
   return (
     /^(https?:)?\/\//.test(href) ||
-    href.startsWith('mailto:') ||
-    href.startsWith('tel:')
+    /^(mailto|tel):/.test(href) ||
+    isDocumentLink(href)
   )
 }
 

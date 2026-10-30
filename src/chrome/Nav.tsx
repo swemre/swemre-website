@@ -37,8 +37,9 @@ function useScrolled(): boolean {
   return scrolled
 }
 
+/** Shows the theme a click switches to (boards: sun on dark, "Switch to light theme"). */
 function ThemeIcon() {
-  return <Icon name={useTheme().theme === 'light' ? 'sun' : 'moon'} />
+  return <Icon name={useTheme().theme === 'light' ? 'moon' : 'sun'} />
 }
 
 export function Nav({

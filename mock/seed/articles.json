@@ -4,11 +4,7 @@
     "title": "A Spring Boot template for new services",
     "excerpt": "The baseline I start every new Spring Boot service from: feature packages, Flyway, Testcontainers and a local verify build.",
     "section": "backend",
-    "tags": [
-      "java",
-      "spring-boot",
-      "backend"
-    ],
+    "tags": ["java", "spring-boot", "backend"],
     "publishedAt": "2026-10-23T08:00:00Z",
     "updatedAt": "2026-10-26T08:00:00Z",
     "fields": {
@@ -165,40 +161,19 @@
         "props": {
           "header": true,
           "rows": [
-            [
-              "Property",
-              "Default",
-              "Purpose"
-            ],
-            [
-              "server.port",
-              "8080",
-              "HTTP port"
-            ],
+            ["Property", "Default", "Purpose"],
+            ["server.port", "8080", "HTTP port"],
             [
               "spring.datasource.url",
               "jdbc:postgresql://localhost:5432/app",
               "Database"
             ],
-            [
-              "app.cors.origins",
-              "http://localhost:5173",
-              "Allowed front ends"
-            ]
+            ["app.cors.origins", "http://localhost:5173", "Allowed front ends"]
           ],
           "compact": [
-            [
-              "server.port",
-              "8080 · HTTP port"
-            ],
-            [
-              "datasource.url",
-              "localhost:5432/app"
-            ],
-            [
-              "cors.origins",
-              "localhost:5173"
-            ]
+            ["server.port", "8080 · HTTP port"],
+            ["datasource.url", "localhost:5432/app"],
+            ["cors.origins", "localhost:5173"]
           ]
         }
       },
@@ -244,11 +219,7 @@
     "title": "One block model for an editor and a website",
     "excerpt": "How a shared block package keeps the CMS preview and the published page identical.",
     "section": "frontend",
-    "tags": [
-      "react",
-      "typescript",
-      "architecture"
-    ],
+    "tags": ["react", "typescript", "architecture"],
     "publishedAt": "2026-10-12T08:00:00Z",
     "fields": {
       "readingTime": 8,
@@ -310,10 +281,7 @@
     "title": "Dark mode with CSS variables only",
     "excerpt": "Switching themes by swapping tokens, so components never need a dark variant.",
     "section": "frontend",
-    "tags": [
-      "css",
-      "design-systems"
-    ],
+    "tags": ["css", "design-systems"],
     "publishedAt": "2026-09-28T08:00:00Z",
     "fields": {
       "readingTime": 5,
@@ -360,11 +328,7 @@
     "title": "A modular monolith on Spring Boot",
     "excerpt": "Modules with their own client contracts and database schemas, in one deployable.",
     "section": "architecture",
-    "tags": [
-      "java",
-      "architecture",
-      "backend"
-    ],
+    "tags": ["java", "architecture", "backend"],
     "publishedAt": "2026-09-10T08:00:00Z",
     "fields": {
       "readingTime": 10,
@@ -426,10 +390,7 @@
     "title": "Testcontainers without the waiting",
     "excerpt": "Reusable containers, one network and a test category split that keeps the unit suite under ten seconds.",
     "section": "backend",
-    "tags": [
-      "java",
-      "testing"
-    ],
+    "tags": ["java", "testing"],
     "publishedAt": "2026-08-27T08:00:00Z",
     "fields": {
       "readingTime": 7,
@@ -476,10 +437,7 @@
     "title": "Outbox events between modules",
     "excerpt": "Why modules in one deployable still talk through events, and the table that makes it reliable.",
     "section": "architecture",
-    "tags": [
-      "java",
-      "architecture"
-    ],
+    "tags": ["java", "architecture"],
     "publishedAt": "2026-08-09T08:00:00Z",
     "fields": {
       "readingTime": 9,
@@ -520,10 +478,7 @@
     "title": "React Server Components, a backend view",
     "excerpt": "What changes when the component tree starts on the server, told by someone who mostly writes Java.",
     "section": "frontend",
-    "tags": [
-      "react",
-      "architecture"
-    ],
+    "tags": ["react", "architecture"],
     "publishedAt": "2026-07-22T08:00:00Z",
     "fields": {
       "readingTime": 8,
@@ -556,10 +511,7 @@
     "title": "Virtual threads in a real service",
     "excerpt": "Turning them on was one line. Finding the two places that pinned a carrier thread took a week.",
     "section": "backend",
-    "tags": [
-      "java",
-      "backend"
-    ],
+    "tags": ["java", "backend"],
     "publishedAt": "2026-07-04T08:00:00Z",
     "fields": {
       "readingTime": 6,
@@ -592,9 +544,7 @@
     "title": "One VPS, Traefik and a certbot certificate",
     "excerpt": "The whole production setup for this site: one machine, one router, one compose file.",
     "section": "devops",
-    "tags": [
-      "devops"
-    ],
+    "tags": ["devops"],
     "publishedAt": "2026-06-18T08:00:00Z",
     "fields": {
       "readingTime": 7,
@@ -627,10 +577,7 @@
     "title": "Flyway migrations you never edit",
     "excerpt": "A released migration is history. How to fix mistakes with a new versioned file instead.",
     "section": "backend",
-    "tags": [
-      "java",
-      "postgresql"
-    ],
+    "tags": ["java", "postgresql"],
     "publishedAt": "2026-05-15T08:00:00Z",
     "fields": {
       "readingTime": 5,
@@ -663,10 +610,7 @@
     "title": "Typed API clients from an OpenAPI file",
     "excerpt": "Generating the TypeScript client from the API description, so a renamed field breaks the build and not the page.",
     "section": "frontend",
-    "tags": [
-      "react",
-      "typescript"
-    ],
+    "tags": ["react", "typescript"],
     "publishedAt": "2026-04-28T08:00:00Z",
     "fields": {
       "readingTime": 6,
@@ -699,10 +643,7 @@
     "title": "Claude Code as a pair programmer",
     "excerpt": "What I hand to an AI agent, what I still write myself, and the checks that keep both honest.",
     "section": "workflow",
-    "tags": [
-      "ai",
-      "workflow"
-    ],
+    "tags": ["ai", "workflow"],
     "publishedAt": "2026-04-09T08:00:00Z",
     "fields": {
       "readingTime": 7,

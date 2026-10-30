@@ -252,7 +252,7 @@ export function MoreBar({
               onClick={onMore}
             />
           )}
-          {rss && <TextLink label="RSS feed" href={rss} arrow="rss" external />}
+          {rss && <TextLink label="RSS feed" href={rss} arrow="rss" />}
         </div>
       </div>
     </>

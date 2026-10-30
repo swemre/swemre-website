@@ -158,7 +158,10 @@ export function ArticlesTemplate(_props: TemplateProps) {
         kind={status}
         retry={all.status === 'error' ? all.retry : undefined}
         filter={filter}
-        related={topics.filter(t => t.slug !== topic).slice(0, 3)}
+        related={
+          (topicData.status === 'ready' && topicData.data.related) ||
+          topics.filter(t => t.slug !== topic).slice(0, 3)
+        }
         onShowAll={() =>
           q.set({topic: undefined, saved: undefined, page: undefined})
         }

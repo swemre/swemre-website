@@ -27,6 +27,7 @@ export default defineConfig(({mode}) => {
               apiBase: env.VITE_API_BASE,
               channel: env.VITE_CHANNEL_KEY,
               readKey: env.VITE_READ_KEY,
+              siteUrl: env.VITE_SITE_URL,
             }),
           ]
         : []),

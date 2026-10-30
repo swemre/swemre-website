@@ -91,7 +91,7 @@ export function FormField({m, f}: {m: Machine; f: FieldSpec}) {
         tabIndex={-1}
         aria-describedby={`${id}-msg`}
       >
-        <legend className="a2-label">
+        <legend className="a2-label" style={{marginBottom: 8}}>
           {f.label}
           {f.optional && <em>optional</em>}
         </legend>
