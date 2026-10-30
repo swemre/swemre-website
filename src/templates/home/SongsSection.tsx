@@ -20,6 +20,7 @@ import {SectionBg} from './kit/SectionBg.tsx'
 import {Skel, StatePanel} from './kit/StatePanel.tsx'
 import {Anchor, Button, Icon, SectionHeader} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const SPOTIFY = 'https://open.spotify.com'
 const lilac = (a: number | string) => `rgb(var(--a2-hue-lilac-rgb) / ${a})`
@@ -144,7 +145,8 @@ function Cover({song, size}: {song: Song; size: number}) {
       className="a2-island"
       role="img"
       aria-label={
-        song.artwork?.alt ?? `${song.album ?? song.title} album cover`
+        song.artwork?.alt ??
+        t('home.songs.cover', {album: song.album ?? song.title})
       }
       style={{
         position: 'relative',
@@ -343,7 +345,7 @@ function Loading() {
   return (
     <>
       <span className="a2-sr" role="status">
-        Loading songs
+        {t('home.songs.loading')}
       </span>
       <div
         style={{
@@ -415,13 +417,13 @@ function Body({state, spotify}: {state: Loadable<Song[]>; spotify: string}) {
         <StatePanel
           hue="lilac"
           icon="music"
-          title="No songs to pick from"
-          copy="The liked-songs playlist is empty right now, so there is nothing to draw from. New picks show up on the next visit."
+          title={t('home.songs.empty.title')}
+          copy={t('home.songs.empty.copy')}
           command="playlist-sync --liked"
           result="0 tracks"
           actions={
             <Button
-              label="Open Spotify"
+              label={t('home.songs.open')}
               kind="secondary"
               iconRight="arrow-up-right"
               href={spotify}
@@ -433,20 +435,20 @@ function Body({state, spotify}: {state: Loadable<Song[]>; spotify: string}) {
       return (
         <StatePanel
           icon="cloud-off"
-          title="Spotify did not answer"
-          copy="The picks could not be fetched from Spotify. The rest of the page works; try again in a moment."
+          title={t('home.songs.error.title')}
+          copy={t('home.songs.error.copy')}
           command="GET /api/public/v2/channels/swemre/songs"
           result="502 Bad Gateway"
           actions={
             <>
               <Button
-                label="Try again"
+                label={t('form.retry')}
                 kind="secondary"
                 iconLeft="refresh"
                 onClick={state.retry}
               />
               <Button
-                label="Open Spotify"
+                label={t('home.songs.open')}
                 kind="ghost"
                 iconRight="arrow-up-right"
                 href={spotify}
@@ -496,13 +498,13 @@ export function SongsSection({
             <SectionHeader
               id="home-songs"
               number={['011', '0b', '', 'lilac']}
-              eyebrow="listening"
-              title="Random picks from my liked songs"
-              copy="Five tracks drawn at random from my Spotify liked songs. Each one opens in Spotify."
+              eyebrow={t('home.songs.eyebrow')}
+              title={t('home.songs.title')}
+              copy={t('home.songs.copy')}
               extra={
                 total ? (
                   <span className="a2-mono" style={{fontSize: 12}}>
-                    {picks} of {total} liked songs
+                    {t('home.songs.count', {picks, total})}
                   </span>
                 ) : undefined
               }

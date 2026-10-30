@@ -18,6 +18,7 @@ import {useCopied} from './clipboard.ts'
 import {LiveNote} from './copy.tsx'
 import {Icon, type IconName} from '../../design/index.tsx'
 import {scrollToId} from './scroll.ts'
+import {t} from '../../i18n/index.ts'
 
 const num = (i: number) => String(i + 1).padStart(2, '0')
 
@@ -39,7 +40,7 @@ export function ArticleTocList({
   return (
     <nav
       className="p2-toc"
-      aria-label="On this page"
+      aria-label={t('toc.label')}
       id={id}
       style={{marginTop: 16}}
     >
@@ -79,7 +80,7 @@ export function ArticleTocButton({
         aria-controls={listId}
         onClick={() => setOpen(o => !o)}
       >
-        <span className="a2-micro">On this page</span>
+        <span className="a2-micro">{t('toc.label')}</span>
         <span
           className="a2-small a2-hi"
           style={{
@@ -142,7 +143,7 @@ export function ShareLinks({title}: {title: string}) {
     <div style={{display: 'flex', gap: 8, marginTop: 16}}>
       <button
         type="button"
-        aria-label={copied ? 'Link copied' : 'Copy link'}
+        aria-label={copied ? t('copy.linkCopied') : t('toc.copyLink')}
         style={{...shareBox, color: copied ? 'var(--a2-soft)' : shareBox.color}}
         onClick={() => copy(url())}
       >
@@ -155,7 +156,7 @@ export function ShareLinks({title}: {title: string}) {
           `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url())}`,
       )}
       {ext(
-        'Email',
+        t('form.email'),
         'mail',
         () =>
           `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url())}`,
@@ -164,7 +165,7 @@ export function ShareLinks({title}: {title: string}) {
       <a href="/rss.xml" aria-label="RSS" style={shareBox}>
         <Icon name="rss" size={16} />
       </a>
-      <LiveNote text={copied ? 'Link copied' : ''} />
+      <LiveNote text={copied ? t('copy.linkCopied') : ''} />
     </div>
   )
 }
@@ -187,10 +188,10 @@ export function ArticleAside({
   const left = Math.max(0, Math.ceil(minutes * (1 - progress)))
   return (
     <div style={{position: 'sticky', top: 96}}>
-      <span className="a2-micro">On this page</span>
+      <span className="a2-micro">{t('toc.label')}</span>
       <ArticleTocList entries={entries} active={active} />
       <div className="a2-hr" style={{margin: '32px 0'}} />
-      <span className="a2-micro">Reading</span>
+      <span className="a2-micro">{t('toc.reading')}</span>
       <div
         className="p2-bar"
         style={{marginTop: 16}}
@@ -198,7 +199,7 @@ export function ArticleAside({
         aria-valuenow={pct}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label="Reading progress"
+        aria-label={t('toc.progress')}
       >
         <div style={{width: `${pct}%`}} />
       </div>
@@ -206,10 +207,10 @@ export function ArticleAside({
         style={{display: 'flex', justifyContent: 'space-between', marginTop: 8}}
       >
         <span className="a2-mono">{pct}%</span>
-        <span className="a2-mono">{left} min left</span>
+        <span className="a2-mono">{t('toc.left', {count: left})}</span>
       </div>
       <div className="a2-hr" style={{margin: '32px 0'}} />
-      <span className="a2-micro">Share</span>
+      <span className="a2-micro">{t('reactions.share')}</span>
       <ShareLinks title={title} />
     </div>
   )
@@ -224,8 +225,8 @@ export function PageTocNav({
   active: number
 }) {
   return (
-    <nav aria-label="On this page">
-      <span className="a2-micro">On this page</span>
+    <nav aria-label={t('toc.label')}>
+      <span className="a2-micro">{t('toc.label')}</span>
       <div
         style={{
           display: 'flex',
@@ -269,7 +270,7 @@ export function PageTocNav({
       </div>
       <div style={{marginTop: 24, paddingLeft: 16}}>
         <a className="a2-link" href="#top" onClick={ev => go(ev, '')}>
-          Back to top
+          {t('toc.top')}
           <Icon name="chevron-up" size={14} />
         </a>
       </div>
@@ -302,7 +303,7 @@ export function PageTocDisclosure({
             listStyle: 'none',
           }}
         >
-          <span className="a2-micro">On this page</span>
+          <span className="a2-micro">{t('toc.label')}</span>
           <span className="a2-mono" style={{marginLeft: 'auto'}}>
             {entries.length} sections
           </span>

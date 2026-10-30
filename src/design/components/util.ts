@@ -13,6 +13,7 @@
 import type {CSSProperties} from 'react'
 import type {Hue, ProjectSummary} from '../../contract/view.ts'
 import type {Viewport} from '../context.ts'
+import {intlLocale, t} from '../../i18n/index.ts'
 
 export type {Hue}
 export const HUES: Hue[] = ['blue', 'sky', 'lilac', 'peri', 'aqua']
@@ -33,7 +34,7 @@ export function cx(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ')
 }
 
-const DATE = new Intl.DateTimeFormat('en-US', {
+const DATE = new Intl.DateTimeFormat(intlLocale('en-US'), {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
@@ -172,12 +173,13 @@ export function projectGlyph(p: ProjectSummary): string {
 /** "2h ago", "2 days ago", "3 weeks ago", else the date. */
 export function relativeTime(iso: string, now = Date.now()): string {
   const s = Math.max(0, (now - new Date(iso).getTime()) / 1000)
-  if (s < 3600) return `${Math.max(1, Math.round(s / 60))}m ago`
-  if (s < 86400) return `${Math.round(s / 3600)}h ago`
+  if (s < 3600)
+    return t('time.minutesAgo', {count: Math.max(1, Math.round(s / 60))})
+  if (s < 86400) return t('time.hoursAgo', {count: Math.round(s / 3600)})
   const d = Math.round(s / 86400)
-  if (d < 14) return d === 1 ? '1 day ago' : `${d} days ago`
-  if (d < 60) return `${Math.round(d / 7)} weeks ago`
-  return `${Math.round(d / 30)} months ago`
+  if (d < 14) return t('time.daysAgo', {count: d})
+  if (d < 60) return t('time.weeksAgo', {count: Math.round(d / 7)})
+  return t('time.monthsAgo', {count: Math.round(d / 30)})
 }
 
 /** The cover hue of an article: the content's, else the board cycle by list position. */

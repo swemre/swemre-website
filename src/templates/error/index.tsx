@@ -14,6 +14,7 @@
 import type {TemplateProps} from '../../contract/templates.ts'
 import {Button} from '../../design/index.tsx'
 import {CodeMark, StatusHero, StatusLink} from '../parts/status.tsx'
+import {t} from '../../i18n/index.ts'
 
 function reload() {
   window.location.reload()
@@ -32,22 +33,22 @@ export function ErrorTemplate({route}: TemplateProps) {
           glow="var(--a2-err-rgb)"
         />
       }
-      markLabel="Server error"
+      markLabel={t('error.mark')}
       markColor="var(--a2-err-text)"
-      eyebrow="error 500"
-      detail={id ? `request id ${id}` : undefined}
-      title="Something broke on my side."
-      lead="The server ran into an error. It has been logged and I will look at it. Try again in a moment."
+      eyebrow={t('error.eyebrow', {code: 500})}
+      detail={id ? t('error.requestId', {id}) : undefined}
+      title={t('error.title')}
+      lead={t('error.lead')}
       actions={
         <>
           <Button
             kind="primary"
-            label="Try again"
+            label={t('form.retry')}
             iconLeft="refresh"
             onClick={reload}
           />
-          <StatusLink to="/">Home</StatusLink>
-          <StatusLink to="/articles">Articles</StatusLink>
+          <StatusLink to="/">{t('nav.home')}</StatusLink>
+          <StatusLink to="/articles">{t('nav.articles')}</StatusLink>
         </>
       }
     />

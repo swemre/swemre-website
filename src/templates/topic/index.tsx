@@ -33,6 +33,8 @@ import {Rail as HookRail} from '../home/kit/Rail.tsx'
 import {SectionBg} from '../home/kit/SectionBg.tsx'
 import {useQuery} from '../home/kit/url.ts'
 import {useCompact, useV} from '../home/kit/vp.ts'
+import {t} from '../../i18n/index.ts'
+import {tRich} from '../../i18n/rich.tsx'
 
 const titleCase = (slug: string) =>
   slug.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase())
@@ -51,27 +53,37 @@ export function TopicTemplate({route}: TemplateProps) {
 
   const countLine = (
     <span className="a2-cap">
-      <span className="a2-hi" style={{fontWeight: 600}}>
-        {count} {count === 1 ? 'article' : 'articles'}
-      </span>{' '}
-      tagged {name} <Slash />{' '}
-      {sort === 'oldest' ? 'oldest first' : 'newest first'}
+      {tRich(
+        'topic.countLine',
+        {name},
+        {
+          count: (
+            <span className="a2-hi" style={{fontWeight: 600}}>
+              {t('articles.count', {count})}
+            </span>
+          ),
+        },
+      )}{' '}
+      <Slash />{' '}
+      {sort === 'oldest'
+        ? t('articles.sort.oldest.short')
+        : t('articles.sort.newest.short')}
     </span>
   )
   const header = (
     <ListHeader
       crumbs={[
-        {label: 'articles', href: '/articles'},
-        {label: 'topic'},
+        {label: t('topic.crumb.articles'), href: '/articles'},
+        {label: t('topic.crumb.topic')},
         {label: slug},
       ]}
-      eyebrow="topic"
+      eyebrow={t('topic.crumb.topic')}
       title={name}
       lead={topic?.term.description}
       commit="7a11ca7"
       right={
         <Button
-          label={`Follow ${name} by RSS`}
+          label={t('topic.follow', {name})}
           kind="secondary"
           iconLeft="rss"
           block={v(true, false, false)}
@@ -112,7 +124,7 @@ export function TopicTemplate({route}: TemplateProps) {
         {header}
         <ListSection label="loading">
           <span className="a2-sr" role="status">
-            Loading articles
+            {t('articles.loading')}
           </span>
           <div
             className="a2-cols"
@@ -187,10 +199,10 @@ function Projects({topic}: {topic: Topic}) {
             <SectionHeader
               id="topic-projects"
               number={['02', '', '', 'peri']}
-              eyebrow="building"
-              title={`Projects built with ${topic.term.name}`}
-              copy="Open source code that uses what these articles describe."
-              link={['All projects', '/projects']}
+              eyebrow={t('mega.projects.eyebrow')}
+              title={t('topic.projects.title', {name: topic.term.name})}
+              copy={t('topic.projects.copy')}
+              link={[t('nav.allProjects'), '/projects']}
             />
           }
           right={
@@ -244,9 +256,9 @@ function Others({
             <SectionHeader
               id="topic-others"
               number={['011', '0b', '', 'lilac']}
-              eyebrow="browse"
-              title="Other topics"
-              copy="Every topic I write about, with the number of articles in it."
+              eyebrow={t('topic.others.eyebrow')}
+              title={t('topic.others.title')}
+              copy={t('topic.others.copy')}
             />
           }
           right={

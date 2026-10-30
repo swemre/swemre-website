@@ -22,6 +22,7 @@ import {SectionBg} from './kit/SectionBg.tsx'
 import {Skel, StatePanel} from './kit/StatePanel.tsx'
 import {Anchor, Button, ProjectCard, SectionHeader, TextLink} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 function useCols() {
   const v = useV()
@@ -68,7 +69,7 @@ function Body({
       return (
         <>
           <span className="a2-sr" role="status">
-            Loading projects
+            {t('projects.loading')}
           </span>
           <div className="a2-cols" style={{...cols, rowGap: v(32, 32, 48)}}>
             <CardSkeleton />
@@ -96,13 +97,13 @@ function Body({
         <StatePanel
           hue="peri"
           icon="folder"
-          title="No projects to show yet"
-          copy="Projects appear here once they have a public page. The code of everything I build is on GitHub in the meantime."
+          title={t('projects.empty.title')}
+          copy={t('projects.empty.copy')}
           command="ls ~/projects --public"
           result="0 results"
           actions={
             <Button
-              label="Open GitHub"
+              label={t('home.projects.github')}
               kind="secondary"
               iconLeft="github"
               href={github}
@@ -114,19 +115,19 @@ function Body({
       return (
         <StatePanel
           icon="cloud-off"
-          title="Projects could not be loaded"
-          copy="The project list did not load. Nothing is lost; try again, or open the projects page."
+          title={t('projects.error.title')}
+          copy={t('home.projects.error.copy')}
           command="GET /api/public/v2/channels/swemre/projects"
           result="503 Service Unavailable"
           actions={
             <>
               <Button
-                label="Try again"
+                label={t('form.retry')}
                 kind="secondary"
                 iconLeft="refresh"
                 onClick={state.retry}
               />
-              <TextLink label="All projects" href="/projects" />
+              <TextLink label={t('nav.allProjects')} href="/projects" />
             </>
           }
         />
@@ -156,7 +157,7 @@ function Body({
                   fontSize: 14,
                 }}
               >
-                <span className="a2-micro">Also</span>
+                <span className="a2-micro">{t('mega.also')}</span>
                 {also.map(p => (
                   <Anchor key={p.slug} className="a2-ulink" href={p.href}>
                     {p.title}
@@ -189,10 +190,10 @@ export function ProjectsSection({
             <SectionHeader
               id="home-projects"
               number={['02', '', '', 'peri']}
-              eyebrow="building"
-              title="Selected projects"
-              copy="What I am building right now, newest activity first."
-              link={['All projects', '/projects']}
+              eyebrow={t('mega.projects.eyebrow')}
+              title={t('home.projects.title')}
+              copy={t('home.projects.copy')}
+              link={[t('nav.allProjects'), '/projects']}
             />
           }
           right={

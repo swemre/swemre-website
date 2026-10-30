@@ -34,6 +34,7 @@ import type {
 import {api} from './client.ts'
 import {SITE_URL} from './env.ts'
 import {canonicalHref} from './rules.ts'
+import {t} from '../i18n/index.ts'
 
 const HUES: Hue[] = ['blue', 'sky', 'lilac', 'peri', 'aqua', 'mist']
 const RESERVED = new Set<string>(RESERVED_TAGS)
@@ -175,11 +176,9 @@ export function toSettings(
 ): SiteSettings {
   const f = pub ? fieldsOf<'site-settings'>(pub) : {}
   return {
-    tagline: f.tagline ?? 'Software brand',
+    tagline: f.tagline ?? t('settings.tagline'),
     contactEmail: f.contactEmail ?? 'emre@swemre.com',
-    footerTagline:
-      f.footerTagline ??
-      'Notes and projects from a software engineer who writes Java, BTW.',
+    footerTagline: f.footerTagline ?? t('footer.tagline'),
     heroEyebrow: f.heroEyebrow,
     heroLead: f.heroLead,
     nowBuilding: f.nowBuilding,

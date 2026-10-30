@@ -15,17 +15,26 @@ import {Rail} from './kit/Rail.tsx'
 import {SectionBg} from './kit/SectionBg.tsx'
 import {Anchor, Icon, SectionHeader, TextLink, type IconName} from './kit/ui.ts'
 import {useCompact} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const PROMISES: [IconName, string, string][] = [
-  ['check', 'Private', 'I’ll never sell your data.'],
-  ['mail', 'Two-way', 'You’ll never get an email from a no-reply address.'],
-  ['message', 'Human', 'You’ll always get something I wrote and sent.'],
+  [
+    'check',
+    t('newsletter.promise.private'),
+    t('newsletter.promise.private.copy'),
+  ],
+  ['mail', t('newsletter.promise.twoWay'), t('newsletter.promise.twoWay.copy')],
+  [
+    'message',
+    t('newsletter.promise.human'),
+    t('newsletter.promise.human.copy'),
+  ],
 ]
 
 function Promises() {
   return (
     <ul
-      aria-label="My promises"
+      aria-label={t('newsletter.promises')}
       style={{display: 'flex', flexDirection: 'column', gap: 16}}
     >
       {PROMISES.map(([icon, title, line]) => (
@@ -86,7 +95,7 @@ function ExampleEmail() {
   return (
     <article
       className="a2-card"
-      aria-label="Example newsletter email"
+      aria-label={t('home.newsletter.example')}
       style={{
         padding: 0,
         display: 'flex',
@@ -137,18 +146,20 @@ function ExampleEmail() {
             style={{flexGrow: 1, minWidth: 0, fontSize: 13, lineHeight: '20px'}}
           >
             <p style={{color: 'var(--a2-text-hi)', fontWeight: 600}}>
-              Emre from swemre{' '}
+              {t('newsletter.eml.from.value')}{' '}
               <span style={{fontWeight: 400, color: 'var(--a2-text-lo)'}}>
                 &lt;emre@swemre.com&gt;
               </span>
             </p>
-            <p style={{color: 'var(--a2-text-lo)'}}>to priya.shah@lumen.dev</p>
+            <p style={{color: 'var(--a2-text-lo)'}}>
+              {t('home.newsletter.to', {email: 'priya.shah@lumen.dev'})}
+            </p>
           </div>
           <span
             className="a2-mono"
             style={{fontSize: 12, whiteSpace: 'nowrap'}}
           >
-            Today, 09:12
+            {t('newsletter.eml.date.value')}
           </span>
         </div>
       </div>
@@ -156,18 +167,16 @@ function ExampleEmail() {
         className="a2-pad"
         style={{fontSize: 14, lineHeight: '23px', color: 'var(--a2-text)'}}
       >
-        <p>Hi Priya,</p>
+        <p>{t('newsletter.eml.hi')}</p>
         <p style={{marginTop: 16}}>
-          A new article is up:{' '}
+          {t('newsletter.eml.newArticle')}{' '}
           <span style={{fontWeight: 600, color: 'var(--a2-text-hi)'}}>
-            A modular monolith on Spring Boot
+            {t('newsletter.eml.articleTitle')}
           </span>
           .
         </p>
         <p style={{marginTop: 16, color: 'var(--a2-text-mid)'}}>
-          It shows how one Spring Boot app is split into modules that talk only
-          through clients and events, and the single test that keeps those
-          boundaries honest. 10 min read.
+          {t('newsletter.eml.body')}
         </p>
         <p style={{marginTop: 16}}>
           <Anchor className="a2-ilink" href="/articles/modular-monolith">
@@ -191,22 +200,22 @@ function ExampleEmail() {
           color: 'var(--a2-text-lo)',
         }}
       >
-        <span>You get this because you subscribed at swemre.com.</span>
+        <span>{t('newsletter.eml.why')}</span>
         <span style={{display: 'flex', gap: 8, whiteSpace: 'nowrap'}}>
           <span className="a2-ulink" style={inert}>
-            Mute
+            {t('newsletter.eml.mute')}
           </span>
           <span aria-hidden="true" style={{color: 'var(--a2-text-faint)'}}>
             |
           </span>
           <span className="a2-ulink" style={inert}>
-            Unsubscribe
+            {t('newsletter.eml.unsubscribe')}
           </span>
           <span aria-hidden="true" style={{color: 'var(--a2-text-faint)'}}>
             |
           </span>
           <span className="a2-ulink" style={inert}>
-            Delete me
+            {t('newsletter.eml.delete')}
           </span>
         </span>
       </p>
@@ -233,10 +242,10 @@ export function NewsletterSection() {
             <SectionHeader
               id="home-newsletter"
               number={['04', '', 'L', 'mist']}
-              eyebrow="newsletter"
+              eyebrow={t('newsletter.eyebrow')}
               title={
                 <>
-                  Let’s stay in{' '}
+                  {t('home.newsletter.title')}{' '}
                   <span
                     style={{
                       position: 'relative',
@@ -244,12 +253,12 @@ export function NewsletterSection() {
                       color: 'var(--a2-blue-ink)',
                     }}
                   >
-                    touch.
+                    {t('home.newsletter.accent')}
                     <Underline />
                   </span>
                 </>
               }
-              copy="Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work."
+              copy={t('home.newsletter.copy')}
               extra={
                 <div
                   style={{
@@ -260,7 +269,10 @@ export function NewsletterSection() {
                 >
                   <Promises />
                   <div>
-                    <TextLink label="Newsletter page" href="/newsletter" />
+                    <TextLink
+                      label={t('home.newsletter.page')}
+                      href="/newsletter"
+                    />
                   </div>
                 </div>
               }

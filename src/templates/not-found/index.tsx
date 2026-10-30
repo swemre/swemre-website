@@ -23,6 +23,7 @@ import {fmtDate, minRead} from '../parts/format.ts'
 import {ArrowLink} from '../parts/heads.tsx'
 import {CodeMark, StatusHero, StatusLink} from '../parts/status.tsx'
 import {useHeroPad, usePick} from '../parts/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 export function NotFoundTemplate({route}: TemplateProps) {
   const kind = route.notFoundKind ?? 'page'
@@ -46,22 +47,22 @@ export function NotFoundTemplate({route}: TemplateProps) {
             glow="var(--a2-hue-blue-rgb)"
           />
         }
-        markLabel="Not found"
+        markLabel={t('notFound.mark')}
         markColor="var(--a2-soft)"
-        eyebrow="error 404"
+        eyebrow={t('error.eyebrow', {code: 404})}
         detail={`swemre.com${route.path}`}
-        title="This page is not available."
-        lead="It may have been unpublished, or the link is old or mistyped. The privacy policy is still here."
+        title={t('notFound.single.title')}
+        lead={t('notFound.single.lead')}
         actions={
           <>
             <Button
               kind="primary"
-              label="Privacy policy"
+              label={t('footer.privacy')}
               iconLeft="shield"
               href="/policies/privacy-policy"
             />
-            <StatusLink to="/">Home</StatusLink>
-            <StatusLink to="/articles">Articles</StatusLink>
+            <StatusLink to="/">{t('nav.home')}</StatusLink>
+            <StatusLink to="/articles">{t('nav.articles')}</StatusLink>
           </>
         }
       />
@@ -77,17 +78,22 @@ export function NotFoundTemplate({route}: TemplateProps) {
           glow="var(--a2-hue-blue-rgb)"
         />
       }
-      markLabel="Not found"
+      markLabel={t('notFound.mark')}
       markColor="var(--a2-soft)"
-      eyebrow="error 404"
+      eyebrow={t('error.eyebrow', {code: 404})}
       detail={route.path}
-      title="Nothing lives here."
-      lead="The link may be old or mistyped. Everything that exists is one click away."
+      title={t('notFound.title')}
+      lead={t('notFound.lead')}
       actions={
         <>
-          <Button kind="primary" label="Home" iconLeft="arrow-left" href="/" />
-          <StatusLink to="/articles">Articles</StatusLink>
-          <StatusLink to="/projects">Projects</StatusLink>
+          <Button
+            kind="primary"
+            label={t('nav.home')}
+            iconLeft="arrow-left"
+            href="/"
+          />
+          <StatusLink to="/articles">{t('nav.articles')}</StatusLink>
+          <StatusLink to="/projects">{t('nav.projects')}</StatusLink>
         </>
       }
     />
@@ -96,14 +102,14 @@ export function NotFoundTemplate({route}: TemplateProps) {
 
 const COPY = {
   article: {
-    title: 'This article is not available.',
-    lead: 'It may have been unpublished, or the link is old or mistyped. Everything that is published is one click away.',
-    list: ['/articles', 'Articles'],
+    title: t('notFound.article.title'),
+    lead: t('notFound.article.lead'),
+    list: ['/articles', t('nav.articles')],
   },
   project: {
-    title: 'This project is not available.',
-    lead: 'It may have been renamed or made private, or the link is mistyped. Every public project is on the projects page.',
-    list: ['/projects', 'Projects'],
+    title: t('notFound.project.title'),
+    lead: t('notFound.project.lead'),
+    list: ['/projects', t('nav.projects')],
   },
 } as const
 
@@ -136,7 +142,7 @@ function DidYouMean({item}: {item: ArticleSummary | ProjectSummary}) {
       }}
     >
       <span style={{flex: 1, minWidth: 0}}>
-        <span className="a2-micro">Did you mean</span>
+        <span className="a2-micro">{t('notFound.didYouMean')}</span>
         <span
           className="a2-h4"
           style={{
@@ -189,7 +195,7 @@ function MissingItem({
           <HeroCurve hue="blue" top={40} />
           <div className="a2-c">
             <span className="a2-eyebrow" style={{marginBottom: 16}}>
-              {`// error 404 · ${path}`}
+              {`// ${t('error.eyebrow', {code: 404})} · ${path}`}
             </span>
             <h1 className="a2-d2">{copy.title}</h1>
             <p
@@ -200,7 +206,7 @@ function MissingItem({
             </p>
             <div style={{marginTop: gap, display: 'flex', gap: 16}}>
               <ArrowLink to={copy.list[0]}>{copy.list[1]}</ArrowLink>
-              <ArrowLink to="/">Home</ArrowLink>
+              <ArrowLink to="/">{t('nav.home')}</ArrowLink>
             </div>
             {suggestion && (
               <div style={{marginTop: gap}}>
@@ -216,7 +222,7 @@ function MissingItem({
             >
               <span className="a2-mint">$</span> open ~{path}
               <span style={{color: 'var(--a2-err-text)', marginLeft: 16}}>
-                404 not found
+                {t('notFound.line')}
               </span>
             </p>
           </div>

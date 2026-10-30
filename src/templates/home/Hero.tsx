@@ -17,14 +17,15 @@ import {useViewport} from '../../design/index.tsx'
 import {Arc} from './Arc.tsx'
 import {Button, Icon} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const COPY = {
-  eyebrow: 'Software brand',
-  lead: 'Spent years building enterprise software. Now I use AI and consider buying a Patagonia vest. I like thinking and solving problems.',
+  eyebrow: t('settings.tagline'),
+  lead: t('home.hero.lead'),
   facts: [
-    ['SwePress', 'Now building'],
-    ['Spring Boot template', 'Latest article'],
-    ['Every other week', 'Newsletter'],
+    ['SwePress', t('home.hero.nowBuilding')],
+    [t('home.hero.latestValue'), t('home.hero.latestArticle')],
+    [t('home.hero.cadence'), t('footer.newsletter')],
   ],
 }
 
@@ -247,7 +248,7 @@ function StatusBar({song}: {song?: Song}) {
     </span>,
     <span key="sync" style={part}>
       <Icon name="check" size={13} style={{color: 'var(--a2-mint)'}} />
-      synced 2 min ago
+      {t('home.status.synced')}
     </span>,
     <span key="problems" style={part}>
       <span
@@ -258,7 +259,7 @@ function StatusBar({song}: {song?: Song}) {
           background: 'var(--a2-mint)',
         }}
       />
-      0 problems
+      {t('home.status.problems')}
     </span>,
     ...(wide
       ? [
@@ -286,7 +287,7 @@ function StatusBar({song}: {song?: Song}) {
   return (
     <div
       role="group"
-      aria-label="Status"
+      aria-label={t('footer.status')}
       className="a2-mono"
       style={
         wide
@@ -346,7 +347,7 @@ export function Hero({settings, song}: {settings?: SiteSettings; song?: Song}) {
         <BranchPill label={settings?.heroEyebrow ?? COPY.eyebrow} />
         <div style={{marginTop: gap}}>
           <h1 className="a2-d1" style={{textWrap: 'balance'}}>
-            Software Engineer
+            {t('home.hero.title')}
             <br />
             <span className="a2-accent">Emre</span>
           </h1>
@@ -370,14 +371,14 @@ export function Hero({settings, song}: {settings?: SiteSettings; song?: Song}) {
           }}
         >
           <Button
-            label="Subscribe"
+            label={t('nav.subscribe')}
             iconLeft="mail"
             href="/newsletter"
             block={mobile}
             style={mobile ? undefined : {width: 224}}
           />
           <Button
-            label="Request a call back"
+            label={t('menu.callBack')}
             kind="secondary"
             iconLeft="phone"
             href="/call-back"

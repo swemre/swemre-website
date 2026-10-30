@@ -21,6 +21,7 @@ import {
   type ProjFilters,
   type ProjSort,
 } from './model.ts'
+import {t} from '../../i18n/index.ts'
 
 export interface FilterActions {
   setQ(q: string): void
@@ -70,7 +71,7 @@ export function SearchBox({
   return (
     <label className="a2-field">
       <span className="a2-label">
-        <span className="a2-sr">Search projects</span>
+        <span className="a2-sr">{t('projects.search')}</span>
       </span>
       <span className="a2-ctl">
         <Icon name="search" style={{color: 'var(--a2-text-lo)'}} />
@@ -80,7 +81,7 @@ export function SearchBox({
           className="pf-in"
           name="q"
           defaultValue={value}
-          placeholder="Search projects…"
+          placeholder={t('projects.search.placeholder')}
           aria-keyshortcuts="/"
           onChange={e => onChange(e.target.value.trim())}
         />
@@ -113,7 +114,7 @@ export function ActiveChips({
           key={`${a.kind}-${'value' in a ? a.value : ''}`}
           type="button"
           className="a2-chip is-active"
-          aria-label={`Remove ${activeLabel(a)}`}
+          aria-label={t('projects.chip.remove', {label: activeLabel(a)})}
           onClick={() => onRemove(a)}
         >
           {activeLabel(a)}
@@ -205,15 +206,20 @@ export function Facets({
 }) {
   return (
     <>
-      <Group label="Year">
-        <div className="p2-seg is-fit" role="group" aria-label="Year">
+      <Group label={t('projects.year')}>
+        <div
+          className="p2-seg is-fit"
+          role="group"
+          aria-label={t('projects.year')}
+        >
           <button
             type="button"
             className={f.year === undefined ? 'a2-chip is-active' : 'a2-chip'}
             aria-pressed={f.year === undefined}
             onClick={() => act.setYear(undefined)}
           >
-            All<span className="a2-count">{total}</span>
+            {t('projects.year.all')}
+            <span className="a2-count">{total}</span>
           </button>
           {years.map(y => (
             <button
@@ -232,7 +238,10 @@ export function Facets({
         </div>
       </Group>
       <Hr />
-      <Group label="Stack" extra={<span className="a2-cap">Match any</span>}>
+      <Group
+        label={t('projects.stack')}
+        extra={<span className="a2-cap">{t('projects.stack.any')}</span>}
+      >
         <div style={{display: 'flex', flexDirection: 'column', gap: 16}}>
           {stacks.map(s => {
             const on = f.stack.includes(s.slug)
@@ -259,31 +268,31 @@ export function Facets({
         </div>
       </Group>
       <Hr />
-      <Group label="Status">
+      <Group label={t('projects.status')}>
         <div style={{display: 'flex', flexDirection: 'column', gap: 16}}>
           <Switch
-            label="Live"
+            label={t('projects.live')}
             count={liveCount}
-            hint="Has a public deployment"
+            hint={t('projects.live.hint')}
             on={f.live}
             onChange={act.setLive}
           />
           <Switch
-            label="Source available"
+            label={t('projects.source')}
             count={sourceCount}
-            hint="Code is public on GitHub"
+            hint={t('projects.source.hint')}
             on={f.source}
             onChange={act.setSource}
           />
         </div>
       </Group>
       <Hr />
-      <Group label="Sort by">
+      <Group label={t('projects.sortBy')}>
         {/* The board's sort field has gap 0 and no message slot; Field always draws
             both (8 + 8 + 20), so pull them back until Field takes noSlot. */}
         <div style={{marginTop: -8, marginBottom: -28}}>
           <Field
-            label={<span className="a2-sr">Sort by</span>}
+            label={<span className="a2-sr">{t('projects.sortBy')}</span>}
             name="sort"
             kind="select"
             value={sort}
@@ -312,7 +321,7 @@ export function FilterAside(props: {
   const input = useRef<HTMLInputElement>(null)
   const n = f.active.length
   return (
-    <aside aria-label="Filters">
+    <aside aria-label={t('projects.filters')}>
       <div
         style={{
           display: 'flex',
@@ -320,8 +329,10 @@ export function FilterAside(props: {
           justifyContent: 'space-between',
         }}
       >
-        <h2 className="a2-h4">Filters</h2>
-        {n > 0 && <Badge label={`${n} active`} hue="blue" />}
+        <h2 className="a2-h4">{t('projects.filters')}</h2>
+        {n > 0 && (
+          <Badge label={t('projects.filters.active', {count: n})} hue="blue" />
+        )}
       </div>
       <div style={{marginTop: 16}}>
         <SearchBox value={f.q} onChange={act.setQ} kbd inputRef={input} />
@@ -330,9 +341,9 @@ export function FilterAside(props: {
         style={{display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 24}}
       >
         <span className="a2-h2">{shown}</span>
-        <span className="a2-cap">of {total} projects</span>
+        <span className="a2-cap">{t('projects.ofTotal', {total})}</span>
         <span className="a2-mono" style={{marginLeft: 'auto'}}>
-          {n} {n === 1 ? 'filter' : 'filters'}
+          {t('projects.filters.count', {count: n})}
         </span>
       </div>
       <div className="p2-bar" style={{marginTop: 8}} aria-hidden="true">
@@ -343,14 +354,18 @@ export function FilterAside(props: {
       {n > 0 && (
         <>
           <Hr />
-          <span className="a2-micro">Active filters</span>
+          <span className="a2-micro">{t('projects.activeFilters')}</span>
           <div style={{marginTop: 16}}>
             <div className="a2-chips" style={{gap: 8}}>
               <ActiveChips f={f} onRemove={act.remove} />
             </div>
           </div>
           <div style={{marginTop: 16}}>
-            <TextLink label="Clear filters" icon="x" onClick={act.clear} />
+            <TextLink
+              label={t('projects.clear')}
+              icon="x"
+              onClick={act.clear}
+            />
           </div>
         </>
       )}

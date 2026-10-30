@@ -15,6 +15,7 @@
 import {useId, type ChangeEvent, type ReactNode, type Ref} from 'react'
 import {Icon, type IconName} from './Icon.tsx'
 import {cx} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 export type FieldState = 'focus' | 'error' | 'disabled' | 'busy'
 
@@ -139,7 +140,7 @@ export function Field({
     >
       <span className="a2-label">
         {label}
-        {optional && <em>optional</em>}
+        {optional && <em>{t('form.optional')}</em>}
       </span>
       <span className={cx('a2-ctl', kind === 'area' && 'is-area')}>
         {icon && <Icon name={icon} />}

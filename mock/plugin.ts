@@ -294,7 +294,9 @@ export function createMockMiddleware(
     }
     const type = q.get('content-type')
     const term = q.get('term')
+    const locale = q.get('locale') ?? 'en'
     const all = data.publications
+      .filter(p => p.locale === locale)
       .filter(p => !type || p.contentType === type)
       .filter(p => !term || p.terms.some(t => t.slug === term))
       .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
@@ -307,7 +309,10 @@ export function createMockMiddleware(
   }
 
   function getPublication(res: Res, url: URL, data: MockData, slug: string) {
-    const pub = data.publications.find(p => p.slug === slug)
+    const locale = url.searchParams.get('locale') ?? 'en'
+    const pub = data.publications.find(
+      p => p.slug === slug && p.locale === locale,
+    )
     if (pub) return send(res, 200, pub)
     const moved = data.redirects.find(r => r.from === slug)
     if (moved) {

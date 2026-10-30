@@ -34,6 +34,7 @@ import {useSearch} from '../data/hooks.ts'
 import type {SearchResult} from '../contract/view.ts'
 import {useChrome} from './context.ts'
 import {useFocusTrap, useScrollLock} from './hooks.ts'
+import {t} from '../i18n/index.ts'
 
 const PAD = {m: 64, t: 96, d: 96, '4k': 128} as const
 
@@ -127,7 +128,7 @@ export function SearchDialog() {
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="Quick search"
+        aria-label={t('qs.label')}
         style={{width: vp === 'm' ? '100%' : 720}}
       >
         <div
@@ -152,8 +153,8 @@ export function SearchDialog() {
               setActive(0)
             }}
             onKeyDown={onKey}
-            placeholder="Search articles and projects"
-            aria-label="Search"
+            placeholder={t('qs.placeholder')}
+            aria-label={t('nav.search')}
             role="combobox"
             aria-expanded={total > 0}
             aria-controls="a2-qs-list"
@@ -168,8 +169,8 @@ export function SearchDialog() {
               aria-live="polite"
             >
               {res.status === 'loading'
-                ? 'Searching…'
-                : `${total} ${total === 1 ? 'result' : 'results'}`}
+                ? t('qs.searching')
+                : t('qs.results', {count: total})}
             </span>
           )}
           {wide && (
@@ -177,7 +178,7 @@ export function SearchDialog() {
               type="button"
               className="pf-esc"
               onClick={close}
-              aria-label="Close search"
+              aria-label={t('qs.close')}
               style={deferred ? undefined : {marginLeft: 'auto'}}
             >
               <Kbd>Esc</Kbd>
@@ -190,7 +191,7 @@ export function SearchDialog() {
               style={{padding: 8}}
               id="a2-qs-list"
               role="listbox"
-              aria-label="Quick results"
+              aria-label={t('qs.list')}
             >
               {res.data.groups.map((g, gi) => (
                 <Fragment key={g.kind}>
@@ -202,7 +203,9 @@ export function SearchDialog() {
                     }}
                   >
                     <span className="a2-micro">
-                      {g.kind === 'article' ? 'Articles' : 'Projects'}
+                      {g.kind === 'article'
+                        ? t('nav.articles')
+                        : t('nav.projects')}
                     </span>
                     <span className="a2-mono">{g.items.length}</span>
                   </div>
@@ -294,24 +297,22 @@ export function SearchDialog() {
                 </span>
               </div>
               <div className="a2-h4" style={{marginTop: 16}}>
-                No quick matches for “{deferred}”
+                {t('qs.empty.title', {q: deferred})}
               </div>
               <p className="a2-small" style={{marginTop: 4}}>
-                Press Enter or see all results to search everything.
+                {t('qs.empty.copy')}
               </p>
             </div>
           )}
           {res.status === 'error' && deferred && (
             <div style={{padding: '48px 24px', textAlign: 'center'}}>
-              <div className="a2-h4">
-                Quick search is not available right now
-              </div>
+              <div className="a2-h4">{t('qs.error.title')}</div>
               <p className="a2-small" style={{marginTop: 4}}>
-                Press Enter to search on the results page, or{' '}
+                {t('qs.error.before')}
                 <button type="button" className="a2-ulink" onClick={res.retry}>
-                  try again
+                  {t('qs.error.retry')}
                 </button>
-                .
+                {t('qs.error.after')}
               </p>
             </div>
           )}
@@ -331,20 +332,21 @@ export function SearchDialog() {
             <>
               <span style={{display: 'flex', alignItems: 'center', gap: 8}}>
                 <Kbd>↑</Kbd>
-                <Kbd>↓</Kbd>to navigate
+                <Kbd>↓</Kbd>
+                {t('qs.hint.navigate')}
               </span>
               <span style={{display: 'flex', alignItems: 'center', gap: 8}}>
-                <Kbd>↵</Kbd>to open
+                <Kbd>↵</Kbd>
+                {t('qs.hint.open')}
               </span>
               <span style={{display: 'flex', alignItems: 'center', gap: 8}}>
-                <Kbd>Esc</Kbd>to close
+                <Kbd>Esc</Kbd>
+                {t('qs.hint.close')}
               </span>
             </>
           )}
           <TextLink
-            label={
-              q.trim() ? `All results for “${q.trim()}”` : 'See all results'
-            }
+            label={q.trim() ? t('qs.all', {q: q.trim()}) : t('qs.seeAll')}
             href={q.trim() ? all : '/search'}
             onClick={close}
             style={{marginLeft: 'auto'}}

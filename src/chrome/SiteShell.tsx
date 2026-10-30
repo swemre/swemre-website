@@ -31,6 +31,7 @@ import {MobileMenu} from './MobileMenu.tsx'
 import {SearchDialog} from './SearchDialog.tsx'
 import {Footer} from './Footer.tsx'
 import './chrome.css'
+import {t} from '../i18n/index.ts'
 
 /** A click on a mega trigger within this long after hover opened it keeps the menu open. */
 const HOVER_GUARD_MS = 600
@@ -257,7 +258,7 @@ export function SiteShell({
       <Root>
         <Grain />
         <a className="a2-skip" href="#main">
-          Skip to content
+          {t('shell.skip')}
         </a>
         {chrome.nav && (
           <div className="a2-chrome" onMouseLeave={closeMega}>
@@ -272,9 +273,7 @@ export function SiteShell({
               items={nav.items}
               logoOnly={logoOnly}
               notice={
-                logoOnly
-                  ? (chrome.notice ?? 'Maintenance in progress')
-                  : undefined
+                logoOnly ? (chrome.notice ?? t('shell.maintenance')) : undefined
               }
             />
             {!logoOnly && compact && api.menu && <MobileMenu />}

@@ -21,6 +21,7 @@ import {Icon, useViewport} from '../../design/index.tsx'
 import {fmtDate, minRead} from './format.ts'
 import {Reactions} from './reactions.tsx'
 import {rgb} from './vp.ts'
+import {t} from '../../i18n/index.ts'
 
 export function Helpful({slug, title}: {slug: string; title: string}) {
   const vp = useViewport()
@@ -50,7 +51,7 @@ export function Helpful({slug, title}: {slug: string; title: string}) {
                 }
           }
         >
-          <p className="a2-h4">Was this article helpful?</p>
+          <p className="a2-h4">{t('reading.helpful')}</p>
           <div
             style={{
               ...(vp === 'm' ? {} : {marginLeft: 'auto'}),
@@ -84,7 +85,7 @@ export function PrevNext({
   } as const
   return (
     <nav
-      aria-label="More articles"
+      aria-label={t('reading.more')}
       style={{
         marginTop: 48,
         paddingTop: 32,
@@ -100,7 +101,7 @@ export function PrevNext({
             className="a2-micro"
             style={{display: 'inline-flex', alignItems: 'center', gap: 8}}
           >
-            Previous
+            {t('reading.previous')}
           </span>
           <span className="a2-h4" style={{...title, color: 'var(--a2-text)'}}>
             {prev.title}
@@ -116,7 +117,7 @@ export function PrevNext({
           rel="next"
         >
           <span className="a2-micro" style={{color: 'var(--a2-soft)'}}>
-            Next
+            {t('reading.next')}
           </span>
           <span className="a2-h4" style={title}>
             {next.title}
@@ -156,7 +157,7 @@ export function RelatedRows({items}: {items: Item[]}) {
               }}
             >
               <span className="a2-micro">
-                {isArticle(it) ? 'Article' : 'Project'}
+                {isArticle(it) ? t('reading.article') : t('reading.project')}
               </span>
               <span className="a2-h4">{it.title}</span>
               <span className="a2-mono">
@@ -208,7 +209,7 @@ export function RelatedRows({items}: {items: Item[]}) {
             <span className="a2-mono">{String(i + 1).padStart(2, '0')}</span>
             <span>
               <span className="a2-micro">
-                {isArticle(it) ? 'Article' : 'Project'}
+                {isArticle(it) ? t('reading.article') : t('reading.project')}
               </span>
               <span className="a2-h4" style={{display: 'block', marginTop: 8}}>
                 {it.title}
@@ -242,7 +243,9 @@ export function RelatedRows({items}: {items: Item[]}) {
                       backgroundImage: `repeating-radial-gradient(circle at 80% 50%,${rgb('peri', 0.2)} 0,${rgb('peri', 0.2)} 1px,transparent 1px,transparent 8px)`,
                     }}
                   />
-                  <span style={{position: 'relative'}}>OPEN ↗</span>
+                  <span style={{position: 'relative'}}>
+                    {t('reading.open')}
+                  </span>
                 </span>
               ) : (
                 <span />

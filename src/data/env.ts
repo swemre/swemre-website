@@ -21,6 +21,7 @@ export const API_TIMEOUT_MS: number = Number(env.VITE_API_TIMEOUT_MS ?? 10000)
 export const SITE_URL: string = (
   env.VITE_SITE_URL ?? 'https://swemre.com'
 ).replace(/\/$/, '')
+/** Kept for the deploy scripts; the site takes its language from the URL (src/i18n). */
 export const LOCALE: string = env.VITE_LOCALE ?? 'en'
 /** Dev switches (?state=, ?fault=, ?seed=) work in dev and whenever the mock serves the API. */
 export const DEV_SWITCHES: boolean = env.DEV || API_MODE === 'mock'

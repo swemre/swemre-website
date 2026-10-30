@@ -17,6 +17,7 @@ import {SectionBg} from './kit/SectionBg.tsx'
 import {Skel, StatePanel} from './kit/StatePanel.tsx'
 import {ArticleRow, Button, SectionHeader, TextLink} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 function RowSkeleton({first}: {first: boolean}) {
   return (
@@ -48,7 +49,7 @@ function Body({state}: {state: Loadable<ArticleSummary[]>}) {
       return (
         <>
           <span className="a2-sr" role="status">
-            Loading articles
+            {t('articles.loading')}
           </span>
           <div style={{display: 'flex', flexDirection: 'column', gap}}>
             {[0, 1, 2, 3].map(i => (
@@ -62,19 +63,19 @@ function Body({state}: {state: Loadable<ArticleSummary[]>}) {
         <StatePanel
           hue="blue"
           icon="file-text"
-          title="No articles yet"
-          copy="The first article is still being written. Subscribe or follow the RSS feed to get it the day it is out."
+          title={t('articles.empty.title')}
+          copy={t('articles.empty.copy')}
           command="ls ~/articles"
           result="0 results"
           actions={
             <>
               <Button
-                label="Follow by RSS"
+                label={t('articles.followRss')}
                 kind="secondary"
                 iconLeft="rss"
                 href="/rss.xml"
               />
-              <TextLink label="Subscribe" href="/newsletter" />
+              <TextLink label={t('nav.subscribe')} href="/newsletter" />
             </>
           }
         />
@@ -83,19 +84,19 @@ function Body({state}: {state: Loadable<ArticleSummary[]>}) {
       return (
         <StatePanel
           icon="cloud-off"
-          title="Articles could not be loaded"
-          copy="The server did not answer in time. The articles are still there; try again in a moment."
+          title={t('articles.error.title')}
+          copy={t('home.articles.error.copy')}
           command="GET /api/public/v2/channels/swemre/articles"
           result="503 Service Unavailable"
           actions={
             <>
               <Button
-                label="Try again"
+                label={t('form.retry')}
                 kind="secondary"
                 iconLeft="refresh"
                 onClick={state.retry}
               />
-              <TextLink label="All articles" href="/articles" />
+              <TextLink label={t('nav.allArticles')} href="/articles" />
             </>
           }
         />
@@ -128,10 +129,10 @@ export function ArticlesSection({state}: {state: Loadable<ArticleSummary[]>}) {
             <SectionHeader
               id="home-articles"
               number={['01', '0x', '', 'blue']}
-              eyebrow="writing"
-              title="Latest articles"
-              copy="Long-form notes on Java, React and architecture, written after the thing works."
-              link={['All articles', '/articles']}
+              eyebrow={t('mega.articles.eyebrow')}
+              title={t('home.articles.title')}
+              copy={t('home.articles.copy')}
+              link={[t('nav.allArticles'), '/articles']}
             />
           }
           right={<Body state={state} />}

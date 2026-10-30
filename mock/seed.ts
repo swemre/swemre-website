@@ -49,6 +49,8 @@ interface SeedItem {
   cover?: string
   fields?: Record<string, unknown>
   body?: SeedBlock[]
+  /** Other-language versions: only what differs from the English item (same slug unless given). */
+  translations?: Record<string, Partial<Omit<SeedItem, 'translations'>>>
 }
 
 export interface MediaFile {
@@ -169,66 +171,84 @@ export function loadMockData(
 
   const publications: ApiPublication[] = []
   for (const [file, contentType] of Object.entries(FILES)) {
-    for (const item of read<SeedItem[]>(file)) {
-      const id = uuidOf(`pub:${contentType}:${item.slug}`)
-      const section = item.section ? term('CATEGORY', item.section) : null
-      const fields: Record<string, unknown> = {...item.fields}
-      for (const [k, v] of Object.entries(fields)) {
-        if (typeof v !== 'string' || !v.startsWith('media:')) continue
-        const m = byName.get(v.slice(6))
-        if (!m) throw new Error(`mock seed: unknown media "${v}"`)
-        fields[k] = {...m, alt: fields[`${k}Alt`] ?? m.alt}
-        delete fields[`${k}Alt`]
+    for (const source of read<SeedItem[]>(file)) {
+      const {translations = {}, ...english} = source
+      const versions: [string, SeedItem][] = [
+        ['en', english],
+        ...Object.entries(translations).map(
+          ([locale, tr]): [string, SeedItem] => [
+            locale,
+            {...english, ...tr, fields: {...english.fields, ...tr.fields}},
+          ],
+        ),
+      ]
+      const languageVersions = versions.map(([locale, v]) => ({
+        locale,
+        slug: v.slug,
+      }))
+      for (const [locale, item] of versions) {
+        const id = uuidOf(
+          `pub:${contentType}:${source.slug}${locale === 'en' ? '' : `:${locale}`}`,
+        )
+        const section = item.section ? term('CATEGORY', item.section) : null
+        const fields: Record<string, unknown> = {...item.fields}
+        for (const [k, v] of Object.entries(fields)) {
+          if (typeof v !== 'string' || !v.startsWith('media:')) continue
+          const m = byName.get(v.slice(6))
+          if (!m) throw new Error(`mock seed: unknown media "${v}"`)
+          fields[k] = {...m, alt: fields[`${k}Alt`] ?? m.alt}
+          delete fields[`${k}Alt`]
+        }
+        const blocks = (item.body ?? []).map((b, i) => {
+          const props: Record<string, unknown> = {...b.props}
+          if (RICH_TYPES.has(b.type)) props.text = richText(props.text)
+          if (b.type === 'image') {
+            props.url = mediaUrl(props.url)
+            if (props.darkUrl) props.darkUrl = mediaUrl(props.darkUrl)
+          }
+          return {
+            id: `${item.slug}-${String(i + 1).padStart(2, '0')}`,
+            type: b.type,
+            v: 2,
+            props,
+          }
+        })
+        publications.push({
+          id,
+          documentId: uuidOf(`doc:${contentType}:${source.slug}`),
+          workId: uuidOf(`work:${contentType}:${source.slug}`),
+          contentType,
+          locale,
+          slug: item.slug,
+          title: item.title,
+          excerpt: item.excerpt ?? null,
+          author:
+            contentType === 'article'
+              ? (item.author ?? 'Emre')
+              : (item.author ?? null),
+          cover: item.cover ? (byName.get(item.cover) ?? null) : null,
+          fields,
+          terms: [
+            ...(section ? [section] : []),
+            ...(item.tags ?? []).map(t => term('TAG', t)),
+          ],
+          section,
+          publishedAt: item.publishedAt,
+          updatedAt: item.updatedAt ?? item.publishedAt,
+          seoTitle: item.seoTitle ?? null,
+          seoDescription: item.seoDescription ?? item.excerpt ?? null,
+          canonicalUrl: null,
+          noindex: item.noindex ?? false,
+          body: {blocks},
+          languageVersions,
+        })
       }
-      const blocks = (item.body ?? []).map((b, i) => {
-        const props: Record<string, unknown> = {...b.props}
-        if (RICH_TYPES.has(b.type)) props.text = richText(props.text)
-        if (b.type === 'image') {
-          props.url = mediaUrl(props.url)
-          if (props.darkUrl) props.darkUrl = mediaUrl(props.darkUrl)
-        }
-        return {
-          id: `${item.slug}-${String(i + 1).padStart(2, '0')}`,
-          type: b.type,
-          v: 2,
-          props,
-        }
-      })
-      publications.push({
-        id,
-        documentId: uuidOf(`doc:${contentType}:${item.slug}`),
-        workId: uuidOf(`work:${contentType}:${item.slug}`),
-        contentType,
-        locale: 'en',
-        slug: item.slug,
-        title: item.title,
-        excerpt: item.excerpt ?? null,
-        author:
-          contentType === 'article'
-            ? (item.author ?? 'Emre')
-            : (item.author ?? null),
-        cover: item.cover ? (byName.get(item.cover) ?? null) : null,
-        fields,
-        terms: [
-          ...(section ? [section] : []),
-          ...(item.tags ?? []).map(t => term('TAG', t)),
-        ],
-        section,
-        publishedAt: item.publishedAt,
-        updatedAt: item.updatedAt ?? item.publishedAt,
-        seoTitle: item.seoTitle ?? null,
-        seoDescription: item.seoDescription ?? item.excerpt ?? null,
-        canonicalUrl: null,
-        noindex: item.noindex ?? false,
-        body: {blocks},
-        languageVersions: [{locale: 'en', slug: item.slug}],
-      })
     }
   }
 
   for (const t of terms) {
-    t.publicationCount = publications.filter(p =>
-      p.terms.some(x => x.id === t.id),
+    t.publicationCount = publications.filter(
+      p => p.locale === 'en' && p.terms.some(x => x.id === t.id),
     ).length
   }
 

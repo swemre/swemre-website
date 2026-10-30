@@ -18,6 +18,7 @@ import {Rail} from './kit/Rail.tsx'
 import {SectionBg} from './kit/SectionBg.tsx'
 import {Anchor, Icon, type IconName} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const STACK: {
   name: string
@@ -28,56 +29,56 @@ const STACK: {
 }[] = [
   {
     name: 'Claude Code',
-    line: 'My pair programmer. Never asks for a standup.',
+    line: t('home.stack.claude'),
     key: 'claude',
     hash: '9c1a7e2',
     hue: 'sky',
   },
   {
     name: 'Java 25',
-    line: 'Records, virtual threads and no regrets.',
+    line: t('home.stack.java'),
     key: 'java',
     hash: '0b5e55d',
     hue: 'blue',
   },
   {
     name: 'Spring Boot 4',
-    line: 'Annotations all the way down.',
+    line: t('home.stack.springboot'),
     key: 'spring-boot',
     hash: '3f2d81a',
     hue: 'peri',
   },
   {
     name: 'PostgreSQL',
-    line: 'One schema per module. No exceptions.',
+    line: t('home.stack.postgresql'),
     key: 'postgresql',
     hash: '7e44c09',
     hue: 'lilac',
   },
   {
     name: 'React',
-    line: 'useEffect and I have an understanding.',
+    line: t('home.stack.react'),
     key: 'react',
     hash: 'a1d3f5b',
     hue: 'mist',
   },
   {
     name: 'TypeScript',
-    line: 'Strict mode on, any is banned. Mostly.',
+    line: t('home.stack.typescript'),
     key: 'typescript',
     hash: '5c0de42',
     hue: 'aqua',
   },
   {
     name: 'Docker',
-    line: 'It works on my machine, so I ship the machine.',
+    line: t('home.stack.docker'),
     key: 'docker',
     hash: 'd0c4e11',
     hue: 'sky',
   },
   {
     name: 'Traefik',
-    line: 'One VPS, one router, zero drama.',
+    line: t('home.stack.traefik'),
     key: 'traefik',
     hash: 'e7af1c3',
     hue: 'blue',
@@ -128,14 +129,14 @@ function Intro({settings}: {settings?: SiteSettings}) {
     <>
       <Prompt command="ls ~/stack" />
       <span className="a2-eyebrow" style={{marginTop: 16}}>
-        {'// my stack'}
+        {`// ${t('home.stack.eyebrow')}`}
       </span>
       <h2
         id="home-stack"
         className="a2-h2"
         style={{marginTop: 16, textWrap: 'balance'}}
       >
-        What I build with, and who I build it with.
+        {t('home.stack.title')}
       </h2>
       <div style={{marginTop: v(24, 24, 32)}}>
         <p style={{display: 'flex', alignItems: 'center', gap: 16}}>
@@ -168,7 +169,7 @@ function Intro({settings}: {settings?: SiteSettings}) {
               }}
             />
           )}
-          <span className="a2-small">Emre, software engineer</span>
+          <span className="a2-small">{t('home.stack.me')}</span>
         </p>
       </div>
       <div
@@ -232,7 +233,7 @@ function StackLog() {
     return (
       <div
         style={{display: 'flex', flexDirection: 'column', gap: 8}}
-        aria-label="Stack log"
+        aria-label={t('home.stack.log')}
       >
         <p className="a2-mono">
           <span className="a2-mint">$</span> stream-status sprint-97XFQ{' '}
@@ -282,7 +283,7 @@ function StackLog() {
         }}
       />
       <div
-        aria-label="Stack log"
+        aria-label={t('home.stack.log')}
         className="a2-mono"
         style={{
           display: 'flex',

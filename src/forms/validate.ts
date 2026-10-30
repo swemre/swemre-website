@@ -13,6 +13,7 @@
 import type {FormValue} from '../contract/api.ts'
 import {EMAIL_RE, type FieldSpec, type FormValues} from '../contract/forms.ts'
 import type {FormDef} from './specs.ts'
+import {t} from '../i18n/index.ts'
 
 export function initialValues(def: FormDef): FormValues {
   return Object.fromEntries(
@@ -51,7 +52,8 @@ export function validate(
 ): Record<string, string> {
   const errors: Record<string, string> = {}
   for (const f of def.fields) {
-    if (isInvalid(f, values[f.key])) errors[f.key] = f.error ?? 'Fill this in.'
+    if (isInvalid(f, values[f.key]))
+      errors[f.key] = f.error ?? t('form.error.required')
   }
   return errors
 }
@@ -68,10 +70,8 @@ export function errorSummary(
   const list =
     names.length === 1
       ? names[0]
-      : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
-  return names.length === 1
-    ? `1 field needs a fix: ${list}.`
-    : `${names.length} fields need a fix: ${list}.`
+      : `${names.slice(0, -1).join(', ')}${t('list.and')}${names[names.length - 1]}`
+  return t('form.summary', {count: names.length, list})
 }
 
 /** The submission body's fields: trimmed strings, empty optional values as null. */

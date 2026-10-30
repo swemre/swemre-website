@@ -19,6 +19,7 @@ import {Anchor} from './Link.tsx'
 import {Rail, SectionBg, Texture, TopGround} from './Decor.tsx'
 import {Eyebrow, SectionNumber} from './SectionHeader.tsx'
 import type {Hue} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 const M: Record<
   Viewport,
@@ -61,7 +62,7 @@ export interface PageHeaderProps {
 
 export function Crumbs({crumbs}: {crumbs: Crumb[]}) {
   return (
-    <nav aria-label="Breadcrumb">
+    <nav aria-label={t('breadcrumb')}>
       <p className="a2-mono" style={{marginBottom: 32}}>
         {crumbs.map((c, i) => (
           <Fragment key={i}>

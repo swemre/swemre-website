@@ -21,25 +21,34 @@ import {Rail} from './kit/Rail.tsx'
 import {SectionBg} from './kit/SectionBg.tsx'
 import {Button, Eyebrow, SectionNumber} from './kit/ui.ts'
 import {useV} from './kit/vp.ts'
+import {t, type TextKey} from '../../i18n/index.ts'
 
-const DESCRIBES = [
-  'Engineer',
-  'Engineering manager',
-  'Founder',
-  'Recruiter',
-  'Student',
-  'Other',
+// Values stay in English, as the newsletter form stores them; the labels follow the language.
+const DESCRIBES: [string, TextKey][] = [
+  ['Engineer', 'form.describes.engineer'],
+  ['Engineering manager', 'form.describes.manager'],
+  ['Founder', 'form.describes.founder'],
+  ['Recruiter', 'form.describes.recruiter'],
+  ['Student', 'form.describes.student'],
+  ['Other', 'form.option.other'],
 ]
-const FOUND = ['Search', 'LinkedIn', 'GitHub', 'YouTube', 'A friend', 'Other']
+const FOUND: [string, TextKey][] = [
+  ['Search', 'form.found.search'],
+  ['LinkedIn', 'form.found.linkedin'],
+  ['GitHub', 'form.found.github'],
+  ['YouTube', 'form.found.youtube'],
+  ['A friend', 'form.found.friend'],
+  ['Other', 'form.option.other'],
+]
 const TOPICS: [string, string][] = [
   ['java', 'Java'],
   ['react', 'React'],
   ['ai', 'AI'],
-  ['architecture', 'Architecture'],
+  ['architecture', t('form.topic.architecture')],
 ]
-const options = (list: string[]) => [
-  {value: '', label: 'Choose one'},
-  ...list.map(o => ({value: o, label: o})),
+const options = (list: [string, TextKey][]) => [
+  {value: '', label: t('form.option.choose')},
+  ...list.map(([value, label]) => ({value, label: t(label)})),
 ]
 
 export function SubscribeSection() {
@@ -60,9 +69,8 @@ export function SubscribeSection() {
     e?.preventDefault()
     if (busy) return
     const local: Record<string, string> = {}
-    if (!EMAIL_RE.test(email.trim()))
-      local.email = 'Enter a full email address.'
-    if (!consent) local.consent = 'Tick this to subscribe.'
+    if (!EMAIL_RE.test(email.trim())) local.email = t('form.error.email')
+    if (!consent) local.consent = t('form.newsletter.consent.error')
     setErrors(local)
     setFailed('')
     if (Object.keys(local).length) return
@@ -83,17 +91,19 @@ export function SubscribeSection() {
     } else if (Object.keys(res.fields).length) {
       setErrors(res.fields)
     } else {
-      setFailed('Not sent. Try again.')
+      setFailed(t('home.subscribe.failed'))
     }
   }
   const fieldState = (key: string) =>
     errors[key] ? ('error' as const) : busy ? ('busy' as const) : undefined
   const toggle = (key: string) =>
-    setTopics(t => (t.includes(key) ? t.filter(k => k !== key) : [...t, key]))
+    setTopics(ts =>
+      ts.includes(key) ? ts.filter(k => k !== key) : [...ts, key],
+    )
 
   const name = (
     <Field
-      label="Full name"
+      label={t('form.fullName')}
       name="fullName"
       value={fullName}
       onChange={setFullName}
@@ -102,7 +112,7 @@ export function SubscribeSection() {
   )
   const mail = (
     <Field
-      label="Email"
+      label={t('form.email')}
       name="email"
       kind="email"
       value={email}
@@ -114,7 +124,7 @@ export function SubscribeSection() {
   )
   const describes = (
     <Field
-      label="What best describes you"
+      label={t('form.describes')}
       name="describesYou"
       kind="select"
       value={describesYou}
@@ -124,7 +134,7 @@ export function SubscribeSection() {
   )
   const found = (
     <Field
-      label="Where did you first find me"
+      label={t('form.found')}
       name="foundVia"
       kind="select"
       value={foundVia}
@@ -135,7 +145,8 @@ export function SubscribeSection() {
   const chips = (
     <fieldset className="a2-field">
       <legend className="a2-label" style={{marginBottom: 8}}>
-        Topics<em>optional</em>
+        {t('form.topics')}
+        <em>{t('form.optional')}</em>
       </legend>
       <div className="a2-chips">
         {TOPICS.map(([key, label]) => (
@@ -161,7 +172,7 @@ export function SubscribeSection() {
       error={errors.consent}
       label={
         <>
-          Email me new articles and the occasional update. I’ve read the{' '}
+          {t('home.subscribe.consent.before')}
           <a
             className="a2-ilink"
             href="/policies/privacy-policy"
@@ -170,16 +181,16 @@ export function SubscribeSection() {
               void navigate('/policies/privacy-policy')
             }}
           >
-            privacy policy
+            {t('home.subscribe.consent.link')}
           </a>
-          .
+          {t('home.subscribe.consent.after')}
         </>
       }
     />
   )
   const button = (block?: boolean) => (
     <Button
-      label="Subscribe"
+      label={t('nav.subscribe')}
       kind="primary"
       type="submit"
       iconRight="arrow-right"
@@ -299,16 +310,16 @@ export function SubscribeSection() {
               minWidth: 0,
             }}
           >
-            <Eyebrow>subscribe</Eyebrow>
+            <Eyebrow>{t('newsletter.subscribe.eyebrow')}</Eyebrow>
             <h2 className="a2-h2" id="home-subscribe">
-              Get the next letter in your inbox.
+              {t('newsletter.subscribe.title')}
             </h2>
             <Prompt command="subscribe --email" caret />
           </div>
         </div>
         <div style={{marginTop: v(48, 48, 64)}}>
           <form
-            aria-label="Subscribe to the newsletter"
+            aria-label={t('newsletter.form.label')}
             noValidate
             onSubmit={e => void submit(e)}
             style={{

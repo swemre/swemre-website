@@ -26,12 +26,12 @@ import {
   type PublicApiClient,
   type TermKind,
 } from '../contract/api.ts'
+import {DEFAULT_LOCALE, locale as pageLocale} from '../i18n/index.ts'
 import {
   API_BASE,
   API_TIMEOUT_MS,
   CHANNEL_KEY,
   DEV_SWITCHES,
-  LOCALE,
   READ_KEY,
 } from './env.ts'
 
@@ -58,7 +58,9 @@ export function createClient(
   const root = `${base}/public/v2/channels/${encodeURIComponent(opts.channel ?? CHANNEL_KEY)}`
   const readKey = opts.readKey ?? READ_KEY
   const timeoutMs = opts.timeoutMs ?? API_TIMEOUT_MS
-  const locale = opts.locale ?? LOCALE
+  // Reads ask for the page's language; anything missing in it falls back to the default one.
+  const locale = opts.locale ?? pageLocale
+  const fallback = locale === DEFAULT_LOCALE ? undefined : DEFAULT_LOCALE
 
   async function call<T>(
     path: string,
@@ -112,30 +114,47 @@ export function createClient(
     return s ? `?${s}` : ''
   }
 
+  const listIn = async (query: ApiListQuery, lang: string) =>
+    (await call<ApiPage<ApiPublicationSummary>>(
+      `/publications${qs({locale: lang, 'content-type': query.contentType, term: query.term, page: query.page, size: query.size})}`,
+    ))!
+  const listAllIn = async (query: ApiListQuery, lang: string) => {
+    const items: ApiPublicationSummary[] = []
+    for (let page = 0; ; page++) {
+      const res = await listIn({...query, page, size: 100}, lang)
+      items.push(...res.items)
+      if (items.length >= res.total || res.items.length === 0) return items
+    }
+  }
+
   const client: PublicApiClient = {
-    async list(query: ApiListQuery) {
-      const page = await call<ApiPage<ApiPublicationSummary>>(
-        `/publications${qs({locale, 'content-type': query.contentType, term: query.term, page: query.page, size: query.size})}`,
-      )
-      return page!
+    list(query: ApiListQuery) {
+      return listIn(query, locale)
     },
     async listAll(query) {
-      const items: ApiPublicationSummary[] = []
-      for (let page = 0; ; page++) {
-        const res = await client.list({...query, page, size: 100})
-        items.push(...res.items)
-        if (items.length >= res.total || res.items.length === 0) return items
-      }
+      const own = await listAllIn(query, locale)
+      if (!fallback) return own
+      // Every publication once: its own-language version when there is one, else the default.
+      const base = await listAllIn(query, fallback)
+      const mine = new Map(own.map(p => [p.workId, p]))
+      return [
+        ...base.map(p => mine.get(p.workId) ?? p),
+        ...own.filter(p => !base.some(b => b.workId === p.workId)),
+      ]
     },
-    get(slug: string) {
-      return call<ApiPublication>(
-        `/publications/${encodeURIComponent(slug)}${qs({locale})}`,
-        {},
-        'undefined',
-      )
+    async get(slug: string) {
+      const get = (lang: string) =>
+        call<ApiPublication>(
+          `/publications/${encodeURIComponent(slug)}${qs({locale: lang})}`,
+          {},
+          'undefined',
+        )
+      return (await get(locale)) ?? (fallback ? get(fallback) : undefined)
     },
     async terms(kind?: TermKind) {
-      return (await call<ApiTerm[]>(`/terms${qs({kind, locale})}`))!
+      const own = (await call<ApiTerm[]>(`/terms${qs({kind, locale})}`))!
+      if (own.length || !fallback) return own
+      return (await call<ApiTerm[]>(`/terms${qs({kind, locale: fallback})}`))!
     },
     async redirects() {
       return (await call<ApiRedirect[]>('/redirects'))!

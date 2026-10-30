@@ -16,6 +16,7 @@ import type {ReactNode} from 'react'
 import {Button} from './Button.tsx'
 import {Icon, type IconName} from './Icon.tsx'
 import {hueRgb, type Hue} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 export interface StatePanelProps {
   kind: 'loading' | 'empty' | 'error' | 'not-found' | 'info'
@@ -139,8 +140,8 @@ export function StatePanel({
               <Button
                 kind={actions ? 'primary' : 'secondary'}
                 iconLeft="refresh"
-                label="Try again"
-                busyLabel="Trying again…"
+                label={t('form.retry')}
+                busyLabel={t('state.retrying')}
                 state={retrying ? 'busy' : undefined}
                 onClick={onRetry}
               />

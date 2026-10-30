@@ -18,8 +18,9 @@ import type {
   SearchResult,
   SearchResults,
 } from '../contract/view.ts'
+import {intlLocale} from '../i18n/index.ts'
 
-const DATE = new Intl.DateTimeFormat('en-US', {
+const DATE = new Intl.DateTimeFormat(intlLocale('en-US'), {
   month: 'short',
   day: 'numeric',
   year: 'numeric',

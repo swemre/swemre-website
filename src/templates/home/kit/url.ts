@@ -13,6 +13,7 @@
 // value of undefined, '' or false removes the key, so the default state has a clean URL.
 import {useCallback, useEffect, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
+import {intlLocale} from '../../../i18n/index.ts'
 
 export type Patch = Record<string, string | number | boolean | undefined>
 
@@ -73,12 +74,12 @@ export function useLastLoad(key: string, ready: boolean): Date | undefined {
 
 /** "Oct 27, 2026, 09:12" */
 export function formatStamp(d: Date): string {
-  const date = d.toLocaleDateString('en-US', {
+  const date = d.toLocaleDateString(intlLocale('en-US'), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
-  const time = d.toLocaleTimeString('en-GB', {
+  const time = d.toLocaleTimeString(intlLocale('en-GB'), {
     hour: '2-digit',
     minute: '2-digit',
   })

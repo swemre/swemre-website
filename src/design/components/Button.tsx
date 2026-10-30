@@ -15,6 +15,7 @@ import type {ButtonHTMLAttributes, ReactNode} from 'react'
 import {Anchor, type AnchorProps} from './Link.tsx'
 import {Icon, type IconName} from './Icon.tsx'
 import {cx} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 export interface ButtonProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -44,7 +45,7 @@ export function Button({
   block,
   iconOnly,
   type = 'button',
-  busyLabel = 'Sending…',
+  busyLabel = t('form.sending'),
   className,
   ...rest
 }: ButtonProps) {

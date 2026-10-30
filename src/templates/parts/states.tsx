@@ -15,6 +15,7 @@ import type {ReactNode} from 'react'
 import {LoadingStatus, Skel, StatePanel} from '../../design/index.tsx'
 import {HeroCurve, Sec, TopGlow} from './deco.tsx'
 import {useHeroPad, usePick} from './vp.ts'
+import {t} from '../../i18n/index.ts'
 
 function Frame({children}: {children: ReactNode}) {
   const pad = useHeroPad()
@@ -78,8 +79,8 @@ export function PageError({
       <div style={{maxWidth: 720}}>
         <StatePanel
           kind="error"
-          title={`${what} could not be loaded`}
-          copy="The server did not answer in time. Nothing is lost; try again in a moment."
+          title={t('state.couldNotLoad', {what})}
+          copy={t('state.couldNotLoad.copy')}
           command={command}
           result="503 Service Unavailable"
           onRetry={onRetry}

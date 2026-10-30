@@ -17,6 +17,7 @@ import {Button, Chip} from '../../design/index.tsx'
 import {ChipRow, ListSection, StateLayout} from '../home/kit/list.tsx'
 import {StateNumber, StatePanel} from '../home/kit/StatePanel.tsx'
 import type {FilterState} from './model.ts'
+import {t} from '../../i18n/index.ts'
 
 export function ArticleStates({
   kind,
@@ -38,20 +39,29 @@ export function ArticleStates({
       <ListSection label="error">
         <StateLayout
           number={
-            <StateNumber prefix="E" digits="503" error line="Load error" />
+            <StateNumber
+              prefix="E"
+              digits="503"
+              error
+              line={t('state.loadError')}
+            />
           }
         >
           <StatePanel
             icon="cloud-off"
-            title="Articles could not be loaded"
-            copy="The server did not answer in time. Check your connection and try again; the articles are still there."
+            title={t('articles.error.title')}
+            copy={t('articles.error.copy')}
             command="GET /api/public/v2/channels/swemre/articles"
             result="503 Service Unavailable"
             actions={
               <>
-                <Button label="Try again" iconLeft="refresh" onClick={retry} />
                 <Button
-                  label="Browse projects"
+                  label={t('form.retry')}
+                  iconLeft="refresh"
+                  onClick={retry}
+                />
+                <Button
+                  label={t('state.browseProjects')}
                   kind="secondary"
                   iconLeft="folder"
                   href="/projects"
@@ -66,32 +76,37 @@ export function ArticleStates({
   const {topic, topicName: name, saved} = filter
   const showAll = (
     <Button
-      label="Show all articles"
+      label={t('articles.showAll')}
       iconLeft="arrow-left"
       onClick={onShowAll}
     />
   )
   const rss = (
-    <Button label="Follow by RSS" kind="ghost" iconLeft="rss" href="/rss.xml" />
+    <Button
+      label={t('articles.followRss')}
+      kind="ghost"
+      iconLeft="rss"
+      href="/rss.xml"
+    />
   )
   const panel = saved ? (
     <StatePanel
       hue="blue"
       icon="bookmark"
-      title="No saved articles yet"
-      copy="Save an article with the bookmark on its page and it shows up here. Saved articles stay in this browser."
+      title={t('articles.saved.empty.title')}
+      copy={t('articles.saved.empty.copy')}
       command="ls ~/articles --saved"
-      result="0 results"
+      result={t('qs.results', {count: 0})}
       actions={showAll}
     />
   ) : topic ? (
     <StatePanel
       hue="blue"
       icon="hash"
-      title={`Nothing on ${name} yet`}
-      copy={`No article is tagged ${name} so far. Clear the filter to see everything, or follow the RSS feed to hear when the first one is out.`}
+      title={t('articles.topic.empty.title', {name})}
+      copy={t('articles.topic.empty.copy', {name})}
       command={`ls ~/articles --topic ${topic}`}
-      result="0 results"
+      result={t('qs.results', {count: 0})}
       actions={
         <>
           {showAll}
@@ -103,15 +118,15 @@ export function ArticleStates({
     <StatePanel
       hue="blue"
       icon="file-text"
-      title="No articles yet"
-      copy="The first article is still being written. Subscribe or follow the RSS feed to get it the day it is out."
+      title={t('articles.empty.title')}
+      copy={t('articles.empty.copy')}
       command="ls ~/articles"
-      result="0 results"
+      result={t('qs.results', {count: 0})}
       actions={
         <>
           {rss}
           <Button
-            label="Subscribe"
+            label={t('nav.subscribe')}
             kind="secondary"
             iconLeft="mail"
             href="/newsletter"
@@ -121,22 +136,22 @@ export function ArticleStates({
     />
   )
   const line = saved
-    ? '0 saved articles'
+    ? t('articles.count.saved', {count: 0})
     : topic
-      ? `0 articles in ${name}`
-      : '0 articles'
+      ? t('articles.count.in', {count: 0, name})
+      : t('articles.count', {count: 0})
   return (
     <ListSection label="empty">
       <StateLayout number={<StateNumber prefix="0" digits="0" line={line} />}>
         {panel}
         {topic && related.length > 0 && (
-          <ChipRow label="Related topics">
-            {related.map(t => (
+          <ChipRow label={t('articles.relatedTopics')}>
+            {related.map(tp => (
               <Chip
-                key={t.slug}
-                label={t.name}
-                count={t.count}
-                onClick={() => onTopic(t.slug)}
+                key={tp.slug}
+                label={tp.name}
+                count={tp.count}
+                onClick={() => onTopic(tp.slug)}
               />
             ))}
           </ChipRow>

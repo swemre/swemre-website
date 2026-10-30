@@ -18,6 +18,8 @@ import {Slash, SortButton} from '../home/kit/list.tsx'
 import {formatStamp} from '../home/kit/url.ts'
 import {useCompact, useV} from '../home/kit/vp.ts'
 import {SORTS, type FilterState, type Sort} from './model.ts'
+import {t} from '../../i18n/index.ts'
+import {tRich} from '../../i18n/rich.tsx'
 
 const SKELETON = [56, 80, 116, 92, 104, 128, 96, 72]
 
@@ -98,7 +100,7 @@ export function FilterBar({
           style={{display: 'inline-flex', alignItems: 'center', gap: 8}}
         >
           <Icon name="spinner" size={14} className="a2-spin" />
-          Loading articles…
+          {t('articles.loading.dots')}
         </span>,
       ),
     )
@@ -106,12 +108,13 @@ export function FilterBar({
     return row(
       <div className="a2-chips" style={{gap: 8}}>
         <span className="a2-chip is-active">
-          All<span className="a2-count">–</span>
+          {t('projects.year.all')}
+          <span className="a2-count">–</span>
         </span>
       </div>,
       lastLoad && (
         <span className="a2-mono">
-          Last successful load: {formatStamp(lastLoad)}
+          {t('articles.lastLoad', {stamp: formatStamp(lastLoad)})}
         </span>
       ),
       true,
@@ -123,12 +126,11 @@ export function FilterBar({
   const activeShown = shown.some(t => t.slug === filter.topic)
   const activeTerm = topics.find(t => t.slug === filter.topic)
   const all = !filter.topic && !filter.saved
-  const noun = (n: number) => (n === 1 ? 'article' : 'articles')
 
   const chips = (
     <div className="a2-chips" style={{gap: 8}}>
       <Chip
-        label="All"
+        label={t('projects.year.all')}
         count={total}
         active={all}
         onClick={() => onTopic(undefined)}
@@ -149,7 +151,7 @@ export function FilterBar({
           aria-expanded={filter.more}
           onClick={() => onMore(!filter.more)}
         >
-          {filter.more ? 'Fewer topics' : 'More topics'}
+          {filter.more ? t('articles.fewerTopics') : t('articles.moreTopics')}
           {!filter.more && <span className="a2-count">{hidden}</span>}
           <Icon
             name={filter.more ? 'chevron-up' : 'chevron-down'}
@@ -162,7 +164,7 @@ export function FilterBar({
         <button
           type="button"
           className="a2-chip is-active"
-          aria-label={`Remove ${filter.topicName}`}
+          aria-label={t('projects.chip.remove', {label: filter.topicName})}
           onClick={() => onTopic(undefined)}
         >
           {filter.topicName}
@@ -174,27 +176,42 @@ export function FilterBar({
         <button
           type="button"
           className="a2-chip is-active"
-          aria-label="Remove Saved"
+          aria-label={t('articles.saved.remove')}
           onClick={() => onSaved(false)}
         >
           <Icon name="bookmark" size={14} />
-          Saved
+          {t('articles.saved')}
           <span className="a2-count">{count}</span>
           <Icon name="x" size={14} />
         </button>
       )}
     </div>
   )
-  const what = filter.saved ? `saved ${noun(count)}` : noun(count)
+
   return row(
     chips,
     side(
       <>
         <span className="a2-cap">
-          <span className="a2-hi" style={{fontWeight: 600}}>
-            {count} {what}
-          </span>
-          {filter.topic && ` in ${filter.topicName}`}
+          {filter.topic ? (
+            tRich(
+              'articles.countIn',
+              {name: filter.topicName},
+              {
+                count: (
+                  <span className="a2-hi" style={{fontWeight: 600}}>
+                    {t('articles.count', {count})}
+                  </span>
+                ),
+              },
+            )
+          ) : (
+            <span className="a2-hi" style={{fontWeight: 600}}>
+              {filter.saved
+                ? t('articles.count.saved', {count})
+                : t('articles.count', {count})}
+            </span>
+          )}
         </span>
         {count > 0 && (
           <>

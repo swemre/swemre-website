@@ -30,16 +30,17 @@ import {PageError, PageLoading} from '../parts/states.tsx'
 import {ArticleAside, ArticleTocButton} from '../parts/toc.tsx'
 import {useHeroPad, usePick} from '../parts/vp.ts'
 import {NotFoundTemplate} from '../not-found/index.tsx'
+import {t} from '../../i18n/index.ts'
 
 export function ArticleTemplate({route}: TemplateProps) {
   const slug = route.params.slug ?? ''
   const res = useArticle(slug)
   if (res.status === 'loading')
-    return <PageLoading label="Loading the article" />
+    return <PageLoading label={t('state.loading.article')} />
   if (res.status === 'error')
     return (
       <PageError
-        what="The article"
+        what={t('state.what.article')}
         command={`GET /api/public/v2/channels/swemre-website/publications/${slug}`}
         onRetry={res.retry}
       />
@@ -52,8 +53,8 @@ export function ArticleTemplate({route}: TemplateProps) {
 /** The FAQ heading: the board says "Questions about the template" for template articles. */
 function faqTitle(a: Article) {
   return /template/i.test(a.title)
-    ? 'Questions about the template'
-    : 'Questions about this article'
+    ? t('article.faq.template')
+    : t('article.faq.article')
 }
 
 function ArticleView({a}: {a: Article}) {
@@ -99,7 +100,7 @@ function ArticleView({a}: {a: Article}) {
     <MetaStrip
       items={[
         {
-          label: 'Author',
+          label: t('article.author'),
           value: (
             <>
               {a.author.avatar ? (
@@ -136,11 +137,11 @@ function ArticleView({a}: {a: Article}) {
           ),
         },
         {
-          label: 'Published',
+          label: t('article.published'),
           value: <time dateTime={a.publishedAt}>{fmtDate(a.publishedAt)}</time>,
         },
         {
-          label: 'Reading time',
+          label: t('article.readingTime'),
           value: (
             <>
               <Icon
@@ -153,7 +154,7 @@ function ArticleView({a}: {a: Article}) {
           ),
         },
         {
-          label: 'Stack',
+          label: t('projects.stack'),
           value: a.tags.map(t => (
             <span key={t.slug} className="a2-badge">
               {t.name}
@@ -161,7 +162,7 @@ function ArticleView({a}: {a: Article}) {
           )),
         },
         {
-          label: 'Updated',
+          label: t('project.updated'),
           value: (
             <>
               <time dateTime={a.updatedAt}>{fmtDate(a.updatedAt)}</time>
@@ -283,9 +284,11 @@ function ArticleView({a}: {a: Article}) {
           >
             <div className="a2-c">
               <SectionHead
-                eyebrow="keep reading"
-                title="More from the workshop"
-                action={<ArrowLink to="/articles">All articles</ArrowLink>}
+                eyebrow={t('article.keepReading')}
+                title={t('article.more')}
+                action={
+                  <ArrowLink to="/articles">{t('nav.allArticles')}</ArrowLink>
+                }
               />
               <RelatedRows items={a.related} />
             </div>
@@ -308,12 +311,12 @@ function ArticleView({a}: {a: Article}) {
           >
             <div className="a2-c">
               <SectionHead
-                eyebrow="faq"
+                eyebrow={t('article.faq.eyebrow')}
                 title={a.faqTitle ?? faqTitle(a)}
                 action={
                   <Button
                     kind="secondary"
-                    label="Send me a question"
+                    label={t('article.askQuestion')}
                     iconLeft="send"
                     href="/contact"
                   />

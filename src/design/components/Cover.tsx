@@ -16,6 +16,7 @@ import type {CSSProperties, ReactNode} from 'react'
 import type {CodeCover as CodeCoverData, Media} from '../../contract/view.ts'
 import {useViewport} from '../context.ts'
 import {cx, glyphFor, hueRgb, type Hue} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 const KEYWORDS = new Set(
   'class interface record enum static public private protected final void return new import package const let var function export type extends implements async await fun val def root'.split(
@@ -109,7 +110,7 @@ export function CodeCover({
     <div
       className="p2-cover a2-island"
       role="img"
-      aria-label={`Cover: ${title}`}
+      aria-label={t('cover.label', {title})}
       style={{
         borderColor: hueRgb(hue, 0.26),
         background: `radial-gradient(120% 140% at 82% 24%,${hueRgb(hue, 0.34)},transparent 60%),var(--a2-cover-grad)`,
@@ -202,7 +203,7 @@ export function GlyphCover({
     <div
       className={cx('a2-cover a2-island', className)}
       role="img"
-      aria-label={`Cover for ${title}`}
+      aria-label={t('cover.for', {title})}
       style={{
         height,
         borderRadius: 10,

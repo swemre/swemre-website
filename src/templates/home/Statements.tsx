@@ -13,6 +13,7 @@
 import {Rail} from './kit/Rail.tsx'
 import {StatementBg} from './kit/SectionBg.tsx'
 import {useV} from './kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const REEL = ['Rust', 'TypeScript', 'Java', 'Go', 'Python']
 const FADE =
@@ -36,15 +37,13 @@ export function ReelStatement() {
     <section
       className="a2-sec is-xl"
       data-cut
-      aria-label="My stack, Java and friends"
+      aria-label={t('home.statement.label')}
     >
       <StatementBg left="sky" right="blue" />
       <Rail from="sky" to="blue" node={[191, 263, 352, 560]} label="7a11ca7" />
       <div className="a2-c">
         <div style={{textAlign: 'center'}}>
-          <p className="a2-sr">
-            I write Java, BTW. Also Go, Rust, TypeScript and Python.
-          </p>
+          <p className="a2-sr">{t('home.statement.sr')}</p>
           <div
             className="a2-stmt"
             aria-hidden="true"
@@ -56,7 +55,9 @@ export function ReelStatement() {
               lineHeight: `${line}px`,
             }}
           >
-            <span>I write</span>
+            {t('home.statement.before') && (
+              <span>{t('home.statement.before')}</span>
+            )}
             <span
               style={{
                 position: 'relative',
@@ -124,6 +125,9 @@ export function ReelStatement() {
                 />
               ))}
             </span>
+            {t('home.statement.after') && (
+              <span>{t('home.statement.after')}</span>
+            )}
             <span>,</span>
             <span style={{position: 'relative', display: 'inline-block'}}>
               <span
@@ -168,7 +172,7 @@ export function ReelStatement() {
             <span style={{color: 'var(--a2-meta-arrow)'}}>→</span>{' '}
             <span style={{color: 'var(--a2-reel-hi)'}}>java</span>
             <span style={{color: 'var(--a2-meta-arrow)'}}>
-              {' \u00a0// favorite'}
+              {` \u00a0// ${t('home.statement.favorite')}`}
             </span>
             <span className="a2-caret" />
           </p>
@@ -184,7 +188,7 @@ export function PromiseStatement() {
     <section
       className="a2-sec is-xl"
       data-cut
-      aria-label="The newsletter, a promise"
+      aria-label={t('home.promise.label')}
     >
       <StatementBg left="lilac" right="mist" />
       <Rail
@@ -204,19 +208,19 @@ export function PromiseStatement() {
               textWrap: 'balance',
             }}
           >
-            Private by default,
+            {t('newsletter.statement.1')}
             <br />
-            written like a note
+            {t('newsletter.statement.2')}
             <br />
-            <span className="a2-accent2">to a friend.</span>
+            <span className="a2-accent2">{t('newsletter.statement.3')}</span>
           </p>
           <p
             className="a2-mono"
             style={{marginTop: v(48, 48, 64), color: 'var(--a2-text-mono-2)'}}
           >
-            your email stays with me{' '}
-            <span style={{color: 'var(--a2-hue-mist)'}}>·</span> one person
-            writing, to one person reading
+            {t('newsletter.statement.note1')}{' '}
+            <span style={{color: 'var(--a2-hue-mist)'}}>·</span>{' '}
+            {t('newsletter.statement.note2')}
           </p>
         </div>
       </div>

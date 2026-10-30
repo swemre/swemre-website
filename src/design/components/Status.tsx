@@ -17,6 +17,7 @@ import {Button} from './Button.tsx'
 import {Icon} from './Icon.tsx'
 import {useViewport} from '../context.ts'
 import {cx} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 export interface StatusLineProps {
   kind?: 'idle' | 'errors' | 'busy' | 'failure'
@@ -193,7 +194,7 @@ export function Banner({
               iconLeft="refresh"
               label={action.label}
               state={action.busy ? 'busy' : undefined}
-              busyLabel="Trying again…"
+              busyLabel={t('state.retrying')}
               onClick={action.onClick}
             />
           </div>

@@ -26,7 +26,7 @@ const rfc822 = (iso: string) => new Date(iso).toUTCString()
 export function buildRss(data: MockData, siteUrl: string): string {
   const site = siteUrl.replace(/\/$/, '')
   const settings = data.publications.find(
-    p => p.contentType === 'site-settings',
+    p => p.contentType === 'site-settings' && p.locale === 'en',
   )
   const f = (settings?.fields ?? {}) as {
     footerTagline?: string
@@ -34,6 +34,7 @@ export function buildRss(data: MockData, siteUrl: string): string {
   }
   const email = f.contactEmail ?? 'emre@swemre.com'
   const articles: ApiPublication[] = data.publications
+    .filter(p => p.locale === 'en')
     .filter(p => p.contentType === 'article')
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
   const newest = articles

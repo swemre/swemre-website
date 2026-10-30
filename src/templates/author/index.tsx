@@ -35,6 +35,7 @@ import {fmtDate, minRead} from '../parts/format.ts'
 import {PageError, PageLoading} from '../parts/states.tsx'
 import {rgb, usePick} from '../parts/vp.ts'
 import {NotFoundTemplate} from '../not-found/index.tsx'
+import {t} from '../../i18n/index.ts'
 
 const SHOWN = 4
 
@@ -42,11 +43,11 @@ export function AuthorTemplate({route}: TemplateProps) {
   const slug = route.params.slug ?? ''
   const res = useAuthor(slug)
   if (res.status === 'loading')
-    return <PageLoading label="Loading the author" />
+    return <PageLoading label={t('state.loading.author')} />
   if (res.status === 'error')
     return (
       <PageError
-        what="The author page"
+        what={t('state.what.author')}
         command={`GET /api/public/v2/channels/swemre-website/publications/${slug}`}
         onRetry={res.retry}
       />
@@ -133,20 +134,20 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
       <Button
         kind="primary"
         block
-        label="Request a call back"
+        label={t('menu.callBack')}
         iconLeft="phone"
         href="/call-back"
       />
       <span className="a2-mono" style={{fontSize: 12}}>
-        I call back within two working days. Or{' '}
+        {t('author.cta.before')}
         <Link
           className="a2-mono a2-soft"
           to="/contact"
           style={{whiteSpace: 'nowrap'}}
         >
-          send a message
+          {t('author.cta.link')}
         </Link>
-        .
+        {t('author.cta.after')}
       </span>
     </div>
   )
@@ -194,7 +195,7 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
           ...(vp === 't' ? {gridColumn: '1 / -1'} : {}),
         }}
       >
-        <Label n={1}>Focus</Label>
+        <Label n={1}>{t('author.focus')}</Label>
         <div style={{marginTop: gap}}>
           <h2 className="a2-h2" style={{textWrap: 'balance', maxWidth: 520}}>
             {a.focus}
@@ -214,10 +215,12 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
           flexDirection: 'column',
         }}
       >
-        <Label n={2}>Background</Label>
+        <Label n={2}>{t('form.group.background')}</Label>
         <div style={{marginTop: gap}}>
           {a.writingSince && (
-            <h3 className="a2-h4">Writing software since {a.writingSince}</h3>
+            <h3 className="a2-h4">
+              {t('author.since', {year: a.writingSince})}
+            </h3>
           )}
           {a.backgroundNote && (
             <p className="a2-small" style={{marginTop: 8}}>
@@ -238,7 +241,7 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
           flexDirection: 'column',
         }}
       >
-        <Label n={3}>Availability</Label>
+        <Label n={3}>{t('author.availability')}</Label>
         <div style={{marginTop: gap}}>
           <p
             style={{
@@ -412,7 +415,7 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
           {a.stack.length > 0 &&
             row(
               4,
-              'Stack',
+              t('projects.stack'),
               <div className="a2-chips" style={{gap: 8}}>
                 {a.stack.map(t => (
                   <Chip key={t.slug} label={t.name} href={t.href} />
@@ -422,7 +425,7 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
           {project &&
             row(
               5,
-              'Currently building',
+              t('author.building'),
               <>
                 <Link
                   to={project.href}
@@ -447,21 +450,21 @@ function AuthorView({a, slug}: {a: Author; slug: string}) {
             )}
           {row(
             6,
-            'Writing',
+            t('author.writing'),
             <>
               <p className="a2-cap">
                 <b className="a2-hi" style={{fontWeight: 600}}>
                   {mine.length}
                 </b>{' '}
-                articles ·{' '}
+                {t('author.articles', {count: mine.length})} ·{' '}
                 <b className="a2-hi" style={{fontWeight: 600}}>
                   {topics.length}
                 </b>{' '}
-                topics
+                {t('author.topics', {count: topics.length})}
                 {latest && (
                   <>
                     {' '}
-                    · latest{' '}
+                    · {t('author.latest')}{' '}
                     <span className="a2-mono a2-hi">
                       {fmtDate(latest.publishedAt)}
                     </span>
@@ -634,13 +637,13 @@ function Writing({
   const vp = useViewport()
   const big = vp === 'd' || vp === '4k'
   const shown = items.slice(0, SHOWN)
-  const count = `${shown.length} of ${items.length} articles`
+  const count = t('author.count', {shown: shown.length, count: items.length})
   const head = (
     <div>
       <span className="a2-eyebrow" style={{marginBottom: 16}}>
-        {'// writing'}
+        {`// ${t('mega.articles.eyebrow')}`}
       </span>
-      <h2 className="a2-d2">Articles by {name}</h2>
+      <h2 className="a2-d2">{t('author.articlesBy', {name})}</h2>
       <div
         style={{
           marginTop: big ? 24 : 16,
@@ -660,7 +663,7 @@ function Writing({
       {vp === 'm' ? (
         <div style={{display: 'flex', flexDirection: 'column', gap: 24}}>
           {head}
-          <span className="a2-cap">Newest first</span>
+          <span className="a2-cap">{t('articles.sort.newest')}</span>
         </div>
       ) : (
         <div
@@ -672,7 +675,7 @@ function Writing({
           }}
         >
           {head}
-          <span className="a2-cap">Newest first</span>
+          <span className="a2-cap">{t('articles.sort.newest')}</span>
         </div>
       )}
       <div
@@ -703,7 +706,7 @@ function Writing({
               }),
         }}
       >
-        <span className="a2-mono">Showing {count} / newest first</span>
+        <span className="a2-mono">{t('author.showing', {count})}</span>
         <div
           style={{
             display: 'flex',
@@ -714,13 +717,13 @@ function Writing({
         >
           <Button
             kind="ghost"
-            label="RSS feed"
+            label={t('footer.rss')}
             iconLeft="rss"
             href="/rss.xml"
           />
           <Button
             kind="secondary"
-            label="Browse the archive"
+            label={t('author.archive')}
             iconRight="arrow-right"
             href="/articles"
             block={vp === 'm'}
@@ -857,7 +860,7 @@ function WritingRow({a, index}: {a: ArticleSummary; index: number}) {
       <Button
         kind="secondary"
         iconOnly
-        label={`Read ${a.title}`}
+        label={t('author.readTitle', {title: a.title})}
         iconLeft="arrow-right"
         href={a.href}
       />

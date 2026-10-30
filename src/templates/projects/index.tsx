@@ -45,6 +45,7 @@ import {
   ProjectGrid,
   SummaryBar,
 } from './Results.tsx'
+import {t} from '../../i18n/index.ts'
 
 const FILTER_KEYS = ['q', 'year', 'stack', 'live', 'source']
 
@@ -100,9 +101,9 @@ export function ProjectsTemplate(_props: TemplateProps) {
 
   const header = (
     <ListHeader
-      eyebrow="building"
-      title="Projects"
-      lead="Things I have built and am building, with the code behind them."
+      eyebrow={t('mega.projects.eyebrow')}
+      title={t('nav.projects')}
+      lead={t('projects.lead')}
       hue="peri"
       commit="5ca1ab1"
     />
@@ -119,31 +120,36 @@ export function ProjectsTemplate(_props: TemplateProps) {
           {state.status === 'loading' ? (
             <>
               <span className="a2-sr" role="status">
-                Loading projects
+                {t('projects.loading')}
               </span>
               <LoadingGrid />
             </>
           ) : state.status === 'error' ? (
             <StateLayout
               number={
-                <StateNumber prefix="E" digits="503" error line="Load error" />
+                <StateNumber
+                  prefix="E"
+                  digits="503"
+                  error
+                  line={t('state.loadError')}
+                />
               }
             >
               <StatePanel
                 icon="cloud-off"
-                title="Projects could not be loaded"
-                copy="The project list did not load. Nothing is lost; try again in a moment."
+                title={t('projects.error.title')}
+                copy={t('projects.error.copy')}
                 command="GET /api/public/v2/channels/swemre/projects"
                 result="503 Service Unavailable"
                 actions={
                   <>
                     <Button
-                      label="Try again"
+                      label={t('form.retry')}
                       iconLeft="refresh"
                       onClick={state.retry}
                     />
                     <Button
-                      label="Browse articles"
+                      label={t('state.browseArticles')}
                       kind="secondary"
                       iconLeft="file-text"
                       href="/articles"
@@ -159,17 +165,17 @@ export function ProjectsTemplate(_props: TemplateProps) {
                   prefix="0"
                   digits="0"
                   hue="peri"
-                  line="0 projects"
+                  line={t('projects.count', {count: 0})}
                 />
               }
             >
               <StatePanel
                 hue="peri"
                 icon="folder"
-                title="No projects to show yet"
-                copy="Projects appear here once they have a public page. The code of everything I build is on GitHub in the meantime."
+                title={t('projects.empty.title')}
+                copy={t('projects.empty.copy')}
                 command="ls ~/projects --public"
-                result="0 results"
+                result={t('qs.results', {count: 0})}
               />
             </StateLayout>
           )}
@@ -301,7 +307,10 @@ function CompactControls({
           onClick={() => setOpen(o => !o)}
         >
           <Icon name="filter" />
-          <span>Filters{f.active.length > 0 && ` · ${f.active.length}`}</span>
+          <span>
+            {t('projects.filters')}
+            {f.active.length > 0 && ` · ${f.active.length}`}
+          </span>
         </button>
         <ActiveChips f={f} onRemove={act.remove} />
       </div>

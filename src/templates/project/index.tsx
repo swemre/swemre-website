@@ -28,16 +28,17 @@ import {ArrowLink, MetaStrip, PathLine, SectionHead} from '../parts/heads.tsx'
 import {PageError, PageLoading} from '../parts/states.tsx'
 import {useHeroPad, usePick} from '../parts/vp.ts'
 import {NotFoundTemplate} from '../not-found/index.tsx'
+import {t} from '../../i18n/index.ts'
 
 export function ProjectTemplate({route}: TemplateProps) {
   const slug = route.params.slug ?? ''
   const res = useProject(slug)
   if (res.status === 'loading')
-    return <PageLoading label="Loading the project" />
+    return <PageLoading label={t('state.loading.project')} />
   if (res.status === 'error')
     return (
       <PageError
-        what="The project"
+        what={t('state.what.project')}
         command={`GET /api/public/v2/channels/swemre-website/publications/${slug}`}
         onRetry={res.retry}
       />
@@ -82,7 +83,7 @@ function ProjectView({p}: {p: Project}) {
       {p.sourceAvailable && p.repoUrl && (
         <Button
           kind="primary"
-          label="View source"
+          label={t('project.viewSource')}
           iconLeft="github"
           href={p.repoUrl}
         />
@@ -90,7 +91,7 @@ function ProjectView({p}: {p: Project}) {
       {p.live && p.url && (
         <Button
           kind={p.sourceAvailable ? 'secondary' : 'primary'}
-          label="Visit site"
+          label={t('project.visitSite')}
           iconLeft="external"
           href={p.url}
         />
@@ -98,7 +99,7 @@ function ProjectView({p}: {p: Project}) {
       {p.docsUrl && (
         <Button
           kind="secondary"
-          label="Read the docs"
+          label={t('project.docs')}
           iconLeft="book-open"
           href={p.docsUrl}
         />
@@ -123,7 +124,7 @@ function ProjectView({p}: {p: Project}) {
     <MetaStrip
       items={[
         {
-          label: 'Status',
+          label: t('projects.status'),
           value: (
             <>
               <StatusBadge p={p} hue={p.hue} />
@@ -131,10 +132,14 @@ function ProjectView({p}: {p: Project}) {
             </>
           ),
         },
-        ...(p.year ? [{label: 'Started', value: String(p.year)}] : []),
-        ...(p.language ? [{label: 'Language', value: p.language}] : []),
+        ...(p.year
+          ? [{label: t('project.started'), value: String(p.year)}]
+          : []),
+        ...(p.language
+          ? [{label: t('project.language'), value: p.language}]
+          : []),
         {
-          label: 'Stack',
+          label: t('projects.stack'),
           value: p.stack.map(t => (
             <span key={t.slug} className="a2-badge">
               {t.name}
@@ -142,7 +147,7 @@ function ProjectView({p}: {p: Project}) {
           )),
         },
         {
-          label: 'Updated',
+          label: t('project.updated'),
           value: <time dateTime={p.updatedAt}>{fmtDate(p.updatedAt)}</time>,
         },
       ]}
@@ -212,9 +217,13 @@ function ProjectView({p}: {p: Project}) {
                         <SectionNumber number={relNumber} hue={relHue} />
                       </div>
                     }
-                    eyebrow="read more"
-                    title="Related articles"
-                    action={<ArrowLink to="/articles">All articles</ArrowLink>}
+                    eyebrow={t('project.readMore')}
+                    title={t('project.relatedArticles')}
+                    action={
+                      <ArrowLink to="/articles">
+                        {t('nav.allArticles')}
+                      </ArrowLink>
+                    }
                   />
                   <div className="a2-rows">
                     {p.relatedArticles.map(a => (
@@ -237,9 +246,13 @@ function ProjectView({p}: {p: Project}) {
                   }
                 >
                   <SectionHead
-                    eyebrow="keep exploring"
-                    title="Related projects"
-                    action={<ArrowLink to="/projects">All projects</ArrowLink>}
+                    eyebrow={t('project.keepExploring')}
+                    title={t('project.relatedProjects')}
+                    action={
+                      <ArrowLink to="/projects">
+                        {t('nav.allProjects')}
+                      </ArrowLink>
+                    }
                   />
                   <div
                     className="a2-cols"

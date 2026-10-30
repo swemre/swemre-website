@@ -10,11 +10,13 @@
  */
 
 // Date and time formats used on the boards, in Amsterdam time.
+import {intlLocale, t} from '../../i18n/index.ts'
+
 const TZ = 'Europe/Amsterdam'
 
 /** "Oct 23, 2026" */
 export function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
+  return new Date(iso).toLocaleDateString(intlLocale('en-US'), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -24,7 +26,7 @@ export function fmtDate(iso: string) {
 
 /** "15 October 2026" */
 export function fmtLongDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', {
+  return new Date(iso).toLocaleDateString(intlLocale('en-GB'), {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -35,31 +37,35 @@ export function fmtLongDate(iso: string) {
 /** "09:00 CET" */
 export function fmtClock(iso: string) {
   const d = new Date(iso)
-  const time = d.toLocaleTimeString('en-GB', {
+  const time = d.toLocaleTimeString(intlLocale('en-GB'), {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: TZ,
   })
   const zone =
-    new Intl.DateTimeFormat('en-GB', {timeZone: TZ, timeZoneName: 'short'})
+    new Intl.DateTimeFormat(intlLocale('en-GB'), {
+      timeZone: TZ,
+      timeZoneName: 'short',
+    })
       .formatToParts(d)
       .find(p => p.type === 'timeZoneName')?.value ?? ''
   return `${time} ${zone.replace('GMT+1', 'CET').replace('GMT+2', 'CEST')}`.trim()
 }
 
-export const minRead = (n?: number) => (n ? `${n} min read` : '')
+export const minRead = (n?: number) =>
+  n ? t('article.minRead', {count: n}) : ''
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}/
 
 /** "01 Sep 2026" */
 export function fmtDayMonth(iso: string) {
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const parts = new Intl.DateTimeFormat(intlLocale('en-US'), {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
     timeZone: TZ,
   }).formatToParts(new Date(iso))
-  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  const get = (type: string) => parts.find(p => p.type === type)?.value ?? ''
   return `${get('day')} ${get('month')} ${get('year')}`
 }
 

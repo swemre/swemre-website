@@ -11,6 +11,7 @@
 
 // The Articles list model: page size, the saved-articles key, view and sort.
 import type {ArticleSummary} from '../../contract/view.ts'
+import {t} from '../../i18n/index.ts'
 
 export const PAGE_SIZE = 9
 
@@ -21,8 +22,8 @@ export type View = 'covers' | 'text'
 export type Sort = 'newest' | 'oldest'
 
 export const SORTS: {value: Sort; label: string}[] = [
-  {value: 'newest', label: 'Newest first'},
-  {value: 'oldest', label: 'Oldest first'},
+  {value: 'newest', label: t('articles.sort.newest')},
+  {value: 'oldest', label: t('articles.sort.oldest')},
 ]
 
 export function sortArticles(list: ArticleSummary[], sort: Sort) {

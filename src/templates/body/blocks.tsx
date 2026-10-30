@@ -22,6 +22,7 @@ import {hueVar, rgb} from '../parts/vp.ts'
 import {Icon, type IconName} from '../../design/index.tsx'
 import {Rich} from './rich.tsx'
 import {badgeHue, headingId, isInternal} from './text.ts'
+import {t} from '../../i18n/index.ts'
 
 export type Variant = 'article' | 'project' | 'single'
 type Of<T extends Block['type']> = Extract<Block, {type: T}>['props']
@@ -94,7 +95,7 @@ export function Heading({p}: {p: Of<'heading'>}) {
         href={`#${id}`}
         className="a2-mono"
         style={{color: copied ? 'var(--a2-soft)' : 'var(--a2-text-faint)'}}
-        aria-label={copied ? 'Link copied' : 'Link to section'}
+        aria-label={copied ? t('copy.linkCopied') : t('body.sectionLink')}
         onClick={onAnchor}
       >
         #

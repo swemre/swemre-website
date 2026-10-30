@@ -25,6 +25,8 @@ import {Anchor, Icon, useTheme, useViewport} from '../design/index.tsx'
 import {useArticles, useNav, useProjects} from '../data/hooks.ts'
 import {sectionOf, useChrome, type Section} from './context.ts'
 import {useFocusTrap, useScrollLock} from './hooks.ts'
+import {useOtherLocaleHref} from './language.ts'
+import {LANGUAGE_NAMES, locale, t} from '../i18n/index.ts'
 
 type Branch = 'articles' | 'projects' | 'none'
 interface Row {
@@ -125,6 +127,7 @@ export function MobileMenu() {
   const articles = useArticles()
   const projects = useProjects()
   const navigate = useNavigate()
+  const otherHref = useOtherLocaleHref()
   const current = sectionOf(useLocation().pathname)
   const [open, setOpen] = useState<Branch>(
     current === 'projects' ? 'projects' : 'articles',
@@ -146,33 +149,35 @@ export function MobileMenu() {
     mega.projects.status === 'ready'
       ? mega.projects.data.featured.slice(0, 3)
       : []
-  const rows: Row[] = [{label: 'Home', href: '/', path: '~/', section: 'home'}]
+  const rows: Row[] = [
+    {label: t('nav.home'), href: '/', path: '~/', section: 'home'},
+  ]
   rows.push({
-    label: 'Articles',
+    label: t('nav.articles'),
     path: '~/articles',
     branch: 'articles',
     section: 'articles',
   })
   if (open === 'articles') {
     rows.push({
-      label: 'All articles',
+      label: t('nav.allArticles'),
       href: '/articles',
       count: countOf(articles as never),
       child: true,
     })
-    topics.forEach(t =>
-      rows.push({label: t.name, href: t.href, count: t.count, child: true}),
+    topics.forEach(tp =>
+      rows.push({label: tp.name, href: tp.href, count: tp.count, child: true}),
     )
   }
   rows.push({
-    label: 'Projects',
+    label: t('nav.projects'),
     path: '~/projects',
     branch: 'projects',
     section: 'projects',
   })
   if (open === 'projects') {
     rows.push({
-      label: 'All projects',
+      label: t('nav.allProjects'),
       href: '/projects',
       count: countOf(projects as never),
       child: true,
@@ -231,7 +236,7 @@ export function MobileMenu() {
         className="a2-palette"
         role="dialog"
         aria-modal="true"
-        aria-label="Menu"
+        aria-label={t('menu.label')}
         style={{
           ...pos,
           zIndex: 55,
@@ -307,8 +312,8 @@ export function MobileMenu() {
                 className="a2-pal-in"
                 type="search"
                 role="searchbox"
-                aria-label="Search or go to a page"
-                placeholder="search or go to…"
+                aria-label={t('menu.search.label')}
+                placeholder={t('menu.search.placeholder')}
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 autoComplete="off"
@@ -318,7 +323,7 @@ export function MobileMenu() {
             </span>
           </label>
         </form>
-        <nav aria-label="Main">
+        <nav aria-label={t('nav.main')}>
           <ul
             className="a2-tree"
             style={{
@@ -430,7 +435,7 @@ export function MobileMenu() {
             style={{justifyContent: 'flex-start'}}
           >
             <Icon name="mail" />
-            <span>Subscribe</span>
+            <span>{t('nav.subscribe')}</span>
             <span style={{marginLeft: 'auto', display: 'grid'}}>
               <Icon name="arrow-right" />
             </span>
@@ -441,7 +446,7 @@ export function MobileMenu() {
             style={{justifyContent: 'flex-start'}}
           >
             <Icon name="phone" />
-            <span>Request a call back</span>
+            <span>{t('menu.callBack')}</span>
             <span style={{marginLeft: 'auto', display: 'grid'}}>
               <Icon name="arrow-right" />
             </span>
@@ -449,32 +454,40 @@ export function MobileMenu() {
           <div
             style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8}}
           >
-            <button type="button" style={tile} aria-label="Language: English">
+            <a
+              href={otherHref}
+              style={tile}
+              aria-label={t('menu.language.label', {
+                current: LANGUAGE_NAMES[locale],
+              })}
+            >
               <Icon name="globe" />
-              Language
+              {t('menu.language')}
               <span
                 style={{...mono, marginLeft: 'auto', lineHeight: 'inherit'}}
               >
-                EN
+                {locale.toUpperCase()}
               </span>
-            </button>
+            </a>
             <button
               type="button"
               style={tile}
               aria-pressed={theme === 'light'}
               aria-label={
                 theme === 'light'
-                  ? 'Theme light, switch to dark'
-                  : 'Theme dark, switch to light'
+                  ? t('menu.theme.lightLabel')
+                  : t('menu.theme.darkLabel')
               }
               onClick={toggle}
             >
               <Icon name={theme === 'light' ? 'sun' : 'moon'} />
-              Theme
+              {t('menu.theme')}
               <span
                 style={{...mono, marginLeft: 'auto', lineHeight: 'inherit'}}
               >
-                {theme}
+                {theme === 'light'
+                  ? t('menu.theme.light')
+                  : t('menu.theme.dark')}
               </span>
             </button>
           </div>

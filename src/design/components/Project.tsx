@@ -18,6 +18,7 @@ import {Anchor} from './Link.tsx'
 import {Button} from './Button.tsx'
 import {Badge, BadgeList, Tags, TextLink} from './Text.tsx'
 import {hueRgb, projectGlyph, projectHue, relativeTime} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 export function StatusBadge({
   p,
@@ -30,14 +31,16 @@ export function StatusBadge({
 }) {
   const building =
     p.status === 'now-building' ? (
-      <Badge key="b" label="now building" hue={hue} dot pulse />
+      <Badge key="b" label={t('project.badge.building')} hue={hue} dot pulse />
     ) : null
-  const live = p.url ? <Badge key="l" label="Live" tone="ok" dot /> : null
+  const live = p.url ? (
+    <Badge key="l" label={t('projects.live')} tone="ok" dot />
+  ) : null
   const other =
     p.status === 'source-only' ? (
-      <Badge key="s" label="source only" />
+      <Badge key="s" label={t('project.badge.sourceOnly')} />
     ) : p.status === 'archived' ? (
-      <Badge key="a" label="archived" />
+      <Badge key="a" label={t('project.badge.archived')} />
     ) : null
   if (both) return <>{[building, live ?? other]}</>
   return building ?? live ?? other
@@ -49,9 +52,14 @@ const ownSite = (url: string) =>
 
 function ProjectLink({p}: {p: ProjectSummary}) {
   return p.url && !ownSite(p.url) ? (
-    <TextLink label="Visit site" href={p.url} icon="external" external />
+    <TextLink
+      label={t('project.visitSite')}
+      href={p.url}
+      icon="external"
+      external
+    />
   ) : (
-    <TextLink label="View project" href={p.href} />
+    <TextLink label={t('project.view')} href={p.href} />
   )
 }
 
@@ -109,7 +117,7 @@ export function ProjectCard({
         >
           <span style={{display: 'inline-flex', alignItems: 'center', gap: 8}}>
             {p.status === 'now-building' && (
-              <Badge label="now building" hue={h} dot pulse />
+              <Badge label={t('project.badge.building')} hue={h} dot pulse />
             )}
           </span>
           <span>{p.year}</span>
@@ -244,7 +252,7 @@ export function ProjectCard({
     >
       {p.version && (
         <>
-          <dt>Version</dt>
+          <dt>{t('project.version')}</dt>
           <dd>
             <span className="a2-mono a2-hi">{p.version}</span>
           </dd>
@@ -252,11 +260,11 @@ export function ProjectCard({
       )}
       {p.language && (
         <>
-          <dt>Language</dt>
+          <dt>{t('project.language')}</dt>
           <dd>{p.language}</dd>
         </>
       )}
-      <dt>Updated</dt>
+      <dt>{t('project.updated')}</dt>
       <dd>{updated}</dd>
     </dl>
   )
@@ -267,7 +275,7 @@ export function ProjectCard({
           kind="secondary"
           block={block}
           iconLeft="external"
-          label="Visit live site"
+          label={t('project.visitLive')}
           href={p.url}
         />
       )}
@@ -276,7 +284,7 @@ export function ProjectCard({
           kind="secondary"
           block={block}
           iconLeft="github"
-          label="View source"
+          label={t('project.viewSource')}
           href={p.repoUrl}
         />
       )}
@@ -285,7 +293,7 @@ export function ProjectCard({
           kind="secondary"
           block={block}
           iconRight="arrow-right"
-          label="View project"
+          label={t('project.view')}
           href={p.href}
         />
       )}

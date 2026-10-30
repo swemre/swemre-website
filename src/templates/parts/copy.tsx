@@ -14,6 +14,7 @@
 import type {CSSProperties, ReactNode} from 'react'
 import {lockStyle, useCopied, useWidthLock} from './clipboard.ts'
 import {Icon} from '../../design/index.tsx'
+import {t} from '../../i18n/index.ts'
 
 export function LiveNote({text}: {text: string}) {
   return (
@@ -29,7 +30,7 @@ export function LiveNote({text}: {text: string}) {
  */
 export function CopyButton({
   text,
-  label = 'Copy',
+  label = t('copy.copy'),
   className,
   style,
   iconSize = 13,
@@ -56,8 +57,8 @@ export function CopyButton({
       onClick={onClick}
     >
       <Icon name={copied ? 'check' : 'copy'} size={iconSize} />
-      {copied ? 'Copied' : (children ?? label)}
-      <LiveNote text={copied ? 'Copied to the clipboard' : ''} />
+      {copied ? t('copy.copied') : (children ?? label)}
+      <LiveNote text={copied ? t('copy.copiedNote') : ''} />
     </button>
   )
 }

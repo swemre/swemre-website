@@ -27,6 +27,8 @@ import {ListHeader} from '../home/kit/ListHeader.tsx'
 import {StateNumber, StatePanel} from '../home/kit/StatePanel.tsx'
 import {useQuery} from '../home/kit/url.ts'
 import {useV} from '../home/kit/vp.ts'
+import {intlLocale, t} from '../../i18n/index.ts'
+import {tRich} from '../../i18n/rich.tsx'
 
 type Tab = 'all' | 'articles' | 'projects'
 const KIND: Record<Exclude<Tab, 'all'>, SearchKind> = {
@@ -86,8 +88,8 @@ export function SearchTemplate(_props: TemplateProps) {
   return (
     <>
       <ListHeader
-        eyebrow="search"
-        title="Search"
+        eyebrow={t('search.eyebrow')}
+        title={t('nav.search')}
         commit="5ea4c11"
         below={
           <SearchControls
@@ -98,10 +100,17 @@ export function SearchTemplate(_props: TemplateProps) {
             summary={
               q && settled ? (
                 <span className="a2-cap">
-                  <span className="a2-hi" style={{fontWeight: 600}}>
-                    {total} {total === 1 ? 'result' : 'results'}
-                  </span>{' '}
-                  for “{q}”
+                  {tRich(
+                    'search.summary',
+                    {q},
+                    {
+                      count: (
+                        <span className="a2-hi" style={{fontWeight: 600}}>
+                          {t('qs.results', {count: total})}
+                        </span>
+                      ),
+                    },
+                  )}
                 </span>
               ) : undefined
             }
@@ -115,7 +124,7 @@ export function SearchTemplate(_props: TemplateProps) {
       ) : results.status === 'loading' ? (
         <ListSection label="loading">
           <span className="a2-sr" role="status">
-            Searching
+            {t('search.searching')}
           </span>
           <div className="a2-rows" aria-hidden="true">
             <Skeleton pattern="row" count={4} />
@@ -125,24 +134,29 @@ export function SearchTemplate(_props: TemplateProps) {
         <ListSection label="error">
           <StateLayout
             number={
-              <StateNumber prefix="E" digits="503" error line="Search error" />
+              <StateNumber
+                prefix="E"
+                digits="503"
+                error
+                line={t('search.error.line')}
+              />
             }
           >
             <StatePanel
               icon="cloud-off"
-              title="Search did not answer"
-              copy="The search could not be run. Nothing is lost; try again in a moment."
+              title={t('search.error.title')}
+              copy={t('search.error.copy')}
               command={`GET /api/public/v2/search?q=${encodeURIComponent(q)}`}
               result="503 Service Unavailable"
               actions={
                 <>
                   <Button
-                    label="Try again"
+                    label={t('form.retry')}
                     iconLeft="refresh"
                     onClick={results.retry}
                   />
                   <Button
-                    label="All articles"
+                    label={t('nav.allArticles')}
                     kind="secondary"
                     iconLeft="file-text"
                     href="/articles"
@@ -192,8 +206,8 @@ function SearchControls({
           ref={input}
           type="search"
           name="q"
-          aria-label="Search articles and projects"
-          placeholder="Search articles and projects"
+          aria-label={t('qs.placeholder')}
+          placeholder={t('qs.placeholder')}
           value={text}
           onChange={e => setText(e.target.value)}
           className="pf-in"
@@ -221,7 +235,7 @@ function SearchControls({
         >
           {!m && text && (
             <Button
-              label="Clear"
+              label={t('search.clear')}
               kind="ghost"
               iconLeft="x"
               style={{color: 'var(--a2-text)'}}
@@ -233,13 +247,17 @@ function SearchControls({
           )}
           {m ? (
             <Button
-              label="Search"
+              label={t('nav.search')}
               iconOnly
               iconLeft="arrow-right"
               type="submit"
             />
           ) : (
-            <Button label="Search" iconRight="arrow-right" type="submit" />
+            <Button
+              label={t('nav.search')}
+              iconRight="arrow-right"
+              type="submit"
+            />
           )}
         </span>
       </form>
@@ -276,16 +294,16 @@ function Tabs({
   onTab(t: Tab): void
 }) {
   const defs: {t: Tab; label: string; icon?: 'file-text' | 'folder'}[] = [
-    {t: 'all', label: 'All'},
-    {t: 'articles', label: 'Articles', icon: 'file-text'},
-    {t: 'projects', label: 'Projects', icon: 'folder'},
+    {t: 'all', label: t('projects.year.all')},
+    {t: 'articles', label: t('nav.articles'), icon: 'file-text'},
+    {t: 'projects', label: t('nav.projects'), icon: 'folder'},
   ]
   return (
     <div
       className="a2-chips"
       style={{gap: 8}}
       role="group"
-      aria-label="Result type"
+      aria-label={t('search.type')}
     >
       {defs.map(d =>
         live ? (
@@ -344,7 +362,9 @@ function ResultRows({items, q}: {items: SearchResult[]; q: string}) {
               }}
             >
               <span className="a2-micro" style={{color: 'var(--a2-soft)'}}>
-                {r.kind === 'article' ? 'Article' : 'Project'}
+                {r.kind === 'article'
+                  ? t('reading.article')
+                  : t('reading.project')}
               </span>
               {r.meta && <span className="a2-mono">{r.meta}</span>}
               {mins !== undefined && (
@@ -353,7 +373,7 @@ function ResultRows({items, q}: {items: SearchResult[]; q: string}) {
                   style={{display: 'inline-flex', alignItems: 'center', gap: 8}}
                 >
                   <Icon name="clock" size={12} />
-                  {mins} min read
+                  {t('article.minRead', {count: mins})}
                 </span>
               )}
             </span>
@@ -420,12 +440,10 @@ function NoResults({q}: {q: string}) {
       </span>
       <div role="status">
         <h3 className="a2-h3">
-          {q ? `Nothing matches “${q}”.` : 'What are you looking for?'}
+          {q ? t('search.none', {q}) : t('search.what')}
         </h3>
         <p className="a2-body" style={{marginTop: 8}}>
-          {q
-            ? 'Try a shorter word, check the spelling, or start from a topic I write about.'
-            : 'Search the articles and projects by word, or start from a topic I write about.'}
+          {q ? t('search.none.copy') : t('search.what.copy')}
         </p>
         {topics.length > 0 && (
           <div style={{marginTop: 24}}>
@@ -453,7 +471,7 @@ function NoResults({q}: {q: string}) {
             <span className="a2-mint">$</span> grep -ri "{q.toLowerCase()}"
             ~/articles ~/projects
             <span className="a2-lo" style={{marginLeft: 16}}>
-              0 results
+              {t('qs.results', {count: 0})}
             </span>
           </p>
         )}
@@ -463,14 +481,20 @@ function NoResults({q}: {q: string}) {
   return (
     <>
       <StateLayout
-        number={<StateNumber prefix="0" digits="0" line="0 results" />}
+        number={
+          <StateNumber
+            prefix="0"
+            digits="0"
+            line={t('qs.results', {count: 0})}
+          />
+        }
       >
         {panel}
       </StateLayout>
       {recent.status === 'ready' && (
         <div style={{marginTop: v(48, 48, 64)}}>
           <StateLayout
-            number={<span className="a2-micro">Recently written</span>}
+            number={<span className="a2-micro">{t('search.recent')}</span>}
           >
             {recent.data.map(a => (
               <Anchor
@@ -491,11 +515,14 @@ function NoResults({q}: {q: string}) {
                   {a.title}
                 </span>
                 <span className="a2-mono">
-                  {new Date(a.publishedAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
+                  {new Date(a.publishedAt).toLocaleDateString(
+                    intlLocale('en-US'),
+                    {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    },
+                  )}
                 </span>
                 <span style={{color: 'var(--a2-text-lo)'}}>
                   <Icon name="arrow-right" size={16} />

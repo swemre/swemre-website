@@ -23,6 +23,7 @@ import {FilterBar} from './FilterBar.tsx'
 import {readList, useLastLoad, useQuery} from '../home/kit/url.ts'
 import {ListSection, ViewToggle} from '../home/kit/list.tsx'
 import {useV} from '../home/kit/vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const fallbackName = (slug: string) =>
   slug.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase())
@@ -60,26 +61,26 @@ export function ArticlesTemplate(_props: TemplateProps) {
 
   const header = (
     <ListHeader
-      eyebrow="writing"
-      title="Articles"
-      lead="Notes on building for the web: Java services, React front ends and the architecture behind my projects."
+      eyebrow={t('mega.articles.eyebrow')}
+      title={t('nav.articles')}
+      lead={t('articles.lead')}
       commit="a1b2c3d"
       right={
         <ViewToggle
-          label="View"
+          label={t('projects.view')}
           value={view}
           disabled={all.status === 'loading' || all.status === 'error'}
           onChange={nv => q.set({view: nv === 'text' ? 'text' : undefined})}
           options={[
             {
               value: 'covers',
-              label: 'With covers',
+              label: t('articles.view.covers'),
               icon: 'image',
               count: filtered.length,
             },
             {
               value: 'text',
-              label: 'Text only',
+              label: t('articles.view.text'),
               icon: 'text',
               count: filtered.length,
             },
@@ -114,7 +115,7 @@ export function ArticlesTemplate(_props: TemplateProps) {
         {header}
         <ListSection label="loading">
           <span className="a2-sr" role="status">
-            Loading articles
+            {t('articles.loading')}
           </span>
           {view === 'covers' ? (
             <div

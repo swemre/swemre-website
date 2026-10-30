@@ -16,6 +16,7 @@ import {ArticleCard, ArticleRow} from '../../design/index.tsx'
 import {MoreBar, Slash} from '../home/kit/list.tsx'
 import {useV} from '../home/kit/vp.ts'
 import {PAGE_SIZE, type Sort, type View} from './model.ts'
+import {t} from '../../i18n/index.ts'
 
 export function ArticleList({
   items,
@@ -58,9 +59,14 @@ export function ArticleList({
       <MoreBar
         status={
           <>
-            Showing {visible.length} of {items.length}{' '}
-            {items.length === 1 ? 'article' : 'articles'} <Slash />{' '}
-            {sort === 'oldest' ? 'oldest first' : 'newest first'}
+            {t('articles.showing', {
+              shown: visible.length,
+              count: items.length,
+            })}{' '}
+            <Slash />{' '}
+            {sort === 'oldest'
+              ? t('articles.sort.oldest.short')
+              : t('articles.sort.newest.short')}
           </>
         }
         more={more}

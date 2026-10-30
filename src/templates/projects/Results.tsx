@@ -26,6 +26,8 @@ import {
   type ProjSort,
   type ProjView,
 } from './model.ts'
+import {t} from '../../i18n/index.ts'
+import {tRich} from '../../i18n/rich.tsx'
 
 export interface Activity {
   weeks: number[]
@@ -54,21 +56,27 @@ export function SummaryBar({
   const q = qualifier(f)
   const sentence = (
     <span className="a2-small" style={{color: 'var(--a2-text)'}} role="status">
-      Showing{' '}
-      <span className="a2-hi" style={{fontWeight: 600}}>
-        {shown}
-      </span>{' '}
-      of {total} projects{q && ` ${q}`}
+      {tRich(
+        q ? 'projects.summary.q' : 'projects.summary',
+        {total, q},
+        {
+          shown: (
+            <span className="a2-hi" style={{fontWeight: 600}}>
+              {shown}
+            </span>
+          ),
+        },
+      )}
     </span>
   )
   const toggle = (
     <ViewToggle
-      label="View"
+      label={t('projects.view')}
       value={view}
       onChange={onView}
       options={[
-        {value: 'grid', label: 'Grid', icon: 'grid'},
-        {value: 'list', label: 'List', icon: 'list'},
+        {value: 'grid', label: t('projects.view.grid'), icon: 'grid'},
+        {value: 'list', label: t('projects.view.list'), icon: 'list'},
       ]}
     />
   )
@@ -123,10 +131,10 @@ export function SummaryBar({
 
 const ago = (iso: string) => {
   const h = Math.round((Date.now() - new Date(iso).getTime()) / 3600000)
-  if (h < 1) return 'just now'
-  if (h < 24) return `${h}h ago`
+  if (h < 1) return t('time.justNow')
+  if (h < 24) return t('time.hoursAgo', {count: h})
   const d = Math.round(h / 24)
-  return d === 1 ? 'yesterday' : `${d} days ago`
+  return d === 1 ? t('time.yesterday') : t('time.daysAgo', {count: d})
 }
 
 /** "Activity · last 26 weeks": weekly bars (the busiest glow) and the latest event. */
@@ -145,7 +153,7 @@ export function ActivityStrip({data}: {data: Activity}) {
         borderBottom: '1px solid var(--a2-line)',
       }}
     >
-      <span className="a2-micro">Activity · last 26 weeks</span>
+      <span className="a2-micro">{t('projects.activity')}</span>
       <span
         aria-hidden="true"
         style={{display: 'flex', alignItems: 'flex-end', gap: 4, height: 32}}
@@ -249,14 +257,25 @@ export function HiddenBar({
         }
       >
         <span className="a2-small" style={{color: 'var(--a2-text)'}}>
-          <span className="a2-hi" style={{fontWeight: 600}}>
-            {hidden.length} more
-          </span>{' '}
-          hidden by filters:{' '}
-          <span className="a2-mono">{hidden.map(p => p.slug).join(', ')}</span>
+          {tRich(
+            'projects.hidden',
+            {},
+            {
+              more: (
+                <span className="a2-hi" style={{fontWeight: 600}}>
+                  {t('projects.hidden.more', {count: hidden.length})}
+                </span>
+              ),
+              list: (
+                <span className="a2-mono">
+                  {hidden.map(p => p.slug).join(', ')}
+                </span>
+              ),
+            },
+          )}
         </span>
         <Button
-          label="Clear filters"
+          label={t('projects.clear')}
           kind="secondary"
           iconLeft="x"
           block={m}
@@ -341,7 +360,7 @@ export function NoMatches({
         />
       </svg>
       <span className="a2-micro" style={{color: 'var(--a2-pale)'}}>
-        No matches
+        {t('projects.noMatches')}
       </span>
     </div>
   )
@@ -371,7 +390,7 @@ export function NoMatches({
           {art}
           <div>
             <h3 className="a2-h3" style={{textWrap: 'balance'}}>
-              No projects match these filters
+              {t('projects.noMatches.title')}
             </h3>
             <p className="a2-body" style={{marginTop: 8, maxWidth: 520}}>
               {copy}
@@ -386,7 +405,7 @@ export function NoMatches({
             >
               <span className="a2-mint">$</span> {command(f)}{' '}
               <span className="a2-lo" style={{marginLeft: 16}}>
-                0 results
+                {t('qs.results', {count: 0})}
               </span>
             </p>
             <div
@@ -399,9 +418,13 @@ export function NoMatches({
                   : {alignItems: 'center', flexWrap: 'wrap'}),
               }}
             >
-              <Button label="Clear filters" iconLeft="x" onClick={onClear} />
               <Button
-                label={`Remove ${label}`}
+                label={t('projects.clear')}
+                iconLeft="x"
+                onClick={onClear}
+              />
+              <Button
+                label={t('projects.remove', {label})}
                 kind="secondary"
                 onClick={() => onRemove(last)}
               />
@@ -412,7 +435,7 @@ export function NoMatches({
       {without.length > 0 && (
         <div style={{marginTop: v(48, 48, 64)}}>
           <span className="a2-micro" style={{color: 'var(--a2-text)'}}>
-            Without the {label} filter
+            {t('projects.without', {label})}
           </span>
           <div
             style={{

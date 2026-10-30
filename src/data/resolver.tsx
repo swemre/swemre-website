@@ -26,6 +26,8 @@ import {
 } from 'react'
 import {Navigate, useLocation, useNavigationType} from 'react-router-dom'
 import {SiteShell} from '../chrome/index.tsx'
+import {FallbackNotice} from '../chrome/FallbackNotice.tsx'
+import {SITE_URL} from './env.ts'
 import type {ResolvedRoute} from '../contract/templates.ts'
 import {ErrorTemplate} from '../templates/error/index.tsx'
 import {loadTemplate, loadedTemplate} from './templates.ts'
@@ -36,13 +38,14 @@ import {
   resolvePath,
   type Resolution,
 } from './resolve.ts'
+import {LOCALES, locale, localeHref, t, type Locale} from '../i18n/index.ts'
 
 function setHead(route: ResolvedRoute) {
   const pub = route.publication
   const title = pub
     ? (pub.seoTitle ?? pub.title)
     : route.template === 'not-found'
-      ? 'Not found'
+      ? t('notFound.mark')
       : ''
   document.title = !title
     ? 'SWEMRE'
@@ -52,6 +55,17 @@ function setHead(route: ResolvedRoute) {
   const desc = pub?.seoDescription ?? pub?.excerpt
   const meta = document.querySelector('meta[name="description"]')
   if (meta && desc) meta.setAttribute('content', desc)
+  // hreflang: only the languages this publication really has (slugs are shared across them).
+  for (const el of document.querySelectorAll('link[rel="alternate"][hreflang]'))
+    el.remove()
+  for (const v of pub?.languageVersions ?? []) {
+    if (!LOCALES.includes(v.locale as Locale)) continue
+    const link = document.createElement('link')
+    link.rel = 'alternate'
+    link.hreflang = v.locale
+    link.href = SITE_URL + localeHref(v.locale as Locale, route.path)
+    document.head.append(link)
+  }
 }
 
 export function RouteResolver() {
@@ -122,11 +136,15 @@ function RouteView({route}: {route: ResolvedRoute}) {
   useEffect(() => setHead(route), [route.path, route.publication]) // eslint-disable-line react-hooks/exhaustive-deps
   // A table lookup, not a component made in render: the loader caches one component per key.
   const template = loadedTemplate(route.template) ?? ErrorTemplate
+  const shown = route.publication?.locale ?? locale
   return (
     <SiteShell chrome={route.chrome}>
       <ErrorBoundary key={route.path} path={route.path}>
+        {/* No lang wrapper on a fallback: the template mixes the page's text with this
+            language's labels, and a wrapper would uppercase those labels by English rules. */}
         {createElement(template, {route})}
       </ErrorBoundary>
+      <FallbackNotice key={`fallback:${route.path}`} shown={shown} />
     </SiteShell>
   )
 }

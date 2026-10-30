@@ -35,6 +35,7 @@ import type {
 import {isArticle} from '../contract/view.ts'
 import {MEGA_COPY} from './fallback.ts'
 import type {MegaKey} from './context.ts'
+import {t} from '../i18n/index.ts'
 
 const dot = {
   width: 5,
@@ -50,7 +51,7 @@ function ArticleTile({a, index}: {a: ArticleSummary; index: number}) {
       <div
         className="p2-cover a2-island"
         role="img"
-        aria-label={`Cover: ${a.title}`}
+        aria-label={t('cover.label', {title: a.title})}
         style={{
           borderColor: hueRgb(hue, 0.26),
           background: `radial-gradient(120% 140% at 82% 24%,${hueRgb(hue, 0.34)},transparent 60%),var(--a2-cover-grad)`,
@@ -227,7 +228,7 @@ export function MegaMenu({
           }}
         >
           <Icon name="bookmark" />
-          Saved articles
+          {t('mega.saved')}
         </Anchor>
         <Anchor
           href="/rss.xml"
@@ -240,7 +241,7 @@ export function MegaMenu({
           }}
         >
           <Icon name="rss" />
-          RSS feed
+          {t('footer.rss')}
         </Anchor>
       </>
     ) : (
@@ -274,7 +275,7 @@ export function MegaMenu({
         className="p2-mega"
         id={`a2-mega-${kind}`}
         role="region"
-        aria-label={`${copy.title} menu`}
+        aria-label={t('mega.label', {title: copy.title})}
         onMouseLeave={onClose}
       >
         <div
@@ -332,7 +333,7 @@ export function MegaMenu({
               <div className="a2-hr" style={{margin: '32px 0'}} />
               {kind === 'articles' ? (
                 <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
-                  <span className="a2-micro">Topics</span>
+                  <span className="a2-micro">{t('mega.topics')}</span>
                   <div className="a2-chips" style={{gap: 8}}>
                     {ready
                       ? ready.topics
@@ -360,7 +361,7 @@ export function MegaMenu({
                     fontSize: 14,
                   }}
                 >
-                  <span className="a2-micro">Also</span>
+                  <span className="a2-micro">{t('mega.also')}</span>
                   {ready?.links.map(l => (
                     <Anchor key={l.href} className="a2-ulink" href={l.href}>
                       {l.label}

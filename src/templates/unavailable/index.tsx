@@ -17,6 +17,7 @@ import {useSettings} from '../../data/hooks.ts'
 import {Button} from '../../design/index.tsx'
 import {fmtClock} from '../parts/format.ts'
 import {CodeMark, StatusHero} from '../parts/status.tsx'
+import {t} from '../../i18n/index.ts'
 
 function reload() {
   window.location.reload()
@@ -45,17 +46,17 @@ export function UnavailableTemplate({route}: TemplateProps) {
             glow="var(--a2-hue-lilac-rgb)"
           />
         }
-        markLabel="Maintenance"
+        markLabel={t('unavailable.mark')}
         markColor="var(--a2-hue-lilac)"
-        eyebrow="error 503"
-        detail="scheduled maintenance"
-        title="Back in a few minutes."
-        lead="swemre.com is being updated. Everything will be back shortly; nothing you saved is lost."
+        eyebrow={t('error.eyebrow', {code: 503})}
+        detail={t('unavailable.detail')}
+        title={t('unavailable.title')}
+        lead={t('unavailable.lead')}
         actions={
           <>
             <Button
               kind="primary"
-              label="Try again"
+              label={t('form.retry')}
               iconLeft="refresh"
               onClick={reload}
             />
@@ -68,7 +69,10 @@ export function UnavailableTemplate({route}: TemplateProps) {
                   height: 48,
                 }}
               >
-                {`started ${fmtClock(win.from)} · back by ${fmtClock(win.until)}`}
+                {t('unavailable.window', {
+                  from: fmtClock(win.from),
+                  until: fmtClock(win.until),
+                })}
               </span>
             )}
           </>

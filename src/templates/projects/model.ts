@@ -13,14 +13,15 @@
 // sentence and the empty-state explanation. Filters keep the order they appear in the URL, so
 // the "last restrictive filter" is the last key added.
 import type {ProjectSummary} from '../../contract/view.ts'
+import {t} from '../../i18n/index.ts'
 
 export type ProjSort = 'updated' | 'newest' | 'name'
 export type ProjView = 'grid' | 'list'
 
 export const PROJ_SORTS: {value: ProjSort; label: string}[] = [
-  {value: 'updated', label: 'Recently updated'},
-  {value: 'newest', label: 'Newest'},
-  {value: 'name', label: 'Name A–Z'},
+  {value: 'updated', label: t('projects.sort.updated')},
+  {value: 'newest', label: t('projects.sort.newest')},
+  {value: 'name', label: t('projects.sort.name')},
 ]
 
 /** One active filter value, in URL order. */
@@ -160,7 +161,7 @@ export function sortProjects(list: ProjectSummary[], sort: ProjSort) {
 /** "React or TypeScript", "A, B or C" */
 export function orList(names: string[]) {
   if (names.length < 2) return names.join('')
-  return `${names.slice(0, -1).join(', ')} or ${names[names.length - 1]}`
+  return `${names.slice(0, -1).join(', ')}${t('list.or')}${names[names.length - 1]}`
 }
 
 export function activeLabel(a: Active): string {
@@ -172,9 +173,9 @@ export function activeLabel(a: Active): string {
     case 'stack':
       return a.name
     case 'live':
-      return 'Live'
+      return t('projects.live')
     case 'source':
-      return 'Source available'
+      return t('projects.source')
   }
 }
 
@@ -183,16 +184,16 @@ export function qualifier(f: ProjFilters, skip?: Active): string {
   const act = f.active.filter(a => a !== skip)
   const parts: string[] = []
   const q = act.find(a => a.kind === 'q')
-  if (q) parts.push(`matching ${activeLabel(q)}`)
+  if (q) parts.push(t('projects.q.matching', {q: activeLabel(q)}))
   const stacks = act.filter(a => a.kind === 'stack').map(activeLabel)
-  if (stacks.length) parts.push(`using ${orList(stacks)}`)
+  if (stacks.length) parts.push(t('projects.q.using', {stack: orList(stacks)}))
   const year = act.find(a => a.kind === 'year')
-  if (year) parts.push(`from ${activeLabel(year)}`)
+  if (year) parts.push(t('projects.q.from', {year: activeLabel(year)}))
   const live = act.some(a => a.kind === 'live')
   const source = act.some(a => a.kind === 'source')
-  if (live && source) parts.push('that are Live with source available')
-  else if (live) parts.push('that are Live')
-  else if (source) parts.push('with source available')
+  if (live && source) parts.push(t('projects.q.liveSource'))
+  else if (live) parts.push(t('projects.q.live'))
+  else if (source) parts.push(t('projects.q.source'))
   return parts.join(' ')
 }
 
@@ -205,8 +206,10 @@ function subject(f: ProjFilters, skip: Active): string {
   const adj = [year && activeLabel(year), stacks.length && orList(stacks)]
     .filter(Boolean)
     .join(' ')
-  const base = adj ? `the ${adj} projects` : 'the projects'
-  return q ? `${base} matching ${activeLabel(q)}` : base
+  const base = adj
+    ? t('projects.subject.adj', {adj})
+    : t('projects.subject.all')
+  return q ? t('projects.subject.matching', {base, q: activeLabel(q)}) : base
 }
 
 /** Server-side stacks: a project on one of them is backend work. */
@@ -227,8 +230,10 @@ export function explain(f: ProjFilters, without: ProjectSummary[]) {
     n === 0
       ? ''
       : n === 1
-        ? ' to see it'
-        : ` to see ${n === 2 ? 'both' : 'them'}`
+        ? t('projects.see.it')
+        : n === 2
+          ? t('projects.see.both')
+          : t('projects.see.them')
   const who = subject(f, last)
   const allSource = n > 0 && without.every(p => p.sourceAvailable)
   const backend = n > 0 && without.every(isBackend)
@@ -236,27 +241,35 @@ export function explain(f: ProjFilters, without: ProjectSummary[]) {
   let it = see
   switch (last.kind) {
     case 'live':
-      why = `None of ${who} has a public deployment yet${allSource ? `; the ${backend ? 'backend ' : ''}work is open source instead` : ''}.`
+      why = t('projects.why.live', {
+        who,
+        extra: allSource
+          ? t(backend ? 'projects.why.live.backend' : 'projects.why.live.open')
+          : '',
+      })
       // "it" is the open source work.
-      if (allSource) it = ' to see it'
+      if (allSource) it = t('projects.see.it')
       break
     case 'source':
-      why = `None of ${who} has its code public yet.`
+      why = t('projects.why.source', {who})
       break
     case 'stack':
-      why = `None of ${who} uses ${label}.`
+      why = t('projects.why.stack', {who, label})
       break
     case 'year':
-      why = `None of ${who} is from ${label}.`
+      why = t('projects.why.year', {who, label})
       break
     case 'q':
-      why = `Nothing in ${who} mentions ${label}.`
+      why = t('projects.why.q', {who, label})
       break
   }
   return {
     last,
     label,
-    copy: `${why} Clear the filters, or drop ${last.kind === 'q' ? 'the search' : label}${it}.`,
+    copy:
+      last.kind === 'q'
+        ? t('projects.explain.search', {why, see: it})
+        : t('projects.explain', {why, label, see: it}),
   }
 }
 

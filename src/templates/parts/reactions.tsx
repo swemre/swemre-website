@@ -17,6 +17,7 @@ import {Icon, type IconName} from '../../design/index.tsx'
 import {lockStyle, useWidthLock} from './clipboard.ts'
 import {LiveNote} from './copy.tsx'
 import {LIKED_KEY, SAVED_KEY, useShare, useToggle} from './store.ts'
+import {t} from '../../i18n/index.ts'
 
 const pressedStyle: CSSProperties = {
   color: 'var(--a2-pale)',
@@ -60,12 +61,12 @@ export function Reactions({
   )
   return (
     <>
-      {toggle('star', 'Like', liked, toggleLike)}
-      {toggle('bookmark', 'Save', saved, toggleSave)}
+      {toggle('star', t('reactions.like'), liked, toggleLike)}
+      {toggle('bookmark', t('reactions.save'), saved, toggleSave)}
       <button
         className={cls}
         type="button"
-        aria-label={labelled ? undefined : 'Share'}
+        aria-label={labelled ? undefined : t('reactions.share')}
         style={lockStyle(copied, width)}
         onClick={e => {
           lock(e)
@@ -73,9 +74,11 @@ export function Reactions({
         }}
       >
         <Icon name={copied ? 'check' : 'send'} size={size} />
-        {labelled && <span>{copied ? 'Copied' : 'Share'}</span>}
+        {labelled && (
+          <span>{copied ? t('copy.copied') : t('reactions.share')}</span>
+        )}
       </button>
-      <LiveNote text={copied ? 'Link copied' : ''} />
+      <LiveNote text={copied ? t('copy.linkCopied') : ''} />
     </>
   )
 }

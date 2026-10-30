@@ -14,10 +14,13 @@ import {createRoot} from 'react-dom/client'
 import {BrowserRouter} from 'react-router-dom'
 import './design/styles/index.css'
 import {App} from './App.tsx'
+import {basename, htmlLang} from './i18n/index.ts'
 
+// The language is the URL prefix (/tr/...); the router works below it.
+document.documentElement.lang = htmlLang
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </StrictMode>,

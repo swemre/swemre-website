@@ -21,45 +21,55 @@ import type {
   TermRef,
 } from '../contract/view.ts'
 import {canonicalHref} from './rules.ts'
+import {t} from '../i18n/index.ts'
 
 export const NAV_ITEMS: NavItem[] = [
-  {key: 'home', label: 'Home', href: '/'},
-  {key: 'articles', label: 'Articles', href: '/articles', mega: 'articles'},
-  {key: 'projects', label: 'Projects', href: '/projects', mega: 'projects'},
+  {key: 'home', label: t('nav.home'), href: '/'},
+  {
+    key: 'articles',
+    label: t('nav.articles'),
+    href: '/articles',
+    mega: 'articles',
+  },
+  {
+    key: 'projects',
+    label: t('nav.projects'),
+    href: '/projects',
+    mega: 'projects',
+  },
 ]
 
-const DEFAULT_TAGLINE =
-  'Notes and projects from a software engineer who writes Java, BTW.'
+const DEFAULT_TAGLINE = t('footer.tagline')
 const PRIVACY: Link = {
-  label: 'Privacy policy',
+  label: t('footer.privacy'),
   href: '/policies/privacy-policy',
 }
 
 function columns(policies: Link[], statusUrl?: string): FooterData['columns'] {
   return [
     {
-      title: 'Explore',
+      title: t('footer.explore'),
       links: [
-        {label: 'Articles', href: '/articles'},
-        {label: 'Projects', href: '/projects'},
-        {label: 'Newsletter', href: '/newsletter'},
-        {label: 'About Emre', href: '/authors/emre'},
+        {label: t('nav.articles'), href: '/articles'},
+        {label: t('nav.projects'), href: '/projects'},
+        {label: t('footer.newsletter'), href: '/newsletter'},
+        {label: t('footer.about'), href: '/authors/emre'},
       ],
     },
     {
-      title: 'Contact',
+      title: t('footer.contact'),
       links: [
-        {label: 'Send a message', href: '/contact'},
-        {label: 'Request a call back', href: '/call-back'},
+        {label: t('footer.sendMessage'), href: '/contact'},
+        {label: t('menu.callBack'), href: '/call-back'},
       ],
     },
     {
-      title: 'Site',
+      title: t('footer.site'),
       links: [
         ...policies,
-        {label: 'RSS feed', href: '/rss.xml', external: true},
+        {label: t('footer.rss'), href: '/rss.xml', external: true},
         {
-          label: 'Status',
+          label: t('footer.status'),
           href: statusUrl ?? 'https://status.swemre.com',
           external: true,
         },
@@ -97,9 +107,9 @@ export function megaArticles(
     featured: articles.slice(0, 4),
     topics: topics.slice(0, 8),
     links: [
-      {label: 'All articles', href: '/articles'},
-      {label: 'Saved articles', href: '/articles?saved=1'},
-      {label: 'RSS feed', href: '/rss.xml', external: true},
+      {label: t('nav.allArticles'), href: '/articles'},
+      {label: t('mega.saved'), href: '/articles?saved=1'},
+      {label: t('footer.rss'), href: '/rss.xml', external: true},
     ],
     also: [],
   }
@@ -112,7 +122,7 @@ export function megaProjects(projects: ProjectSummary[]): MegaMenuData {
     featured,
     topics: [],
     links: [
-      {label: 'All projects', href: '/projects'},
+      {label: t('nav.allProjects'), href: '/projects'},
       {
         label: 'github.com/swemre',
         href: 'https://github.com/swemre',

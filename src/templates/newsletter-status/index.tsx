@@ -21,6 +21,7 @@ import type {TemplateProps} from '../../contract/templates.ts'
 import {useArticles, useSettings} from '../../data/hooks.ts'
 import {NEWSLETTER_TOPICS} from '../../forms/specs.ts'
 import {
+  Anchor,
   ArticleRow,
   Button,
   Icon,
@@ -36,6 +37,7 @@ import {ArrowLink} from '../parts/heads.tsx'
 import {CodeMark, StatusHero, StatusLink} from '../parts/status.tsx'
 import {rgb, usePick} from '../parts/vp.ts'
 import {useTokenOutcome, type Kind} from './token.ts'
+import {t} from '../../i18n/index.ts'
 
 export function NewsletterStatusTemplate({route}: TemplateProps) {
   if (route.path.endsWith('thanks')) return <Thanks />
@@ -99,13 +101,19 @@ function Working({kind}: {kind: Kind}) {
           color="var(--a2-hue-mist)"
         />
       }
-      markLabel="Newsletter"
-      eyebrow="newsletter"
-      detail={kind === 'confirmed' ? 'confirming' : 'unsubscribing'}
-      title={
-        kind === 'confirmed' ? 'Confirming your address…' : 'Unsubscribing…'
+      markLabel={t('footer.newsletter')}
+      eyebrow={t('newsletter.eyebrow')}
+      detail={
+        kind === 'confirmed'
+          ? t('status.detail.confirming')
+          : t('status.detail.unsubscribing')
       }
-      lead={<LoadingStatus label="Checking the link from your email" />}
+      title={
+        kind === 'confirmed'
+          ? t('status.confirming')
+          : t('status.unsubscribing')
+      }
+      lead={<LoadingStatus label={t('status.checking')} />}
       actions={null}
     />
   )
@@ -123,22 +131,22 @@ function Expired({path}: {path: string}) {
           glow="var(--a2-hue-blue-rgb)"
         />
       }
-      markLabel="Not found"
+      markLabel={t('notFound.mark')}
       markColor="var(--a2-soft)"
-      eyebrow="error 404"
+      eyebrow={t('error.eyebrow', {code: 404})}
       detail={`swemre.com${path}`}
-      title="This link has expired."
-      lead="Newsletter links work once and stop working after a while. Subscribe again to get a fresh one."
+      title={t('status.expired.title')}
+      lead={t('status.expired.lead')}
       actions={
         <>
           <Button
             kind="primary"
-            label="Subscribe again"
+            label={t('status.subscribeAgain')}
             iconLeft="mail"
             href="/newsletter"
           />
-          <StatusLink to="/">Home</StatusLink>
-          <StatusLink to="/articles">Articles</StatusLink>
+          <StatusLink to="/">{t('nav.home')}</StatusLink>
+          <StatusLink to="/articles">{t('nav.articles')}</StatusLink>
         </>
       }
     />
@@ -166,21 +174,21 @@ function Failed({
           glow="var(--a2-err-rgb)"
         />
       }
-      markLabel="Server error"
+      markLabel={t('error.mark')}
       markColor="var(--a2-err-text)"
-      eyebrow={`error ${code}`}
-      detail={requestId ? `request id ${requestId}` : undefined}
-      title="That did not go through."
-      lead="The server did not answer. Your link still works; try again in a moment."
+      eyebrow={t('error.eyebrow', {code})}
+      detail={requestId ? t('error.requestId', {id: requestId}) : undefined}
+      title={t('status.failed.title')}
+      lead={t('status.failed.lead')}
       actions={
         <>
           <Button
             kind="primary"
-            label="Try again"
+            label={t('form.retry')}
             iconLeft="refresh"
             onClick={onRetry}
           />
-          <StatusLink to="/">Home</StatusLink>
+          <StatusLink to="/">{t('nav.home')}</StatusLink>
         </>
       }
     />
@@ -199,30 +207,30 @@ function Unsubscribed() {
           color="var(--a2-hue-mist)"
         />
       }
-      markLabel="Newsletter"
-      eyebrow="newsletter"
-      detail="unsubscribed"
-      title="You are unsubscribed."
-      lead="You will not get any more emails from swemre.com. Changed your mind? You can subscribe again any time."
+      markLabel={t('footer.newsletter')}
+      eyebrow={t('newsletter.eyebrow')}
+      detail={t('status.detail.unsubscribed')}
+      title={t('status.unsubscribed.title')}
+      lead={t('status.unsubscribed.lead')}
       actions={
         <>
           <Button
             kind="primary"
-            label="Subscribe again"
+            label={t('status.subscribeAgain')}
             iconLeft="mail"
             href="/newsletter"
           />
-          <StatusLink to="/">Home</StatusLink>
-          <StatusLink to="/articles">Articles</StatusLink>
+          <StatusLink to="/">{t('nav.home')}</StatusLink>
+          <StatusLink to="/articles">{t('nav.articles')}</StatusLink>
         </>
       }
       after={
         <p className="a2-cap" style={{marginTop: 32}}>
-          Unsubscribed by mistake?{' '}
-          <a className="a2-ilink" href="/newsletter">
-            Subscribe again
-          </a>{' '}
-          puts you back with one click, no form needed.
+          {t('status.mistake.before')}
+          <Anchor className="a2-ilink" href="/newsletter">
+            {t('status.subscribeAgain')}
+          </Anchor>
+          {t('status.mistake.after')}
         </p>
       }
     />
@@ -249,33 +257,37 @@ function Thanks() {
             glow="0 0 24px rgb(var(--a2-mint-rgb) / calc(.25 * var(--a2-glow-k)))"
           />
         }
-        markLabel="Thank you"
-        eyebrow="newsletter"
-        detail="thanks"
+        markLabel={t('status.thanks.mark')}
+        eyebrow={t('newsletter.eyebrow')}
+        detail={t('status.detail.thanks')}
         title={
           <>
-            Thanks for <span className="a2-accent">subscribing.</span>
+            {t('status.thanks.title')}{' '}
+            <span className="a2-accent">{t('status.thanks.accent')}</span>
           </>
         }
-        lead={`${name ? `${name}, one` : 'One'} last step: I sent a confirmation link to ${sent?.email ?? 'your inbox'}. Click it and the next letter is on its way.`}
+        lead={t(name ? 'status.thanks.leadNamed' : 'status.thanks.lead', {
+          name: name ?? '',
+          email: sent?.email ?? t('status.thanks.inbox'),
+        })}
         actions={
           <>
             <Button
               kind="primary"
-              label="Read the latest articles"
+              label={t('form.readLatest')}
               iconRight="arrow-right"
               href="/articles"
             />
-            <StatusLink to="/">Home</StatusLink>
+            <StatusLink to="/">{t('nav.home')}</StatusLink>
           </>
         }
         after={
           <p className="a2-cap" style={{marginTop: 32}}>
-            No email after a few minutes? Check your spam folder, or{' '}
-            <a className="a2-ilink" href="/newsletter">
-              subscribe again
-            </a>
-            .
+            {t('status.noEmail.before')}
+            <Anchor className="a2-ilink" href="/newsletter">
+              {t('status.noEmail.link')}
+            </Anchor>
+            {t('status.noEmail.after')}
           </p>
         }
       />
@@ -294,13 +306,13 @@ function Confirmed({sub}: {sub: Subscriber}) {
     .join(', ')
   const name = firstName(sub.name)
   const facts = [
-    {label: 'Email', value: sub.email},
-    ...(topics ? [{label: 'Topics', value: topics}] : []),
+    {label: t('form.email'), value: sub.email},
+    ...(topics ? [{label: t('form.topics'), value: topics}] : []),
     {
-      label: 'Frequency',
-      value: s?.newsletterCadence ?? 'At most twice a month',
+      label: t('form.frequency'),
+      value: s?.newsletterCadence ?? t('form.frequency.value'),
     },
-    {label: 'Sent from', value: s?.contactEmail ?? 'emre@swemre.com'},
+    {label: t('form.sentFrom'), value: s?.contactEmail ?? 'emre@swemre.com'},
   ]
   const card = (
     <div
@@ -329,24 +341,25 @@ function Confirmed({sub}: {sub: Subscriber}) {
             glow="0 0 24px rgb(var(--a2-mint-rgb) / calc(.25 * var(--a2-glow-k)))"
           />
         }
-        markLabel="Confirmed"
-        eyebrow="newsletter"
-        detail="confirmed"
+        markLabel={t('status.confirmed.mark')}
+        eyebrow={t('newsletter.eyebrow')}
+        detail={t('status.detail.confirmed')}
         title={
           <>
-            You’re <span className="a2-accent">subscribed.</span>
+            {t('status.confirmed.title')}{' '}
+            <span className="a2-accent">{t('status.confirmed.accent')}</span>
           </>
         }
-        lead={`${name ? `Thanks, ${name}. ` : ''}Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.`}
+        lead={`${name ? t('status.confirmed.thanks', {name}) : ''}${t('status.confirmed.lead')}`}
         actions={
           <>
             <Button
               kind="primary"
-              label="Read the latest articles"
+              label={t('form.readLatest')}
               iconRight="arrow-right"
               href="/articles"
             />
-            <StatusLink to="/">Home</StatusLink>
+            <StatusLink to="/">{t('nav.home')}</StatusLink>
           </>
         }
         after={card}
@@ -400,14 +413,14 @@ function Latest() {
   const left: ReactNode = (
     <div style={{display: 'flex', flexDirection: 'column', gap: big ? 32 : 24}}>
       <div>
-        <span className="a2-eyebrow">{'// latest'}</span>
+        <span className="a2-eyebrow">{`// ${t('status.latest.eyebrow')}`}</span>
         <h2 className="a2-h2" style={{marginTop: 16}}>
-          While you wait for the next one
+          {t('status.latest.title')}
         </h2>
       </div>
-      <p className="a2-body">The three most recent articles, newest first.</p>
+      <p className="a2-body">{t('status.latest.copy')}</p>
       <div>
-        <ArrowLink to="/articles">All articles</ArrowLink>
+        <ArrowLink to="/articles">{t('nav.allArticles')}</ArrowLink>
       </div>
     </div>
   )

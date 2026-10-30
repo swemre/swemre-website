@@ -25,6 +25,8 @@ import {
   useTheme,
 } from '../design/index.tsx'
 import type {NavItem} from '../contract/view.ts'
+import {LanguageSwitch} from './LanguageSwitch.tsx'
+import {t} from '../i18n/index.ts'
 import {sectionOf, useChrome, type MegaKey} from './context.ts'
 
 /** Scrolled past 8px, and hidden while the last scroll went down past the bar's height. */
@@ -103,7 +105,7 @@ export function Nav({
         <Anchor
           className="a2-logo"
           href="/"
-          aria-label="SWEMRE, home"
+          aria-label={t('nav.logo.label')}
           onMouseEnter={close}
         >
           SWEMRE
@@ -120,7 +122,7 @@ export function Nav({
               <button
                 className="a2-nctl is-icon"
                 type="button"
-                aria-label="Close menu"
+                aria-label={t('nav.menu.close')}
                 aria-expanded="true"
                 aria-controls="a2-menu"
                 onClick={chrome.closeMenu}
@@ -132,19 +134,19 @@ export function Nav({
                 <button
                   className="a2-nctl is-icon"
                   type="button"
-                  aria-label="Search"
+                  aria-label={t('nav.search')}
                   onClick={() => chrome.openSearch()}
                 >
                   <Icon name="search" size={18} />
                 </button>
                 <Anchor className="a2-nctl is-white" href="/newsletter">
                   <Icon name="mail" />
-                  Subscribe
+                  {t('nav.subscribe')}
                 </Anchor>
                 <button
                   className="a2-nctl is-icon"
                   type="button"
-                  aria-label="Open menu"
+                  aria-label={t('nav.menu.open')}
                   aria-expanded="false"
                   aria-controls="a2-menu"
                   onClick={chrome.openMenu}
@@ -156,7 +158,7 @@ export function Nav({
           </div>
         ) : (
           <>
-            <nav className="a2-navlinks" aria-label="Main">
+            <nav className="a2-navlinks" aria-label={t('nav.main')}>
               {items.map(it => {
                 const open = it.mega !== undefined && chrome.mega === it.mega
                 const cls = cx(
@@ -208,12 +210,12 @@ export function Nav({
               <button
                 className="a2-nctl is-search"
                 type="button"
-                aria-label="Search (Ctrl K)"
+                aria-label={t('nav.search.shortcut')}
                 onClick={() => chrome.openSearch()}
                 onMouseEnter={close}
               >
                 <Icon name="search" />
-                <span>Search…</span>
+                <span>{t('nav.search.button')}</span>
                 <span className="a2-kbds">
                   <Kbd>Ctrl</Kbd>
                   <Kbd>K</Kbd>
@@ -225,26 +227,16 @@ export function Nav({
                 onMouseEnter={close}
               >
                 <Icon name="mail" size={14} />
-                Subscribe
+                {t('nav.subscribe')}
               </Anchor>
-              <button
-                className="a2-nctl"
-                type="button"
-                aria-label="Language: English"
-                style={{padding: '0 8px 0 12px'}}
-                onMouseEnter={close}
-              >
-                <Icon name="globe" />
-                EN
-                <Icon name="chevron-down" size={14} />
-              </button>
+              <LanguageSwitch className="a2-nctl" onMouseEnter={close} />
               <button
                 className="a2-nctl is-icon"
                 type="button"
                 aria-label={
                   theme === 'light'
-                    ? 'Switch to dark theme'
-                    : 'Switch to light theme'
+                    ? t('nav.theme.toDark')
+                    : t('nav.theme.toLight')
                 }
                 aria-pressed={theme === 'light'}
                 onClick={toggle}

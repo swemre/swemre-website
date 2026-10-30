@@ -26,20 +26,22 @@ import {
 import type {Machine} from './useFormMachine.ts'
 import {errorSummary} from './validate.ts'
 import type {FormDef, Row} from './specs.ts'
+import {t} from '../i18n/index.ts'
 
 const PRIVACY = '/policies/privacy-policy'
 
 /** The consent label with its privacy link: inline when the copy names the policy, else after. */
 function checkLabel(f: FieldSpec): ReactNode {
-  const i = f.label.toLowerCase().indexOf('privacy policy')
+  const words = t('form.privacyWords')
+  const i = f.label.toLowerCase().indexOf(words)
   if (i >= 0) {
     return (
       <>
         {f.label.slice(0, i)}
         <Anchor className="a2-ilink" href={PRIVACY}>
-          {f.label.slice(i, i + 14)}
+          {f.label.slice(i, i + words.length)}
         </Anchor>
-        {f.label.slice(i + 14)}
+        {f.label.slice(i + words.length)}
       </>
     )
   }
@@ -48,7 +50,7 @@ function checkLabel(f: FieldSpec): ReactNode {
       <>
         {f.label}{' '}
         <Anchor className="a2-ilink" href={PRIVACY}>
-          Privacy policy
+          {t('footer.privacy')}
         </Anchor>
       </>
     )
@@ -93,7 +95,7 @@ export function FormField({m, f}: {m: Machine; f: FieldSpec}) {
       >
         <legend className="a2-label" style={{marginBottom: 8}}>
           {f.label}
-          {f.optional && <em>optional</em>}
+          {f.optional && <em>{t('form.optional')}</em>}
         </legend>
         <div className="a2-chips">
           {(f.options ?? []).map(o => {
@@ -227,10 +229,8 @@ export function FormStatus({m}: {m: Machine}) {
 }
 
 function failureLine(m: Machine): string {
-  if (m.failure === 'closed')
-    return 'This form is closed right now. Email me instead.'
-  if (m.failure === 'limited')
-    return 'Too many tries in a short time. Wait a minute, then press Try again.'
+  if (m.failure === 'closed') return t('form.failure.closed')
+  if (m.failure === 'limited') return t('form.failure.limited')
   return m.def.failureStatus
 }
 
@@ -243,11 +243,11 @@ export function SubmitRow({m, aside}: {m: Machine; aside: ReactNode}) {
     <Button
       kind="primary"
       type="submit"
-      label={retry ? 'Try again' : m.def.submitLabel}
+      label={retry ? t('form.retry') : m.def.submitLabel}
       iconLeft={retry ? 'refresh' : undefined}
       iconRight={retry ? undefined : (m.def.submitIcon as IconName)}
       state={busy ? 'busy' : undefined}
-      busyLabel="Sending…"
+      busyLabel={t('form.sending')}
       block={vp === 'm'}
       style={vp === 'm' ? undefined : {width: 200}}
     />
@@ -267,7 +267,7 @@ export function SubmitRow({m, aside}: {m: Machine; aside: ReactNode}) {
 export function PreferEmail() {
   return (
     <span className="a2-cap">
-      Prefer email?{' '}
+      {t('form.preferEmail')}{' '}
       <a
         className="a2-mono a2-soft"
         href="mailto:emre@swemre.com"

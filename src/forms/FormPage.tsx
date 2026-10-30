@@ -35,6 +35,7 @@ import {
 } from './parts.tsx'
 import type {FormDef, Group} from './specs.ts'
 import {useFormMachine, type Machine} from './useFormMachine.ts'
+import {t} from '../i18n/index.ts'
 
 const HERO: Record<
   Viewport,
@@ -275,13 +276,13 @@ function FormReceipt({m}: {m: Machine}) {
         <>
           <Button
             kind="secondary"
-            label="Read the latest articles"
+            label={t('form.readLatest')}
             iconRight="arrow-right"
             href="/articles"
           />
           <Button
             kind="ghost"
-            label="Back home"
+            label={t('form.backHome')}
             iconLeft="arrow-left"
             href="/"
           />

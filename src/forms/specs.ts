@@ -12,6 +12,7 @@
 // product-spec 2.7. Field keys are the API field keys of each form table. Owner: agent C.
 import type {FormKey} from '../contract/api.ts'
 import type {FieldSpec, FormValues} from '../contract/forms.ts'
+import {t, type TextKey} from '../i18n/index.ts'
 
 /** A row of fields: two side by side (one column on mobile), or one at full width. pad keeps a
  * single field at half width with an empty cell beside it. gap is the space above the row. */
@@ -49,34 +50,46 @@ export interface FormDef {
   receipt: Receipt
 }
 
-const DESCRIBES = [
-  'Engineer',
-  'Engineering manager',
-  'Founder',
-  'Recruiter',
-  'Student',
-  'Other',
+// Option values stay in English, as the form tables store them; only the labels are translated.
+const DESCRIBES: [string, TextKey][] = [
+  ['Engineer', 'form.describes.engineer'],
+  ['Engineering manager', 'form.describes.manager'],
+  ['Founder', 'form.describes.founder'],
+  ['Recruiter', 'form.describes.recruiter'],
+  ['Student', 'form.describes.student'],
+  ['Other', 'form.option.other'],
 ]
-const FOUND_VIA = [
-  'Search',
-  'LinkedIn',
-  'GitHub',
-  'YouTube',
-  'A friend',
-  'Other',
+const FOUND_VIA: [string, TextKey][] = [
+  ['Search', 'form.found.search'],
+  ['LinkedIn', 'form.found.linkedin'],
+  ['GitHub', 'form.found.github'],
+  ['YouTube', 'form.found.youtube'],
+  ['A friend', 'form.found.friend'],
+  ['Other', 'form.option.other'],
 ]
-const opts = (labels: string[]) => [
-  {value: '', label: 'Choose one'},
-  ...labels.map(l => ({value: l, label: l})),
+/** Values that read the same in every language (time zones). */
+const same = (values: string[]): [string, string][] => values.map(v => [v, v])
+const opts = (options: [string, TextKey | string][], translate = true) => [
+  {value: '', label: t('form.option.choose')},
+  ...options.map(([value, label]) => ({
+    value,
+    label: translate ? t(label as TextKey) : label,
+  })),
 ]
+/** The label of a select's chosen value, for the receipt. */
+function labelOf(spec: FieldSpec, v: FormValues[string] | undefined): string {
+  const value = str(v)
+  return spec.options?.find(o => o.value === value && value)?.label ?? value
+}
 
-const EMAIL_ERROR = 'Enter a full email address.'
+const EMAIL_ERROR = t('form.error.email')
 
 export const str = (v: FormValues[string] | undefined) =>
   typeof v === 'string' ? v.trim() : ''
-const given = (v: FormValues[string] | undefined) => str(v) || 'Not given'
+const given = (v: FormValues[string] | undefined) =>
+  str(v) || t('form.notGiven')
 export const firstName = (v: FormValues[string] | undefined) =>
-  str(v).split(/\s+/)[0] || 'there'
+  str(v).split(/\s+/)[0] || t('form.there')
 
 /** "Weekday mornings, weekday evenings": the first as written, the rest in lower case. */
 export function joinLabels(labels: string[]): string {
@@ -95,15 +108,15 @@ export const NEWSLETTER_TOPICS = [
   {value: 'java', label: 'Java'},
   {value: 'react', label: 'React'},
   {value: 'ai', label: 'AI'},
-  {value: 'architecture', label: 'Architecture'},
+  {value: 'architecture', label: t('form.topic.architecture')},
 ]
 
 const newsletterFields: FieldSpec[] = [
-  {key: 'name', kind: 'text', label: 'Full name', initial: ''},
+  {key: 'name', kind: 'text', label: t('form.fullName'), initial: ''},
   {
     key: 'email',
     kind: 'email',
-    label: 'Email',
+    label: t('form.email'),
     required: true,
     error: EMAIL_ERROR,
     initial: '',
@@ -111,14 +124,14 @@ const newsletterFields: FieldSpec[] = [
   {
     key: 'role',
     kind: 'select',
-    label: 'What best describes you',
+    label: t('form.describes'),
     options: opts(DESCRIBES),
     initial: 'Engineer',
   },
   {
     key: 'source',
     kind: 'select',
-    label: 'Where did you first find me',
+    label: t('form.found'),
     optional: true,
     options: opts(FOUND_VIA),
     initial: '',
@@ -126,7 +139,7 @@ const newsletterFields: FieldSpec[] = [
   {
     key: 'topics',
     kind: 'chips',
-    label: 'Topics',
+    label: t('form.topics'),
     optional: true,
     options: NEWSLETTER_TOPICS,
     initial: ['java', 'architecture'],
@@ -134,11 +147,10 @@ const newsletterFields: FieldSpec[] = [
   {
     key: 'consent',
     kind: 'check',
-    label:
-      'Email me new articles and the occasional update. I’ve read the privacy policy.',
+    label: t('form.newsletter.consent'),
     required: true,
-    error: 'Tick this to subscribe.',
-    summaryLabel: 'Consent',
+    error: t('form.newsletter.consent.error'),
+    summaryLabel: t('form.consent'),
     initial: false,
   },
 ]
@@ -151,7 +163,7 @@ export const NEWSLETTER: FormDef = {
   fields: newsletterFields,
   groups: [
     {
-      title: 'Subscribe',
+      title: t('nav.subscribe'),
       copy: '',
       rows: [
         {keys: ['name', 'email']},
@@ -161,24 +173,23 @@ export const NEWSLETTER: FormDef = {
       ],
     },
   ],
-  submitLabel: 'Subscribe',
+  submitLabel: t('nav.subscribe'),
   submitIcon: 'arrow-right',
-  busyStatus: 'Subscribing you. Keep this page open.',
-  failureStatus:
-    'That didn’t subscribe you. Nothing was lost, so press Try again.',
-  done: {title: 'Subscribed', copy: ''},
+  busyStatus: t('form.newsletter.busy'),
+  failureStatus: t('form.newsletter.failure'),
+  done: {title: t('form.newsletter.done'), copy: ''},
   receipt: {
-    title: 'Almost done. Check your inbox.',
-    copy: v =>
-      `I sent a confirmation link to ${str(v.email)}. Click it and the next article comes straight to you. Not there in a minute? Look in spam or promotions.`,
+    title: t('form.newsletter.receipt.title'),
+    copy: v => t('form.newsletter.receipt.copy', {email: str(v.email)}),
     items: v => [
-      ['Email', str(v.email)],
+      [t('form.email'), str(v.email)],
       [
-        'Topics',
-        chosen(newsletterFields[4], v.topics).join(', ') || 'None picked',
+        t('form.topics'),
+        chosen(newsletterFields[4], v.topics).join(', ') ||
+          t('form.nonePicked'),
       ],
-      ['Frequency', 'At most twice a month'],
-      ['Sent from', 'emre@swemre.com'],
+      [t('form.frequency'), t('form.frequency.value')],
+      [t('form.sentFrom'), 'emre@swemre.com'],
     ],
     command: v => `subscribe --email ${str(v.email)}`,
   },
@@ -190,11 +201,11 @@ export const CONTACT: FormDef = {
   hue: 'aqua',
   commits: ['c0ntac7', '5e7d0a1'],
   fields: [
-    {key: 'fullName', kind: 'text', label: 'Full name', initial: ''},
+    {key: 'fullName', kind: 'text', label: t('form.fullName'), initial: ''},
     {
       key: 'email',
       kind: 'email',
-      label: 'Email',
+      label: t('form.email'),
       required: true,
       error: EMAIL_ERROR,
       initial: '',
@@ -202,7 +213,7 @@ export const CONTACT: FormDef = {
     {
       key: 'phone',
       kind: 'tel',
-      label: 'Phone',
+      label: t('form.phone'),
       optional: true,
       placeholder: '+44 7700 900000',
       initial: '',
@@ -210,14 +221,14 @@ export const CONTACT: FormDef = {
     {
       key: 'describesYou',
       kind: 'select',
-      label: 'What best describes you',
+      label: t('form.describes'),
       options: opts(DESCRIBES),
       initial: 'Engineer',
     },
     {
       key: 'foundVia',
       kind: 'select',
-      label: 'Where did you first find me',
+      label: t('form.found'),
       optional: true,
       options: opts(FOUND_VIA),
       initial: '',
@@ -225,160 +236,166 @@ export const CONTACT: FormDef = {
     {
       key: 'favouriteLanguage',
       kind: 'text',
-      label: 'Favourite programming language',
+      label: t('form.favouriteLanguage'),
       optional: true,
-      placeholder: 'Java, obviously',
+      placeholder: t('form.favouriteLanguage.placeholder'),
       initial: '',
     },
     {
       key: 'message',
       kind: 'area',
-      label: 'Message',
+      label: t('form.message'),
       required: true,
-      placeholder:
-        'A sentence or two on the project and what you need from me.',
-      error: 'Tell me a little about what you need.',
+      placeholder: t('form.message.placeholder'),
+      error: t('form.message.error'),
       initial: '',
     },
     {
       key: 'consent',
       kind: 'check',
-      label: 'I agree my details are used to reply to this message.',
+      label: t('form.contact.consent'),
       required: true,
-      error: 'Tick this so I can reply.',
-      summaryLabel: 'Consent',
+      error: t('form.contact.consent.error'),
+      summaryLabel: t('form.consent'),
       initial: false,
     },
     {
       key: 'newsletterOptIn',
       kind: 'check',
-      label: 'Also send me new articles by email',
-      hint: '(optional, unsubscribe any time)',
+      label: t('form.contact.optIn'),
+      hint: t('form.contact.optIn.hint'),
       initial: false,
     },
   ],
   groups: [
     {
-      title: 'About you',
-      copy: 'So I know who I’m replying to.',
+      title: t('form.group.aboutYou'),
+      copy: t('form.contact.group.aboutYou'),
       rows: [
         {keys: ['fullName', 'email']},
         {keys: ['phone'], pad: true, gap: 24},
       ],
     },
     {
-      title: 'Background',
-      copy: 'Helps me pitch the reply right.',
+      title: t('form.group.background'),
+      copy: t('form.contact.group.background'),
       rows: [
         {keys: ['describesYou', 'foundVia']},
         {keys: ['favouriteLanguage'], gap: 24},
       ],
     },
     {
-      title: 'Your message',
-      copy: 'The more context, the better.',
+      title: t('form.group.message'),
+      copy: t('form.contact.group.message'),
       rows: [{keys: ['message']}],
     },
     {
-      title: 'Send',
-      copy: 'I reply within two working days.',
+      title: t('form.group.send'),
+      copy: t('form.contact.group.send'),
       rows: [{keys: ['consent', 'newsletterOptIn']}],
     },
   ],
-  submitLabel: 'Send message',
+  submitLabel: t('form.contact.submit'),
   submitIcon: 'arrow-right',
-  busyStatus: 'Sending your message. Keep this page open.',
-  failureStatus:
-    'That didn’t send. Nothing was lost, so press Try again or email me.',
+  busyStatus: t('form.contact.busy'),
+  failureStatus: t('form.failure'),
   done: {
-    title: 'Sent',
-    copy: 'A copy of what you sent. Nothing else is stored.',
+    title: t('form.contact.done'),
+    copy: t('form.contact.done.copy'),
   },
   receipt: {
-    title: 'Message sent.',
-    copy: v =>
-      `Thanks, ${firstName(v.fullName)}. I’ll reply within two working days, from my own inbox, not a no-reply address. Here’s what you sent.`,
+    title: t('form.contact.receipt.title'),
+    copy: v => t('form.contact.receipt.copy', {name: firstName(v.fullName)}),
     items: v => [
-      ['From', given(v.fullName)],
-      ['Reply to', str(v.email)],
-      ['Phone', given(v.phone)],
-      ['Role', given(v.describesYou)],
-      ['Found via', given(v.foundVia)],
-      ['Message', str(v.message)],
+      [t('form.receipt.from'), given(v.fullName)],
+      [t('form.receipt.replyTo'), str(v.email)],
+      [t('form.phone'), given(v.phone)],
+      [
+        t('form.receipt.role'),
+        given(labelOf(CONTACT.fields[3], v.describesYou)),
+      ],
+      [
+        t('form.receipt.foundVia'),
+        given(labelOf(CONTACT.fields[4], v.foundVia)),
+      ],
+      [t('form.message'), str(v.message)],
     ],
     command: () => 'send --message',
   },
 }
 
 const SLOTS = [
-  {value: 'weekday-mornings', label: 'Weekday mornings'},
-  {value: 'weekday-afternoons', label: 'Weekday afternoons'},
-  {value: 'weekday-evenings', label: 'Weekday evenings'},
-  {value: 'saturday-morning', label: 'Saturday morning'},
+  {value: 'weekday-mornings', label: t('form.slot.weekdayMornings')},
+  {value: 'weekday-afternoons', label: t('form.slot.weekdayAfternoons')},
+  {value: 'weekday-evenings', label: t('form.slot.weekdayEvenings')},
+  {value: 'saturday-morning', label: t('form.slot.saturdayMorning')},
 ]
 const callbackFields: FieldSpec[] = [
-  {key: 'fullName', kind: 'text', label: 'Full name', initial: ''},
+  {key: 'fullName', kind: 'text', label: t('form.fullName'), initial: ''},
   {
     key: 'contact',
     kind: 'contact',
-    label: 'Phone or email',
+    label: t('form.callback.contact'),
     required: true,
-    placeholder: '+31 6 2345 6789 or you@example.com',
-    hint: 'I call, or email to set up a video call.',
-    error: 'Enter a full phone number or an email.',
+    placeholder: t('form.callback.contact.placeholder'),
+    hint: t('form.callback.contact.hint'),
+    error: t('form.callback.contact.error'),
     initial: '',
   },
   {
     key: 'preferredTime',
     kind: 'chips',
-    label: 'Preferred time',
+    label: t('form.callback.time'),
     required: true,
     options: SLOTS,
-    error: 'Pick at least one time slot.',
+    error: t('form.callback.time.error'),
     initial: ['weekday-mornings'],
   },
   {
     key: 'timeZone',
     kind: 'select',
-    label: 'Time zone',
-    options: opts([
-      'Europe/Amsterdam (CET)',
-      'Europe/London (GMT)',
-      'America/New_York (ET)',
-      'Asia/Singapore (SGT)',
-    ]),
+    label: t('form.callback.timeZone'),
+    options: opts(
+      same([
+        'Europe/Amsterdam (CET)',
+        'Europe/London (GMT)',
+        'America/New_York (ET)',
+        'Asia/Singapore (SGT)',
+      ]),
+      false,
+    ),
     initial: 'Europe/Amsterdam (CET)',
   },
   {
     key: 'topic',
     kind: 'select',
-    label: 'Topic',
+    label: t('form.callback.topic'),
     required: true,
     options: opts([
-      'Architecture review',
-      'Spring Boot',
-      'React front end',
-      'Hiring',
-      'Something else',
+      ['Architecture review', 'form.callback.topic.review'],
+      ['Spring Boot', 'form.callback.topic.springBoot'],
+      ['React front end', 'form.callback.topic.react'],
+      ['Hiring', 'form.callback.topic.hiring'],
+      ['Something else', 'form.callback.topic.else'],
     ]),
-    error: 'Choose a topic.',
+    error: t('form.callback.topic.error'),
     initial: '',
   },
   {
     key: 'note',
     kind: 'area',
-    label: 'Note',
+    label: t('form.callback.note'),
     optional: true,
-    placeholder: 'Anything I should read before the call',
+    placeholder: t('form.callback.note.placeholder'),
     initial: '',
   },
   {
     key: 'consent',
     kind: 'check',
-    label: 'I agree my details are used to call me back.',
+    label: t('form.callback.consent'),
     required: true,
-    error: 'Tick this so I can call you.',
-    summaryLabel: 'Consent',
+    error: t('form.callback.consent.error'),
+    summaryLabel: t('form.consent'),
     initial: false,
   },
 ]
@@ -391,51 +408,52 @@ export const CALLBACK: FormDef = {
   fields: callbackFields,
   groups: [
     {
-      title: 'About you',
-      copy: 'Who I’m calling, and how to reach you.',
+      title: t('form.group.aboutYou'),
+      copy: t('form.callback.group.aboutYou'),
       rows: [{keys: ['fullName', 'contact']}],
     },
     {
-      title: 'When',
-      copy: 'Pick every slot that works. Times are in your time zone.',
+      title: t('form.group.when'),
+      copy: t('form.callback.group.when'),
       rows: [
         {keys: ['preferredTime']},
         {keys: ['timeZone'], pad: true, gap: 32},
       ],
     },
     {
-      title: 'What about',
-      copy: 'So I come prepared.',
+      title: t('form.group.whatAbout'),
+      copy: t('form.callback.group.whatAbout'),
       rows: [
         {keys: ['topic'], pad: true},
         {keys: ['note'], gap: 24},
       ],
     },
     {
-      title: 'Send',
-      copy: 'A short email confirms the time first.',
+      title: t('form.group.send'),
+      copy: t('form.callback.group.send'),
       rows: [{keys: ['consent']}],
     },
   ],
-  submitLabel: 'Request call back',
+  submitLabel: t('form.callback.submit'),
   submitIcon: 'phone',
-  busyStatus: 'Sending your request. Keep this page open.',
-  failureStatus:
-    'That didn’t send. Nothing was lost, so press Try again or email me.',
+  busyStatus: t('form.callback.busy'),
+  failureStatus: t('form.failure'),
   done: {
-    title: 'Requested',
-    copy: 'What I need to call you. Nothing else is stored.',
+    title: t('form.callback.done'),
+    copy: t('form.callback.done.copy'),
   },
   receipt: {
-    title: 'Call back requested.',
-    copy: v =>
-      `Thanks, ${firstName(v.fullName)}. I’ll call you in one of the slots you picked and send a short email first to confirm the time.`,
+    title: t('form.callback.receipt.title'),
+    copy: v => t('form.callback.receipt.copy', {name: firstName(v.fullName)}),
     items: v => [
-      ['Name', given(v.fullName)],
-      ['Reach me on', str(v.contact)],
-      ['Slots', joinLabels(chosen(callbackFields[2], v.preferredTime))],
-      ['Time zone', given(v.timeZone)],
-      ['Topic', str(v.topic)],
+      [t('form.receipt.name'), given(v.fullName)],
+      [t('form.receipt.reachMe'), str(v.contact)],
+      [
+        t('form.receipt.slots'),
+        joinLabels(chosen(callbackFields[2], v.preferredTime)),
+      ],
+      [t('form.callback.timeZone'), given(v.timeZone)],
+      [t('form.callback.topic'), labelOf(callbackFields[4], v.topic)],
     ],
     command: () => 'request --call-back',
   },

@@ -15,6 +15,7 @@ import type {ReactNode} from 'react'
 import type {ArticleSummary, Hue} from '../../contract/view.ts'
 import {useViewport} from '../../design/index.tsx'
 import {rgb} from './vp.ts'
+import {t} from '../../i18n/index.ts'
 
 const KEYWORDS =
   /\b(class|interface|record|enum|public|private|protected|static|final|void|return|new|import|package|extends|implements|const|let|var|function|export|default|async|await|if|else|for|while|fun|val|def)\b/
@@ -64,7 +65,7 @@ export function ArticleCover({article}: {article: ArticleSummary}) {
       <div
         className="p2-cover a2-island"
         role="img"
-        aria-label={`Cover: ${article.title}`}
+        aria-label={t('cover.label', {title: article.title})}
         style={{
           borderColor: rgb(hue, 0.26),
           background: `radial-gradient(120% 140% at 82% 24%,${rgb(hue, 0.34)},transparent 60%),var(--a2-cover-grad)`,
@@ -139,7 +140,7 @@ export function MiniCover({article}: {article: ArticleSummary}) {
       <div
         className="a2-cover a2-island"
         role="img"
-        aria-label={`Cover for ${article.title}`}
+        aria-label={t('cover.for', {title: article.title})}
         style={{
           height: small ? 72 : 88,
           borderRadius: 8,

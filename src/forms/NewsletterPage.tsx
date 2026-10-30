@@ -41,6 +41,7 @@ import {
 import {NEWSLETTER, str} from './specs.ts'
 import {useFormMachine, type Machine} from './useFormMachine.ts'
 import {validate, wireFields} from './validate.ts'
+import {t} from '../i18n/index.ts'
 
 const ENDPOINT =
   '/api/public/v2/channels/swemre-website/forms/newsletter/submissions'
@@ -188,16 +189,20 @@ function HeroGround() {
 }
 
 const PROMISES: {icon: IconName; title: string; copy: string}[] = [
-  {icon: 'check', title: 'Private', copy: 'I’ll never sell your data.'},
+  {
+    icon: 'check',
+    title: t('newsletter.promise.private'),
+    copy: t('newsletter.promise.private.copy'),
+  },
   {
     icon: 'mail',
-    title: 'Two-way',
-    copy: 'You’ll never get an email from a no-reply address.',
+    title: t('newsletter.promise.twoWay'),
+    copy: t('newsletter.promise.twoWay.copy'),
   },
   {
     icon: 'message',
-    title: 'Human',
-    copy: 'You’ll always get something I wrote and sent.',
+    title: t('newsletter.promise.human'),
+    copy: t('newsletter.promise.human.copy'),
   },
 ]
 
@@ -206,11 +211,12 @@ function Hero({copy}: {copy: PageCopy}) {
   const wide = vp === 'd' || vp === '4k'
   const compact = vp === 'm' || vp === 't'
   const pt = HERO.pt[vp]
-  const eyebrow = copy.eyebrow?.replace(/^\/\/\s*/, '') ?? 'newsletter'
+  const eyebrow =
+    copy.eyebrow?.replace(/^\/\/\s*/, '') ?? t('newsletter.eyebrow')
   return (
     <section
       className="a2-sec"
-      aria-label="Newsletter"
+      aria-label={t('footer.newsletter')}
       style={{paddingTop: pt, paddingBottom: SEC_PAD[vp]}}
     >
       <HeroGround />
@@ -263,7 +269,7 @@ function Hero({copy}: {copy: PageCopy}) {
           }}
         />
         <ul
-          aria-label="My promises"
+          aria-label={t('newsletter.promises')}
           style={{
             display: 'grid',
             gridTemplateColumns: vp === 'm' ? '1fr' : 'repeat(3,minmax(0,1fr))',
@@ -405,13 +411,12 @@ function Inbox() {
             textAlign: 'center',
           }}
         >
-          <span className="a2-eyebrow">// in your inbox</span>
+          <span className="a2-eyebrow">// {t('newsletter.inbox.eyebrow')}</span>
           <h2 className="a2-h2" style={{marginTop: 16}}>
-            What a letter looks like.
+            {t('newsletter.inbox.title')}
           </h2>
           <p className="a2-body" style={{marginTop: s, maxWidth: 480}}>
-            One email per article, sent from my own address. Reply and it
-            reaches me; unsubscribe in one click.
+            {t('newsletter.inbox.copy')}
           </p>
           <p className="a2-mono" style={{whiteSpace: 'nowrap', marginTop: s}}>
             <span className="a2-mint">emre@swemre</span>
@@ -422,7 +427,7 @@ function Inbox() {
             <span className="a2-caret" aria-hidden="true" />
           </p>
           <div style={{marginTop: s}}>
-            <TextLink label="Read the latest articles" href="/articles" />
+            <TextLink label={t('form.readLatest')} href="/articles" />
           </div>
         </div>
         <div
@@ -478,20 +483,22 @@ function Inbox() {
                     margin: 0,
                   }}
                 >
-                  <dt style={row}>Subject:</dt>
+                  <dt style={row}>{t('newsletter.eml.subject')}</dt>
                   <dd style={{...dd, margin: 0}}>
                     <span style={{color: 'var(--a2-text-hi)', fontWeight: 700}}>
-                      New article: A modular monolith on Spring Boot
+                      {t('newsletter.eml.subject.value')}
                     </span>
                   </dd>
-                  <dt style={row}>From:</dt>
+                  <dt style={row}>{t('newsletter.eml.from')}</dt>
                   <dd style={{...dd, margin: 0}}>
-                    Emre from swemre &lt;emre@swemre.com&gt;
+                    {t('newsletter.eml.from.value')} &lt;emre@swemre.com&gt;
                   </dd>
-                  <dt style={row}>To:</dt>
+                  <dt style={row}>{t('newsletter.eml.to')}</dt>
                   <dd style={{...dd, margin: 0}}>priya.shah@lumen.dev</dd>
-                  <dt style={row}>Date:</dt>
-                  <dd style={{...dd, margin: 0}}>Today, 09:12</dd>
+                  <dt style={row}>{t('newsletter.eml.date')}</dt>
+                  <dd style={{...dd, margin: 0}}>
+                    {t('newsletter.eml.date.value')}
+                  </dd>
                 </dl>
               </div>
               <div
@@ -502,18 +509,16 @@ function Inbox() {
                   color: 'var(--a2-text)',
                 }}
               >
-                <p>Hi Priya,</p>
+                <p>{t('newsletter.eml.hi')}</p>
                 <p style={{marginTop: 8}}>
-                  A new article is up:{' '}
+                  {t('newsletter.eml.newArticle')}{' '}
                   <span style={{fontWeight: 600, color: 'var(--a2-text-hi)'}}>
-                    A modular monolith on Spring Boot
+                    {t('newsletter.eml.articleTitle')}
                   </span>
                   .
                 </p>
                 <p style={{marginTop: 8, color: 'var(--a2-text-mid)'}}>
-                  It shows how one Spring Boot app is split into modules that
-                  talk only through clients and events, and the single test that
-                  keeps those boundaries honest. 10 min read.
+                  {t('newsletter.eml.body')}
                 </p>
                 <p style={{marginTop: 16}}>
                   <Anchor
@@ -536,9 +541,13 @@ function Inbox() {
                   borderTop: '1px solid var(--a2-line)',
                 }}
               >
-                <span>You get this because you subscribed at swemre.com.</span>
+                <span>{t('newsletter.eml.why')}</span>
                 <span style={{display: 'flex', gap: 8}}>
-                  {['Mute', 'Unsubscribe', 'Delete me'].map((l, i) => (
+                  {[
+                    t('newsletter.eml.mute'),
+                    t('newsletter.eml.unsubscribe'),
+                    t('newsletter.eml.delete'),
+                  ].map((l, i) => (
                     <span key={l} style={{display: 'contents'}}>
                       {i > 0 && (
                         <span
@@ -590,7 +599,7 @@ function Statement() {
     color: 'var(--a2-text-lo)',
   }
   return (
-    <section className="a2-sec is-xl" aria-label="A promise">
+    <section className="a2-sec is-xl" aria-label={t('newsletter.promise')}>
       <SectionBg>
         <Glow
           x="50%"
@@ -637,11 +646,11 @@ function Statement() {
               textWrap: 'balance',
             }}
           >
-            Private by default,
+            {t('newsletter.statement.1')}
             <br />
-            written like a note
+            {t('newsletter.statement.2')}
             <br />
-            <span className="a2-accent2">to a friend.</span>
+            <span className="a2-accent2">{t('newsletter.statement.3')}</span>
           </p>
           <p aria-hidden="true" className="a2-mono" style={mono}>
             */
@@ -653,9 +662,9 @@ function Statement() {
               color: 'var(--a2-text-mono-2)',
             }}
           >
-            your email stays with me{' '}
-            <span style={{color: 'var(--a2-hue-mist)'}}>·</span> one person
-            writing, to one person reading
+            {t('newsletter.statement.note1')}{' '}
+            <span style={{color: 'var(--a2-hue-mist)'}}>·</span>{' '}
+            {t('newsletter.statement.note2')}
           </p>
         </div>
       </div>
@@ -736,7 +745,7 @@ function Subscribe({
         </div>
         <form
           noValidate
-          aria-label="Subscribe to the newsletter"
+          aria-label={t('newsletter.form.label')}
           onSubmit={e => {
             e.preventDefault()
             void m.submit()
@@ -813,10 +822,10 @@ function Subscribe({
             </span>
           </span>
           <span className="a2-eyebrow" style={{marginTop: s}}>
-            // subscribe
+            // {t('newsletter.subscribe.eyebrow')}
           </span>
           <h2 className="a2-h2" style={{marginTop: 16, textWrap: 'balance'}}>
-            Get the next letter in your inbox.
+            {t('newsletter.subscribe.title')}
           </h2>
           <div style={{marginTop: s}}>
             <PromptPill command="subscribe --email" />
@@ -881,13 +890,13 @@ function SubscribeReceipt({m}: {m: Machine}) {
         <>
           <Button
             kind="secondary"
-            label="Open the confirmation email"
+            label={t('newsletter.openConfirm')}
             iconLeft="mail"
             href={`/newsletter/confirmed${token ? `?token=${encodeURIComponent(token)}` : ''}`}
           />
           <Button
             kind="ghost"
-            label="Back home"
+            label={t('form.backHome')}
             iconLeft="arrow-left"
             href="/"
           />
@@ -962,8 +971,8 @@ function ExchangePanel({m}: {m: Machine}) {
           <div style={line}>
             <span className="a2-lo">
               {sent
-                ? '// the body the form sent'
-                : '// the body the form will send'}
+                ? `// ${t('newsletter.json.sent')}`
+                : `// ${t('newsletter.json.willSend')}`}
             </span>
           </div>
           <div style={line} />
@@ -982,7 +991,7 @@ function ExchangePanel({m}: {m: Machine}) {
           ))}
           <div style={line}>{'} }'}</div>
           <div className="a2-hr" style={{margin: '24px 0'}} />
-          <div className="a2-lo">// response</div>
+          <div className="a2-lo">// {t('newsletter.json.response')}</div>
           <div
             style={{marginTop: 8, height: 60, overflow: 'hidden'}}
             aria-live="polite"
@@ -1029,7 +1038,7 @@ function responseOf(m: Machine): {
       ),
       foot: {
         label: 'pending',
-        text: 'sending request',
+        text: t('newsletter.json.sending'),
         color: 'var(--a2-soft)',
       },
     }
@@ -1056,7 +1065,7 @@ function responseOf(m: Machine): {
       ),
       foot: {
         label: String(ex?.status ?? 201),
-        text: 'confirmation email sent',
+        text: t('newsletter.json.confirmSent'),
         color: 'var(--a2-mint)',
       },
     }
@@ -1082,7 +1091,7 @@ function responseOf(m: Machine): {
         <>
           <div style={wrapLine}>
             <span style={{color: ERR}}>
-              {server ? '400 Bad Request' : 'not sent: checked in the browser'}
+              {server ? '400 Bad Request' : t('newsletter.json.local')}
             </span>
           </div>
           {list.length > 0 && (
@@ -1101,7 +1110,7 @@ function responseOf(m: Machine): {
       ),
       foot: {
         label: server ? '400' : 'local',
-        text: 'validation failed',
+        text: t('newsletter.json.invalid'),
         color: ERR,
       },
     }
@@ -1113,12 +1122,14 @@ function responseOf(m: Machine): {
         <>
           <div style={wrapLine}>
             <span style={{color: ERR}}>
-              {st ? `${st} ${ex?.statusText ?? ''}`.trim() : 'no answer'}
+              {st
+                ? `${st} ${ex?.statusText ?? ''}`.trim()
+                : t('newsletter.json.noAnswer')}
             </span>
           </div>
           <div style={wrapLine}>
             <span className="a2-lo">
-              // nothing was stored, your data is still in the form
+              // {t('newsletter.json.nothingStored')}
             </span>
           </div>
         </>
@@ -1127,16 +1138,20 @@ function responseOf(m: Machine): {
         label: st ? String(st) : 'error',
         text:
           st === 429
-            ? 'too many tries, wait a minute'
+            ? t('newsletter.json.limited')
             : st === 403
-              ? 'form closed'
-              : 'no answer, retry is safe',
+              ? t('newsletter.json.closed')
+              : t('newsletter.json.retrySafe'),
         color: ERR,
       },
     }
   }
   return {
-    answer: <div style={wrapLine}>waiting for submit …</div>,
-    foot: {label: 'idle', text: 'nothing sent yet', color: 'var(--a2-text-lo)'},
+    answer: <div style={wrapLine}>{t('newsletter.json.waiting')}</div>,
+    foot: {
+      label: 'idle',
+      text: t('newsletter.json.idle'),
+      color: 'var(--a2-text-lo)',
+    },
   }
 }

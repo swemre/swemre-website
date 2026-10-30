@@ -1,0 +1,1315 @@
+{
+  "article.askQuestion": {
+    "en": "Send me a question",
+    "tr": "Bana bir soru gönderin"
+  },
+  "article.author": {"en": "Author", "tr": "Yazar"},
+  "article.faq.article": {
+    "en": "Questions about this article",
+    "tr": "Bu yazıyla ilgili sorular"
+  },
+  "article.faq.eyebrow": {"en": "faq", "tr": "sss"},
+  "article.faq.template": {
+    "en": "Questions about the template",
+    "tr": "Şablonla ilgili sorular"
+  },
+  "article.keepReading": {"en": "keep reading", "tr": "okumaya devam"},
+  "article.minRead": {"en": "{count} min read", "tr": "{count} dk okuma"},
+  "article.more": {
+    "en": "More from the workshop",
+    "tr": "Atölyeden daha fazlası"
+  },
+  "article.published": {"en": "Published", "tr": "Yayımlandı"},
+  "article.readingTime": {"en": "Reading time", "tr": "Okuma süresi"},
+  "articles.count": {
+    "en": {"one": "{count} article", "other": "{count} articles"},
+    "tr": {"other": "{count} yazı"}
+  },
+  "articles.count.in": {
+    "en": {
+      "one": "{count} article in {name}",
+      "other": "{count} articles in {name}"
+    },
+    "tr": {"other": "{name} konusunda {count} yazı"}
+  },
+  "articles.count.saved": {
+    "en": {"one": "{count} saved article", "other": "{count} saved articles"},
+    "tr": {"other": "{count} kayıtlı yazı"}
+  },
+  "articles.countIn": {
+    "en": "{count} in {name}",
+    "tr": "{name} konusunda {count}"
+  },
+  "articles.empty.copy": {
+    "en": "The first article is still being written. Subscribe or follow the RSS feed to get it the day it is out.",
+    "tr": "İlk yazı hâlâ yazılıyor. Çıktığı gün almak için abone olun ya da RSS akışını takip edin."
+  },
+  "articles.empty.title": {"en": "No articles yet", "tr": "Henüz yazı yok"},
+  "articles.error.copy": {
+    "en": "The server did not answer in time. Check your connection and try again; the articles are still there.",
+    "tr": "Sunucu zamanında yanıt vermedi. Bağlantınızı kontrol edip tekrar deneyin; yazılar hâlâ orada."
+  },
+  "articles.error.title": {
+    "en": "Articles could not be loaded",
+    "tr": "Yazılar yüklenemedi"
+  },
+  "articles.fewerTopics": {"en": "Fewer topics", "tr": "Daha az konu"},
+  "articles.followRss": {"en": "Follow by RSS", "tr": "RSS ile takip et"},
+  "articles.lastLoad": {
+    "en": "Last successful load: {stamp}",
+    "tr": "Son başarılı yükleme: {stamp}"
+  },
+  "articles.lead": {
+    "en": "Notes on building for the web: Java services, React front ends and the architecture behind my projects.",
+    "tr": "Web için geliştirme üzerine notlar: Java servisleri, React ön yüzleri ve projelerimin arkasındaki mimari."
+  },
+  "articles.loading": {"en": "Loading articles", "tr": "Yazılar yükleniyor"},
+  "articles.loading.dots": {
+    "en": "Loading articles…",
+    "tr": "Yazılar yükleniyor…"
+  },
+  "articles.moreTopics": {"en": "More topics", "tr": "Daha fazla konu"},
+  "articles.relatedTopics": {"en": "Related topics", "tr": "İlgili konular"},
+  "articles.saved": {"en": "Saved", "tr": "Kaydedilenler"},
+  "articles.saved.empty.copy": {
+    "en": "Save an article with the bookmark on its page and it shows up here. Saved articles stay in this browser.",
+    "tr": "Bir yazıyı sayfasındaki yer imiyle kaydedin, burada görünsün. Kaydedilen yazılar bu tarayıcıda kalır."
+  },
+  "articles.saved.empty.title": {
+    "en": "No saved articles yet",
+    "tr": "Henüz kaydedilmiş yazı yok"
+  },
+  "articles.saved.remove": {
+    "en": "Remove Saved",
+    "tr": "Kaydedilenler filtresini kaldır"
+  },
+  "articles.showAll": {"en": "Show all articles", "tr": "Tüm yazıları göster"},
+  "articles.showing": {
+    "en": {
+      "one": "Showing {shown} of {count} article",
+      "other": "Showing {shown} of {count} articles"
+    },
+    "tr": {"other": "{count} yazıdan {shown} tanesi gösteriliyor"}
+  },
+  "articles.sort.newest": {"en": "Newest first", "tr": "Önce en yeni"},
+  "articles.sort.newest.short": {"en": "newest first", "tr": "önce en yeni"},
+  "articles.sort.oldest": {"en": "Oldest first", "tr": "Önce en eski"},
+  "articles.sort.oldest.short": {"en": "oldest first", "tr": "önce en eski"},
+  "articles.topic.empty.copy": {
+    "en": "No article is tagged {name} so far. Clear the filter to see everything, or follow the RSS feed to hear when the first one is out.",
+    "tr": "Şimdiye kadar {name} etiketli yazı yok. Her şeyi görmek için filtreyi temizleyin ya da ilki çıktığında haberdar olmak için RSS akışını takip edin."
+  },
+  "articles.topic.empty.title": {
+    "en": "Nothing on {name} yet",
+    "tr": "Henüz {name} hakkında bir şey yok"
+  },
+  "articles.view.covers": {"en": "With covers", "tr": "Kapaklı"},
+  "articles.view.text": {"en": "Text only", "tr": "Yalnızca metin"},
+  "author.archive": {"en": "Browse the archive", "tr": "Arşive göz at"},
+  "author.articles": {
+    "en": {"one": "article", "other": "articles"},
+    "tr": {"other": "yazı"}
+  },
+  "author.articlesBy": {
+    "en": "Articles by {name}",
+    "tr": "{name} tarafından yazılanlar"
+  },
+  "author.availability": {"en": "Availability", "tr": "Uygunluk"},
+  "author.building": {"en": "Currently building", "tr": "Şu an yapılan"},
+  "author.count": {
+    "en": {
+      "one": "{shown} of {count} article",
+      "other": "{shown} of {count} articles"
+    },
+    "tr": {"other": "{count} yazıdan {shown}"}
+  },
+  "author.cta.after": {"en": ".", "tr": "."},
+  "author.cta.before": {
+    "en": "I call back within two working days. Or ",
+    "tr": "İki iş günü içinde geri ararım. Ya da "
+  },
+  "author.cta.link": {"en": "send a message", "tr": "mesaj gönderin"},
+  "author.focus": {"en": "Focus", "tr": "Odak"},
+  "author.latest": {"en": "latest", "tr": "en son"},
+  "author.readTitle": {"en": "Read {title}", "tr": "Oku: {title}"},
+  "author.showing": {
+    "en": "Showing {count} / newest first",
+    "tr": "{count} gösteriliyor / önce en yeni"
+  },
+  "author.since": {
+    "en": "Writing software since {year}",
+    "tr": "{year} yılından beri yazılım geliştiriyor"
+  },
+  "author.topics": {
+    "en": {"one": "topic", "other": "topics"},
+    "tr": {"other": "konu"}
+  },
+  "author.writing": {"en": "Writing", "tr": "Yazılar"},
+  "body.sectionLink": {"en": "Link to section", "tr": "Bölüme bağlantı"},
+  "breadcrumb": {"en": "Breadcrumb", "tr": "İçerik haritası"},
+  "copy.copied": {"en": "Copied", "tr": "Kopyalandı"},
+  "copy.copiedNote": {
+    "en": "Copied to the clipboard",
+    "tr": "Panoya kopyalandı"
+  },
+  "copy.copy": {"en": "Copy", "tr": "Kopyala"},
+  "copy.linkCopied": {"en": "Link copied", "tr": "Bağlantı kopyalandı"},
+  "cover.for": {"en": "Cover for {title}", "tr": "{title} için kapak"},
+  "cover.label": {"en": "Cover: {title}", "tr": "Kapak: {title}"},
+  "error.eyebrow": {"en": "error {code}", "tr": "hata {code}"},
+  "error.lead": {
+    "en": "The server ran into an error. It has been logged and I will look at it. Try again in a moment.",
+    "tr": "Sunucu bir hatayla karşılaştı. Kaydedildi ve bakacağım. Birazdan tekrar deneyin."
+  },
+  "error.mark": {"en": "Server error", "tr": "Sunucu hatası"},
+  "error.requestId": {"en": "request id {id}", "tr": "istek kimliği {id}"},
+  "error.title": {
+    "en": "Something broke on my side.",
+    "tr": "Benim tarafımda bir şey bozuldu."
+  },
+  "fallback.close": {"en": "Close", "tr": "Kapat"},
+  "fallback.notice": {
+    "en": "This page is only available in {language}.",
+    "tr": "Bu sayfa yalnızca {language} olarak mevcut."
+  },
+  "footer.about": {"en": "About Emre", "tr": "Emre hakkında"},
+  "footer.brand": {
+    "en": "Software brand · © {year}",
+    "tr": "Yazılım markası · © {year}"
+  },
+  "footer.contact": {"en": "Contact", "tr": "İletişim"},
+  "footer.explore": {"en": "Explore", "tr": "Keşfet"},
+  "footer.newsletter": {"en": "Newsletter", "tr": "Bülten"},
+  "footer.privacy": {"en": "Privacy policy", "tr": "Gizlilik politikası"},
+  "footer.rss": {"en": "RSS feed", "tr": "RSS akışı"},
+  "footer.sendMessage": {"en": "Send a message", "tr": "Mesaj gönder"},
+  "footer.site": {"en": "Site", "tr": "Site"},
+  "footer.status": {"en": "Status", "tr": "Durum"},
+  "footer.tagline": {
+    "en": "Notes and projects from a software engineer who writes Java, BTW.",
+    "tr": "Java yazan bir yazılım mühendisinden notlar ve projeler, BTW."
+  },
+  "form.backHome": {"en": "Back home", "tr": "Ana sayfaya dön"},
+  "form.callback.busy": {
+    "en": "Sending your request. Keep this page open.",
+    "tr": "Talebiniz gönderiliyor. Bu sayfayı açık tutun."
+  },
+  "form.callback.consent": {
+    "en": "I agree my details are used to call me back.",
+    "tr": "Bilgilerimin beni geri aramak için kullanılmasını kabul ediyorum."
+  },
+  "form.callback.consent.error": {
+    "en": "Tick this so I can call you.",
+    "tr": "Sizi arayabilmem için bunu işaretleyin."
+  },
+  "form.callback.contact": {
+    "en": "Phone or email",
+    "tr": "Telefon ya da e-posta"
+  },
+  "form.callback.contact.error": {
+    "en": "Enter a full phone number or an email.",
+    "tr": "Tam bir telefon numarası ya da e-posta girin."
+  },
+  "form.callback.contact.hint": {
+    "en": "I call, or email to set up a video call.",
+    "tr": "Ararım ya da görüntülü görüşme ayarlamak için e-posta atarım."
+  },
+  "form.callback.contact.placeholder": {
+    "en": "+31 6 2345 6789 or you@example.com",
+    "tr": "+90 532 123 45 67 ya da siz@ornek.com"
+  },
+  "form.callback.done": {"en": "Requested", "tr": "İstendi"},
+  "form.callback.done.copy": {
+    "en": "What I need to call you. Nothing else is stored.",
+    "tr": "Sizi aramak için gerekenler. Başka hiçbir şey saklanmaz."
+  },
+  "form.callback.group.aboutYou": {
+    "en": "Who I’m calling, and how to reach you.",
+    "tr": "Kimi arayacağım ve size nasıl ulaşacağım."
+  },
+  "form.callback.group.send": {
+    "en": "A short email confirms the time first.",
+    "tr": "Önce kısa bir e-posta saati onaylar."
+  },
+  "form.callback.group.whatAbout": {
+    "en": "So I come prepared.",
+    "tr": "Hazırlıklı geleyim."
+  },
+  "form.callback.group.when": {
+    "en": "Pick every slot that works. Times are in your time zone.",
+    "tr": "Uygun olan tüm aralıkları seçin. Saatler sizin saat diliminizdedir."
+  },
+  "form.callback.note": {"en": "Note", "tr": "Not"},
+  "form.callback.note.placeholder": {
+    "en": "Anything I should read before the call",
+    "tr": "Görüşmeden önce okumam gereken bir şey"
+  },
+  "form.callback.receipt.copy": {
+    "en": "Thanks, {name}. I’ll call you in one of the slots you picked and send a short email first to confirm the time.",
+    "tr": "Teşekkürler, {name}. Seçtiğiniz aralıklardan birinde sizi arayacağım ve saati onaylamak için önce kısa bir e-posta göndereceğim."
+  },
+  "form.callback.receipt.title": {
+    "en": "Call back requested.",
+    "tr": "Geri arama istendi."
+  },
+  "form.callback.submit": {"en": "Request call back", "tr": "Geri arama iste"},
+  "form.callback.time": {"en": "Preferred time", "tr": "Tercih edilen zaman"},
+  "form.callback.time.error": {
+    "en": "Pick at least one time slot.",
+    "tr": "En az bir zaman aralığı seçin."
+  },
+  "form.callback.timeZone": {"en": "Time zone", "tr": "Saat dilimi"},
+  "form.callback.topic": {"en": "Topic", "tr": "Konu"},
+  "form.callback.topic.else": {"en": "Something else", "tr": "Başka bir şey"},
+  "form.callback.topic.error": {
+    "en": "Choose a topic.",
+    "tr": "Bir konu seçin."
+  },
+  "form.callback.topic.hiring": {"en": "Hiring", "tr": "İşe alım"},
+  "form.callback.topic.react": {"en": "React front end", "tr": "React ön yüz"},
+  "form.callback.topic.review": {
+    "en": "Architecture review",
+    "tr": "Mimari inceleme"
+  },
+  "form.callback.topic.springBoot": {"en": "Spring Boot", "tr": "Spring Boot"},
+  "form.consent": {"en": "Consent", "tr": "Onay"},
+  "form.contact.busy": {
+    "en": "Sending your message. Keep this page open.",
+    "tr": "Mesajınız gönderiliyor. Bu sayfayı açık tutun."
+  },
+  "form.contact.consent": {
+    "en": "I agree my details are used to reply to this message.",
+    "tr": "Bilgilerimin bu mesaja yanıt vermek için kullanılmasını kabul ediyorum."
+  },
+  "form.contact.consent.error": {
+    "en": "Tick this so I can reply.",
+    "tr": "Yanıt verebilmem için bunu işaretleyin."
+  },
+  "form.contact.done": {"en": "Sent", "tr": "Gönderildi"},
+  "form.contact.done.copy": {
+    "en": "A copy of what you sent. Nothing else is stored.",
+    "tr": "Gönderdiklerinizin bir kopyası. Başka hiçbir şey saklanmaz."
+  },
+  "form.contact.group.aboutYou": {
+    "en": "So I know who I’m replying to.",
+    "tr": "Kime yanıt verdiğimi bileyim."
+  },
+  "form.contact.group.background": {
+    "en": "Helps me pitch the reply right.",
+    "tr": "Yanıtı doğru tonda yazmama yardımcı olur."
+  },
+  "form.contact.group.message": {
+    "en": "The more context, the better.",
+    "tr": "Ne kadar bağlam, o kadar iyi."
+  },
+  "form.contact.group.send": {
+    "en": "I reply within two working days.",
+    "tr": "İki iş günü içinde yanıt veririm."
+  },
+  "form.contact.optIn": {
+    "en": "Also send me new articles by email",
+    "tr": "Yeni yazıları bana e-postayla da gönder"
+  },
+  "form.contact.optIn.hint": {
+    "en": "(optional, unsubscribe any time)",
+    "tr": "(isteğe bağlı, istediğiniz zaman ayrılabilirsiniz)"
+  },
+  "form.contact.receipt.copy": {
+    "en": "Thanks, {name}. I’ll reply within two working days, from my own inbox, not a no-reply address. Here’s what you sent.",
+    "tr": "Teşekkürler, {name}. İki iş günü içinde, no-reply adresinden değil kendi gelen kutumdan yanıt vereceğim. Gönderdikleriniz:"
+  },
+  "form.contact.receipt.title": {
+    "en": "Message sent.",
+    "tr": "Mesaj gönderildi."
+  },
+  "form.contact.submit": {"en": "Send message", "tr": "Mesajı gönder"},
+  "form.describes": {
+    "en": "What best describes you",
+    "tr": "Sizi en iyi ne tanımlar"
+  },
+  "form.describes.engineer": {"en": "Engineer", "tr": "Mühendis"},
+  "form.describes.founder": {"en": "Founder", "tr": "Kurucu"},
+  "form.describes.manager": {
+    "en": "Engineering manager",
+    "tr": "Mühendislik yöneticisi"
+  },
+  "form.describes.recruiter": {"en": "Recruiter", "tr": "İşe alım uzmanı"},
+  "form.describes.student": {"en": "Student", "tr": "Öğrenci"},
+  "form.email": {"en": "Email", "tr": "E-posta"},
+  "form.error.email": {
+    "en": "Enter a full email address.",
+    "tr": "Tam bir e-posta adresi girin."
+  },
+  "form.error.required": {"en": "Fill this in.", "tr": "Bunu doldurun."},
+  "form.failure": {
+    "en": "That didn’t send. Nothing was lost, so press Try again or email me.",
+    "tr": "Gönderilemedi. Hiçbir şey kaybolmadı, Tekrar dene'ye basın ya da bana e-posta atın."
+  },
+  "form.failure.closed": {
+    "en": "This form is closed right now. Email me instead.",
+    "tr": "Bu form şu anda kapalı. Bunun yerine bana e-posta atın."
+  },
+  "form.failure.limited": {
+    "en": "Too many tries in a short time. Wait a minute, then press Try again.",
+    "tr": "Kısa sürede çok fazla deneme. Bir dakika bekleyin, sonra Tekrar dene'ye basın."
+  },
+  "form.favouriteLanguage": {
+    "en": "Favourite programming language",
+    "tr": "En sevdiğiniz programlama dili"
+  },
+  "form.favouriteLanguage.placeholder": {
+    "en": "Java, obviously",
+    "tr": "Java, tabii ki"
+  },
+  "form.found": {
+    "en": "Where did you first find me",
+    "tr": "Beni ilk nerede buldunuz"
+  },
+  "form.found.friend": {"en": "A friend", "tr": "Bir arkadaş"},
+  "form.found.github": {"en": "GitHub", "tr": "GitHub"},
+  "form.found.linkedin": {"en": "LinkedIn", "tr": "LinkedIn"},
+  "form.found.search": {"en": "Search", "tr": "Arama motoru"},
+  "form.found.youtube": {"en": "YouTube", "tr": "YouTube"},
+  "form.frequency": {"en": "Frequency", "tr": "Sıklık"},
+  "form.frequency.value": {
+    "en": "At most twice a month",
+    "tr": "Ayda en fazla iki kez"
+  },
+  "form.fullName": {"en": "Full name", "tr": "Ad soyad"},
+  "form.group.aboutYou": {"en": "About you", "tr": "Hakkınızda"},
+  "form.group.background": {"en": "Background", "tr": "Geçmiş"},
+  "form.group.message": {"en": "Your message", "tr": "Mesajınız"},
+  "form.group.send": {"en": "Send", "tr": "Gönder"},
+  "form.group.whatAbout": {"en": "What about", "tr": "Konu"},
+  "form.group.when": {"en": "When", "tr": "Ne zaman"},
+  "form.message": {"en": "Message", "tr": "Mesaj"},
+  "form.message.error": {
+    "en": "Tell me a little about what you need.",
+    "tr": "Neye ihtiyacınız olduğunu biraz anlatın."
+  },
+  "form.message.placeholder": {
+    "en": "A sentence or two on the project and what you need from me.",
+    "tr": "Proje ve benden ne istediğiniz hakkında bir iki cümle."
+  },
+  "form.newsletter.busy": {
+    "en": "Subscribing you. Keep this page open.",
+    "tr": "Aboneliğiniz yapılıyor. Bu sayfayı açık tutun."
+  },
+  "form.newsletter.consent": {
+    "en": "Email me new articles and the occasional update. I’ve read the privacy policy.",
+    "tr": "Yeni yazıları ve ara sıra güncellemeleri e-postayla gönder. Gizlilik politikasını okudum."
+  },
+  "form.newsletter.consent.error": {
+    "en": "Tick this to subscribe.",
+    "tr": "Abone olmak için bunu işaretleyin."
+  },
+  "form.newsletter.done": {"en": "Subscribed", "tr": "Abone olundu"},
+  "form.newsletter.failure": {
+    "en": "That didn’t subscribe you. Nothing was lost, so press Try again.",
+    "tr": "Abonelik yapılamadı. Hiçbir şey kaybolmadı, Tekrar dene'ye basın."
+  },
+  "form.newsletter.receipt.copy": {
+    "en": "I sent a confirmation link to {email}. Click it and the next article comes straight to you. Not there in a minute? Look in spam or promotions.",
+    "tr": "{email} adresine bir onay bağlantısı gönderdim. Tıklayın, sonraki yazı doğrudan size gelsin. Bir dakika içinde gelmedi mi? Spam ya da promosyonlar klasörüne bakın."
+  },
+  "form.newsletter.receipt.title": {
+    "en": "Almost done. Check your inbox.",
+    "tr": "Neredeyse bitti. Gelen kutunuza bakın."
+  },
+  "form.nonePicked": {"en": "None picked", "tr": "Seçilmedi"},
+  "form.notGiven": {"en": "Not given", "tr": "Belirtilmedi"},
+  "form.option.choose": {"en": "Choose one", "tr": "Birini seçin"},
+  "form.option.other": {"en": "Other", "tr": "Diğer"},
+  "form.optional": {"en": "optional", "tr": "isteğe bağlı"},
+  "form.phone": {"en": "Phone", "tr": "Telefon"},
+  "form.preferEmail": {
+    "en": "Prefer email?",
+    "tr": "E-postayı mı tercih edersiniz?"
+  },
+  "form.privacyWords": {"en": "privacy policy", "tr": "gizlilik politikasını"},
+  "form.readLatest": {
+    "en": "Read the latest articles",
+    "tr": "Son yazıları okuyun"
+  },
+  "form.receipt.foundVia": {"en": "Found via", "tr": "Nereden"},
+  "form.receipt.from": {"en": "From", "tr": "Gönderen"},
+  "form.receipt.name": {"en": "Name", "tr": "Ad"},
+  "form.receipt.reachMe": {"en": "Reach me on", "tr": "Ulaşılacak adres"},
+  "form.receipt.replyTo": {"en": "Reply to", "tr": "Yanıt adresi"},
+  "form.receipt.role": {"en": "Role", "tr": "Rol"},
+  "form.receipt.slots": {"en": "Slots", "tr": "Zaman aralıkları"},
+  "form.retry": {"en": "Try again", "tr": "Tekrar dene"},
+  "form.sending": {"en": "Sending…", "tr": "Gönderiliyor…"},
+  "form.sentFrom": {"en": "Sent from", "tr": "Gönderen"},
+  "form.slot.saturdayMorning": {
+    "en": "Saturday morning",
+    "tr": "Cumartesi sabahı"
+  },
+  "form.slot.weekdayAfternoons": {
+    "en": "Weekday afternoons",
+    "tr": "Hafta içi öğleden sonraları"
+  },
+  "form.slot.weekdayEvenings": {
+    "en": "Weekday evenings",
+    "tr": "Hafta içi akşamları"
+  },
+  "form.slot.weekdayMornings": {
+    "en": "Weekday mornings",
+    "tr": "Hafta içi sabahları"
+  },
+  "form.summary": {
+    "en": {
+      "one": "{count} field needs a fix: {list}.",
+      "other": "{count} fields need a fix: {list}."
+    },
+    "tr": {"other": "{count} alanın düzeltilmesi gerekiyor: {list}."}
+  },
+  "form.there": {"en": "there", "tr": "merhaba"},
+  "form.topic.architecture": {"en": "Architecture", "tr": "Mimari"},
+  "form.topics": {"en": "Topics", "tr": "Konular"},
+  "home.articles.copy": {
+    "en": "Long-form notes on Java, React and architecture, written after the thing works.",
+    "tr": "Java, React ve mimari üzerine uzun notlar, iş çalıştıktan sonra yazıldı."
+  },
+  "home.articles.error.copy": {
+    "en": "The server did not answer in time. The articles are still there; try again in a moment.",
+    "tr": "Sunucu zamanında yanıt vermedi. Yazılar hâlâ orada; birazdan tekrar deneyin."
+  },
+  "home.articles.title": {"en": "Latest articles", "tr": "Son yazılar"},
+  "home.hero.cadence": {"en": "Every other week", "tr": "İki haftada bir"},
+  "home.hero.latestArticle": {"en": "Latest article", "tr": "Son yazı"},
+  "home.hero.latestValue": {
+    "en": "Spring Boot template",
+    "tr": "Spring Boot şablonu"
+  },
+  "home.hero.lead": {
+    "en": "Spent years building enterprise software. Now I use AI and consider buying a Patagonia vest. I like thinking and solving problems.",
+    "tr": "Yıllarca kurumsal yazılım geliştirdim. Şimdi yapay zekâ kullanıyor ve bir Patagonia yeleği almayı düşünüyorum. Düşünmeyi ve problem çözmeyi seviyorum."
+  },
+  "home.hero.nowBuilding": {"en": "Now building", "tr": "Şu an yapılan"},
+  "home.hero.title": {"en": "Software Engineer", "tr": "Yazılım Mühendisi"},
+  "home.newsletter.accent": {"en": "touch.", "tr": "kalalım."},
+  "home.newsletter.copy": {
+    "en": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
+    "tr": "Java, React, mimari ve yapay zekâ üzerine pratik notlar, artı bu hafta ne bozduysam. İş yerinden bir arkadaşa yazar gibi yazılmış."
+  },
+  "home.newsletter.example": {
+    "en": "Example newsletter email",
+    "tr": "Örnek bülten e-postası"
+  },
+  "home.newsletter.page": {"en": "Newsletter page", "tr": "Bülten sayfası"},
+  "home.newsletter.title": {"en": "Let’s stay in", "tr": "İletişimde"},
+  "home.newsletter.to": {"en": "to {email}", "tr": "alıcı: {email}"},
+  "home.projects.copy": {
+    "en": "What I am building right now, newest activity first.",
+    "tr": "Şu anda yaptıklarım, en yeni etkinlik önce."
+  },
+  "home.projects.error.copy": {
+    "en": "The project list did not load. Nothing is lost; try again, or open the projects page.",
+    "tr": "Proje listesi yüklenmedi. Hiçbir şey kaybolmadı; tekrar deneyin ya da projeler sayfasını açın."
+  },
+  "home.projects.github": {"en": "Open GitHub", "tr": "GitHub'ı aç"},
+  "home.projects.title": {"en": "Selected projects", "tr": "Seçili projeler"},
+  "home.promise.label": {
+    "en": "The newsletter, a promise",
+    "tr": "Bülten, bir söz"
+  },
+  "home.songs.copy": {
+    "en": "Five tracks drawn at random from my Spotify liked songs. Each one opens in Spotify.",
+    "tr": "Spotify'da beğendiğim şarkılardan rastgele seçilmiş beş parça. Her biri Spotify'da açılır."
+  },
+  "home.songs.count": {
+    "en": "{picks} of {total} liked songs",
+    "tr": "{total} beğenilen şarkıdan {picks}"
+  },
+  "home.songs.cover": {
+    "en": "{album} album cover",
+    "tr": "{album} albüm kapağı"
+  },
+  "home.songs.empty.copy": {
+    "en": "The liked-songs playlist is empty right now, so there is nothing to draw from. New picks show up on the next visit.",
+    "tr": "Beğenilen şarkılar listesi şu an boş, seçilecek bir şey yok. Yeni seçimler bir sonraki ziyarette görünür."
+  },
+  "home.songs.empty.title": {
+    "en": "No songs to pick from",
+    "tr": "Seçilecek şarkı yok"
+  },
+  "home.songs.error.copy": {
+    "en": "The picks could not be fetched from Spotify. The rest of the page works; try again in a moment.",
+    "tr": "Seçimler Spotify'dan alınamadı. Sayfanın geri kalanı çalışıyor; birazdan tekrar deneyin."
+  },
+  "home.songs.error.title": {
+    "en": "Spotify did not answer",
+    "tr": "Spotify yanıt vermedi"
+  },
+  "home.songs.eyebrow": {"en": "listening", "tr": "dinliyorum"},
+  "home.songs.loading": {"en": "Loading songs", "tr": "Şarkılar yükleniyor"},
+  "home.songs.open": {"en": "Open Spotify", "tr": "Spotify'ı aç"},
+  "home.songs.title": {
+    "en": "Random picks from my liked songs",
+    "tr": "Beğendiğim şarkılardan rastgele seçimler"
+  },
+  "home.stack.claude": {
+    "en": "My pair programmer. Never asks for a standup.",
+    "tr": "Eşli programlama ortağım. Hiç stand-up toplantısı istemez."
+  },
+  "home.stack.docker": {
+    "en": "It works on my machine, so I ship the machine.",
+    "tr": "Benim makinemde çalışıyor, o yüzden makineyi gönderiyorum."
+  },
+  "home.stack.eyebrow": {"en": "my stack", "tr": "teknolojilerim"},
+  "home.stack.java": {
+    "en": "Records, virtual threads and no regrets.",
+    "tr": "Record'lar, sanal thread'ler ve pişmanlık yok."
+  },
+  "home.stack.log": {"en": "Stack log", "tr": "Teknoloji günlüğü"},
+  "home.stack.me": {
+    "en": "Emre, software engineer",
+    "tr": "Emre, yazılım mühendisi"
+  },
+  "home.stack.postgresql": {
+    "en": "One schema per module. No exceptions.",
+    "tr": "Modül başına bir şema. İstisna yok."
+  },
+  "home.stack.react": {
+    "en": "useEffect and I have an understanding.",
+    "tr": "useEffect ile anlaşmamız var."
+  },
+  "home.stack.springboot": {
+    "en": "Annotations all the way down.",
+    "tr": "En dibe kadar anotasyon."
+  },
+  "home.stack.title": {
+    "en": "What I build with, and who I build it with.",
+    "tr": "Neyle ve kiminle geliştiriyorum."
+  },
+  "home.stack.traefik": {
+    "en": "One VPS, one router, zero drama.",
+    "tr": "Bir VPS, bir yönlendirici, sıfır drama."
+  },
+  "home.stack.typescript": {
+    "en": "Strict mode on, any is banned. Mostly.",
+    "tr": "Strict mod açık, any yasak. Çoğunlukla."
+  },
+  "home.statement.after": {"en": "", "tr": "yazıyorum"},
+  "home.statement.before": {"en": "I write", "tr": ""},
+  "home.statement.favorite": {"en": "favorite", "tr": "favori"},
+  "home.statement.label": {
+    "en": "My stack, Java and friends",
+    "tr": "Teknolojilerim, Java ve arkadaşları"
+  },
+  "home.statement.sr": {
+    "en": "I write Java, BTW. Also Go, Rust, TypeScript and Python.",
+    "tr": "Java yazıyorum, BTW. Ayrıca Go, Rust, TypeScript ve Python."
+  },
+  "home.status.problems": {"en": "0 problems", "tr": "0 sorun"},
+  "home.status.synced": {"en": "synced 2 min ago", "tr": "2 dk önce eşitlendi"},
+  "home.subscribe.consent.after": {"en": ".", "tr": " okudum."},
+  "home.subscribe.consent.before": {
+    "en": "Email me new articles and the occasional update. I’ve read the ",
+    "tr": "Yeni yazıları ve ara sıra güncellemeleri e-postayla gönder. "
+  },
+  "home.subscribe.consent.link": {
+    "en": "privacy policy",
+    "tr": "Gizlilik politikasını"
+  },
+  "home.subscribe.failed": {
+    "en": "Not sent. Try again.",
+    "tr": "Gönderilmedi. Tekrar deneyin."
+  },
+  "language.name.en": {"en": "English", "tr": "İngilizce"},
+  "language.name.tr": {"en": "Turkish", "tr": "Türkçe"},
+  "language.switch.label": {
+    "en": "Language: {current}. Switch to {target}",
+    "tr": "Dil: {current}. {target} diline geç"
+  },
+  "list.and": {"en": " and ", "tr": " ve "},
+  "list.loadMore": {"en": "Load {count} more", "tr": "{count} tane daha yükle"},
+  "list.or": {"en": " or ", "tr": " ya da "},
+  "list.sortAria": {
+    "en": "Sort: {current}. Change to {next}",
+    "tr": "Sıralama: {current}. {next} olarak değiştir"
+  },
+  "mega.also": {"en": "Also", "tr": "Ayrıca"},
+  "mega.articles.copy": {
+    "en": "Notes on building for the web.",
+    "tr": "Web için geliştirme üzerine notlar."
+  },
+  "mega.articles.eyebrow": {"en": "writing", "tr": "yazılar"},
+  "mega.label": {"en": "{title} menu", "tr": "{title} menüsü"},
+  "mega.projects.copy": {
+    "en": "Things I have built and am building.",
+    "tr": "Yaptığım ve yapmakta olduğum şeyler."
+  },
+  "mega.projects.eyebrow": {"en": "building", "tr": "yapım"},
+  "mega.saved": {"en": "Saved articles", "tr": "Kaydedilen yazılar"},
+  "mega.topics": {"en": "Topics", "tr": "Konular"},
+  "menu.callBack": {"en": "Request a call back", "tr": "Geri arama iste"},
+  "menu.label": {"en": "Menu", "tr": "Menü"},
+  "menu.language": {"en": "Language", "tr": "Dil"},
+  "menu.language.label": {
+    "en": "Language: {current}. Switch language",
+    "tr": "Dil: {current}. Dili değiştir"
+  },
+  "menu.search.label": {
+    "en": "Search or go to a page",
+    "tr": "Ara ya da bir sayfaya git"
+  },
+  "menu.search.placeholder": {"en": "search or go to…", "tr": "ara ya da git…"},
+  "menu.theme": {"en": "Theme", "tr": "Tema"},
+  "menu.theme.dark": {"en": "dark", "tr": "koyu"},
+  "menu.theme.darkLabel": {
+    "en": "Theme dark, switch to light",
+    "tr": "Tema koyu, açığa geç"
+  },
+  "menu.theme.light": {"en": "light", "tr": "açık"},
+  "menu.theme.lightLabel": {
+    "en": "Theme light, switch to dark",
+    "tr": "Tema açık, koyuya geç"
+  },
+  "nav.allArticles": {"en": "All articles", "tr": "Tüm yazılar"},
+  "nav.allProjects": {"en": "All projects", "tr": "Tüm projeler"},
+  "nav.articles": {"en": "Articles", "tr": "Yazılar"},
+  "nav.home": {"en": "Home", "tr": "Ana sayfa"},
+  "nav.logo.label": {"en": "SWEMRE, home", "tr": "SWEMRE, ana sayfa"},
+  "nav.main": {"en": "Main", "tr": "Ana menü"},
+  "nav.menu.close": {"en": "Close menu", "tr": "Menüyü kapat"},
+  "nav.menu.open": {"en": "Open menu", "tr": "Menüyü aç"},
+  "nav.projects": {"en": "Projects", "tr": "Projeler"},
+  "nav.search": {"en": "Search", "tr": "Ara"},
+  "nav.search.button": {"en": "Search…", "tr": "Ara…"},
+  "nav.search.shortcut": {"en": "Search (Ctrl K)", "tr": "Ara (Ctrl K)"},
+  "nav.subscribe": {"en": "Subscribe", "tr": "Abone ol"},
+  "nav.theme.toDark": {"en": "Switch to dark theme", "tr": "Koyu temaya geç"},
+  "nav.theme.toLight": {"en": "Switch to light theme", "tr": "Açık temaya geç"},
+  "newsletter.eml.articleTitle": {
+    "en": "A modular monolith on Spring Boot",
+    "tr": "Spring Boot ile modüler monolit"
+  },
+  "newsletter.eml.body": {
+    "en": "It shows how one Spring Boot app is split into modules that talk only through clients and events, and the single test that keeps those boundaries honest. 10 min read.",
+    "tr": "Tek bir Spring Boot uygulamasının yalnızca istemciler ve olaylar üzerinden konuşan modüllere nasıl bölündüğünü ve bu sınırları koruyan tek testi anlatıyor. 10 dakikalık okuma."
+  },
+  "newsletter.eml.date": {"en": "Date:", "tr": "Tarih:"},
+  "newsletter.eml.date.value": {"en": "Today, 09:12", "tr": "Bugün, 09:12"},
+  "newsletter.eml.delete": {"en": "Delete me", "tr": "Beni sil"},
+  "newsletter.eml.from": {"en": "From:", "tr": "Kimden:"},
+  "newsletter.eml.from.value": {
+    "en": "Emre from swemre",
+    "tr": "swemre'den Emre"
+  },
+  "newsletter.eml.hi": {"en": "Hi Priya,", "tr": "Merhaba Priya,"},
+  "newsletter.eml.mute": {"en": "Mute", "tr": "Sessize al"},
+  "newsletter.eml.newArticle": {
+    "en": "A new article is up:",
+    "tr": "Yeni bir yazı yayında:"
+  },
+  "newsletter.eml.subject": {"en": "Subject:", "tr": "Konu:"},
+  "newsletter.eml.subject.value": {
+    "en": "New article: A modular monolith on Spring Boot",
+    "tr": "Yeni yazı: Spring Boot ile modüler monolit"
+  },
+  "newsletter.eml.to": {"en": "To:", "tr": "Kime:"},
+  "newsletter.eml.unsubscribe": {"en": "Unsubscribe", "tr": "Abonelikten çık"},
+  "newsletter.eml.why": {
+    "en": "You get this because you subscribed at swemre.com.",
+    "tr": "Bunu swemre.com'da abone olduğunuz için alıyorsunuz."
+  },
+  "newsletter.eyebrow": {"en": "newsletter", "tr": "bülten"},
+  "newsletter.form.label": {
+    "en": "Subscribe to the newsletter",
+    "tr": "Bültene abone ol"
+  },
+  "newsletter.inbox.copy": {
+    "en": "One email per article, sent from my own address. Reply and it reaches me; unsubscribe in one click.",
+    "tr": "Her yazı için bir e-posta, kendi adresimden. Yanıtlarsanız bana ulaşır; tek tıkla ayrılırsınız."
+  },
+  "newsletter.inbox.eyebrow": {"en": "in your inbox", "tr": "gelen kutunuzda"},
+  "newsletter.inbox.title": {
+    "en": "What a letter looks like.",
+    "tr": "Bir mektup nasıl görünür."
+  },
+  "newsletter.json.closed": {"en": "form closed", "tr": "form kapalı"},
+  "newsletter.json.confirmSent": {
+    "en": "confirmation email sent",
+    "tr": "onay e-postası gönderildi"
+  },
+  "newsletter.json.idle": {
+    "en": "nothing sent yet",
+    "tr": "henüz bir şey gönderilmedi"
+  },
+  "newsletter.json.invalid": {
+    "en": "validation failed",
+    "tr": "doğrulama başarısız"
+  },
+  "newsletter.json.limited": {
+    "en": "too many tries, wait a minute",
+    "tr": "çok fazla deneme, bir dakika bekleyin"
+  },
+  "newsletter.json.local": {
+    "en": "not sent: checked in the browser",
+    "tr": "gönderilmedi: tarayıcıda denetlendi"
+  },
+  "newsletter.json.noAnswer": {"en": "no answer", "tr": "yanıt yok"},
+  "newsletter.json.nothingStored": {
+    "en": "nothing was stored, your data is still in the form",
+    "tr": "hiçbir şey saklanmadı, verileriniz hâlâ formda"
+  },
+  "newsletter.json.response": {"en": "response", "tr": "yanıt"},
+  "newsletter.json.retrySafe": {
+    "en": "no answer, retry is safe",
+    "tr": "yanıt yok, tekrar denemek güvenli"
+  },
+  "newsletter.json.sending": {
+    "en": "sending request",
+    "tr": "istek gönderiliyor"
+  },
+  "newsletter.json.sent": {
+    "en": "the body the form sent",
+    "tr": "formun gönderdiği gövde"
+  },
+  "newsletter.json.waiting": {
+    "en": "waiting for submit …",
+    "tr": "gönderim bekleniyor …"
+  },
+  "newsletter.json.willSend": {
+    "en": "the body the form will send",
+    "tr": "formun göndereceği gövde"
+  },
+  "newsletter.openConfirm": {
+    "en": "Open the confirmation email",
+    "tr": "Onay e-postasını aç"
+  },
+  "newsletter.promise": {"en": "A promise", "tr": "Bir söz"},
+  "newsletter.promise.human": {"en": "Human", "tr": "İnsan"},
+  "newsletter.promise.human.copy": {
+    "en": "You’ll always get something I wrote and sent.",
+    "tr": "Her zaman benim yazıp gönderdiğim bir şey alırsınız."
+  },
+  "newsletter.promise.private": {"en": "Private", "tr": "Gizli"},
+  "newsletter.promise.private.copy": {
+    "en": "I’ll never sell your data.",
+    "tr": "Verilerinizi asla satmam."
+  },
+  "newsletter.promise.twoWay": {"en": "Two-way", "tr": "İki yönlü"},
+  "newsletter.promise.twoWay.copy": {
+    "en": "You’ll never get an email from a no-reply address.",
+    "tr": "Hiçbir zaman no-reply adresinden e-posta almazsınız."
+  },
+  "newsletter.promises": {"en": "My promises", "tr": "Sözlerim"},
+  "newsletter.statement.1": {
+    "en": "Private by default,",
+    "tr": "Varsayılan olarak gizli,"
+  },
+  "newsletter.statement.2": {
+    "en": "written like a note",
+    "tr": "bir arkadaşa yazılmış"
+  },
+  "newsletter.statement.3": {"en": "to a friend.", "tr": "bir not gibi."},
+  "newsletter.statement.note1": {
+    "en": "your email stays with me",
+    "tr": "e-postanız bende kalır"
+  },
+  "newsletter.statement.note2": {
+    "en": "one person writing, to one person reading",
+    "tr": "bir kişi yazar, bir kişi okur"
+  },
+  "newsletter.subscribe.eyebrow": {"en": "subscribe", "tr": "abone ol"},
+  "newsletter.subscribe.title": {
+    "en": "Get the next letter in your inbox.",
+    "tr": "Sonraki mektup gelen kutunuza gelsin."
+  },
+  "notFound.article.lead": {
+    "en": "It may have been unpublished, or the link is old or mistyped. Everything that is published is one click away.",
+    "tr": "Yayından kaldırılmış olabilir ya da bağlantı eski veya hatalı yazılmış. Yayımlanan her şey bir tık uzağınızda."
+  },
+  "notFound.article.title": {
+    "en": "This article is not available.",
+    "tr": "Bu yazı mevcut değil."
+  },
+  "notFound.didYouMean": {
+    "en": "Did you mean",
+    "tr": "Bunu mu demek istediniz"
+  },
+  "notFound.lead": {
+    "en": "The link may be old or mistyped. Everything that exists is one click away.",
+    "tr": "Bağlantı eski ya da hatalı yazılmış olabilir. Var olan her şey bir tık uzağınızda."
+  },
+  "notFound.line": {"en": "404 not found", "tr": "404 bulunamadı"},
+  "notFound.mark": {"en": "Not found", "tr": "Bulunamadı"},
+  "notFound.project.lead": {
+    "en": "It may have been renamed or made private, or the link is mistyped. Every public project is on the projects page.",
+    "tr": "Adı değişmiş ya da gizli yapılmış olabilir veya bağlantı hatalı yazılmış. Herkese açık tüm projeler projeler sayfasında."
+  },
+  "notFound.project.title": {
+    "en": "This project is not available.",
+    "tr": "Bu proje mevcut değil."
+  },
+  "notFound.single.lead": {
+    "en": "It may have been unpublished, or the link is old or mistyped. The privacy policy is still here.",
+    "tr": "Yayından kaldırılmış olabilir ya da bağlantı eski veya hatalı yazılmış. Gizlilik politikası hâlâ burada."
+  },
+  "notFound.single.title": {
+    "en": "This page is not available.",
+    "tr": "Bu sayfa mevcut değil."
+  },
+  "notFound.title": {
+    "en": "Nothing lives here.",
+    "tr": "Burada kimse yaşamıyor."
+  },
+  "project.badge.archived": {"en": "archived", "tr": "arşivlendi"},
+  "project.badge.building": {"en": "now building", "tr": "yapım aşamasında"},
+  "project.badge.sourceOnly": {"en": "source only", "tr": "yalnızca kaynak"},
+  "project.docs": {"en": "Read the docs", "tr": "Belgeleri oku"},
+  "project.keepExploring": {"en": "keep exploring", "tr": "keşfetmeye devam"},
+  "project.language": {"en": "Language", "tr": "Dil"},
+  "project.readMore": {"en": "read more", "tr": "daha fazla oku"},
+  "project.relatedArticles": {"en": "Related articles", "tr": "İlgili yazılar"},
+  "project.relatedProjects": {
+    "en": "Related projects",
+    "tr": "İlgili projeler"
+  },
+  "project.started": {"en": "Started", "tr": "Başlangıç"},
+  "project.updated": {"en": "Updated", "tr": "Güncellendi"},
+  "project.version": {"en": "Version", "tr": "Sürüm"},
+  "project.view": {"en": "View project", "tr": "Projeyi gör"},
+  "project.viewSource": {"en": "View source", "tr": "Kaynağı gör"},
+  "project.visitLive": {
+    "en": "Visit live site",
+    "tr": "Canlı siteyi ziyaret et"
+  },
+  "project.visitSite": {"en": "Visit site", "tr": "Siteyi ziyaret et"},
+  "projects.activeFilters": {"en": "Active filters", "tr": "Etkin filtreler"},
+  "projects.activity": {
+    "en": "Activity · last 26 weeks",
+    "tr": "Etkinlik · son 26 hafta"
+  },
+  "projects.chip.remove": {
+    "en": "Remove {label}",
+    "tr": "{label} filtresini kaldır"
+  },
+  "projects.clear": {"en": "Clear filters", "tr": "Filtreleri temizle"},
+  "projects.count": {
+    "en": {"one": "{count} project", "other": "{count} projects"},
+    "tr": {"other": "{count} proje"}
+  },
+  "projects.empty.copy": {
+    "en": "Projects appear here once they have a public page. The code of everything I build is on GitHub in the meantime.",
+    "tr": "Projeler herkese açık bir sayfaları olunca burada görünür. Bu arada yaptığım her şeyin kodu GitHub'da."
+  },
+  "projects.empty.title": {
+    "en": "No projects to show yet",
+    "tr": "Henüz gösterilecek proje yok"
+  },
+  "projects.error.copy": {
+    "en": "The project list did not load. Nothing is lost; try again in a moment.",
+    "tr": "Proje listesi yüklenmedi. Hiçbir şey kaybolmadı; birazdan tekrar deneyin."
+  },
+  "projects.error.title": {
+    "en": "Projects could not be loaded",
+    "tr": "Projeler yüklenemedi"
+  },
+  "projects.explain": {
+    "en": "{why} Clear the filters, or drop {label}{see}.",
+    "tr": "{why} Filtreleri temizleyin ya da {label} filtresini kaldırın{see}."
+  },
+  "projects.explain.search": {
+    "en": "{why} Clear the filters, or drop the search{see}.",
+    "tr": "{why} Filtreleri temizleyin ya da aramayı kaldırın{see}."
+  },
+  "projects.filters": {"en": "Filters", "tr": "Filtreler"},
+  "projects.filters.active": {"en": "{count} active", "tr": "{count} etkin"},
+  "projects.filters.count": {
+    "en": {"one": "{count} filter", "other": "{count} filters"},
+    "tr": {"other": "{count} filtre"}
+  },
+  "projects.hidden": {
+    "en": "{more} hidden by filters: {list}",
+    "tr": "{more} filtrelerle gizlendi: {list}"
+  },
+  "projects.hidden.more": {"en": "{count} more", "tr": "{count} proje daha"},
+  "projects.lead": {
+    "en": "Things I have built and am building, with the code behind them.",
+    "tr": "Yaptığım ve yapmakta olduğum şeyler, arkalarındaki kodla birlikte."
+  },
+  "projects.live": {"en": "Live", "tr": "Yayında"},
+  "projects.live.hint": {
+    "en": "Has a public deployment",
+    "tr": "Herkese açık bir yayını var"
+  },
+  "projects.loading": {"en": "Loading projects", "tr": "Projeler yükleniyor"},
+  "projects.noMatches": {"en": "No matches", "tr": "Eşleşme yok"},
+  "projects.noMatches.title": {
+    "en": "No projects match these filters",
+    "tr": "Bu filtrelere uyan proje yok"
+  },
+  "projects.ofTotal": {"en": "of {total} projects", "tr": "/ {total} proje"},
+  "projects.q.from": {"en": "from {year}", "tr": "{year} yılından"},
+  "projects.q.live": {"en": "that are Live", "tr": "yayında olan"},
+  "projects.q.liveSource": {
+    "en": "that are Live with source available",
+    "tr": "yayında ve kaynağı açık olan"
+  },
+  "projects.q.matching": {"en": "matching {q}", "tr": "{q} ile eşleşen"},
+  "projects.q.source": {
+    "en": "with source available",
+    "tr": "kaynağı açık olan"
+  },
+  "projects.q.using": {"en": "using {stack}", "tr": "{stack} kullanan"},
+  "projects.remove": {
+    "en": "Remove {label}",
+    "tr": "{label} filtresini kaldır"
+  },
+  "projects.search": {"en": "Search projects", "tr": "Projelerde ara"},
+  "projects.search.placeholder": {
+    "en": "Search projects…",
+    "tr": "Projelerde ara…"
+  },
+  "projects.see.both": {"en": " to see both", "tr": ""},
+  "projects.see.it": {"en": " to see it", "tr": ""},
+  "projects.see.them": {"en": " to see them", "tr": ""},
+  "projects.sort.name": {"en": "Name A–Z", "tr": "Ad A–Z"},
+  "projects.sort.newest": {"en": "Newest", "tr": "En yeni"},
+  "projects.sort.updated": {"en": "Recently updated", "tr": "Son güncellenen"},
+  "projects.sortBy": {"en": "Sort by", "tr": "Sırala"},
+  "projects.source": {"en": "Source available", "tr": "Kaynağı açık"},
+  "projects.source.hint": {
+    "en": "Code is public on GitHub",
+    "tr": "Kodu GitHub'da açık"
+  },
+  "projects.stack": {"en": "Stack", "tr": "Teknolojiler"},
+  "projects.stack.any": {"en": "Match any", "tr": "Herhangi biri"},
+  "projects.status": {"en": "Status", "tr": "Durum"},
+  "projects.subject.adj": {
+    "en": "the {adj} projects",
+    "tr": "{adj} projelerinin"
+  },
+  "projects.subject.all": {"en": "the projects", "tr": "projelerin"},
+  "projects.subject.matching": {
+    "en": "{base} matching {q}",
+    "tr": "{q} ile eşleşen {base}"
+  },
+  "projects.summary": {
+    "en": "Showing {shown} of {total} projects",
+    "tr": "{total} projeden {shown} tanesi gösteriliyor"
+  },
+  "projects.summary.q": {
+    "en": "Showing {shown} of {total} projects {q}",
+    "tr": "{q} {total} projeden {shown} tanesi gösteriliyor"
+  },
+  "projects.view": {"en": "View", "tr": "Görünüm"},
+  "projects.view.grid": {"en": "Grid", "tr": "Izgara"},
+  "projects.view.list": {"en": "List", "tr": "Liste"},
+  "projects.why.live": {
+    "en": "None of {who} has a public deployment yet{extra}.",
+    "tr": "{who} hiçbirinin henüz herkese açık bir yayını yok{extra}."
+  },
+  "projects.why.live.backend": {
+    "en": "; the backend work is open source instead",
+    "tr": "; bunun yerine backend çalışması açık kaynak"
+  },
+  "projects.why.live.open": {
+    "en": "; the work is open source instead",
+    "tr": "; bunun yerine çalışma açık kaynak"
+  },
+  "projects.why.q": {
+    "en": "Nothing in {who} mentions {label}.",
+    "tr": "{who} hiçbirinde {label} geçmiyor."
+  },
+  "projects.why.source": {
+    "en": "None of {who} has its code public yet.",
+    "tr": "{who} hiçbirinin kodu henüz açık değil."
+  },
+  "projects.why.stack": {
+    "en": "None of {who} uses {label}.",
+    "tr": "{who} hiçbiri {label} kullanmıyor."
+  },
+  "projects.why.year": {
+    "en": "None of {who} is from {label}.",
+    "tr": "{who} hiçbiri {label} yılından değil."
+  },
+  "projects.without": {
+    "en": "Without the {label} filter",
+    "tr": "{label} filtresi olmadan"
+  },
+  "projects.year": {"en": "Year", "tr": "Yıl"},
+  "projects.year.all": {"en": "All", "tr": "Tümü"},
+  "qs.all": {"en": "All results for “{q}”", "tr": "“{q}” için tüm sonuçlar"},
+  "qs.close": {"en": "Close search", "tr": "Aramayı kapat"},
+  "qs.empty.copy": {
+    "en": "Press Enter or see all results to search everything.",
+    "tr": "Her yerde aramak için Enter'a basın ya da tüm sonuçları görün."
+  },
+  "qs.empty.title": {
+    "en": "No quick matches for “{q}”",
+    "tr": "“{q}” için hızlı eşleşme yok"
+  },
+  "qs.error.after": {"en": ".", "tr": "."},
+  "qs.error.before": {
+    "en": "Press Enter to search on the results page, or ",
+    "tr": "Sonuç sayfasında aramak için Enter'a basın ya da "
+  },
+  "qs.error.retry": {"en": "try again", "tr": "tekrar deneyin"},
+  "qs.error.title": {
+    "en": "Quick search is not available right now",
+    "tr": "Hızlı arama şu anda kullanılamıyor"
+  },
+  "qs.hint.close": {"en": "to close", "tr": "kapat"},
+  "qs.hint.navigate": {"en": "to navigate", "tr": "gezin"},
+  "qs.hint.open": {"en": "to open", "tr": "aç"},
+  "qs.label": {"en": "Quick search", "tr": "Hızlı arama"},
+  "qs.list": {"en": "Quick results", "tr": "Hızlı sonuçlar"},
+  "qs.placeholder": {
+    "en": "Search articles and projects",
+    "tr": "Yazılarda ve projelerde ara"
+  },
+  "qs.results": {
+    "en": {"one": "{count} result", "other": "{count} results"},
+    "tr": {"other": "{count} sonuç"}
+  },
+  "qs.searching": {"en": "Searching…", "tr": "Aranıyor…"},
+  "qs.seeAll": {"en": "See all results", "tr": "Tüm sonuçları gör"},
+  "reactions.like": {"en": "Like", "tr": "Beğen"},
+  "reactions.save": {"en": "Save", "tr": "Kaydet"},
+  "reactions.share": {"en": "Share", "tr": "Paylaş"},
+  "reading.article": {"en": "Article", "tr": "Yazı"},
+  "reading.helpful": {
+    "en": "Was this article helpful?",
+    "tr": "Bu yazı işinize yaradı mı?"
+  },
+  "reading.more": {"en": "More articles", "tr": "Diğer yazılar"},
+  "reading.next": {"en": "Next", "tr": "Sonraki"},
+  "reading.open": {"en": "OPEN ↗", "tr": "AÇ ↗"},
+  "reading.previous": {"en": "Previous", "tr": "Önceki"},
+  "reading.project": {"en": "Project", "tr": "Proje"},
+  "recent.eyebrow": {"en": "back to reading", "tr": "okumaya dön"},
+  "recent.title": {"en": "Recent articles", "tr": "Son yazılar"},
+  "search.clear": {"en": "Clear", "tr": "Temizle"},
+  "search.error.copy": {
+    "en": "The search could not be run. Nothing is lost; try again in a moment.",
+    "tr": "Arama çalıştırılamadı. Hiçbir şey kaybolmadı; birazdan tekrar deneyin."
+  },
+  "search.error.line": {"en": "Search error", "tr": "Arama hatası"},
+  "search.error.title": {
+    "en": "Search did not answer",
+    "tr": "Arama yanıt vermedi"
+  },
+  "search.eyebrow": {"en": "search", "tr": "arama"},
+  "search.none": {
+    "en": "Nothing matches “{q}”.",
+    "tr": "“{q}” ile eşleşen bir şey yok."
+  },
+  "search.none.copy": {
+    "en": "Try a shorter word, check the spelling, or start from a topic I write about.",
+    "tr": "Daha kısa bir kelime deneyin, yazımı kontrol edin ya da yazdığım bir konudan başlayın."
+  },
+  "search.recent": {"en": "Recently written", "tr": "Son yazılanlar"},
+  "search.searching": {"en": "Searching", "tr": "Aranıyor"},
+  "search.summary": {"en": "{count} for “{q}”", "tr": "“{q}” için {count}"},
+  "search.type": {"en": "Result type", "tr": "Sonuç türü"},
+  "search.what": {"en": "What are you looking for?", "tr": "Ne arıyorsunuz?"},
+  "search.what.copy": {
+    "en": "Search the articles and projects by word, or start from a topic I write about.",
+    "tr": "Yazılarda ve projelerde kelimeyle arayın ya da yazdığım bir konudan başlayın."
+  },
+  "settings.tagline": {"en": "Software brand", "tr": "Yazılım markası"},
+  "shell.maintenance": {
+    "en": "Maintenance in progress",
+    "tr": "Bakım çalışması sürüyor"
+  },
+  "shell.skip": {"en": "Skip to content", "tr": "İçeriğe geç"},
+  "single.changelog": {"en": "changelog", "tr": "değişiklik günlüğü"},
+  "single.downloadPdf": {"en": "Download PDF", "tr": "PDF indir"},
+  "single.end": {"en": "end of document", "tr": "belgenin sonu"},
+  "single.glance": {"en": "At a glance", "tr": "Bir bakışta"},
+  "single.print": {"en": "Print", "tr": "Yazdır"},
+  "single.savePdf": {
+    "en": "Save as PDF from the print dialog",
+    "tr": "Yazdırma penceresinden PDF olarak kaydedin"
+  },
+  "single.updated": {"en": "updated", "tr": "güncellendi"},
+  "single.version": {"en": "version", "tr": "sürüm"},
+  "state.browseArticles": {"en": "Browse articles", "tr": "Yazılara göz at"},
+  "state.browseProjects": {"en": "Browse projects", "tr": "Projelere göz at"},
+  "state.couldNotLoad": {
+    "en": "{what} could not be loaded",
+    "tr": "{what} yüklenemedi"
+  },
+  "state.couldNotLoad.copy": {
+    "en": "The server did not answer in time. Nothing is lost; try again in a moment.",
+    "tr": "Sunucu zamanında yanıt vermedi. Hiçbir şey kaybolmadı; birazdan tekrar deneyin."
+  },
+  "state.loadError": {"en": "Load error", "tr": "Yükleme hatası"},
+  "state.loading.article": {
+    "en": "Loading the article",
+    "tr": "Yazı yükleniyor"
+  },
+  "state.loading.author": {
+    "en": "Loading the author",
+    "tr": "Yazar yükleniyor"
+  },
+  "state.loading.page": {"en": "Loading the page", "tr": "Sayfa yükleniyor"},
+  "state.loading.project": {
+    "en": "Loading the project",
+    "tr": "Proje yükleniyor"
+  },
+  "state.retrying": {"en": "Trying again…", "tr": "Tekrar deneniyor…"},
+  "state.what.article": {"en": "The article", "tr": "Yazı"},
+  "state.what.author": {"en": "The author page", "tr": "Yazar sayfası"},
+  "state.what.page": {"en": "The page", "tr": "Sayfa"},
+  "state.what.project": {"en": "The project", "tr": "Proje"},
+  "status.checking": {
+    "en": "Checking the link from your email",
+    "tr": "E-postanızdaki bağlantı kontrol ediliyor"
+  },
+  "status.confirmed.accent": {"en": "subscribed.", "tr": "oldunuz."},
+  "status.confirmed.lead": {
+    "en": "Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
+    "tr": "Adresiniz onaylandı. Sonraki mektup yeni bir yazı hazır olunca gider ve her birinde tek tıkla abonelikten çıkma bağlantısı vardır."
+  },
+  "status.confirmed.mark": {"en": "Confirmed", "tr": "Onaylandı"},
+  "status.confirmed.thanks": {
+    "en": "Thanks, {name}. ",
+    "tr": "Teşekkürler, {name}. "
+  },
+  "status.confirmed.title": {"en": "You’re", "tr": "Abone"},
+  "status.confirming": {
+    "en": "Confirming your address…",
+    "tr": "Adresiniz onaylanıyor…"
+  },
+  "status.detail.confirmed": {"en": "confirmed", "tr": "onaylandı"},
+  "status.detail.confirming": {"en": "confirming", "tr": "onaylanıyor"},
+  "status.detail.thanks": {"en": "thanks", "tr": "teşekkürler"},
+  "status.detail.unsubscribed": {
+    "en": "unsubscribed",
+    "tr": "abonelikten çıkıldı"
+  },
+  "status.detail.unsubscribing": {
+    "en": "unsubscribing",
+    "tr": "abonelikten çıkılıyor"
+  },
+  "status.expired.lead": {
+    "en": "Newsletter links work once and stop working after a while. Subscribe again to get a fresh one.",
+    "tr": "Bülten bağlantıları bir kez çalışır ve bir süre sonra geçersiz olur. Yenisini almak için tekrar abone olun."
+  },
+  "status.expired.title": {
+    "en": "This link has expired.",
+    "tr": "Bu bağlantının süresi doldu."
+  },
+  "status.failed.lead": {
+    "en": "The server did not answer. Your link still works; try again in a moment.",
+    "tr": "Sunucu yanıt vermedi. Bağlantınız hâlâ geçerli; birazdan tekrar deneyin."
+  },
+  "status.failed.title": {
+    "en": "That did not go through.",
+    "tr": "Bu işlem gerçekleşmedi."
+  },
+  "status.latest.copy": {
+    "en": "The three most recent articles, newest first.",
+    "tr": "En son üç yazı, önce en yeni."
+  },
+  "status.latest.eyebrow": {"en": "latest", "tr": "en yeniler"},
+  "status.latest.title": {
+    "en": "While you wait for the next one",
+    "tr": "Bir sonrakini beklerken"
+  },
+  "status.mistake.after": {
+    "en": " puts you back with one click, no form needed.",
+    "tr": " ile tek tıkla geri dönersiniz, form gerekmez."
+  },
+  "status.mistake.before": {
+    "en": "Unsubscribed by mistake? ",
+    "tr": "Yanlışlıkla mı çıktınız? "
+  },
+  "status.noEmail.after": {"en": ".", "tr": "."},
+  "status.noEmail.before": {
+    "en": "No email after a few minutes? Check your spam folder, or ",
+    "tr": "Birkaç dakika sonra e-posta gelmedi mi? Spam klasörünüze bakın ya da "
+  },
+  "status.noEmail.link": {"en": "subscribe again", "tr": "tekrar abone olun"},
+  "status.subscribeAgain": {"en": "Subscribe again", "tr": "Tekrar abone ol"},
+  "status.thanks.accent": {"en": "subscribing.", "tr": "teşekkürler."},
+  "status.thanks.inbox": {"en": "your inbox", "tr": "gelen kutunuz"},
+  "status.thanks.lead": {
+    "en": "One last step: I sent a confirmation link to {email}. Click it and the next letter is on its way.",
+    "tr": "Son bir adım: {email} adresine bir onay bağlantısı gönderdim. Tıklayın, sonraki mektup yola çıksın."
+  },
+  "status.thanks.leadNamed": {
+    "en": "{name}, one last step: I sent a confirmation link to {email}. Click it and the next letter is on its way.",
+    "tr": "{name}, son bir adım: {email} adresine bir onay bağlantısı gönderdim. Tıklayın, sonraki mektup yola çıksın."
+  },
+  "status.thanks.mark": {"en": "Thank you", "tr": "Teşekkürler"},
+  "status.thanks.title": {"en": "Thanks for", "tr": "Abone olduğunuz için"},
+  "status.unsubscribed.lead": {
+    "en": "You will not get any more emails from swemre.com. Changed your mind? You can subscribe again any time.",
+    "tr": "swemre.com'dan artık e-posta almayacaksınız. Fikriniz mi değişti? İstediğiniz zaman tekrar abone olabilirsiniz."
+  },
+  "status.unsubscribed.title": {
+    "en": "You are unsubscribed.",
+    "tr": "Abonelikten çıktınız."
+  },
+  "status.unsubscribing": {
+    "en": "Unsubscribing…",
+    "tr": "Abonelikten çıkılıyor…"
+  },
+  "time.daysAgo": {
+    "en": {"one": "{count} day ago", "other": "{count} days ago"},
+    "tr": {"other": "{count} gün önce"}
+  },
+  "time.hoursAgo": {"en": "{count}h ago", "tr": "{count} sa önce"},
+  "time.justNow": {"en": "just now", "tr": "az önce"},
+  "time.minutesAgo": {"en": "{count}m ago", "tr": "{count} dk önce"},
+  "time.monthsAgo": {
+    "en": {"one": "{count} month ago", "other": "{count} months ago"},
+    "tr": {"other": "{count} ay önce"}
+  },
+  "time.weeksAgo": {
+    "en": {"one": "{count} week ago", "other": "{count} weeks ago"},
+    "tr": {"other": "{count} hafta önce"}
+  },
+  "time.yesterday": {"en": "yesterday", "tr": "dün"},
+  "toc.copyLink": {"en": "Copy link", "tr": "Bağlantıyı kopyala"},
+  "toc.label": {"en": "On this page", "tr": "Bu sayfada"},
+  "toc.left": {"en": "{count} min left", "tr": "{count} dk kaldı"},
+  "toc.progress": {"en": "Reading progress", "tr": "Okuma ilerlemesi"},
+  "toc.reading": {"en": "Reading", "tr": "Okuma"},
+  "toc.top": {"en": "Back to top", "tr": "Başa dön"},
+  "topic.countLine": {
+    "en": "{count} tagged {name}",
+    "tr": "{name} etiketli {count}"
+  },
+  "topic.crumb.articles": {"en": "articles", "tr": "yazılar"},
+  "topic.crumb.topic": {"en": "topic", "tr": "konu"},
+  "topic.follow": {
+    "en": "Follow {name} by RSS",
+    "tr": "{name} konusunu RSS ile takip et"
+  },
+  "topic.others.copy": {
+    "en": "Every topic I write about, with the number of articles in it.",
+    "tr": "Yazdığım her konu, içindeki yazı sayısıyla."
+  },
+  "topic.others.eyebrow": {"en": "browse", "tr": "göz at"},
+  "topic.others.title": {"en": "Other topics", "tr": "Diğer konular"},
+  "topic.projects.copy": {
+    "en": "Open source code that uses what these articles describe.",
+    "tr": "Bu yazıların anlattıklarını kullanan açık kaynak kod."
+  },
+  "topic.projects.title": {
+    "en": "Projects built with {name}",
+    "tr": "{name} ile yapılan projeler"
+  },
+  "unavailable.detail": {"en": "scheduled maintenance", "tr": "planlı bakım"},
+  "unavailable.lead": {
+    "en": "swemre.com is being updated. Everything will be back shortly; nothing you saved is lost.",
+    "tr": "swemre.com güncelleniyor. Her şey kısa sürede geri gelecek; kaydettiğiniz hiçbir şey kaybolmadı."
+  },
+  "unavailable.mark": {"en": "Maintenance", "tr": "Bakım"},
+  "unavailable.title": {
+    "en": "Back in a few minutes.",
+    "tr": "Birkaç dakikaya döneceğim."
+  },
+  "unavailable.window": {
+    "en": "started {from} · back by {until}",
+    "tr": "başlangıç {from} · dönüş {until}"
+  }
+}

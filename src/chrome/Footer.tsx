@@ -15,6 +15,7 @@
 import type {ReactNode} from 'react'
 import {Anchor, Icon, useViewport, type IconName} from '../design/index.tsx'
 import type {FooterData, SiteSettings} from '../contract/view.ts'
+import {t} from '../i18n/index.ts'
 
 function Socials({social}: {social: SiteSettings['social']}) {
   const items: [string, string | undefined, IconName][] = [
@@ -68,22 +69,24 @@ export function Footer({
   const vp = useViewport()
   const year = new Date().getFullYear()
   const columns = footer.columns.map(c =>
-    c.title === 'Site' && statusUrl && !c.links.some(l => l.label === 'Status')
+    c.title === t('footer.site') &&
+    statusUrl &&
+    !c.links.some(l => l.label === t('footer.status'))
       ? {
           ...c,
           links: [
             ...c.links,
-            {label: 'Status', href: statusUrl, external: true},
+            {label: t('footer.status'), href: statusUrl, external: true},
           ],
         }
       : c,
   )
   const logo = (
-    <Anchor className="a2-logo" href="/" aria-label="SWEMRE, home">
+    <Anchor className="a2-logo" href="/" aria-label={t('nav.logo.label')}>
       SWEMRE
     </Anchor>
   )
-  const brand = <span className="a2-micro">Software brand · © {year}</span>
+  const brand = <span className="a2-micro">{t('footer.brand', {year})}</span>
   const exit = <span className="a2-mono">emre@swemre:~$ exit 0</span>
   let body: ReactNode
   let bar: ReactNode

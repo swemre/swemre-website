@@ -18,9 +18,12 @@ import {Icon} from './Icon.tsx'
 import {CodeCover, GlyphCover, ImageCover} from './Cover.tsx'
 import {BadgeList, Tags} from './Text.tsx'
 import {articleHue, formatDate, glyphFor} from './util.ts'
+import {t} from '../../i18n/index.ts'
 
 function readTime(a: ArticleSummary): string | undefined {
-  return a.readingTime ? `${a.readingTime} min read` : undefined
+  return a.readingTime
+    ? t('article.minRead', {count: a.readingTime})
+    : undefined
 }
 
 export interface ArticleCardProps {

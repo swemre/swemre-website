@@ -25,6 +25,7 @@ import {
 } from '../../../design/index.tsx'
 import type {Hue} from '../../../contract/view.ts'
 import {useV} from './vp.ts'
+import {t} from '../../../i18n/index.ts'
 
 export function ListHeader({
   eyebrow,
@@ -70,7 +71,7 @@ export function ListHeader({
         />
         <div className="a2-c">
           {crumbs && (
-            <nav aria-label="Breadcrumb">
+            <nav aria-label={t('breadcrumb')}>
               <p className="a2-mono" style={{marginBottom: v(24, 24, 32)}}>
                 {crumbs.map((c, i) => (
                   <Fragment key={i}>

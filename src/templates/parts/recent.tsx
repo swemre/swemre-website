@@ -18,6 +18,7 @@ import {MiniCover} from './cover.tsx'
 import {fmtDate, minRead} from './format.ts'
 import {ArrowLink, SectionHead} from './heads.tsx'
 import {usePick} from './vp.ts'
+import {t} from '../../i18n/index.ts'
 
 export function RecentCards({items}: {items: ArticleSummary[]}) {
   const vp = useViewport()
@@ -68,10 +69,10 @@ export function RecentArticles({exclude}: {exclude?: string}) {
   return (
     <>
       <SectionHead
-        eyebrow="back to reading"
-        title="Recent articles"
+        eyebrow={t('recent.eyebrow')}
+        title={t('recent.title')}
         gap={16}
-        action={<ArrowLink to="/articles">All articles</ArrowLink>}
+        action={<ArrowLink to="/articles">{t('nav.allArticles')}</ArrowLink>}
       />
       <RecentCards items={items} />
     </>

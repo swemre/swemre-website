@@ -32,15 +32,17 @@ import {PageError, PageLoading} from '../parts/states.tsx'
 import {PageTocDisclosure, PageTocNav} from '../parts/toc.tsx'
 import {useHeroPad, usePick} from '../parts/vp.ts'
 import {NotFoundTemplate} from '../not-found/index.tsx'
+import {t} from '../../i18n/index.ts'
 
 export function SingleTemplate({route}: TemplateProps) {
   const slug = route.params.slug ?? ''
   const res = usePage(slug)
-  if (res.status === 'loading') return <PageLoading label="Loading the page" />
+  if (res.status === 'loading')
+    return <PageLoading label={t('state.loading.page')} />
   if (res.status === 'error')
     return (
       <PageError
-        what="The page"
+        what={t('state.what.page')}
         command={`GET /api/public/v2/channels/swemre-website/publications/${slug}`}
         onRetry={res.retry}
       />
@@ -91,24 +93,24 @@ function PrintButtons({pdfUrl, long}: {pdfUrl?: string; long?: boolean}) {
     >
       <Button
         kind="secondary"
-        label="Print"
+        label={t('single.print')}
         iconLeft="file-text"
         onClick={printPage}
       />
       {pdfUrl ? (
         <Button
           kind="secondary"
-          label={long ? 'Download PDF' : 'PDF'}
+          label={long ? t('single.downloadPdf') : 'PDF'}
           iconLeft="download"
           href={pdfUrl}
         />
       ) : (
         <Button
           kind="secondary"
-          label={long ? 'Download PDF' : 'PDF'}
+          label={long ? t('single.downloadPdf') : 'PDF'}
           iconLeft="download"
           onClick={printPage}
-          title="Save as PDF from the print dialog"
+          title={t('single.savePdf')}
         />
       )}
     </div>
@@ -135,20 +137,22 @@ function SingleView({page}: {page: Page}) {
 
   const metaLine: ReactNode[] = [
     <Fragment key="u">
-      updated&nbsp;<span className="a2-hi">{fmtLongDate(page.updatedAt)}</span>
+      {t('single.updated')}&nbsp;
+      <span className="a2-hi">{fmtLongDate(page.updatedAt)}</span>
     </Fragment>,
     <Fragment key="r">{minRead(minutes)}</Fragment>,
   ]
   if (page.policyVersion)
     metaLine.push(
       <Fragment key="v">
-        version&nbsp;<span className="a2-hi">{page.policyVersion}</span>
+        {t('single.version')}&nbsp;
+        <span className="a2-hi">{page.policyVersion}</span>
       </Fragment>,
     )
   if (page.changelogUrl)
     metaLine.push(
       <a key="c" className="a2-ilink" href={page.changelogUrl}>
-        changelog
+        {t('single.changelog')}
       </a>,
     )
   const meta = (
@@ -192,7 +196,7 @@ function SingleView({page}: {page: Page}) {
         >
           <span className="a2-mono">
             {[
-              'end of document',
+              t('single.end'),
               page.policyVersion && `v${page.policyVersion}`,
               fmtLongDate(date),
             ]
@@ -265,7 +269,7 @@ function SingleView({page}: {page: Page}) {
             {strip && (
               <div style={{marginTop: big ? 48 : 32}}>
                 <FactStrip
-                  title={strip.props.title ?? 'At a glance'}
+                  title={strip.props.title ?? t('single.glance')}
                   facts={strip.props.facts}
                 />
               </div>

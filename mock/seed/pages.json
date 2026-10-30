@@ -10,6 +10,17 @@
     "fields": {
       "eyebrow": "main",
       "lead": "Spent years building enterprise software. Now I use AI and consider buying a Patagonia vest. I like thinking and solving problems."
+    },
+    "translations": {
+      "tr": {
+        "title": "Yazılım Mühendisi Emre",
+        "excerpt": "Java yazan bir yazılım mühendisinden notlar ve projeler, BTW.",
+        "seoTitle": "SWEMRE · Yazılım mühendisi Emre",
+        "fields": {
+          "eyebrow": "ana",
+          "lead": "Yıllarca kurumsal yazılım geliştirdim. Şimdi yapay zekâ kullanıyor ve bir Patagonia yeleği almayı düşünüyorum. Düşünmeyi ve problem çözmeyi seviyorum."
+        }
+      }
     }
   },
   {
@@ -22,6 +33,16 @@
     "fields": {
       "eyebrow": "// writing",
       "lead": "Notes on building for the web: Java services, React front ends and the architecture behind my projects."
+    },
+    "translations": {
+      "tr": {
+        "title": "Yazılar",
+        "excerpt": "Web için geliştirme üzerine notlar: Java servisleri, React ön yüzleri ve projelerimin arkasındaki mimari.",
+        "fields": {
+          "eyebrow": "// yazılar",
+          "lead": "Web için geliştirme üzerine notlar: Java servisleri, React ön yüzleri ve projelerimin arkasındaki mimari."
+        }
+      }
     }
   },
   {
@@ -33,6 +54,15 @@
     "publishedAt": "2026-01-01T08:00:00Z",
     "fields": {
       "eyebrow": "// topic"
+    },
+    "translations": {
+      "tr": {
+        "title": "Konu",
+        "excerpt": "Bir konudaki tüm yazılar, önce en yeni.",
+        "fields": {
+          "eyebrow": "// konu"
+        }
+      }
     }
   },
   {
@@ -45,6 +75,16 @@
     "fields": {
       "eyebrow": "// building",
       "lead": "Things I have built and am building, with the code behind them."
+    },
+    "translations": {
+      "tr": {
+        "title": "Projeler",
+        "excerpt": "Yaptığım ve yapmakta olduğum şeyler, arkalarındaki kodla birlikte.",
+        "fields": {
+          "eyebrow": "// yapım",
+          "lead": "Yaptığım ve yapmakta olduğum şeyler, arkalarındaki kodla birlikte."
+        }
+      }
     }
   },
   {
@@ -56,6 +96,15 @@
     "publishedAt": "2026-01-01T08:00:00Z",
     "fields": {
       "eyebrow": "// search"
+    },
+    "translations": {
+      "tr": {
+        "title": "Arama",
+        "excerpt": "Tüm yazılarda ve projelerde arayın.",
+        "fields": {
+          "eyebrow": "// arama"
+        }
+      }
     }
   },
   {
@@ -69,6 +118,17 @@
       "eyebrow": "// newsletter",
       "lead": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
       "formKey": "newsletter"
+    },
+    "translations": {
+      "tr": {
+        "title": "İletişimde kalalım.",
+        "excerpt": "Java, React, mimari ve yapay zekâ üzerine pratik notlar, artı bu hafta ne bozduysam. İş yerinden bir arkadaşa yazar gibi yazılmış.",
+        "seoTitle": "Bülten",
+        "fields": {
+          "eyebrow": "// bülten",
+          "lead": "Java, React, mimari ve yapay zekâ üzerine pratik notlar, artı bu hafta ne bozduysam. İş yerinden bir arkadaşa yazar gibi yazılmış."
+        }
+      }
     }
   },
   {
@@ -82,6 +142,16 @@
       "eyebrow": "// now playing · 1987 · Never Gonna Give You Up · Rick Astley",
       "lead": "A project, a question or a bug you can’t shake. I read every message myself and reply within two working days.",
       "formKey": "contact"
+    },
+    "translations": {
+      "tr": {
+        "title": "Seni asla yarı yolda bırakmam.",
+        "excerpt": "Bir proje, bir soru ya da kurtulamadığınız bir hata. Her mesajı kendim okurum ve iki iş günü içinde yanıtlarım.",
+        "seoTitle": "İletişim",
+        "fields": {
+          "lead": "Bir proje, bir soru ya da kurtulamadığınız bir hata. Her mesajı kendim okurum ve iki iş günü içinde yanıtlarım."
+        }
+      }
     }
   },
   {
@@ -95,6 +165,17 @@
       "eyebrow": "// call back · Mon to Fri, 09:00 to 18:00 CET",
       "lead": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
       "formKey": "callback-request"
+    },
+    "translations": {
+      "tr": {
+        "title": "Sizi geri arayayım.",
+        "excerpt": "Bir numara ya da e-posta ve size uyan saatleri bırakın. Genellikle iki iş günü içinde kendim geri ararım.",
+        "seoTitle": "Geri arama",
+        "fields": {
+          "eyebrow": "// geri arama · Pzt–Cum, 09:00–18:00 CET",
+          "lead": "Bir numara ya da e-posta ve size uyan saatleri bırakın. Genellikle iki iş günü içinde kendim geri ararım."
+        }
+      }
     }
   },
   {
@@ -109,6 +190,16 @@
       "eyebrow": "// newsletter · confirmed",
       "lead": "Thanks, {firstName}. Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
       "formKey": "newsletter-confirm"
+    },
+    "translations": {
+      "tr": {
+        "title": "Abone oldunuz.",
+        "excerpt": "Adresiniz onaylandı. Sonraki mektup yeni bir yazı hazır olunca gider ve her birinde tek tıkla abonelikten çıkma bağlantısı vardır.",
+        "fields": {
+          "eyebrow": "// bülten · onaylandı",
+          "lead": "Teşekkürler, {firstName}. Adresiniz onaylandı. Sonraki mektup yeni bir yazı hazır olunca gider ve her birinde tek tıkla abonelikten çıkma bağlantısı vardır."
+        }
+      }
     }
   },
   {
@@ -123,6 +214,16 @@
       "eyebrow": "// newsletter · unsubscribed",
       "lead": "You will not get any more emails from swemre.com. Changed your mind? You can subscribe again any time.",
       "formKey": "newsletter-unsubscribe"
+    },
+    "translations": {
+      "tr": {
+        "title": "Abonelikten çıktınız.",
+        "excerpt": "swemre.com'dan artık e-posta almayacaksınız.",
+        "fields": {
+          "eyebrow": "// bülten · abonelikten çıkıldı",
+          "lead": "swemre.com'dan artık e-posta almayacaksınız. Fikriniz mi değişti? İstediğiniz zaman tekrar abone olabilirsiniz."
+        }
+      }
     }
   },
   {

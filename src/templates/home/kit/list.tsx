@@ -17,6 +17,7 @@ import type {Hue} from '../../../contract/view.ts'
 import {SectionBg} from './SectionBg.tsx'
 import {Button, Icon, TextLink, type IconName} from './ui.ts'
 import {useCompact, useV} from './vp.ts'
+import {t} from '../../../i18n/index.ts'
 
 /**
  * The section under a page header that holds the list. ready: glow at 84% 20% with dots; states
@@ -176,7 +177,10 @@ export function SortButton<T extends string>({
     <button
       type="button"
       className="a2-mono"
-      aria-label={`Sort: ${options[i].label}. Change to ${next.label}`}
+      aria-label={t('list.sortAria', {
+        current: options[i].label,
+        next: next.label,
+      })}
       onClick={() => onChange(next.value)}
       style={{
         display: 'inline-flex',
@@ -245,14 +249,14 @@ export function MoreBar({
         >
           {more > 0 && (
             <Button
-              label={`Load ${more} more`}
+              label={t('list.loadMore', {count: more})}
               kind="secondary"
               iconLeft="refresh"
               block={m}
               onClick={onMore}
             />
           )}
-          {rss && <TextLink label="RSS feed" href={rss} arrow="rss" />}
+          {rss && <TextLink label={t('footer.rss')} href={rss} arrow="rss" />}
         </div>
       </div>
     </>

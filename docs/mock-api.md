@@ -47,6 +47,7 @@ Lists publication summaries, newest first. A summary is a publication without it
 | `term`         | a term slug (category or tag)                                   |
 | `page`         | zero-based page number, default `0`                             |
 | `size`         | page size from `1` to `100`, default `20`                       |
+| `locale`       | `en` or `tr`, default `en`; only publications in that language  |
 
 ```http
 GET /api/public/v2/channels/swemre-website/publications?content-type=article&size=1
@@ -105,6 +106,8 @@ A `page` below `0`, or a `size` outside `1` to `100`, gets `400 VALIDATION_FAILE
 Returns one publication with its `body`, which holds `{blocks: [{id, type, v, props}]}`.
 
 - An unknown slug gets `404 NOT_FOUND`.
+- `?locale=` picks the language, default `en`. A slug with no version in that language gets
+  `404 NOT_FOUND`, and the site then asks for `en`.
 - An old slug in the redirect list gets `301`, with `Location` set to the new slug's URL.
 
 ```http
@@ -343,3 +346,19 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 
 The articles `typed-api-clients` and `ai-pair-programming`, and the copy of the `tokenset`
 project, are made up to fill the lists. No board shows them in full.
+
+### Languages
+
+The site's texts (labels, buttons, messages) live in `src/i18n/texts.json`, one key per text
+with an `en` and a `tr` value. `npm run i18n:check` checks that every key has English, that the
+`{placeholders}` match and that every key is used.
+
+Seed content is English. An item in a seed file can carry `translations: {"tr": {...}}`, with the
+fields that differ in Turkish. The mock then serves a second publication for it with
+`locale: "tr"`, the same `workId` and `documentId`, and an id ending in `:tr`; both versions list
+each other in `languageVersions`.
+
+Only the pages (except `privacy-policy`) and the site settings have Turkish versions. Everything
+else falls back to English: lists merge both languages by `workId`, preferring Turkish, and a
+single page asks for `en` after a `404`. A page shown in English on `/tr` gets a note saying so.
+Those `404`s show in the browser console; they are expected.
