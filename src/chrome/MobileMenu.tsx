@@ -25,8 +25,8 @@ import {Anchor, Icon, useTheme, useViewport} from '../design/index.tsx'
 import {useArticles, useNav, useProjects} from '../data/hooks.ts'
 import {sectionOf, useChrome, type Section} from './context.ts'
 import {useFocusTrap, useScrollLock} from './hooks.ts'
-import {useOtherLocaleHref} from './language.ts'
-import {LANGUAGE_NAMES, locale, t} from '../i18n/index.ts'
+import {LanguageSwitch} from './LanguageSwitch.tsx'
+import {locale, t} from '../i18n/index.ts'
 
 type Branch = 'articles' | 'projects' | 'none'
 interface Row {
@@ -127,7 +127,6 @@ export function MobileMenu() {
   const articles = useArticles()
   const projects = useProjects()
   const navigate = useNavigate()
-  const otherHref = useOtherLocaleHref()
   const current = sectionOf(useLocation().pathname)
   const [open, setOpen] = useState<Branch>(
     current === 'projects' ? 'projects' : 'articles',
@@ -455,12 +454,11 @@ export function MobileMenu() {
           <div
             style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8}}
           >
-            <a
-              href={otherHref}
-              style={tile}
-              aria-label={t('menu.language.label', {
-                current: LANGUAGE_NAMES[locale],
-              })}
+            <LanguageSwitch
+              style={{...tile, width: '100%'}}
+              align="left"
+              up
+              block
             >
               <Icon name="globe" />
               {t('menu.language')}
@@ -469,7 +467,7 @@ export function MobileMenu() {
               >
                 {locale.toUpperCase()}
               </span>
-            </a>
+            </LanguageSwitch>
             <button
               type="button"
               style={tile}

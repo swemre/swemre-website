@@ -619,9 +619,9 @@
   },
   "language.name.en": {"en": "English", "tr": "İngilizce"},
   "language.name.tr": {"en": "Turkish", "tr": "Türkçe"},
-  "language.switch.label": {
-    "en": "Language: {current}. Switch to {target}",
-    "tr": "Dil: {current}. {target} diline geç"
+  "language.menu.label": {
+    "en": "Language: {current}. Choose a language",
+    "tr": "Dil: {current}. Bir dil seçin"
   },
   "list.and": {"en": " and ", "tr": " ve "},
   "list.loadMore": {"en": "Load {count} more", "tr": "{count} tane daha yükle"},
@@ -647,10 +647,6 @@
   "menu.callBack": {"en": "Request a call back", "tr": "Geri arama iste"},
   "menu.label": {"en": "Menu", "tr": "Menü"},
   "menu.language": {"en": "Language", "tr": "Dil"},
-  "menu.language.label": {
-    "en": "Language: {current}. Switch language",
-    "tr": "Dil: {current}. Dili değiştir"
-  },
   "menu.search.label": {
     "en": "Search or go to a page",
     "tr": "Ara ya da bir sayfaya git"

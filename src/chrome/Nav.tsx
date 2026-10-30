@@ -229,7 +229,11 @@ export function Nav({
                 <Icon name="mail" size={14} />
                 {t('nav.subscribe')}
               </Anchor>
-              <LanguageSwitch className="a2-nctl" onMouseEnter={close} />
+              <LanguageSwitch
+                className="a2-nctl"
+                style={{padding: '0 8px 0 12px'}}
+                onMouseEnter={close}
+              />
               <button
                 className="a2-nctl is-icon"
                 type="button"

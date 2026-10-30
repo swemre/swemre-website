@@ -9,15 +9,11 @@
  * Contact: emre@swemre.com
  */
 
-// The other language and the current page's address in it, for the language switches.
+// The current page's address in each language, for the language menus.
 import {useLocation} from 'react-router-dom'
-import {LOCALES, basename, locale, localeHref} from '../i18n/index.ts'
+import {basename, localeHref, type Locale} from '../i18n/index.ts'
 
-/** The other language, for a two-language site. */
-export const otherLocale = LOCALES.find(l => l !== locale) ?? locale
-
-/** The current page's address in the other language. */
-export function useOtherLocaleHref(): string {
+export function useLocaleHref(): (target: Locale) => string {
   const {pathname, search, hash} = useLocation()
-  return localeHref(otherLocale, basename + pathname, search) + hash
+  return target => localeHref(target, basename + pathname, search) + hash
 }

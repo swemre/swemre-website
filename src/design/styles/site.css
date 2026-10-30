@@ -690,3 +690,59 @@ html.a2-locked body {
     transition: none;
   }
 }
+/* Language menu (nav and mobile menu): the dropdown's listbox look on a list of links. */
+.a2-langmenu {
+  position: relative;
+  display: inline-flex;
+}
+.a2-langmenu.is-block {
+  display: flex;
+}
+.a2-langmenu .a2-chev {
+  display: grid;
+  color: var(--a2-text-lo);
+  transition: transform 0.16s ease;
+}
+.a2-langmenu.is-open .a2-chev {
+  transform: rotate(180deg);
+}
+.a2-langmenu .a2-select-pop {
+  min-width: 200px;
+  left: auto;
+  right: 0;
+}
+.a2-langmenu .a2-select-pop.is-left {
+  left: 0;
+  right: auto;
+}
+.a2-langmenu .a2-select-pop.is-up {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+.a2-langmenu .a2-select-opt {
+  justify-content: flex-start;
+}
+.a2-langmenu .a2-select-opt:hover,
+.a2-langmenu .a2-select-opt:focus-visible {
+  background: var(--a2-opt-hover);
+  color: var(--a2-text-hi);
+  outline: none;
+}
+.a2-langmenu .a2-select-opt.is-current {
+  color: var(--a2-text-hi);
+  font-weight: 500;
+}
+.a2-langmenu .a2-select-opt svg {
+  margin-left: auto;
+  color: var(--a2-link);
+}
+.a2-langcode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--a2-text-lo);
+}
+@media (prefers-reduced-motion: reduce) {
+  .a2-langmenu .a2-chev {
+    transition: none;
+  }
+}

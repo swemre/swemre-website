@@ -87,13 +87,16 @@ export function t(key: TextKey, params?: TextParams): string {
   return fill(pick(value, count), params)
 }
 
-/** The same page in another language: swaps the /tr prefix on the current path. */
+/** The same page in another language: swaps the language prefix on the current path. */
 export function localeHref(
   target: Locale,
   pathname: string,
   search = '',
 ): string {
-  const bare = pathname.replace(/^\/(en|tr)(?=\/|$)/, '') || '/'
+  const first = pathname.split('/')[1]
+  const bare = (LOCALES as readonly string[]).includes(first)
+    ? pathname.slice(first.length + 1) || '/'
+    : pathname
   const prefixed =
     target === DEFAULT_LOCALE ? bare : `/${target}${bare === '/' ? '' : bare}`
   return prefixed + search
