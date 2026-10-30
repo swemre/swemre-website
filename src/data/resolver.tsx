@@ -8,26 +8,155 @@
  *
  * Contact: emre@swemre.com
  */
-
-// URL -> ResolvedRoute -> template, inside the site shell. Owner: agent C. Day-0 stub.
-import {useLocation} from 'react-router-dom'
+// URL -> ResolvedRoute -> template, inside the site shell. Owner: agent C.
+//   /                       -> publication "home"
+//   /articles/topic/:term   -> publication "topic" (template topic, params.term)
+//   /:a                     -> publication :a
+//   /:a/:b                  -> publication :b, then its canonical path must equal the URL
+//   deeper, or unknown      -> not-found (notFoundKind from the first segment)
+//   /sp/:slug               -> redirect to /policies/:slug; API 301s (e.g. /about) are followed
+//                              by fetch and end on the canonical path of the target
+//   API 503 / unreachable   -> unavailable (logo bar, no footer); other API 5xx -> error (requestId)
+import {
+  Component,
+  createElement,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
+import {Navigate, useLocation, useNavigationType} from 'react-router-dom'
 import {SiteShell} from '../chrome/index.tsx'
 import type {ResolvedRoute} from '../contract/templates.ts'
-import {templates} from '../templates/index.ts'
+import {ErrorTemplate} from '../templates/error/index.tsx'
+import {loadTemplate, loadedTemplate} from './templates.ts'
+import {
+  FULL,
+  failure,
+  requestId,
+  resolvePath,
+  type Resolution,
+} from './resolve.ts'
+
+function setHead(route: ResolvedRoute) {
+  const pub = route.publication
+  const title = pub
+    ? (pub.seoTitle ?? pub.title)
+    : route.template === 'not-found'
+      ? 'Not found'
+      : ''
+  document.title = !title
+    ? 'SWEMRE'
+    : title.includes('SWEMRE')
+      ? title
+      : `${title} · SWEMRE`
+  const desc = pub?.seoDescription ?? pub?.excerpt
+  const meta = document.querySelector('meta[name="description"]')
+  if (meta && desc) meta.setAttribute('content', desc)
+}
 
 export function RouteResolver() {
   const location = useLocation()
-  const route: ResolvedRoute = {
-    template: location.pathname === '/' ? 'home' : 'not-found',
-    path: location.pathname,
-    params: Object.fromEntries(new URLSearchParams(location.search)),
-    notFoundKind: 'page',
-    chrome: {nav: true, footer: true},
+  const navType = useNavigationType()
+  const [resolved, setResolved] = useState<{path: string; result: Resolution}>()
+
+  useEffect(() => {
+    let alive = true
+    resolvePath(location.pathname)
+      .then(async result => {
+        // The template's chunk loads before the route shows (the old page stays meanwhile).
+        if ('route' in result) await loadTemplate(result.route.template)
+        return result
+      })
+      .then(
+        result => alive && setResolved({path: location.pathname, result}),
+        (e: unknown) =>
+          alive &&
+          setResolved({
+            path: location.pathname,
+            result: failure(location.pathname, e),
+          }),
+      )
+    return () => {
+      alive = false
+    }
+  }, [location.pathname])
+
+  const current =
+    resolved?.path === location.pathname ? resolved.result : undefined
+  // Back and forward keep their position: SiteShell restores it, so only new pages go to the top.
+  useEffect(() => {
+    if (current && 'route' in current && !location.hash && navType !== 'POP')
+      window.scrollTo(0, 0)
+  }, [current, location.hash, navType])
+
+  if (current && 'redirect' in current) {
+    return (
+      <Navigate
+        replace
+        to={{
+          pathname: current.redirect,
+          search: location.search,
+          hash: location.hash,
+        }}
+      />
+    )
   }
-  const Template = templates[route.template]
+  // While a new path resolves, the previous page stays on screen (no blank flash).
+  const shown =
+    current ??
+    (resolved && 'route' in resolved.result ? resolved.result : undefined)
+  if (!shown || !('route' in shown))
+    return <SiteShell chrome={FULL}>{null}</SiteShell>
+
+  const route: ResolvedRoute = {
+    ...shown.route,
+    params: {
+      ...Object.fromEntries(new URLSearchParams(location.search)),
+      ...shown.params,
+    },
+  }
+  return <RouteView route={route} />
+}
+
+function RouteView({route}: {route: ResolvedRoute}) {
+  useEffect(() => setHead(route), [route.path, route.publication]) // eslint-disable-line react-hooks/exhaustive-deps
+  // A table lookup, not a component made in render: the loader caches one component per key.
+  const template = loadedTemplate(route.template) ?? ErrorTemplate
   return (
     <SiteShell chrome={route.chrome}>
-      <Template route={route} />
+      <ErrorBoundary key={route.path} path={route.path}>
+        {createElement(template, {route})}
+      </ErrorBoundary>
     </SiteShell>
   )
+}
+
+/** A render crash shows the 500 board in place of the page; the shell stays. */
+export class ErrorBoundary extends Component<
+  {path: string; children: ReactNode},
+  {requestId?: string}
+> {
+  state: {requestId?: string} = {}
+
+  static getDerivedStateFromError() {
+    return {requestId: requestId()}
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error('[swemre] render error', error)
+  }
+
+  render() {
+    if (!this.state.requestId) return this.props.children
+    return (
+      <ErrorTemplate
+        route={{
+          template: 'error',
+          path: this.props.path,
+          params: {requestId: this.state.requestId},
+          chrome: FULL,
+        }}
+      />
+    )
+  }
 }

@@ -48,8 +48,15 @@ export interface ResolvedRoute {
   /** slug, term, token, requestId and every query parameter (q, view, topic, stack, ...). */
   params: Record<string, string>
   notFoundKind?: NotFoundKind
-  /** nav and footer are hidden on the 503 page only. */
-  chrome: {nav: boolean; footer: boolean}
+  /** The 503 page shows the logo bar (logo and notice badge, no links or search) and no footer. */
+  chrome: {
+    nav: boolean
+    footer: boolean
+    /** 'logo': the 503 bar. Default 'full'. */
+    bar?: 'full' | 'logo'
+    /** The badge text of the logo bar; SiteShell defaults to "Maintenance in progress". */
+    notice?: string
+  }
 }
 
 export interface TemplateProps {

@@ -19,7 +19,18 @@ export default defineConfig(({mode}) => {
   const env = {...loadEnv(mode, process.cwd()), ...process.env}
   const mock = (env.VITE_API_MODE ?? 'mock') === 'mock'
   return {
-    plugins: [react(), ...(mock ? [mockApi()] : [])],
+    plugins: [
+      react(),
+      ...(mock
+        ? [
+            mockApi({
+              apiBase: env.VITE_API_BASE,
+              channel: env.VITE_CHANNEL_KEY,
+              readKey: env.VITE_READ_KEY,
+            }),
+          ]
+        : []),
+    ],
     server: {port: 5173},
     preview: {port: 4173},
   }

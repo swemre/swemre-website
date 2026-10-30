@@ -39,7 +39,11 @@ export type Block =
   | BlockBase<'quote', {text: RichText; cite?: string}>
   | BlockBase<
       'callout',
-      {tone: 'info' | 'tip' | 'warning' | 'danger'; title?: string; text: RichText}
+      {
+        tone: 'info' | 'tip' | 'warning' | 'danger'
+        title?: string
+        text: RichText
+      }
     >
   | BlockBase<
       'code',
@@ -55,10 +59,24 @@ export type Block =
     >
   | BlockBase<
       'image',
-      {url: string; darkUrl?: string; alt: string; caption?: string; card?: boolean}
+      {
+        url: string
+        darkUrl?: string
+        alt: string
+        caption?: string
+        card?: boolean
+      }
     >
   | BlockBase<'divider', Record<string, never>>
-  | BlockBase<'table', {header: boolean; rows: string[][]}>
+  | BlockBase<
+      'table',
+      {
+        header: boolean
+        rows: string[][]
+        /** Shortened key / value rows for the mobile rendering, one per body row. */
+        compact?: [string, string][]
+      }
+    >
   | BlockBase<
       'section',
       {number: string; eyebrow: string; title: string; hue?: Hue; copy?: string}
@@ -68,7 +86,13 @@ export type Block =
       {
         layout: 'list' | 'strip' | 'rows'
         title?: string
-        facts: {label: string; value: string; href?: string; code?: boolean; note?: string}[]
+        facts: {
+          label: string
+          value: string
+          href?: string
+          code?: boolean
+          note?: string
+        }[]
       }
     >
   | BlockBase<
@@ -82,7 +106,13 @@ export type Block =
   | BlockBase<
       'timeline',
       {
-        items: {version: string; date: string; title: string; note?: string; current?: boolean}[]
+        items: {
+          version: string
+          date: string
+          title: string
+          note?: string
+          current?: boolean
+        }[]
       }
     >
   | BlockBase<'faq', {title?: string; items: {q: string; a: string}[]}>

@@ -1,48 +1,75 @@
 # swemre-website
 
-The personal website at [swemre.com](https://swemre.com): articles, projects, songs, a chat
-widget and a resume request form. Built with React 19, TypeScript, Vite and Tailwind CSS.
+The personal website at [swemre.com](https://swemre.com): articles, projects, the liked songs, a
+newsletter, and the contact, resume and call back forms. Built with React 19, TypeScript,
+Vite 8 and React Router 7, with plain CSS from the V4 design system (`src/design`).
 
-All content comes from one workspace of `swemre-website-api` and is written in `swemre-press`; the
-site bundles none. Each page reads one content type and its fields:
-
-| Content type | Shown at                   | Fields the site reads                                |
-| ------------ | -------------------------- | ---------------------------------------------------- |
-| `article`    | `/articles/<slug>`         | `summary`, `cover`, `readingTime`, `body`            |
-| `project`    | `/projects/<slug>`         | `summary`, `year`, `url`, `repoUrl`, `cover`, `body` |
-| `song`       | the music player           | `artist`, `spotifyUrl`, `artwork`                    |
-| `page`       | `/sp/<slug>` (legal pages) | `summary`, `version`, `effectiveDate`, `body`        |
-
-`body` is a rich text field, rendered by `swemre-blocks`, the same view the CMS uses for its
-preview. A content type the site does not know yet (a short, a carousel...) needs a page or
-component here before it shows up.
+The site bundles no content. Everything comes from one website channel of **SWEPress public
+API v2**, read with a read key. A page's section (category) and its reserved `layout-*` tag pick
+its template. `docs/mock-api.md` describes every endpoint, error and fault, and the content model.
 
 ## Run locally
 
-Start the API first (see its README), then:
-
 ```bash
 npm install
-npm run dev
+cp .env.example .env.local   # optional: the defaults run the mock
+npm run dev                  # http://localhost:5173
 ```
 
-The site runs on http://localhost:5173. It reads the workspace `swemre-website` from
-`http://localhost:8080/api`. `.env.example` lists every setting: API base, workspace,
-site URL, language, read timeout and, once the channel API exists, the channel and its read key.
-Each website of a workspace is its own build with its own values. `swemre-blocks` must sit next to
-this folder; Vite and TypeScript resolve it by path.
+### Mock or live
 
-## Content
+| `VITE_API_MODE`  | Where the data comes from                                                                                                                               |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mock` (default) | The Vite plugin in `mock/` answers `/api/public/v2/...` from `mock/seed/*.json`. It works in `npm run dev` and `npm run preview`; no backend is needed. |
+| `live`           | The site calls `VITE_API_BASE` with `VITE_CHANNEL_KEY` and `VITE_READ_KEY`, for example the local SWEPress API at `http://localhost:8080/api`.          |
 
-- `npm run rss` writes `public/rss.xml` from the published posts. It runs before `dev` and `build`
-  and keeps the existing file when the API cannot be reached.
+`.env.example` lists every setting:
 
-## Checks
+- the API mode and base
+- the channel and its read key
+- the site URL and locale
+- the read timeout
+
+### Dev switches (dev server, or any mock build)
+
+- `?state=articles:loading,songs:error` forces data hooks into the loading, empty or error state.
+- `?fault=503` makes the mock fail every call with that status. It also takes `timeout`, `slow`,
+  or a single resource such as `?fault=songs:500`.
+- `?seed=0` shows the boards' songs in board order.
+- In any form, an email starting with `fail@` gets `504`, and one starting with `slow@` is
+  answered after 3 s.
+
+## Layout
+
+| Path             | What                                                                  |
+| ---------------- | --------------------------------------------------------------------- |
+| `src/contract/`  | Wire types of API v2, view models, blocks, forms and the template map |
+| `src/data/`      | API client, cache and hooks, adapters, template rules, route resolver |
+| `src/design/`    | Design tokens, components, site shell                                 |
+| `src/templates/` | One template per page kind                                            |
+| `src/forms/`     | The form template: newsletter, contact, resume and call back          |
+| `mock/`          | The mock API plugin, seed content and media                           |
+| `docs/`          | `mock-api.md`                                                         |
+
+## Scripts
 
 ```bash
+npm run dev          # dev server with the mock API
+npm run build        # type check (tsc -b) and production build into dist/
+npm run preview      # serve dist/ (the mock API too, when VITE_API_MODE=mock)
+npm run typecheck    # tsc -b
+npm run lint         # eslint .
 npm run checkstyle   # ESLint, Prettier and license headers
-npm run build        # type check and production build into dist/
+npm run v4:shoot -- --base http://localhost:5173 --boards ../v4-ref/boards   # site shots per board state
+npm run v4:boards -- --boards ../v4-ref/boards   # board frames + v4-shots/report.html
 ```
+
+`v4:shoot` starts nothing, so run `npm run dev` first. Both commands take `--vp m,t,d,4k`,
+`--theme dark,light`, `--only Home,Contact` and `--out` (default `v4-shots/`). Playwright comes
+from the project or from the global `node_modules`.
+
+Every source file starts with the license header from `src/main.tsx`
+(`node scripts/license-headers.mjs --fix` adds it).
 
 ## Deploy
 

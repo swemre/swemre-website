@@ -1,0 +1,95 @@
+/*
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+/* Site chrome on the real page: the nav, mega menus, palette and search overlay are fixed to the
+   window (the boards draw them absolute inside a frame). Owner: agent A. */
+.a2-root > .a2-nav,
+.a2-chrome .a2-nav,
+.a2-chrome .p2-mega,
+.a2-chrome .p2-mscrim,
+.a2-chrome .a2-scrim,
+.a2-chrome .a2-palette {
+  position: fixed;
+}
+.a2-chrome .p2-mega {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+.a2-chrome .a2-palette {
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.a2-chrome .a2-scrim .a2-dialog {
+  max-height: calc(100vh - 128px);
+  display: flex;
+  flex-direction: column;
+}
+.a2-qs-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+.a2-navlink,
+.a2-nctl {
+  cursor: pointer;
+}
+.a2-nctl:hover {
+  color: var(--a2-text-white);
+}
+.a2-nctl.is-white:hover {
+  color: var(--a2-chip-ink-text);
+}
+.a2-soc {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--a2-line-2);
+  color: var(--a2-text-mid);
+}
+.a2-soc:hover {
+  color: var(--a2-text-hi);
+  border-color: var(--a2-line-3);
+}
+.a2-cmp .a2-soc {
+  width: 44px;
+  height: 44px;
+}
+.a2-tree a:hover {
+  background: var(--a2-tree-bg);
+}
+.a2-pal-in {
+  min-width: 1ch;
+  field-sizing: content;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--a2-text);
+  caret-color: transparent;
+}
+.a2-pal-in::placeholder {
+  color: var(--a2-text-path);
+  opacity: 1;
+}
+.p2-qitem {
+  color: inherit;
+}
+.p2-qitem:hover {
+  background: var(--a2-tint-soft);
+}
+@media print {
+  .a2-chrome {
+    display: none !important;
+  }
+}

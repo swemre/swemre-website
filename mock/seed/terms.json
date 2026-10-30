@@ -1,0 +1,41 @@
+{
+  "categories": [
+    {"slug": "articles", "name": "Articles", "description": "The articles area: /articles and the topic pages."},
+    {"slug": "projects", "name": "Projects", "description": "The projects area: /projects."},
+    {"slug": "policies", "name": "Policies", "description": "Legal and policy documents under /policies."},
+    {"slug": "newsletter", "name": "Newsletter", "description": "Newsletter status pages under /newsletter."},
+    {"slug": "backend", "name": "backend", "description": "Article category: services, APIs and databases."},
+    {"slug": "frontend", "name": "frontend", "description": "Article category: React, CSS and the browser."},
+    {"slug": "architecture", "name": "architecture", "description": "Article category: how the parts fit together."},
+    {"slug": "devops", "name": "devops", "description": "Article category: hosting, builds and deployments."},
+    {"slug": "workflow", "name": "workflow", "description": "Article category: tools and habits."}
+  ],
+  "tags": [
+    {"slug": "java", "name": "Java", "description": "Services on Java 25 and Spring Boot 4: how I structure them, test them and keep them small enough to change."},
+    {"slug": "architecture", "name": "Architecture", "description": "Module boundaries, contracts and events: the decisions that decide how hard the next change will be."},
+    {"slug": "react", "name": "React", "description": "React front ends from someone who mostly writes Java: components, data and the parts that surprised me."},
+    {"slug": "backend", "name": "Backend", "description": "The server side of my projects: APIs, databases, threads and the build that checks them."},
+    {"slug": "typescript", "name": "TypeScript", "description": "Strict TypeScript on the front end and in shared packages, with types that come from the API."},
+    {"slug": "spring-boot", "name": "Spring Boot", "description": "Spring Boot 4 services: starters, configuration and the defaults I keep."},
+    {"slug": "css", "name": "CSS", "description": "Plain CSS with custom properties: themes, tokens and layouts without a framework."},
+    {"slug": "design-systems", "name": "Design systems", "description": "Tokens and components shared between a design and the code that ships it."},
+    {"slug": "testing", "name": "Testing", "description": "Tests that run against real dependencies and still finish fast."},
+    {"slug": "postgresql", "name": "PostgreSQL", "description": "PostgreSQL schemas, migrations and the queries behind my services."},
+    {"slug": "devops", "name": "DevOps", "description": "One VPS, containers and the scripts that put this site online."},
+    {"slug": "ai", "name": "AI", "description": "Working with AI agents on real code: what to hand over and what to check."},
+    {"slug": "workflow", "name": "Workflow", "description": "The tools and habits behind the work: editors, agents, reviews and releases."},
+    {"slug": "kotlin", "name": "Kotlin", "description": "Kotlin on the JVM. Nothing written yet."},
+    {"slug": "cms", "name": "CMS", "description": "Content management: SwePress and the sites it feeds."},
+    {"slug": "tailwind-css", "name": "Tailwind CSS", "description": "Utility-first CSS."},
+    {"slug": "vite", "name": "Vite", "description": "The front-end build tool."},
+    {"slug": "node-js", "name": "Node.js", "description": "JavaScript on the server and in scripts."},
+    {"slug": "featured", "name": "featured", "description": "Reserved: shown in the mega menu and the home page."},
+    {"slug": "layout-home", "name": "layout-home", "description": "Reserved: selects the home template."},
+    {"slug": "layout-listing", "name": "layout-listing", "description": "Reserved: selects the listing template of the section (articles or projects)."},
+    {"slug": "layout-topic", "name": "layout-topic", "description": "Reserved: selects the topic template."},
+    {"slug": "layout-search", "name": "layout-search", "description": "Reserved: selects the search template."},
+    {"slug": "layout-form", "name": "layout-form", "description": "Reserved: selects the form template; the page field formKey picks the form."},
+    {"slug": "layout-status", "name": "layout-status", "description": "Reserved: selects the newsletter status template."},
+    {"slug": "layout-author", "name": "layout-author", "description": "Reserved: selects the author template for a page."}
+  ]
+}

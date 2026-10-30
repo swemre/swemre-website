@@ -1,0 +1,414 @@
+[
+  {
+    "slug": "home",
+    "title": "Software Engineer Emre",
+    "excerpt": "Notes and projects from a software engineer who writes Java, BTW.",
+    "tags": [
+      "layout-home"
+    ],
+    "seoTitle": "SWEMRE · Software engineer Emre",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "updatedAt": "2026-10-27T06:00:00Z",
+    "fields": {
+      "eyebrow": "main",
+      "lead": "Spent years building enterprise software. Now I use AI and consider buying a Patagonia vest. I like thinking and solving problems."
+    }
+  },
+  {
+    "slug": "articles",
+    "title": "Articles",
+    "excerpt": "Notes on building for the web: Java services, React front ends and the architecture behind my projects.",
+    "section": "articles",
+    "tags": [
+      "layout-listing"
+    ],
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// writing",
+      "lead": "Notes on building for the web: Java services, React front ends and the architecture behind my projects."
+    }
+  },
+  {
+    "slug": "topic",
+    "title": "Topic",
+    "excerpt": "Every article on one topic, newest first.",
+    "section": "articles",
+    "tags": [
+      "layout-topic"
+    ],
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// topic"
+    }
+  },
+  {
+    "slug": "projects",
+    "title": "Projects",
+    "excerpt": "Things I have built and am building, with the code behind them.",
+    "section": "projects",
+    "tags": [
+      "layout-listing"
+    ],
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// building",
+      "lead": "Things I have built and am building, with the code behind them."
+    }
+  },
+  {
+    "slug": "search",
+    "title": "Search",
+    "excerpt": "Search every article and project.",
+    "tags": [
+      "layout-search"
+    ],
+    "noindex": true,
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// search"
+    }
+  },
+  {
+    "slug": "newsletter",
+    "title": "Let’s stay in touch.",
+    "excerpt": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
+    "tags": [
+      "layout-form"
+    ],
+    "seoTitle": "Newsletter",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// newsletter",
+      "lead": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
+      "formKey": "newsletter"
+    }
+  },
+  {
+    "slug": "contact",
+    "title": "Never gonna let you down.",
+    "excerpt": "A project, a question or a bug you can’t shake. I read every message myself and reply within two working days.",
+    "tags": [
+      "layout-form"
+    ],
+    "seoTitle": "Contact",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// now playing · 1987 · Never Gonna Give You Up · Rick Astley",
+      "lead": "A project, a question or a bug you can’t shake. I read every message myself and reply within two working days.",
+      "formKey": "contact"
+    }
+  },
+  {
+    "slug": "resume",
+    "title": "Request my resume.",
+    "excerpt": "Tell me who you are and why you need it. I check every request myself and send the PDF to your email within one working day.",
+    "tags": [
+      "layout-form"
+    ],
+    "seoTitle": "Resume",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// resume.pdf · 2 pages · updated Oct 2026",
+      "lead": "Tell me who you are and why you need it. I check every request myself and send the PDF to your email within one working day.",
+      "formKey": "cv-request"
+    }
+  },
+  {
+    "slug": "call-back",
+    "title": "Let me call you back.",
+    "excerpt": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
+    "tags": [
+      "layout-form"
+    ],
+    "seoTitle": "Call back",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// call back · Mon to Fri, 09:00 to 18:00 CET",
+      "lead": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
+      "formKey": "callback-request"
+    }
+  },
+  {
+    "slug": "confirmed",
+    "title": "You’re subscribed.",
+    "excerpt": "Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
+    "section": "newsletter",
+    "tags": [
+      "layout-status"
+    ],
+    "noindex": true,
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// newsletter · confirmed",
+      "lead": "Thanks, {firstName}. Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
+      "formKey": "newsletter-confirm"
+    }
+  },
+  {
+    "slug": "unsubscribed",
+    "title": "You are unsubscribed.",
+    "excerpt": "You will not get any more emails from swemre.com.",
+    "section": "newsletter",
+    "tags": [
+      "layout-status"
+    ],
+    "noindex": true,
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "fields": {
+      "eyebrow": "// newsletter · unsubscribed",
+      "lead": "You will not get any more emails from swemre.com. Changed your mind? You can subscribe again any time.",
+      "formKey": "newsletter-unsubscribe"
+    }
+  },
+  {
+    "slug": "privacy-policy",
+    "title": "Privacy policy",
+    "excerpt": "What this website records about visitors, why, and how to have it removed.",
+    "section": "policies",
+    "tags": [],
+    "publishedAt": "2026-01-14T08:00:00Z",
+    "updatedAt": "2026-10-15T08:00:00Z",
+    "fields": {
+      "lead": "What this website records about visitors, why, and how to have it removed.",
+      "policyVersion": "1.3",
+      "effectiveDate": "2026-10-15",
+      "changelogUrl": "#changes-to-this-policy",
+      "showToc": true,
+      "showPrint": true
+    },
+    "body": [
+      {
+        "type": "facts",
+        "props": {
+          "layout": "strip",
+          "title": "At a glance",
+          "facts": [
+            {
+              "label": "Tracking cookies",
+              "value": "None"
+            },
+            {
+              "label": "Page views kept",
+              "value": "12 months"
+            },
+            {
+              "label": "Forms and requests",
+              "value": "Until you ask"
+            },
+            {
+              "label": "Your rights",
+              "value": "Copy, correct, delete"
+            },
+            {
+              "label": "Questions",
+              "value": "emre@swemre.com",
+              "href": "mailto:emre@swemre.com"
+            }
+          ]
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Who we are",
+          "anchor": "who-we-are"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "This website is run by Emre, a software engineer. He decides what is recorded and is the person to write to: [emre@swemre.com](mailto:emre@swemre.com)."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "What we collect",
+          "anchor": "what-we-collect"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "When you visit, the site records the page you opened, the page you came from and a random session id kept in your browser. It does not set tracking cookies."
+        }
+      },
+      {
+        "type": "facts",
+        "props": {
+          "layout": "rows",
+          "facts": [
+            {
+              "label": "Page views",
+              "value": "Path, referrer and a random session id"
+            },
+            {
+              "label": "Forms",
+              "value": "What you type in the contact, call back and resume forms"
+            },
+            {
+              "label": "Newsletter",
+              "value": "Your name, email and the topics you picked"
+            }
+          ]
+        }
+      },
+      {
+        "type": "callout",
+        "props": {
+          "tone": "info",
+          "title": "No tracking cookies",
+          "text": "No third-party advertising or analytics scripts are used on this site."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "How long we keep it",
+          "anchor": "how-long-we-keep-it"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Page views are kept for 12 months, then removed automatically. Form messages, requests and newsletter details are kept until you ask for them to be deleted or you unsubscribe."
+        }
+      },
+      {
+        "type": "table",
+        "props": {
+          "header": true,
+          "rows": [
+            [
+              "Data",
+              "What is recorded",
+              "Kept for"
+            ],
+            [
+              "Page views",
+              "Path, referrer and session id",
+              "12 months"
+            ],
+            [
+              "Forms",
+              "Name, email and your message or request",
+              "until you ask"
+            ],
+            [
+              "Newsletter",
+              "Name, email and topics",
+              "until you unsubscribe"
+            ]
+          ],
+          "compact": [
+            [
+              "Page views",
+              "Path, referrer and session id · 12 months"
+            ],
+            [
+              "Forms",
+              "Name, email and your message · until you ask"
+            ],
+            [
+              "Newsletter",
+              "Name, email and topics · until you unsubscribe"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Your rights",
+          "anchor": "your-rights"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "You can ask for a copy of your data, or for it to be corrected or deleted, at any time. Write to [emre@swemre.com](mailto:emre@swemre.com) and Emre replies personally, usually within a few days."
+        }
+      },
+      {
+        "type": "facts",
+        "props": {
+          "layout": "rows",
+          "facts": [
+            {
+              "label": "Get a copy",
+              "value": "Everything stored about you, sent by email."
+            },
+            {
+              "label": "Correct it",
+              "value": "Fix details that are wrong or out of date."
+            },
+            {
+              "label": "Delete it",
+              "value": "Remove your form messages, requests and newsletter details."
+            }
+          ]
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Changes to this policy",
+          "anchor": "changes-to-this-policy"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "When this policy changes, the version number and the date at the top of this page change with it. The current version is 1.3, effective 15 October 2026."
+        }
+      },
+      {
+        "type": "timeline",
+        "props": {
+          "items": [
+            {
+              "version": "v1.3",
+              "date": "2026-10-15",
+              "title": "Chat removed; call back and resume requests added to what is recorded.",
+              "current": true
+            },
+            {
+              "version": "v1.2",
+              "date": "2026-09-01",
+              "title": "Newsletter details added to what is recorded."
+            },
+            {
+              "version": "v1.1",
+              "date": "2026-06-02",
+              "title": "Retention for page views shortened to 12 months."
+            },
+            {
+              "version": "v1.0",
+              "date": "2026-01-14",
+              "title": "First version."
+            }
+          ]
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Contact",
+          "anchor": "contact"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Questions about this policy or your data? Write to [emre@swemre.com](mailto:emre@swemre.com), or use the [contact form](/contact)."
+        }
+      }
+    ]
+  }
+]

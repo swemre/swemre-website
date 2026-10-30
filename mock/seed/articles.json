@@ -1,0 +1,733 @@
+[
+  {
+    "slug": "spring-boot-template",
+    "title": "A Spring Boot template for new services",
+    "excerpt": "The baseline I start every new Spring Boot service from: feature packages, Flyway, Testcontainers and a local verify build.",
+    "section": "backend",
+    "tags": [
+      "java",
+      "spring-boot",
+      "backend"
+    ],
+    "publishedAt": "2026-10-23T08:00:00Z",
+    "updatedAt": "2026-10-26T08:00:00Z",
+    "fields": {
+      "readingTime": 6,
+      "coverStyle": "code",
+      "hue": "blue",
+      "codeCover": "@SpringBootApplication\nclass Application {\n  SpringApplication.run();\n}",
+      "codeCoverFile": "Application.java",
+      "codeCoverGlyph": "{ }",
+      "codeCoverRepo": "swemre/spring-service-template",
+      "coverCaption": "A new service, from a working baseline.",
+      "revision": 2,
+      "related": [
+        "modular-monolith",
+        "swemre-website-api",
+        "dark-mode-css-variables",
+        "swepress"
+      ],
+      "faqTitle": "Questions about the template",
+      "faq": [
+        {
+          "q": "Does the template work with Gradle?",
+          "a": "Yes. The repository ships with Maven by default, and a Gradle branch keeps the same layout, plugins and verify build. Pick the branch when you fork; everything else is identical."
+        },
+        {
+          "q": "Why Flyway and not Liquibase?",
+          "a": "Plain SQL files are easier to review than XML or YAML changelogs, and Flyway's rule that a released migration never changes fits how I work. Liquibase is fine too; swapping it in touches one dependency and one folder."
+        },
+        {
+          "q": "Can I run the tests without Docker?",
+          "a": "The unit tests, yes: they are plain JUnit and need nothing else. The integration tests start PostgreSQL with Testcontainers, so they need a Docker daemon, locally or in CI."
+        },
+        {
+          "q": "Why feature packages instead of layers?",
+          "a": "A change usually touches one feature, not one layer. Keeping the controller, service and repository of a feature together keeps that change in one folder and makes the feature easy to move out later."
+        },
+        {
+          "q": "Is the template free to use in commercial projects?",
+          "a": "Yes. It is MIT licensed: fork it, rename it and ship it. A link back is welcome but not required."
+        }
+      ],
+      "previous": "shared-block-model",
+      "next": "modular-monolith"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Every new Spring Boot service I start needs the same things: a feature package layout, Flyway migrations, a health endpoint, structured logging and a test setup that runs against a real database. This template puts all of that in one place so a new service starts from a working baseline."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "What the template gives you",
+          "anchor": "what-the-template-gives-you"
+        }
+      },
+      {
+        "type": "bulleted",
+        "props": {
+          "text": "Java 25 and Spring Boot 4 with the web, validation and actuator starters"
+        }
+      },
+      {
+        "type": "bulleted",
+        "props": {
+          "text": "PostgreSQL with Flyway migrations under `db/migration`"
+        }
+      },
+      {
+        "type": "bulleted",
+        "props": {
+          "text": "Testcontainers for integration tests, so the local build uses the same database as production"
+        }
+      },
+      {
+        "type": "bulleted",
+        "props": {
+          "text": "A Dockerfile and one `./mvnw verify` that runs Checkstyle and every test on your machine"
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Project layout",
+          "anchor": "project-layout"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "The code is split by feature, not by layer. Each feature keeps its controller, service and repository together, which keeps changes local and makes the module easy to move into its own service later."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "text",
+          "variant": "file",
+          "filename": "project-layout",
+          "code": "src/main/java/com/example/\n  Application.java\n  account/\n    AccountController.java\n    AccountService.java\n    AccountRepository.java\n  shared/\n    ApiError.java"
+        }
+      },
+      {
+        "type": "callout",
+        "props": {
+          "tone": "info",
+          "title": "Keep shared code small",
+          "text": "If two features need the same helper, copy it once; extract it the second time."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Running it locally",
+          "anchor": "running-it-locally"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Start PostgreSQL with Docker Compose, then run the application with the local profile."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "bash",
+          "variant": "terminal",
+          "title": "terminal",
+          "code": "$ docker compose up -d postgres\n$ ./mvnw spring-boot:run -Dspring-boot.run.profiles=local"
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Configuration",
+          "anchor": "configuration"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Every value has a sensible local default and can be overridden with an environment variable, so the same jar runs on a laptop and in production. Defaults live in `application.yml`."
+        }
+      },
+      {
+        "type": "table",
+        "props": {
+          "header": true,
+          "rows": [
+            [
+              "Property",
+              "Default",
+              "Purpose"
+            ],
+            [
+              "server.port",
+              "8080",
+              "HTTP port"
+            ],
+            [
+              "spring.datasource.url",
+              "jdbc:postgresql://localhost:5432/app",
+              "Database"
+            ],
+            [
+              "app.cors.origins",
+              "http://localhost:5173",
+              "Allowed front ends"
+            ]
+          ],
+          "compact": [
+            [
+              "server.port",
+              "8080 · HTTP port"
+            ],
+            [
+              "datasource.url",
+              "localhost:5432/app"
+            ],
+            [
+              "cors.origins",
+              "localhost:5173"
+            ]
+          ]
+        }
+      },
+      {
+        "type": "quote",
+        "props": {
+          "text": "Make it work, make it right, make it fast.",
+          "cite": "Kent Beck"
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Testing",
+          "anchor": "testing"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Integration tests extend one base class that starts a PostgreSQL container once for the whole suite. Unit tests stay plain JUnit with no Spring context."
+        }
+      },
+      {
+        "type": "callout",
+        "props": {
+          "tone": "warning",
+          "title": "Docker required",
+          "text": "Testcontainers needs a running Docker daemon. Start Docker Desktop or Colima before ./mvnw verify."
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "The template is on GitHub. Fork it, rename the base package and start building."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "shared-block-model",
+    "title": "One block model for an editor and a website",
+    "excerpt": "How a shared block package keeps the CMS preview and the published page identical.",
+    "section": "frontend",
+    "tags": [
+      "react",
+      "typescript",
+      "architecture"
+    ],
+    "publishedAt": "2026-10-12T08:00:00Z",
+    "fields": {
+      "readingTime": 8,
+      "coverStyle": "code",
+      "hue": "sky",
+      "codeCover": "<Block type=\"hero\">\n  <Heading level={1} />\n  <Text>{lede}</Text>\n</Block>",
+      "codeCoverFile": "Block.tsx",
+      "codeCoverGlyph": "</>",
+      "codeCoverRepo": "swemre/swemre-blocks"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "SwePress edits content as blocks, and this website renders the same blocks. When the editor preview and the page used two renderers, they drifted apart within a week. Now both import one package."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "One package, two hosts",
+          "anchor": "one-package-two-hosts"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "`swemre-blocks` exports the block types, their JSON shape and a React renderer per block. The editor wraps each renderer in an editing frame; the website renders them as they are."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "tsx",
+          "variant": "file",
+          "filename": "Block.tsx",
+          "code": "<Block type=\"hero\">\n  <Heading level={1} />\n  <Text>{lede}</Text>\n</Block>"
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Versioned shapes",
+          "anchor": "versioned-shapes"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Every block carries a version. A renderer accepts the versions it knows and upgrades older ones on read, so old documents keep working after a change."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "dark-mode-css-variables",
+    "title": "Dark mode with CSS variables only",
+    "excerpt": "Switching themes by swapping tokens, so components never need a dark variant.",
+    "section": "frontend",
+    "tags": [
+      "css",
+      "design-systems"
+    ],
+    "publishedAt": "2026-09-28T08:00:00Z",
+    "fields": {
+      "readingTime": 5,
+      "coverStyle": "code",
+      "hue": "lilac",
+      "codeCover": ":root {\n  --canvas: #0b0c0f;\n  --fg: #e6e8ee;\n}",
+      "codeCoverFile": "tokens.css",
+      "codeCoverGlyph": "--var"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Components on this site never ask which theme is active. They use tokens, and the theme decides what the tokens are."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Tokens, not variants",
+          "anchor": "tokens-not-variants"
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "css",
+          "variant": "file",
+          "filename": "tokens.css",
+          "code": ":root {\n  --canvas: #0b0c0f;\n  --fg: #e6e8ee;\n}\n[data-theme=light] {\n  --canvas: #f7f8fb;\n  --fg: #14161c;\n}"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "A small script in the document head sets the theme before the first paint, so there is no flash of the wrong colours."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "modular-monolith",
+    "title": "A modular monolith on Spring Boot",
+    "excerpt": "Modules with their own client contracts and database schemas, in one deployable.",
+    "section": "architecture",
+    "tags": [
+      "java",
+      "architecture",
+      "backend"
+    ],
+    "publishedAt": "2026-09-10T08:00:00Z",
+    "fields": {
+      "readingTime": 10,
+      "coverStyle": "code",
+      "hue": "peri",
+      "codeCover": "interface ArticlesClient {\n  Article get(UUID id);\n  Page list(Query q);\n}",
+      "codeCoverFile": "ArticlesClient.java",
+      "codeCoverGlyph": "[ ]",
+      "codeCoverRepo": "swemre/swemre-website-api"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "One Spring Boot app, split into modules that talk only through clients and events, with one PostgreSQL schema per module and a single test that keeps those boundaries honest."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "A client per module",
+          "anchor": "a-client-per-module"
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "java",
+          "variant": "file",
+          "filename": "ArticlesClient.java",
+          "code": "interface ArticlesClient {\n  Article get(UUID id);\n  Page list(Query q);\n}"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Other modules see the client interface and nothing else. The implementation, its entities and its repositories stay package-private."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "One schema per module",
+          "anchor": "one-schema-per-module"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Each module owns a schema and its own Flyway history. No module reads another module's tables; it asks the client."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "testcontainers-without-waiting",
+    "title": "Testcontainers without the waiting",
+    "excerpt": "Reusable containers, one network and a test category split that keeps the unit suite under ten seconds.",
+    "section": "backend",
+    "tags": [
+      "java",
+      "testing"
+    ],
+    "publishedAt": "2026-08-27T08:00:00Z",
+    "fields": {
+      "readingTime": 7,
+      "coverStyle": "code",
+      "hue": "aqua",
+      "codeCover": "@Testcontainers\nclass ArticlesIT {\n  @Container static\n  PostgreSQLContainer db;",
+      "codeCoverFile": "ArticlesIT.java",
+      "codeCoverGlyph": "@Test"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Integration tests against a real database are worth it, as long as nobody waits for them while writing unit tests."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "Start the container once",
+          "anchor": "start-the-container-once"
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "java",
+          "variant": "file",
+          "filename": "ArticlesIT.java",
+          "code": "@Testcontainers\nclass ArticlesIT {\n  @Container static\n  PostgreSQLContainer db = new PostgreSQLContainer(\"postgres:17\");\n}"
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "A static container is shared by every test in the class; a base class shares it across the suite."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "outbox-events",
+    "title": "Outbox events between modules",
+    "excerpt": "Why modules in one deployable still talk through events, and the table that makes it reliable.",
+    "section": "architecture",
+    "tags": [
+      "java",
+      "architecture"
+    ],
+    "publishedAt": "2026-08-09T08:00:00Z",
+    "fields": {
+      "readingTime": 9,
+      "coverStyle": "code",
+      "hue": "blue",
+      "codeCover": "record OutboxEvent(\n  UUID id,\n  String topic,\n  String payload) {}",
+      "codeCoverFile": "OutboxEvent.java",
+      "codeCoverGlyph": "->"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "A module writes its change and the event about it in one transaction. A poller publishes the event afterwards, so nothing is lost when the app stops halfway."
+        }
+      },
+      {
+        "type": "heading",
+        "props": {
+          "level": 2,
+          "text": "The outbox table",
+          "anchor": "the-outbox-table"
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "java",
+          "variant": "file",
+          "filename": "OutboxEvent.java",
+          "code": "record OutboxEvent(\n  UUID id,\n  String topic,\n  String payload) {}"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "react-server-components-backend-view",
+    "title": "React Server Components, a backend view",
+    "excerpt": "What changes when the component tree starts on the server, told by someone who mostly writes Java.",
+    "section": "frontend",
+    "tags": [
+      "react",
+      "architecture"
+    ],
+    "publishedAt": "2026-07-22T08:00:00Z",
+    "fields": {
+      "readingTime": 8,
+      "coverStyle": "code",
+      "hue": "sky",
+      "codeCover": "async function Page() {\n  const a = await get();\n  return <List />;\n}",
+      "codeCoverFile": "page.tsx",
+      "codeCoverGlyph": "<RSC/>"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Server components look a lot like the server-side templates I wrote fifteen years ago, with one big difference: the same tree continues in the browser."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "tsx",
+          "variant": "file",
+          "filename": "page.tsx",
+          "code": "async function Page() {\n  const a = await get();\n  return <List />;\n}"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "virtual-threads",
+    "title": "Virtual threads in a real service",
+    "excerpt": "Turning them on was one line. Finding the two places that pinned a carrier thread took a week.",
+    "section": "backend",
+    "tags": [
+      "java",
+      "backend"
+    ],
+    "publishedAt": "2026-07-04T08:00:00Z",
+    "fields": {
+      "readingTime": 6,
+      "coverStyle": "code",
+      "hue": "peri",
+      "codeCover": "spring:\n  threads:\n    virtual:\n      enabled: true",
+      "codeCoverFile": "application.yml",
+      "codeCoverGlyph": "vt"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "One property switches Spring Boot to virtual threads. The hard part is what happens around `synchronized` blocks and old drivers."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "yaml",
+          "variant": "file",
+          "filename": "application.yml",
+          "code": "spring:\n  threads:\n    virtual:\n      enabled: true"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "vps-traefik-certbot",
+    "title": "One VPS, Traefik and a certbot certificate",
+    "excerpt": "The whole production setup for this site: one machine, one router, one compose file.",
+    "section": "devops",
+    "tags": [
+      "devops"
+    ],
+    "publishedAt": "2026-06-18T08:00:00Z",
+    "fields": {
+      "readingTime": 7,
+      "coverStyle": "code",
+      "hue": "mist",
+      "codeCover": "services:\n  garage:\n    labels:\n      traefik.enable: true",
+      "codeCoverFile": "compose.yaml",
+      "codeCoverGlyph": ":443"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "This site, its API and the CMS run on one VPS. Traefik routes by host name and terminates TLS; everything else is a container."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "yaml",
+          "variant": "file",
+          "filename": "compose.yaml",
+          "code": "services:\n  garage:\n    labels:\n      traefik.enable: true"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "flyway-migrations",
+    "title": "Flyway migrations you never edit",
+    "excerpt": "A released migration is history. How to fix mistakes with a new versioned file instead.",
+    "section": "backend",
+    "tags": [
+      "java",
+      "postgresql"
+    ],
+    "publishedAt": "2026-05-15T08:00:00Z",
+    "fields": {
+      "readingTime": 5,
+      "coverStyle": "code",
+      "hue": "aqua",
+      "codeCover": "create table channels (\n  id uuid primary key,\n  key text unique\n);",
+      "codeCoverFile": "V7__add_channels.sql",
+      "codeCoverGlyph": "V1__"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Once a migration has run anywhere but your laptop, it is history. A mistake gets fixed by the next versioned file, never by editing the old one."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "sql",
+          "variant": "file",
+          "filename": "V7__add_channels.sql",
+          "code": "create table channels (\n  id uuid primary key,\n  key text unique\n);"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "typed-api-clients",
+    "title": "Typed API clients from an OpenAPI file",
+    "excerpt": "Generating the TypeScript client from the API description, so a renamed field breaks the build and not the page.",
+    "section": "frontend",
+    "tags": [
+      "react",
+      "typescript"
+    ],
+    "publishedAt": "2026-04-28T08:00:00Z",
+    "fields": {
+      "readingTime": 6,
+      "coverStyle": "code",
+      "hue": "sky",
+      "codeCover": "const res = await api\n  .GET('/articles', {\n    params: {query},\n  });",
+      "codeCoverFile": "client.ts",
+      "codeCoverGlyph": "TS"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "The API publishes an OpenAPI file; the front end generates its types from it on every build. When a field is renamed, the compiler tells me before a visitor does."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "ts",
+          "variant": "file",
+          "filename": "client.ts",
+          "code": "const res = await api\n  .GET('/articles', {\n    params: {query},\n  });"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "ai-pair-programming",
+    "title": "Claude Code as a pair programmer",
+    "excerpt": "What I hand to an AI agent, what I still write myself, and the checks that keep both honest.",
+    "section": "workflow",
+    "tags": [
+      "ai",
+      "workflow"
+    ],
+    "publishedAt": "2026-04-09T08:00:00Z",
+    "fields": {
+      "readingTime": 7,
+      "coverStyle": "code",
+      "hue": "lilac",
+      "codeCover": "# Rules\n- run ./mvnw verify\n- no new dependencies\n- small commits",
+      "codeCoverFile": "CLAUDE.md",
+      "codeCoverGlyph": "AI"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "An agent writes a lot of my code now. The verify build, the review and the decisions about boundaries are still mine."
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "markdown",
+          "variant": "file",
+          "filename": "CLAUDE.md",
+          "code": "# Rules\n- run ./mvnw verify\n- no new dependencies\n- small commits"
+        }
+      }
+    ]
+  }
+]

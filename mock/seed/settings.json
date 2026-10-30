@@ -1,0 +1,27 @@
+[
+  {
+    "slug": "site-settings",
+    "title": "Site settings",
+    "publishedAt": "2026-01-01T08:00:00Z",
+    "updatedAt": "2026-10-27T06:00:00Z",
+    "fields": {
+      "tagline": "Software brand",
+      "contactEmail": "emre@swemre.com",
+      "footerTagline": "Notes and projects from a software engineer who writes Java, BTW.",
+      "heroEyebrow": "Software brand",
+      "heroLead": "Spent years building enterprise software. Now I use AI and consider buying a Patagonia vest. I like thinking and solving problems.",
+      "nowBuilding": "SwePress",
+      "latestArticle": "Spring Boot template",
+      "newsletterCadence": "Every other week",
+      "statusUrl": "https://status.swemre.com",
+      "maintenance": null,
+      "likedSongsTotal": 412,
+      "social": {
+        "github": "https://github.com/swemre",
+        "youtube": "https://www.youtube.com/@swemrews",
+        "linkedin": "https://www.linkedin.com/in/swemre",
+        "spotify": "https://open.spotify.com/user/swemre"
+      }
+    }
+  }
+]

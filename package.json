@@ -12,7 +12,9 @@
     "checkstyle": "eslint . && prettier --check . && node scripts/license-headers.mjs --check",
     "checkstyle:fix": "eslint . --fix && prettier --write . && node scripts/license-headers.mjs --fix",
     "deploy": "bash scripts/deploy.sh",
-    "deploy:cloudflare": "bash scripts/deploy-cloudflare.sh"
+    "deploy:cloudflare": "bash scripts/deploy-cloudflare.sh",
+    "v4:shoot": "node tools/v4/shoot.mjs",
+    "v4:boards": "node tools/v4/boards.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

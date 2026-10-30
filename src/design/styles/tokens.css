@@ -10,7 +10,8 @@
  */
 /* Copied verbatim from the SWEMRE V4 design system (tokens.css). Owner: agent A. */
 /* SWEMRE V4 — generated from tokens.json */
-:root, [data-theme="dark"] {
+:root,
+[data-theme='dark'] {
   --a2-ground: #0b0c0f;
   --a2-ground-2: #0e0f12;
   --a2-ground-deep: #08090b;
@@ -22,7 +23,7 @@
   --a2-text-white: #ffffff;
   --a2-text-hi: #f0f2f5;
   --a2-text: #c4c8d0;
-  --a2-text-lead: rgba(255,255,255,0.78);
+  --a2-text-lead: rgba(255, 255, 255, 0.78);
   --a2-text-mid: #8a909b;
   --a2-text-lo: #868c97;
   --a2-text-path: #9aa1ad;
@@ -33,35 +34,35 @@
   --a2-reel-dim: #c9d6ee;
   --a2-reel-hi: #dbe5f6;
   --a2-song-current: #d9cffb;
-  --a2-meta-hi: rgba(214,226,246,0.84);
-  --a2-meta: rgba(196,214,242,0.66);
-  --a2-meta-lo: rgba(196,214,242,0.5);
-  --a2-meta-arrow: rgba(196,214,242,0.4);
-  --a2-hero-label: rgba(255,255,255,0.84);
-  --a2-hero-dt: rgba(255,255,255,0.62);
+  --a2-meta-hi: rgba(214, 226, 246, 0.84);
+  --a2-meta: rgba(196, 214, 242, 0.66);
+  --a2-meta-lo: rgba(196, 214, 242, 0.5);
+  --a2-meta-arrow: rgba(196, 214, 242, 0.4);
+  --a2-hero-label: rgba(255, 255, 255, 0.84);
+  --a2-hero-dt: rgba(255, 255, 255, 0.62);
   --a2-line: #1b1e24;
   --a2-line-2: #23262e;
   --a2-line-3: #2e323b;
   --a2-field-line: #2e3440;
-  --a2-rule-bold: rgba(240,242,245,0.82);
-  --a2-line-soft: rgba(196,214,242,0.14);
-  --a2-line-blue: rgba(143,180,236,0.14);
-  --a2-line-blue-2: rgba(143,180,236,0.2);
-  --a2-line-blue-3: rgba(143,180,236,0.3);
-  --a2-line-blue-4: rgba(143,180,236,0.45);
-  --a2-panel-line: rgba(143,180,236,0.26);
-  --a2-tile-line: rgba(196,214,242,0.16);
-  --a2-tile-line-2: rgba(196,214,242,0.22);
-  --a2-pill-line: rgba(196,214,242,0.2);
-  --a2-pill-sep: rgba(196,214,242,0.18);
-  --a2-field-bg: rgba(9,12,18,0.6);
+  --a2-rule-bold: rgba(240, 242, 245, 0.82);
+  --a2-line-soft: rgba(196, 214, 242, 0.14);
+  --a2-line-blue: rgba(143, 180, 236, 0.14);
+  --a2-line-blue-2: rgba(143, 180, 236, 0.2);
+  --a2-line-blue-3: rgba(143, 180, 236, 0.3);
+  --a2-line-blue-4: rgba(143, 180, 236, 0.45);
+  --a2-panel-line: rgba(143, 180, 236, 0.26);
+  --a2-tile-line: rgba(196, 214, 242, 0.16);
+  --a2-tile-line-2: rgba(196, 214, 242, 0.22);
+  --a2-pill-line: rgba(196, 214, 242, 0.2);
+  --a2-pill-sep: rgba(196, 214, 242, 0.18);
+  --a2-field-bg: rgba(9, 12, 18, 0.6);
   --a2-field-text: #f0f2f5;
   --a2-field-ph: #868c97;
   --a2-option-bg: #0e1526;
   --a2-check-line: #7fc0e6;
-  --a2-check-bg: rgba(127,192,230,0.1);
-  --a2-prompt-bg: rgba(6,9,20,0.7);
-  --a2-switch-on: rgba(61,111,216,0.35);
+  --a2-check-bg: rgba(127, 192, 230, 0.1);
+  --a2-prompt-bg: rgba(6, 9, 20, 0.7);
+  --a2-switch-on: rgba(61, 111, 216, 0.35);
   --a2-blue: #3d6fd8;
   --a2-blue-hover: #4a7be0;
   --a2-blue-dark: #2a55b8;
@@ -81,16 +82,16 @@
   --a2-mint: #86d4b4;
   --a2-err: #f47067;
   --a2-err-text: #f69a93;
-  --a2-glow-text: rgba(143,180,236,0.22);
-  --a2-hero-glow-1: rgba(104,152,230,0.24);
-  --a2-hero-glow-2: rgba(118,112,240,0.14);
-  --a2-stmt-glow: rgba(130,160,240,0.07);
-  --a2-btn-glow: rgba(127,168,255,0.75);
-  --a2-panel-glow: rgba(53,99,200,0.35);
-  --a2-focus-glow: rgba(61,111,216,0.6);
-  --a2-arc-light: rgba(143,180,236,0.26);
+  --a2-glow-text: rgba(143, 180, 236, 0.22);
+  --a2-hero-glow-1: rgba(104, 152, 230, 0.24);
+  --a2-hero-glow-2: rgba(118, 112, 240, 0.14);
+  --a2-stmt-glow: rgba(130, 160, 240, 0.07);
+  --a2-btn-glow: rgba(127, 168, 255, 0.75);
+  --a2-panel-glow: rgba(53, 99, 200, 0.35);
+  --a2-focus-glow: rgba(61, 111, 216, 0.6);
+  --a2-arc-light: rgba(143, 180, 236, 0.26);
   --a2-grid-line: #ffffff;
-  --a2-cover-grid: rgba(196,214,242,0.1);
+  --a2-cover-grid: rgba(196, 214, 242, 0.1);
   --a2-arc-0: #4f7fd6;
   --a2-arc-1: #8fb4ec;
   --a2-arc-2: #c4d6f2;
@@ -98,83 +99,84 @@
   --a2-arc-node-line: #c4d6f2;
   --a2-arc-tag: #c4d6f2;
   --a2-arc-tag-text: #060b1e;
-  --a2-arc-stem: rgba(196,214,242,0.55);
-  --a2-card-bg: rgba(18,20,25,0.86);
-  --a2-card-flat: rgba(18,20,25,0.6);
-  --a2-card-solid: rgba(18,20,25,0.9);
-  --a2-empty-bg: rgba(18,20,25,0.5);
-  --a2-tint: rgba(61,111,216,0.07);
-  --a2-tint-soft: rgba(143,180,236,0.08);
-  --a2-chip-active: rgba(143,173,218,0.14);
-  --a2-mark: rgba(61,111,216,0.3);
-  --a2-pill-bg: rgba(13,26,66,0.55);
-  --a2-btn2-bg: rgba(13,26,66,0.42);
-  --a2-tile-bg: rgba(255,255,255,0.04);
-  --a2-tab-active: rgba(255,255,255,0.06);
+  --a2-arc-stem: rgba(196, 214, 242, 0.55);
+  --a2-card-bg: rgba(18, 20, 25, 0.86);
+  --a2-card-flat: rgba(18, 20, 25, 0.6);
+  --a2-card-solid: rgba(18, 20, 25, 0.9);
+  --a2-empty-bg: rgba(18, 20, 25, 0.5);
+  --a2-tint: rgba(61, 111, 216, 0.07);
+  --a2-tint-soft: rgba(143, 180, 236, 0.08);
+  --a2-chip-active: rgba(143, 173, 218, 0.14);
+  --a2-mark: rgba(61, 111, 216, 0.3);
+  --a2-pill-bg: rgba(13, 26, 66, 0.55);
+  --a2-btn2-bg: rgba(13, 26, 66, 0.42);
+  --a2-tile-bg: rgba(255, 255, 255, 0.04);
+  --a2-tab-active: rgba(255, 255, 255, 0.06);
   --a2-deck-back: #151a24;
   --a2-album-bg: #16181c;
-  --a2-diagram-glow: rgba(154,168,244,0.18);
-  --a2-diagram-box: rgba(11,12,15,0.85);
-  --a2-nav-scrolled: rgba(8,11,22,0.94);
-  --a2-nav-scrolled-line: rgba(196,214,242,0.1);
-  --a2-nav-text: rgba(255,255,255,0.8);
-  --a2-nav-icon: rgba(255,255,255,0.7);
-  --a2-nav-active-bg: rgba(255,255,255,0.14);
-  --a2-nav-hover-bg: rgba(255,255,255,0.08);
-  --a2-nav-open-ring: rgba(196,214,242,0.3);
-  --a2-nctl-line: rgba(255,255,255,0.22);
+  --a2-diagram-glow: rgba(154, 168, 244, 0.18);
+  --a2-diagram-box: rgba(11, 12, 15, 0.85);
+  --a2-nav-scrolled: rgba(8, 11, 22, 0.94);
+  --a2-nav-scrolled-line: rgba(196, 214, 242, 0.1);
+  --a2-nav-text: rgba(255, 255, 255, 0.8);
+  --a2-nav-icon: rgba(255, 255, 255, 0.7);
+  --a2-nav-active-bg: rgba(255, 255, 255, 0.14);
+  --a2-nav-hover-bg: rgba(255, 255, 255, 0.08);
+  --a2-nav-open-ring: rgba(196, 214, 242, 0.3);
+  --a2-nctl-line: rgba(255, 255, 255, 0.22);
   --a2-chip-ink: #ffffff;
   --a2-chip-ink-text: #0f1014;
-  --a2-scrim: rgba(4,7,18,0.8);
-  --a2-scrim-menu: rgba(4,7,18,0.55);
-  --a2-scrim-search: rgba(4,7,18,0.6);
-  --a2-code-bg: rgba(9,12,18,0.72);
-  --a2-code-bar: rgba(6,11,30,0.75);
+  --a2-scrim: rgba(4, 7, 18, 0.8);
+  --a2-scrim-menu: rgba(4, 7, 18, 0.55);
+  --a2-scrim-search: rgba(4, 7, 18, 0.6);
+  --a2-code-bg: rgba(9, 12, 18, 0.72);
+  --a2-code-bar: rgba(6, 11, 30, 0.75);
   --a2-code-dim: #5d6575;
   --a2-code-meta: #a7b0c0;
   --a2-code-fg2: #e6e8ee;
   --a2-code-fg3: #e8f0ff;
-  --a2-skel: rgba(143,180,236,0.07);
-  --a2-skel-shine: rgba(143,180,236,0.08);
+  --a2-skel: rgba(143, 180, 236, 0.07);
+  --a2-skel-shine: rgba(143, 180, 236, 0.08);
   --a2-focus: #8fadda;
-  --a2-focus-ring: rgba(143,173,218,0.16);
+  --a2-focus-ring: rgba(143, 173, 218, 0.16);
   --a2-on-blue: #ffffff;
-  --a2-island-bg: rgba(0,0,0,0);
-  --a2-btn-line: rgba(196,214,242,0.5);
-  --a2-btn2-line: rgba(196,214,242,0.26);
-  --a2-focus-ring-2: rgba(143,173,218,0.2);
-  --a2-empty-line: rgba(143,180,236,0.22);
-  --a2-dfoot-line: rgba(143,180,236,0.12);
-  --a2-ilink-line: rgba(143,180,236,0.4);
-  --a2-head-bg: rgba(143,180,236,0.12);
-  --a2-head-line: rgba(143,180,236,0.32);
-  --a2-tree-bg: rgba(61,111,216,0.09);
-  --a2-tree-inset: rgba(143,180,236,0.16);
-  --a2-panel-glow-2: rgba(53,99,200,0.3);
-  --a2-arc-light-2: rgba(143,180,236,0.3);
-  --a2-top-glow-1: rgba(104,152,230,0.22);
-  --a2-top-glow-2: rgba(118,112,240,0.12);
+  --a2-island-bg: rgba(0, 0, 0, 0);
+  --a2-btn-line: rgba(196, 214, 242, 0.5);
+  --a2-btn2-line: rgba(196, 214, 242, 0.26);
+  --a2-focus-ring-2: rgba(143, 173, 218, 0.2);
+  --a2-empty-line: rgba(143, 180, 236, 0.22);
+  --a2-dfoot-line: rgba(143, 180, 236, 0.12);
+  --a2-ilink-line: rgba(143, 180, 236, 0.4);
+  --a2-head-bg: rgba(143, 180, 236, 0.12);
+  --a2-head-line: rgba(143, 180, 236, 0.32);
+  --a2-tree-bg: rgba(61, 111, 216, 0.09);
+  --a2-tree-inset: rgba(143, 180, 236, 0.16);
+  --a2-panel-glow-2: rgba(53, 99, 200, 0.3);
+  --a2-arc-light-2: rgba(143, 180, 236, 0.3);
+  --a2-top-glow-1: rgba(104, 152, 230, 0.22);
+  --a2-top-glow-2: rgba(118, 112, 240, 0.12);
   --a2-grid-line-status: #ffffff;
-  --a2-status-dot: rgba(196,214,242,0.3);
-  --a2-cover-dot: rgba(196,214,242,0.5);
-  --a2-cover-line: rgba(196,214,242,0.45);
-  --a2-island-line: rgba(143,180,236,0.14);
+  --a2-status-dot: rgba(196, 214, 242, 0.3);
+  --a2-cover-dot: rgba(196, 214, 242, 0.5);
+  --a2-cover-line: rgba(196, 214, 242, 0.45);
+  --a2-island-line: rgba(143, 180, 236, 0.14);
   --a2-hero-mask: #000000;
   --a2-chip-ink-shadow: 0 8px 24px -8px #244577;
-  --a2-shadow-card: 0 60px 120px -40px rgba(0,0,0,.9);
-  --a2-shadow-panel: 0 32px 80px -24px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.4);
-  --a2-shadow-sheet: 0 40px 100px -30px rgba(0,0,0,.9);
-  --a2-shadow-nav: 0 12px 32px -20px rgba(0,0,0,.9);
-  --a2-shadow-media: 0 24px 48px -20px rgba(0,0,0,.9);
-  --a2-shadow-front: 0 40px 80px -30px rgba(0,0,0,.95);
-  --a2-shadow-pill: 0 10px 30px -14px rgba(0,0,0,.8);
-  --a2-shadow-stamp: 0 20px 40px -16px rgba(0,0,0,.9);
-  --a2-btn2-inset: inset 0 1px 0 rgba(255,255,255,.12);
-  --a2-btn-inset: inset 0 1px 0 rgba(255,255,255,.22);
-  --a2-pill-inset: inset 0 1px 0 rgba(255,255,255,.06);
-  --a2-tile-inset: inset 0 1px 0 rgba(255,255,255,.04);
+  --a2-shadow-card: 0 60px 120px -40px rgba(0, 0, 0, 0.9);
+  --a2-shadow-panel:
+    0 32px 80px -24px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(0, 0, 0, 0.4);
+  --a2-shadow-sheet: 0 40px 100px -30px rgba(0, 0, 0, 0.9);
+  --a2-shadow-nav: 0 12px 32px -20px rgba(0, 0, 0, 0.9);
+  --a2-shadow-media: 0 24px 48px -20px rgba(0, 0, 0, 0.9);
+  --a2-shadow-front: 0 40px 80px -30px rgba(0, 0, 0, 0.95);
+  --a2-shadow-pill: 0 10px 30px -14px rgba(0, 0, 0, 0.8);
+  --a2-shadow-stamp: 0 20px 40px -16px rgba(0, 0, 0, 0.9);
+  --a2-btn2-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --a2-btn-inset: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --a2-pill-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --a2-tile-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-[data-theme="light"] {
+[data-theme='light'] {
   --a2-ground: #fbfcfe;
   --a2-ground-2: #f1f3f7;
   --a2-ground-deep: #f4f5f8;
@@ -206,13 +208,13 @@
   --a2-line-2: #d9dde5;
   --a2-line-3: #c9ced8;
   --a2-field-line: #858c99;
-  --a2-rule-bold: rgba(19,21,27,0.82);
-  --a2-line-soft: rgba(12,13,16,0.1);
-  --a2-line-blue: rgba(61,111,216,0.16);
-  --a2-line-blue-2: rgba(61,111,216,0.22);
-  --a2-line-blue-3: rgba(61,111,216,0.32);
-  --a2-line-blue-4: rgba(61,111,216,0.5);
-  --a2-panel-line: rgba(61,111,216,0.22);
+  --a2-rule-bold: rgba(19, 21, 27, 0.82);
+  --a2-line-soft: rgba(12, 13, 16, 0.1);
+  --a2-line-blue: rgba(61, 111, 216, 0.16);
+  --a2-line-blue-2: rgba(61, 111, 216, 0.22);
+  --a2-line-blue-3: rgba(61, 111, 216, 0.32);
+  --a2-line-blue-4: rgba(61, 111, 216, 0.5);
+  --a2-panel-line: rgba(61, 111, 216, 0.22);
   --a2-tile-line: #d9dde5;
   --a2-tile-line-2: #c9ced8;
   --a2-pill-line: #c9ced8;
@@ -222,7 +224,7 @@
   --a2-field-ph: #5b606a;
   --a2-option-bg: #ffffff;
   --a2-check-line: #1d6a9c;
-  --a2-check-bg: rgba(56,140,200,0.06);
+  --a2-check-bg: rgba(56, 140, 200, 0.06);
   --a2-prompt-bg: #ffffff;
   --a2-switch-on: #3d6fd8;
   --a2-blue-hover: #2a55b8;
@@ -240,14 +242,14 @@
   --a2-mint: #0c7450;
   --a2-err: #c62f27;
   --a2-err-text: #b0261f;
-  --a2-glow-text: rgba(143,180,236,0);
-  --a2-hero-glow-1: rgba(61,111,216,0.12);
-  --a2-hero-glow-2: rgba(118,112,240,0.09);
-  --a2-stmt-glow: rgba(61,111,216,0.05);
-  --a2-btn-glow: rgba(61,111,216,0.35);
-  --a2-panel-glow: rgba(61,111,216,0.12);
-  --a2-focus-glow: rgba(61,111,216,0.25);
-  --a2-arc-light: rgba(61,111,216,0.07);
+  --a2-glow-text: rgba(143, 180, 236, 0);
+  --a2-hero-glow-1: rgba(61, 111, 216, 0.12);
+  --a2-hero-glow-2: rgba(118, 112, 240, 0.09);
+  --a2-stmt-glow: rgba(61, 111, 216, 0.05);
+  --a2-btn-glow: rgba(61, 111, 216, 0.35);
+  --a2-panel-glow: rgba(61, 111, 216, 0.12);
+  --a2-focus-glow: rgba(61, 111, 216, 0.25);
+  --a2-arc-light: rgba(61, 111, 216, 0.07);
   --a2-grid-line: #0a1a40;
   --a2-arc-0: #2a55b8;
   --a2-arc-1: #3d6fd8;
@@ -256,70 +258,71 @@
   --a2-arc-node-line: #3d6fd8;
   --a2-arc-tag: #3d6fd8;
   --a2-arc-tag-text: #ffffff;
-  --a2-arc-stem: rgba(61,111,216,0.55);
+  --a2-arc-stem: rgba(61, 111, 216, 0.55);
   --a2-card-bg: #ffffff;
   --a2-card-flat: #f5f7fb;
   --a2-card-solid: #ffffff;
   --a2-empty-bg: #f5f7fb;
-  --a2-tint: rgba(61,111,216,0.06);
-  --a2-tint-soft: rgba(61,111,216,0.07);
-  --a2-chip-active: rgba(61,111,216,0.08);
-  --a2-mark: rgba(61,111,216,0.16);
+  --a2-tint: rgba(61, 111, 216, 0.06);
+  --a2-tint-soft: rgba(61, 111, 216, 0.07);
+  --a2-chip-active: rgba(61, 111, 216, 0.08);
+  --a2-mark: rgba(61, 111, 216, 0.16);
   --a2-pill-bg: #ffffff;
   --a2-btn2-bg: #ffffff;
   --a2-tile-bg: #f5f7fb;
-  --a2-tab-active: rgba(12,13,16,0.05);
+  --a2-tab-active: rgba(12, 13, 16, 0.05);
   --a2-deck-back: #e9edf5;
-  --a2-diagram-glow: rgba(88,104,224,0.1);
+  --a2-diagram-glow: rgba(88, 104, 224, 0.1);
   --a2-diagram-box: #ffffff;
-  --a2-nav-scrolled: rgba(251,252,254,0.94);
-  --a2-nav-scrolled-line: rgba(12,13,16,0.08);
+  --a2-nav-scrolled: rgba(251, 252, 254, 0.94);
+  --a2-nav-scrolled-line: rgba(12, 13, 16, 0.08);
   --a2-nav-text: #3a3d45;
   --a2-nav-icon: #5b606a;
-  --a2-nav-active-bg: rgba(12,13,16,0.07);
-  --a2-nav-hover-bg: rgba(12,13,16,0.05);
-  --a2-nav-open-ring: rgba(12,13,16,0.14);
+  --a2-nav-active-bg: rgba(12, 13, 16, 0.07);
+  --a2-nav-hover-bg: rgba(12, 13, 16, 0.05);
+  --a2-nav-open-ring: rgba(12, 13, 16, 0.14);
   --a2-nctl-line: #c9ced8;
   --a2-chip-ink: #0c0d10;
   --a2-chip-ink-text: #ffffff;
-  --a2-scrim: rgba(16,22,40,0.4);
-  --a2-scrim-menu: rgba(16,22,40,0.32);
-  --a2-scrim-search: rgba(16,22,40,0.36);
+  --a2-scrim: rgba(16, 22, 40, 0.4);
+  --a2-scrim-menu: rgba(16, 22, 40, 0.32);
+  --a2-scrim-search: rgba(16, 22, 40, 0.36);
   --a2-code-bg: #10131a;
-  --a2-skel: rgba(61,111,216,0.07);
-  --a2-skel-shine: rgba(255,255,255,0.75);
+  --a2-skel: rgba(61, 111, 216, 0.07);
+  --a2-skel-shine: rgba(255, 255, 255, 0.75);
   --a2-focus: #3d6fd8;
-  --a2-focus-ring: rgba(61,111,216,0.18);
+  --a2-focus-ring: rgba(61, 111, 216, 0.18);
   --a2-island-bg: #10131a;
   --a2-btn-line: #2a55b8;
   --a2-btn2-line: #8a919d;
-  --a2-focus-ring-2: rgba(61,111,216,0.22);
-  --a2-empty-line: rgba(61,111,216,0.35);
-  --a2-dfoot-line: rgba(61,111,216,0.16);
-  --a2-ilink-line: rgba(42,92,204,0.4);
-  --a2-head-bg: rgba(61,111,216,0.08);
-  --a2-head-line: rgba(61,111,216,0.35);
-  --a2-tree-bg: rgba(61,111,216,0.08);
-  --a2-tree-inset: rgba(61,111,216,0.2);
-  --a2-panel-glow-2: rgba(61,111,216,0.1);
-  --a2-arc-light-2: rgba(61,111,216,0.08);
-  --a2-top-glow-1: rgba(61,111,216,0.11);
-  --a2-top-glow-2: rgba(118,112,240,0.08);
+  --a2-focus-ring-2: rgba(61, 111, 216, 0.22);
+  --a2-empty-line: rgba(61, 111, 216, 0.35);
+  --a2-dfoot-line: rgba(61, 111, 216, 0.16);
+  --a2-ilink-line: rgba(42, 92, 204, 0.4);
+  --a2-head-bg: rgba(61, 111, 216, 0.08);
+  --a2-head-line: rgba(61, 111, 216, 0.35);
+  --a2-tree-bg: rgba(61, 111, 216, 0.08);
+  --a2-tree-inset: rgba(61, 111, 216, 0.2);
+  --a2-panel-glow-2: rgba(61, 111, 216, 0.1);
+  --a2-arc-light-2: rgba(61, 111, 216, 0.08);
+  --a2-top-glow-1: rgba(61, 111, 216, 0.11);
+  --a2-top-glow-2: rgba(118, 112, 240, 0.08);
   --a2-grid-line-status: #0a0b10;
   --a2-status-dot: #c9ced8;
-  --a2-island-line: rgba(12,13,16,0.08);
-  --a2-chip-ink-shadow: 0 8px 24px -10px rgba(12,13,16,.35);
-  --a2-shadow-card: 0 24px 48px -32px rgba(20,32,70,.18);
-  --a2-shadow-panel: 0 32px 80px -24px rgba(16,26,60,.28),0 0 0 1px rgba(12,13,16,.04);
-  --a2-shadow-sheet: 0 40px 100px -30px rgba(16,26,60,.22);
-  --a2-shadow-nav: 0 12px 32px -20px rgba(20,30,60,.18);
-  --a2-shadow-media: 0 24px 48px -24px rgba(20,32,70,.22);
-  --a2-shadow-front: 0 40px 80px -30px rgba(20,20,50,.28);
-  --a2-shadow-pill: 0 10px 30px -14px rgba(20,32,70,.18);
-  --a2-shadow-stamp: 0 20px 40px -16px rgba(20,32,70,.22);
+  --a2-island-line: rgba(12, 13, 16, 0.08);
+  --a2-chip-ink-shadow: 0 8px 24px -10px rgba(12, 13, 16, 0.35);
+  --a2-shadow-card: 0 24px 48px -32px rgba(20, 32, 70, 0.18);
+  --a2-shadow-panel:
+    0 32px 80px -24px rgba(16, 26, 60, 0.28), 0 0 0 1px rgba(12, 13, 16, 0.04);
+  --a2-shadow-sheet: 0 40px 100px -30px rgba(16, 26, 60, 0.22);
+  --a2-shadow-nav: 0 12px 32px -20px rgba(20, 30, 60, 0.18);
+  --a2-shadow-media: 0 24px 48px -24px rgba(20, 32, 70, 0.22);
+  --a2-shadow-front: 0 40px 80px -30px rgba(20, 20, 50, 0.28);
+  --a2-shadow-pill: 0 10px 30px -14px rgba(20, 32, 70, 0.18);
+  --a2-shadow-stamp: 0 20px 40px -16px rgba(20, 32, 70, 0.22);
   --a2-btn2-inset: none;
-  --a2-pill-inset: inset 0 0 0 rgba(0,0,0,0);
-  --a2-tile-inset: inset 0 0 0 rgba(0,0,0,0);
+  --a2-pill-inset: inset 0 0 0 rgba(0, 0, 0, 0);
+  --a2-tile-inset: inset 0 0 0 rgba(0, 0, 0, 0);
 }
 :root {
   --space-4: 4px;
@@ -339,21 +342,81 @@
   --radius-link-card: 10px;
   --radius-card: 12px;
   --radius-pill: 999px;
-  --a2-reel-grad: linear-gradient(95deg,#9aa8f4,#b8b0fa);
-  --a2-accent: linear-gradient(100deg,#f1f6fd 0%,#c4d6f2 40%,#9fb6f0 75%,#a99cf0 100%);
-  --a2-accent-2: linear-gradient(95deg,#b0c6e8 0%,#8fb4ec 55%,#9aa8f4 100%);
-  --a2-hero-grad: linear-gradient(160deg,#060b1e 0%,#0d1a42 45%,#16245a 68%,#0f1838 100%);
-  --a2-top-grad: linear-gradient(160deg,#060b1e 0%,#0d1a42 50%,#132052 75%,#0f1838 100%);
-  --a2-status-grad: linear-gradient(160deg,#08090b 0%,#0b0c0f 45%,#0e0f12 68%,#0b0c0f 100%);
-  --a2-cover-grad: linear-gradient(135deg,#0c1530 0%,#14245a 55%,#1b2f6e 100%);
-  --a2-plan-grad: linear-gradient(160deg,rgba(22,36,90,.55),rgba(13,26,66,.35));
-  --a2-note-grad: linear-gradient(160deg,rgba(13,26,66,.5),rgba(9,13,30,.6));
-  --a2-panel-grad: linear-gradient(180deg,rgba(14,21,38,.97),rgba(9,13,26,.97));
-  --a2-sheet-grad: linear-gradient(180deg,rgba(9,13,30,.98),rgba(9,12,24,.97));
-  --a2-ticker-bg: linear-gradient(90deg,rgba(196,214,242,.1),rgba(196,214,242,.06) 60%,transparent);
-  --a2-heading-hl: linear-gradient(90deg,rgba(61,111,216,.1),rgba(61,111,216,0) 70%);
-  --a2-reel-rule: linear-gradient(90deg,transparent,rgba(143,180,236,.42) 18%,rgba(143,180,236,.42) 82%,transparent);
-  --a2-avatar-grad: linear-gradient(140deg,#244577,#6f63d8);
+  --a2-reel-grad: linear-gradient(95deg, #9aa8f4, #b8b0fa);
+  --a2-accent: linear-gradient(
+    100deg,
+    #f1f6fd 0%,
+    #c4d6f2 40%,
+    #9fb6f0 75%,
+    #a99cf0 100%
+  );
+  --a2-accent-2: linear-gradient(95deg, #b0c6e8 0%, #8fb4ec 55%, #9aa8f4 100%);
+  --a2-hero-grad: linear-gradient(
+    160deg,
+    #060b1e 0%,
+    #0d1a42 45%,
+    #16245a 68%,
+    #0f1838 100%
+  );
+  --a2-top-grad: linear-gradient(
+    160deg,
+    #060b1e 0%,
+    #0d1a42 50%,
+    #132052 75%,
+    #0f1838 100%
+  );
+  --a2-status-grad: linear-gradient(
+    160deg,
+    #08090b 0%,
+    #0b0c0f 45%,
+    #0e0f12 68%,
+    #0b0c0f 100%
+  );
+  --a2-cover-grad: linear-gradient(
+    135deg,
+    #0c1530 0%,
+    #14245a 55%,
+    #1b2f6e 100%
+  );
+  --a2-plan-grad: linear-gradient(
+    160deg,
+    rgba(22, 36, 90, 0.55),
+    rgba(13, 26, 66, 0.35)
+  );
+  --a2-note-grad: linear-gradient(
+    160deg,
+    rgba(13, 26, 66, 0.5),
+    rgba(9, 13, 30, 0.6)
+  );
+  --a2-panel-grad: linear-gradient(
+    180deg,
+    rgba(14, 21, 38, 0.97),
+    rgba(9, 13, 26, 0.97)
+  );
+  --a2-sheet-grad: linear-gradient(
+    180deg,
+    rgba(9, 13, 30, 0.98),
+    rgba(9, 12, 24, 0.97)
+  );
+  --a2-ticker-bg: linear-gradient(
+    90deg,
+    rgba(196, 214, 242, 0.1),
+    rgba(196, 214, 242, 0.06) 60%,
+    transparent
+  );
+  --a2-heading-hl: linear-gradient(
+    90deg,
+    rgba(61, 111, 216, 0.1),
+    rgba(61, 111, 216, 0) 70%
+  );
+  --a2-reel-rule: linear-gradient(
+    90deg,
+    transparent,
+    rgba(143, 180, 236, 0.42) 18%,
+    rgba(143, 180, 236, 0.42) 82%,
+    transparent
+  );
+  --a2-avatar-grad: linear-gradient(140deg, #244577, #6f63d8);
   --size-control-xs: 24px;
   --size-control-sm: 32px;
   --size-control-touch: 44px;
@@ -381,17 +444,17 @@
   --a2-glow-k: 1;
   --a2-glow-text-k: 1;
   --a2-node-glow-k: 1;
-  --a2-grain-op: .085;
+  --a2-grain-op: 0.085;
   --a2-tex-k: 1;
-  --a2-paper-op: .22;
-  --a2-grid-op: .07;
-  --a2-grid-op-status: .035;
-  --a2-arc-blur-op: .4;
-  --a2-selection: rgba(61,111,216,.20);
+  --a2-paper-op: 0.22;
+  --a2-grid-op: 0.07;
+  --a2-grid-op-status: 0.035;
+  --a2-arc-blur-op: 0.4;
+  --a2-selection: rgba(61, 111, 216, 0.2);
   --a2-pale-rgb: 196 214 242;
-  --a2-rail-op: .38;
-  --a2-rail-label-op: .6;
-  --a2-side-cover-filter: brightness(.45) saturate(.8);
+  --a2-rail-op: 0.38;
+  --a2-rail-label-op: 0.6;
+  --a2-side-cover-filter: brightness(0.45) saturate(0.8);
   --layout-m-width: 390px;
   --layout-m-margin: 24px;
   --layout-m-container: 342px;
@@ -425,62 +488,386 @@
   --layout-4k-rail-x: 55px;
   --layout-4k-viewport-h: 1080px;
   --layout-nav-h: 64px;
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
+    Helvetica, Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
 }
-.d1-m { font-family: var(--font-sans); font-size: 48px; line-height: 52px; font-weight: 800; letter-spacing: -0.048em; }
-.d2-m { font-family: var(--font-sans); font-size: 40px; line-height: 44px; font-weight: 800; letter-spacing: -0.04em; }
-.stmt-m { font-family: var(--font-sans); font-size: 44px; line-height: 48px; font-weight: 800; letter-spacing: -0.045em; }
-.h2-m { font-family: var(--font-sans); font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.025em; }
-.h3-m { font-family: var(--font-sans); font-size: 24px; line-height: 30px; font-weight: 650; letter-spacing: -0.02em; }
-.h4-m { font-family: var(--font-sans); font-size: 18px; line-height: 26px; font-weight: 650; letter-spacing: -0.01em; }
-.lead-m { font-family: var(--font-sans); font-size: 18px; line-height: 28px; font-weight: 400; }
-.body-m { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
-.small-m { font-family: var(--font-sans); font-size: 15px; line-height: 24px; font-weight: 400; }
-.cap-m { font-family: var(--font-sans); font-size: 13px; line-height: 20px; font-weight: 400; }
-.mono-m { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; }
-.micro-m { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16em; }
-.eyebrow-m { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; font-style: italic; }
-.num-m { font-family: var(--font-mono); font-size: 48px; line-height: 52px; font-weight: 600; letter-spacing: -0.05em; }
-.d1-t { font-family: var(--font-sans); font-size: 64px; line-height: 64px; font-weight: 800; letter-spacing: -0.048em; }
-.d2-t { font-family: var(--font-sans); font-size: 48px; line-height: 52px; font-weight: 800; letter-spacing: -0.04em; }
-.stmt-t { font-family: var(--font-sans); font-size: 64px; line-height: 64px; font-weight: 800; letter-spacing: -0.045em; }
-.h2-t { font-family: var(--font-sans); font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.025em; }
-.h3-t { font-family: var(--font-sans); font-size: 26px; line-height: 32px; font-weight: 650; letter-spacing: -0.02em; }
-.h4-t { font-family: var(--font-sans); font-size: 20px; line-height: 28px; font-weight: 650; letter-spacing: -0.01em; }
-.lead-t { font-family: var(--font-sans); font-size: 18px; line-height: 28px; font-weight: 400; }
-.body-t { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
-.small-t { font-family: var(--font-sans); font-size: 15px; line-height: 24px; font-weight: 400; }
-.cap-t { font-family: var(--font-sans); font-size: 13px; line-height: 20px; font-weight: 400; }
-.mono-t { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; }
-.micro-t { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16em; }
-.eyebrow-t { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; font-style: italic; }
-.num-t { font-family: var(--font-mono); font-size: 64px; line-height: 72px; font-weight: 600; letter-spacing: -0.06em; }
-.d1-d { font-family: var(--font-sans); font-size: 80px; line-height: 80px; font-weight: 800; letter-spacing: -0.048em; }
-.d2-d { font-family: var(--font-sans); font-size: 56px; line-height: 60px; font-weight: 800; letter-spacing: -0.04em; }
-.stmt-d { font-family: var(--font-sans); font-size: 96px; line-height: 92px; font-weight: 800; letter-spacing: -0.045em; }
-.h2-d { font-family: var(--font-sans); font-size: 36px; line-height: 44px; font-weight: 700; letter-spacing: -0.025em; }
-.h3-d { font-family: var(--font-sans); font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.02em; }
-.h4-d { font-family: var(--font-sans); font-size: 20px; line-height: 28px; font-weight: 650; letter-spacing: -0.01em; }
-.lead-d { font-family: var(--font-sans); font-size: 20px; line-height: 32px; font-weight: 400; }
-.body-d { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
-.small-d { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
-.cap-d { font-family: var(--font-sans); font-size: 13px; line-height: 20px; font-weight: 400; }
-.mono-d { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; }
-.micro-d { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16em; }
-.eyebrow-d { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; font-style: italic; }
-.num-d { font-family: var(--font-mono); font-size: 72px; line-height: 80px; font-weight: 600; letter-spacing: -0.06em; }
-.d1-4k { font-family: var(--font-sans); font-size: 96px; line-height: 96px; font-weight: 800; letter-spacing: -0.048em; }
-.d2-4k { font-family: var(--font-sans); font-size: 64px; line-height: 68px; font-weight: 800; letter-spacing: -0.04em; }
-.stmt-4k { font-family: var(--font-sans); font-size: 128px; line-height: 124px; font-weight: 800; letter-spacing: -0.045em; }
-.h2-4k { font-family: var(--font-sans); font-size: 40px; line-height: 48px; font-weight: 700; letter-spacing: -0.025em; }
-.h3-4k { font-family: var(--font-sans); font-size: 28px; line-height: 36px; font-weight: 650; letter-spacing: -0.02em; }
-.h4-4k { font-family: var(--font-sans); font-size: 20px; line-height: 28px; font-weight: 650; letter-spacing: -0.01em; }
-.lead-4k { font-family: var(--font-sans); font-size: 20px; line-height: 32px; font-weight: 400; }
-.body-4k { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
-.small-4k { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
-.cap-4k { font-family: var(--font-sans); font-size: 13px; line-height: 20px; font-weight: 400; }
-.mono-4k { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; }
-.micro-4k { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16em; }
-.eyebrow-4k { font-family: var(--font-mono); font-size: 13px; line-height: 20px; font-weight: 400; font-style: italic; }
-.num-4k { font-family: var(--font-mono); font-size: 80px; line-height: 88px; font-weight: 600; letter-spacing: -0.06em; }
+.d1-m {
+  font-family: var(--font-sans);
+  font-size: 48px;
+  line-height: 52px;
+  font-weight: 800;
+  letter-spacing: -0.048em;
+}
+.d2-m {
+  font-family: var(--font-sans);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.stmt-m {
+  font-family: var(--font-sans);
+  font-size: 44px;
+  line-height: 48px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.h2-m {
+  font-family: var(--font-sans);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.h3-m {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.h4-m {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.lead-m {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+}
+.body-m {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
+.small-m {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.cap-m {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.mono-m {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.micro-m {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+.eyebrow-m {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+.num-m {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  line-height: 52px;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+.d1-t {
+  font-family: var(--font-sans);
+  font-size: 64px;
+  line-height: 64px;
+  font-weight: 800;
+  letter-spacing: -0.048em;
+}
+.d2-t {
+  font-family: var(--font-sans);
+  font-size: 48px;
+  line-height: 52px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.stmt-t {
+  font-family: var(--font-sans);
+  font-size: 64px;
+  line-height: 64px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.h2-t {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.h3-t {
+  font-family: var(--font-sans);
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.h4-t {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.lead-t {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+}
+.body-t {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
+.small-t {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.cap-t {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.mono-t {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.micro-t {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+.eyebrow-t {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+.num-t {
+  font-family: var(--font-mono);
+  font-size: 64px;
+  line-height: 72px;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}
+.d1-d {
+  font-family: var(--font-sans);
+  font-size: 80px;
+  line-height: 80px;
+  font-weight: 800;
+  letter-spacing: -0.048em;
+}
+.d2-d {
+  font-family: var(--font-sans);
+  font-size: 56px;
+  line-height: 60px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.stmt-d {
+  font-family: var(--font-sans);
+  font-size: 96px;
+  line-height: 92px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.h2-d {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.h3-d {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.h4-d {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.lead-d {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 400;
+}
+.body-d {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
+.small-d {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+.cap-d {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.mono-d {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.micro-d {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+.eyebrow-d {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+.num-d {
+  font-family: var(--font-mono);
+  font-size: 72px;
+  line-height: 80px;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}
+.d1-4k {
+  font-family: var(--font-sans);
+  font-size: 96px;
+  line-height: 96px;
+  font-weight: 800;
+  letter-spacing: -0.048em;
+}
+.d2-4k {
+  font-family: var(--font-sans);
+  font-size: 64px;
+  line-height: 68px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.stmt-4k {
+  font-family: var(--font-sans);
+  font-size: 128px;
+  line-height: 124px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.h2-4k {
+  font-family: var(--font-sans);
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.h3-4k {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.h4-4k {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.lead-4k {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 400;
+}
+.body-4k {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
+.small-4k {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+.cap-4k {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.mono-4k {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.micro-4k {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+.eyebrow-4k {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+.num-4k {
+  font-family: var(--font-mono);
+  font-size: 80px;
+  line-height: 88px;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}

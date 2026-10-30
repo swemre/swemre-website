@@ -9,9 +9,44 @@
  * Contact: emre@swemre.com
  */
 
+// The home page (boards Home, Home-1..3, Home-Scrolled and the Home-<section>-<state> crops).
+// Each data section renders its own loading, empty and error state.
 import type {TemplateProps} from '../../contract/templates.ts'
+import {
+  useArticles,
+  useProjects,
+  useSettings,
+  useSongs,
+} from '../../data/hooks.ts'
+import {ArticlesSection} from './ArticlesSection.tsx'
+import {Hero} from './Hero.tsx'
+import {NewsletterSection} from './NewsletterSection.tsx'
+import {ProjectsSection} from './ProjectsSection.tsx'
+import {SongsSection} from './SongsSection.tsx'
+import {StackSection} from './StackSection.tsx'
+import {PromiseStatement, ReelStatement} from './Statements.tsx'
+import {SubscribeSection} from './SubscribeSection.tsx'
 
-// Placeholder until its owner builds it.
-export function HomeTemplate({route}: TemplateProps) {
-  return <p>home template: {route.path}</p>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- same props as every template
+export function HomeTemplate(_props: TemplateProps) {
+  const settingsState = useSettings()
+  const settings =
+    settingsState.status === 'ready' ? settingsState.data : undefined
+  const articles = useArticles({limit: 4})
+  const projects = useProjects()
+  const songs = useSongs(5)
+  const song = songs.status === 'ready' ? songs.data[0] : undefined
+  return (
+    <>
+      <Hero settings={settings} song={song} />
+      <StackSection settings={settings} />
+      <ReelStatement />
+      <ArticlesSection state={articles} />
+      <ProjectsSection state={projects} settings={settings} />
+      <SongsSection state={songs} settings={settings} />
+      <PromiseStatement />
+      <NewsletterSection />
+      <SubscribeSection />
+    </>
+  )
 }

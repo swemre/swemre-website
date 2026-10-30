@@ -9,23 +9,7 @@
  * Contact: emre@swemre.com
  */
 
+/* eslint-disable react-refresh/only-export-components -- the public barrel exports a hook too */
 // Site chrome: shell, nav, mega menus, mobile menu, footer, quick search. Owner: agent A.
-// Day-0 stub with the final signature.
-import type {ReactNode} from 'react'
-import {Root} from '../design/index.tsx'
-
-export function SiteShell({
-  chrome,
-  children,
-}: {
-  chrome: {nav: boolean; footer: boolean}
-  children: ReactNode
-}) {
-  return (
-    <Root>
-      {chrome.nav && <nav aria-label="Main">SWEMRE</nav>}
-      <main id="main">{children}</main>
-      {chrome.footer && <footer>Software brand</footer>}
-    </Root>
-  )
-}
+export {SiteShell} from './SiteShell.tsx'
+export {useChrome, sectionOf, type ChromeApi, type MegaKey} from './context.ts'

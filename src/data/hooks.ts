@@ -8,10 +8,14 @@
  *
  * Contact: emre@swemre.com
  */
-
-// Data hooks. Owner: agent C. Day-0 stubs with the final signatures (they stay 'loading' until C
-// implements them). In dev every hook honours ?state=<name>:<loading|empty|error>, for example
-// /?state=articles:error, so templates can show each board state.
+// Data hooks: every template reads the API through these. Owner: agent C.
+// Each returns a Loadable: loading -> ready | empty | error (with retry). Reads are cached per
+// request (store.ts), so many hooks on one page cost one call per resource.
+// In dev and mock mode every hook honours ?state=<name>:<loading|empty|error>[,<name>:<status>],
+// for example /?state=articles:error, so templates can show each board state.
+import {useMemo} from 'react'
+import {useLocation} from 'react-router-dom'
+import type {ApiPublication, ApiPublicationSummary} from '../contract/api.ts'
 import type {
   Article,
   ArticleSummary,
@@ -29,61 +33,488 @@ import type {
   TermRef,
   Topic,
 } from '../contract/view.ts'
+import {
+  blocksOf,
+  byNewest,
+  byProjectOrder,
+  crumbsOf,
+  isReservedTag,
+  seoOf,
+  termRef,
+  toArticleSummary,
+  toAuthorRef,
+  toPage,
+  toProjectSummary,
+  toSettings,
+  toSong,
+} from './adapters.ts'
+import {DEV_SWITCHES} from './env.ts'
+import {
+  FOOTER,
+  NAV_ITEMS,
+  footerWith,
+  megaArticles,
+  megaProjects,
+} from './nav.ts'
+import {searchIndex} from './search.ts'
+import {resources, useResource, type Entry} from './store.ts'
 
-const loading = {status: 'loading'} as const
+type Res<T> = Entry<T> & {retry: () => void}
+type Forced = 'loading' | 'empty' | 'error' | undefined
+
+/** Reads ?state=name:status (dev and mock mode only). */
+function useForced(name: string): Forced {
+  const {search} = useLocation()
+  if (!DEV_SWITCHES) return undefined
+  const spec = new URLSearchParams(search).get('state') ?? ''
+  for (const part of spec.split(',')) {
+    const [n, s] = part.split(':')
+    if (n === name && (s === 'loading' || s === 'empty' || s === 'error'))
+      return s
+  }
+  return undefined
+}
+
+const data = <T>(r: Res<T>): T =>
+  (r as Extract<Entry<T>, {status: 'ready'}>).data
+
+/**
+ * Combines several reads into one Loadable. build runs when all are ready; undefined or an empty
+ * array means 'empty'.
+ */
+function settle<T>(
+  forced: Forced,
+  parts: Res<unknown>[],
+  build: () => T | undefined,
+): Loadable<T> {
+  const retry = () => parts.forEach(p => p.status === 'error' && p.retry())
+  if (forced === 'loading') return {status: 'loading'}
+  if (forced === 'empty') return {status: 'empty'}
+  if (forced === 'error')
+    return {status: 'error', error: new Error('forced by ?state='), retry}
+  const failed = parts.find(p => p.status === 'error')
+  if (failed)
+    return {status: 'error', error: (failed as {error: unknown}).error, retry}
+  if (parts.some(p => p.status === 'loading')) return {status: 'loading'}
+  const value = build()
+  if (value === undefined || (Array.isArray(value) && value.length === 0))
+    return {status: 'empty'}
+  return {status: 'ready', data: value}
+}
+
+// Shared reads --------------------------------------------------------------------------------
+
+function useList(type: 'article' | 'project' | 'song' | 'author' | 'page') {
+  return useResource(...resources.list(type))
+}
+function usePub(slug: string) {
+  return useResource(...resources.pub(slug))
+}
+
+const articleSummaries = (items: ApiPublicationSummary[]) =>
+  items.map(toArticleSummary).sort(byNewest)
+const projectSummaries = (items: ApiPublicationSummary[]) =>
+  items.map(toProjectSummary).sort(byProjectOrder)
+
+/** Article topic tags with their article counts, most used first (seed order on ties). */
+function articleTopics(
+  articles: ApiPublicationSummary[],
+  tags: {slug: string; name: string}[],
+) {
+  const counts = new Map<string, number>()
+  for (const a of articles) {
+    for (const t of a.terms) {
+      if (t.kind === 'TAG' && !isReservedTag(t.slug))
+        counts.set(t.slug, (counts.get(t.slug) ?? 0) + 1)
+    }
+  }
+  const order = new Map<string, number>()
+  articles
+    .flatMap(a => a.terms)
+    .forEach((t, i) => !order.has(t.slug) && order.set(t.slug, i))
+  return [...counts.entries()]
+    .sort(
+      (a, b) => b[1] - a[1] || (order.get(a[0]) ?? 0) - (order.get(b[0]) ?? 0),
+    )
+    .map(([slug, count]) => {
+      const term = articles
+        .flatMap(a => a.terms)
+        .find(t => t.slug === slug && t.kind === 'TAG')!
+      const full = tags.find(t => t.slug === slug)
+      return termRef({...term, ...full, kind: 'TAG'}, count)
+    })
+}
+
+// Hooks ---------------------------------------------------------------------------------------
 
 /** name 'settings' */
 export function useSettings(): Loadable<SiteSettings> {
-  return loading
+  const forced = useForced('settings')
+  const pub = usePub('site-settings')
+  return useMemo(
+    () => settle(forced, [pub], () => toSettings(data(pub))),
+    [forced, pub],
+  )
 }
+
 /** name 'page' */
-export function usePage(_slug: string): Loadable<Page> {
-  return loading
+export function usePage(slug: string): Loadable<Page> {
+  const forced = useForced('page')
+  const pub = usePub(slug)
+  return useMemo(
+    () =>
+      settle(forced, [pub], () => {
+        const p = data(pub)
+        return p ? toPage(p) : undefined
+      }),
+    [forced, pub],
+  )
 }
-/** name 'articles'. Newest first. */
-export function useArticles(_opts?: {term?: string; limit?: number}): Loadable<ArticleSummary[]> {
-  return loading
+
+/** name 'articles'. Newest first. term filters by tag (or section) slug. */
+export function useArticles(opts?: {
+  term?: string
+  limit?: number
+}): Loadable<ArticleSummary[]> {
+  const forced = useForced('articles')
+  const list = useList('article')
+  const term = opts?.term
+  const limit = opts?.limit
+  return useMemo(
+    () =>
+      settle(forced, [list], () => {
+        const items = data(list).filter(
+          p => !term || p.terms.some(t => t.slug === term),
+        )
+        return articleSummaries(items).slice(0, limit)
+      }),
+    [forced, list, term, limit],
+  )
 }
+
+function neighbours(
+  all: ArticleSummary[],
+  slug: string,
+  f: Record<string, unknown>,
+) {
+  const i = all.findIndex(a => a.slug === slug)
+  const pick = (s: unknown) => all.find(a => a.slug === s)
+  return {
+    prev: pick(f.previous) ?? all[i + 1],
+    next: pick(f.next) ?? (i > 0 ? all[i - 1] : undefined),
+  }
+}
+
+/** Related items: the explicit slugs, else items sharing the most tags. */
+function relatedOf(
+  pub: ApiPublicationSummary,
+  articles: ArticleSummary[],
+  projects: ProjectSummary[],
+  max: number,
+): (ArticleSummary | ProjectSummary)[] {
+  const explicit = (pub.fields.related as string[] | undefined) ?? []
+  const pool = [...articles, ...projects].filter(x => x.slug !== pub.slug)
+  if (explicit.length) {
+    return explicit
+      .map(s => pool.find(x => x.slug === s))
+      .filter(x => x !== undefined)
+      .slice(0, max)
+  }
+  const tags = new Set(pub.terms.map(t => t.slug))
+  const score = (x: ArticleSummary | ProjectSummary) =>
+    ('tags' in x ? x.tags : x.stack).filter(t => tags.has(t.slug)).length
+  return pool
+    .map(x => ({x, s: score(x)}))
+    .filter(e => e.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, max)
+    .map(e => e.x)
+}
+
 /** name 'article' */
-export function useArticle(_slug: string): Loadable<Article> {
-  return loading
+export function useArticle(slug: string): Loadable<Article> {
+  const forced = useForced('article')
+  const pub = usePub(slug)
+  const articles = useList('article')
+  const projects = useList('project')
+  const authors = useList('author')
+  return useMemo(
+    () =>
+      settle(forced, [pub, articles, projects, authors], () => {
+        const p = data(pub)
+        if (!p || p.contentType !== 'article') return undefined
+        const all = articleSummaries(data(articles))
+        const allProjects = projectSummaries(data(projects))
+        const author =
+          data(authors).find(
+            a => a.title === p.author || a.slug === p.author,
+          ) ?? data(authors)[0]
+        const f = p.fields
+        return {
+          ...toArticleSummary(p),
+          body: blocksOf(p),
+          author: toAuthorRef(author, p.author),
+          revision: f.revision as number | undefined,
+          faq: (f.faq as {q: string; a: string}[] | undefined) ?? [],
+          faqTitle: f.faqTitle as string | undefined,
+          seo: seoOf(p),
+          ...neighbours(all, p.slug, f),
+          related: relatedOf(p, all, allProjects, 4),
+        }
+      }),
+    [forced, pub, articles, projects, authors],
+  )
 }
-/** name 'projects'. Featured first, then by order, then newest. */
-export function useProjects(_opts?: {
+
+/** name 'projects'. Featured first, then by order, then most recently updated. */
+export function useProjects(opts?: {
   term?: string
   featured?: boolean
   limit?: number
 }): Loadable<ProjectSummary[]> {
-  return loading
+  const forced = useForced('projects')
+  const list = useList('project')
+  const {term, featured, limit} = opts ?? {}
+  return useMemo(
+    () =>
+      settle(forced, [list], () =>
+        projectSummaries(
+          data(list).filter(p => !term || p.terms.some(t => t.slug === term)),
+        )
+          .filter(p => featured === undefined || p.featured === featured)
+          .slice(0, limit),
+      ),
+    [forced, list, term, featured, limit],
+  )
 }
+
 /** name 'project' */
-export function useProject(_slug: string): Loadable<Project> {
-  return loading
+export function useProject(slug: string): Loadable<Project> {
+  const forced = useForced('project')
+  const pub = usePub(slug)
+  const articles = useList('article')
+  const projects = useList('project')
+  return useMemo(
+    () =>
+      settle(forced, [pub, articles, projects], () => {
+        const p = data(pub)
+        if (!p || p.contentType !== 'project') return undefined
+        const related = relatedOf(
+          p,
+          articleSummaries(data(articles)),
+          projectSummaries(data(projects)),
+          8,
+        )
+        return {
+          ...toProjectSummary(p),
+          body: blocksOf(p),
+          seo: seoOf(p),
+          crumbs: crumbsOf(p),
+          relatedArticles: related
+            .filter((x): x is ArticleSummary => 'publishedAt' in x)
+            .slice(0, 3),
+          relatedProjects: related
+            .filter((x): x is ProjectSummary => !('publishedAt' in x))
+            .slice(0, 2),
+        }
+      }),
+    [forced, pub, articles, projects],
+  )
 }
-/** name 'songs'. A random pick per visit; ?seed= fixes it. */
-export function useSongs(_limit?: number): Loadable<Song[]> {
-  return loading
+
+/** Seeded PRNG (mulberry32). */
+function random(seed: number) {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
-/** name 'topic' */
-export function useTopic(_term: string): Loadable<Topic> {
-  return loading
+const VISIT_SEED = Math.floor(Math.random() * 2 ** 31) + 1
+
+/**
+ * name 'songs'. A random pick per visit; ?seed=<n> fixes it, and ?seed=0 takes the first songs in
+ * playlist order (the five on the boards).
+ */
+export function useSongs(limit = 5): Loadable<Song[]> {
+  const forced = useForced('songs')
+  const list = useList('song')
+  const {search} = useLocation()
+  const seedParam = DEV_SWITCHES
+    ? new URLSearchParams(search).get('seed')
+    : null
+  const seed =
+    seedParam !== null && /^\d+$/.test(seedParam)
+      ? Number(seedParam)
+      : VISIT_SEED
+  return useMemo(
+    () =>
+      settle(forced, [list], () => {
+        const songs = [...data(list)].sort(
+          (a, b) => Number(a.fields.order ?? 0) - Number(b.fields.order ?? 0),
+        )
+        if (seed !== 0) {
+          const rnd = random(seed)
+          for (let i = songs.length - 1; i > 0; i--) {
+            const j = Math.floor(rnd() * (i + 1))
+            ;[songs[i], songs[j]] = [songs[j], songs[i]]
+          }
+        }
+        return songs.slice(0, limit).map(toSong)
+      }),
+    [forced, list, seed, limit],
+  )
 }
-/** name 'terms'. Tags with counts per content type. */
+
+/** name 'topic'. A tag with no articles (e.g. kotlin) is ready with empty lists. */
+export function useTopic(term: string): Loadable<Topic> {
+  const forced = useForced('topic')
+  const articles = useList('article')
+  const projects = useList('project')
+  const tags = useResource(...resources.tags())
+  return useMemo(
+    () =>
+      settle(forced, [articles, projects, tags], () => {
+        const t = data(tags).find(x => x.slug === term)
+        if (!t || isReservedTag(t.slug)) return undefined
+        const topics = articleTopics(data(articles), data(tags))
+        const own = articleSummaries(
+          data(articles).filter(p =>
+            p.terms.some(x => x.kind === 'TAG' && x.slug === term),
+          ),
+        )
+        return {
+          term: termRef(t, own.length),
+          articles: own,
+          projects: projectSummaries(
+            data(projects).filter(p =>
+              p.terms.some(x => x.kind === 'TAG' && x.slug === term),
+            ),
+          ),
+          others: topics.filter(x => x.slug !== term),
+        }
+      }),
+    [forced, articles, projects, tags, term],
+  )
+}
+
+/** name 'terms'. The article topics (tags used by articles) with article counts, most used first. */
 export function useTerms(): Loadable<TermRef[]> {
-  return loading
+  const forced = useForced('terms')
+  const articles = useList('article')
+  const tags = useResource(...resources.tags())
+  return useMemo(
+    () =>
+      settle(forced, [articles, tags], () =>
+        articleTopics(data(articles), data(tags)),
+      ),
+    [forced, articles, tags],
+  )
 }
+
 /** name 'author' */
-export function useAuthor(_slug: string): Loadable<Author> {
-  return loading
+export function useAuthor(slug: string): Loadable<Author> {
+  const forced = useForced('author')
+  const pub = usePub(slug)
+  const projects = useList('project')
+  const tags = useResource(...resources.tags())
+  return useMemo(
+    () =>
+      settle(forced, [pub, projects, tags], () => {
+        const p = data(pub) as ApiPublication | undefined
+        if (!p || (p.contentType !== 'author' && p.contentType !== 'page'))
+          return undefined
+        const f = p.fields as Record<string, unknown>
+        const current = data(projects).find(x => x.slug === f.currentProject)
+        const stack = ((f.stack as string[] | undefined) ?? [])
+          .map(s => data(tags).find(t => t.slug === s))
+          .filter(t => t !== undefined)
+          .map(t => termRef(t))
+        return {
+          ...toAuthorRef(p),
+          headline:
+            (f.headline as string | undefined) ?? p.excerpt ?? undefined,
+          body: blocksOf(p),
+          writingSince: f.writingSince as number | undefined,
+          availability: f.availability as string | undefined,
+          availableFrom: f.availableFrom as string | undefined,
+          links: (
+            (f.links as {label: string; url: string}[] | undefined) ?? []
+          ).map(l => ({
+            label: l.label,
+            href: l.url,
+            external: /^https?:/.test(l.url),
+          })),
+          currentProject: current ? toProjectSummary(current) : undefined,
+          focus: f.focus as string | undefined,
+          backgroundNote: f.backgroundNote as string | undefined,
+          stack,
+        }
+      }),
+    [forced, pub, projects, tags],
+  )
 }
-/** name 'search' */
-export function useSearch(_query: string): Loadable<SearchResults> {
-  return loading
+
+/** name 'search'. Client-side over articles and projects; empty when nothing matches. */
+export function useSearch(query: string): Loadable<SearchResults> {
+  const forced = useForced('search')
+  const articles = useList('article')
+  const projects = useList('project')
+  const index = useMemo(
+    () =>
+      articles.status === 'ready' && projects.status === 'ready'
+        ? searchIndex(
+            articleSummaries(data(articles)),
+            projectSummaries(data(projects)),
+          )
+        : undefined,
+    [articles, projects],
+  )
+  return useMemo(
+    () =>
+      settle(forced, [articles, projects], () => {
+        const results = index!.search(query)
+        return results.total ? results : undefined
+      }),
+    [forced, articles, projects, index, query],
+  )
 }
+
 export function useNav(): {
   items: NavItem[]
   mega: Record<'articles' | 'projects', Loadable<MegaMenuData>>
   footer: FooterData
 } {
-  return {items: [], mega: {articles: loading, projects: loading}, footer: {columns: [], tagline: ''}}
+  const articles = useList('article')
+  const projects = useList('project')
+  const tags = useResource(...resources.tags())
+  const settings = usePub('site-settings')
+  const pages = useList('page')
+  const forcedA = useForced('mega')
+  return useMemo(() => {
+    const articlesMega = settle(forcedA, [articles, tags], () =>
+      megaArticles(
+        articleSummaries(data(articles)),
+        articleTopics(data(articles), data(tags)),
+      ),
+    )
+    const projectsMega = settle(forcedA, [projects], () =>
+      megaProjects(projectSummaries(data(projects))),
+    )
+    const footer =
+      settings.status === 'ready' && pages.status === 'ready'
+        ? footerWith(
+            toSettings(data(settings)),
+            data(pages).filter(p => p.section?.slug === 'policies'),
+          )
+        : FOOTER
+    return {
+      items: NAV_ITEMS,
+      mega: {articles: articlesMega, projects: projectsMega},
+      footer,
+    }
+  }, [articles, projects, tags, settings, pages, forcedA])
 }

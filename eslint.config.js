@@ -41,7 +41,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['*.config.{js,ts}', 'scripts/**/*.mjs'],
+    files: ['*.config.{js,ts}', 'scripts/**/*.mjs', 'tools/**/*.mjs'],
     languageOptions: {
       // gts treats eslint.config.js as CommonJS; this project uses ESM.
       sourceType: 'module',

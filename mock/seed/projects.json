@@ -1,0 +1,452 @@
+[
+  {
+    "slug": "swepress",
+    "title": "SwePress",
+    "excerpt": "The content management system behind swemre.com: workspaces, a block editor, forms and channels.",
+    "tags": [
+      "react",
+      "typescript",
+      "cms",
+      "featured"
+    ],
+    "publishedAt": "2026-01-20T08:00:00Z",
+    "updatedAt": "2026-10-25T08:00:00Z",
+    "fields": {
+      "status": "now-building",
+      "version": "v0.9.2",
+      "year": 2026,
+      "language": "TypeScript",
+      "url": "https://press.swemre.com",
+      "repoUrl": "https://github.com/swemre/swepress",
+      "featured": true,
+      "order": 1,
+      "hue": "peri",
+      "glyph": "SP",
+      "related": [
+        "shared-block-model",
+        "swemre-blocks"
+      ],
+      "tagline": "Block editor CMS"
+    },
+    "body": [
+      {
+        "type": "section",
+        "props": {
+          "number": "0x01",
+          "eyebrow": "overview",
+          "title": "One editor for every site",
+          "hue": "blue",
+          "copy": "Workspaces, documents, media, forms and channels, edited with blocks and published as JSON."
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "SwePress is the CMS this website is written in. Every site it feeds reads its content through the public API of its own channel."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "swemre-website-api",
+    "title": "swemre-website-api",
+    "excerpt": "The backend of the websites managed from SwePress: a Spring Boot modular monolith with one PostgreSQL schema per module.",
+    "tags": [
+      "java",
+      "spring-boot",
+      "postgresql",
+      "featured"
+    ],
+    "publishedAt": "2026-02-02T08:00:00Z",
+    "updatedAt": "2026-10-26T08:00:00Z",
+    "fields": {
+      "status": "source-only",
+      "version": "v1.4.0-alpha",
+      "year": 2026,
+      "language": "Java 25",
+      "repoUrl": "https://github.com/swemre/swemre-website-api",
+      "docsUrl": "https://github.com/swemre/swemre-website-api/blob/main/docs/modules.md",
+      "featured": true,
+      "order": 2,
+      "hue": "blue",
+      "glyph": "API",
+      "related": [
+        "modular-monolith",
+        "spring-boot-template",
+        "outbox-events",
+        "spring-service-template",
+        "swepress"
+      ],
+      "tagline": "Built from this template"
+    },
+    "body": [
+      {
+        "type": "section",
+        "props": {
+          "number": "0x01",
+          "eyebrow": "overview",
+          "title": "One backend for every site",
+          "hue": "blue",
+          "copy": "One account owns any number of workspaces, and every document, media file, collection and channel belongs to exactly one of them."
+        }
+      },
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "The CMS calls the admin API with a bearer token; each website reads only through the public API of its own channel. The business modules keep their data in PostgreSQL, one schema per module, and uploaded files on disk. Everything ships as one Spring Boot application behind Traefik on a single VPS."
+        }
+      },
+      {
+        "type": "facts",
+        "props": {
+          "layout": "list",
+          "facts": [
+            {
+              "label": "Admin API",
+              "value": "/api/v2/workspaces/{id}/…",
+              "code": true
+            },
+            {
+              "label": "Public API",
+              "value": "/api/public/v2/channels/{key}/…",
+              "code": true
+            },
+            {
+              "label": "Sign-in",
+              "value": "Password or Google, for the owner"
+            },
+            {
+              "label": "Licence",
+              "value": "MIT"
+            }
+          ]
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "02",
+          "eyebrow": "stack",
+          "title": "Stack and commands",
+          "hue": "sky",
+          "copy": "Every check runs locally: one verify build covers Checkstyle and all three test categories."
+        }
+      },
+      {
+        "type": "stack",
+        "props": {
+          "prompt": "cat pom.xml | grep artifactId",
+          "items": [
+            {
+              "name": "Java 25",
+              "note": "Records and virtual threads."
+            },
+            {
+              "name": "Spring Boot 4",
+              "note": "Web, validation, actuator."
+            },
+            {
+              "name": "PostgreSQL",
+              "note": "One schema per module."
+            },
+            {
+              "name": "Flyway",
+              "note": "Versioned migrations, never edited."
+            },
+            {
+              "name": "Testcontainers",
+              "note": "Unit, component, integration."
+            },
+            {
+              "name": "Checkstyle",
+              "note": "Fails the build on any violation."
+            },
+            {
+              "name": "Docker",
+              "note": "One production image."
+            },
+            {
+              "name": "Traefik",
+              "note": "Routing, TLS, IP allowlist."
+            }
+          ]
+        }
+      },
+      {
+        "type": "code",
+        "props": {
+          "language": "bash",
+          "variant": "terminal",
+          "title": "commands",
+          "code": "$ docker compose up -d\n$ ./mvnw verify\n$ ./mvnw test -Dtest.category=unit\n$ ./mvnw -pl service -am spring-boot:run"
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "0b011",
+          "eyebrow": "architecture",
+          "title": "How a request travels",
+          "hue": "peri",
+          "copy": "Clients reach Traefik first. The service answers v2 routes after checking the caller’s workspace role, and answers ids of another workspace with 404."
+        }
+      },
+      {
+        "type": "image",
+        "props": {
+          "url": "media:swemre-website-api-architecture-light",
+          "darkUrl": "media:swemre-website-api-architecture-dark",
+          "alt": "Architecture of swemre-website-api: clients, Traefik, the modular service, storage",
+          "card": true
+        }
+      },
+      {
+        "type": "section",
+        "props": {
+          "number": "04L",
+          "eyebrow": "history",
+          "title": "Releases and links",
+          "hue": "lilac",
+          "copy": "Newest first. Released migrations and error keys are never changed or reused."
+        }
+      },
+      {
+        "type": "links",
+        "props": {
+          "links": [
+            {
+              "label": "Repository",
+              "value": "swemre/swemre-website-api",
+              "href": "https://github.com/swemre/swemre-website-api"
+            },
+            {
+              "label": "Module guide",
+              "value": "docs/modules.md",
+              "href": "https://github.com/swemre/swemre-website-api/blob/main/docs/modules.md"
+            },
+            {
+              "label": "API reference",
+              "value": "/api/v2",
+              "href": "https://github.com/swemre/swemre-website-api/blob/main/docs/public-api-v2.md"
+            },
+            {
+              "label": "Changelog",
+              "value": "CHANGELOG.md",
+              "href": "https://github.com/swemre/swemre-website-api/blob/main/CHANGELOG.md"
+            }
+          ]
+        }
+      },
+      {
+        "type": "timeline",
+        "props": {
+          "items": [
+            {
+              "version": "v1.4.0-alpha",
+              "date": "2026-10-26",
+              "title": "Google sign-in for the owner",
+              "note": "ID tokens for one client id, limited to an allowlist of addresses.",
+              "current": true
+            },
+            {
+              "version": "v1.3.0",
+              "date": "2026-09-18",
+              "title": "Public API v2 per channel",
+              "note": "Websites read through their channel key; the old routes are gone."
+            },
+            {
+              "version": "v1.2.0",
+              "date": "2026-08-20",
+              "title": "Outbox events between modules",
+              "note": "Modules publish events in the same transaction as their writes."
+            },
+            {
+              "version": "v1.0.0",
+              "date": "2026-06-30",
+              "title": "First release",
+              "note": "Workspaces, documents and media in one Spring Boot application."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "swemre-blocks",
+    "title": "swemre-blocks",
+    "excerpt": "The block package shared by the SwePress editor and the website renderer.",
+    "tags": [
+      "react",
+      "typescript",
+      "featured"
+    ],
+    "publishedAt": "2025-05-12T08:00:00Z",
+    "updatedAt": "2026-10-20T08:00:00Z",
+    "fields": {
+      "status": "source-only",
+      "version": "v2.1.0",
+      "year": 2025,
+      "language": "TypeScript",
+      "repoUrl": "https://github.com/swemre/swemre-blocks",
+      "featured": true,
+      "order": 3,
+      "hue": "lilac",
+      "glyph": "[ ]",
+      "related": [
+        "shared-block-model",
+        "swepress"
+      ],
+      "tagline": "Shared block renderer"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Block types, their versioned JSON shapes and one React renderer per block, used by the editor preview and by the published pages."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "swemre-com",
+    "title": "swemre.com",
+    "excerpt": "This website: articles, projects, songs and the request forms, built with React 19, Vite and Tailwind CSS.",
+    "tags": [
+      "react",
+      "tailwind-css",
+      "vite",
+      "featured"
+    ],
+    "publishedAt": "2025-03-01T08:00:00Z",
+    "updatedAt": "2026-10-27T06:12:00Z",
+    "fields": {
+      "status": "live",
+      "version": "v3.0.1",
+      "year": 2025,
+      "language": "TypeScript",
+      "url": "https://swemre.com",
+      "repoUrl": "https://github.com/swemre/swemre-website",
+      "featured": true,
+      "order": 4,
+      "hue": "sky",
+      "glyph": "W",
+      "related": [
+        "dark-mode-css-variables",
+        "vps-traefik-certbot"
+      ],
+      "tagline": "This website"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "The site you are reading. It renders the JSON that SwePress publishes to its channel, with no server of its own."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "spring-service-template",
+    "title": "spring-service-template",
+    "excerpt": "The template every new Spring Boot service starts from: feature packages, Flyway, Testcontainers, Checkstyle.",
+    "tags": [
+      "java",
+      "spring-boot",
+      "testing"
+    ],
+    "publishedAt": "2026-03-10T08:00:00Z",
+    "updatedAt": "2026-10-23T08:00:00Z",
+    "fields": {
+      "status": "source-only",
+      "version": "v1.2.0",
+      "year": 2026,
+      "language": "Java 25",
+      "repoUrl": "https://github.com/swemre/spring-service-template",
+      "featured": false,
+      "order": 5,
+      "hue": "aqua",
+      "glyph": "{ }",
+      "related": [
+        "spring-boot-template",
+        "testcontainers-without-waiting",
+        "flyway-migrations",
+        "swemre-website-api"
+      ],
+      "tagline": "Starter for new services"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "Fork it, rename the base package and start building. The article A Spring Boot template for new services explains every part."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "tokenset",
+    "title": "tokenset",
+    "excerpt": "Design tokens in one JSON file, built into CSS variables for a dark and a light theme.",
+    "tags": [
+      "css"
+    ],
+    "publishedAt": "2025-08-04T08:00:00Z",
+    "updatedAt": "2026-08-14T08:00:00Z",
+    "fields": {
+      "status": "live",
+      "version": "v0.4.1",
+      "year": 2025,
+      "language": "CSS",
+      "url": "https://tokenset.swemre.com",
+      "repoUrl": "https://github.com/swemre/tokenset",
+      "featured": false,
+      "order": 6,
+      "hue": "mist",
+      "glyph": "--",
+      "related": [
+        "dark-mode-css-variables"
+      ],
+      "tagline": "Theme tokens to CSS"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "One JSON file of tokens in, one CSS file of custom properties out, for each theme."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "playlist-sync",
+    "title": "playlist-sync",
+    "excerpt": "Pulls my Spotify liked songs once a day for the picks on the home page.",
+    "tags": [
+      "typescript",
+      "node-js"
+    ],
+    "publishedAt": "2024-09-15T08:00:00Z",
+    "updatedAt": "2026-07-27T08:00:00Z",
+    "fields": {
+      "status": "live",
+      "version": "v0.3.0",
+      "year": 2024,
+      "language": "TypeScript",
+      "url": "https://swemre.com/#songs",
+      "privateRepo": true,
+      "featured": false,
+      "order": 7,
+      "hue": "lilac",
+      "glyph": ">_",
+      "tagline": "Liked songs, daily"
+    },
+    "body": [
+      {
+        "type": "paragraph",
+        "props": {
+          "text": "A small scheduled job that reads the liked-songs playlist and stores it as song entries in SwePress."
+        }
+      }
+    ]
+  }
+]

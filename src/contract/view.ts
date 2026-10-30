@@ -40,6 +40,10 @@ export interface CodeCover {
   filename?: string
   language?: string
   repo?: string
+  /** The big glyph, e.g. "{ }". */
+  glyph?: string
+  /** Same as the summary's hue. */
+  hue?: Hue
 }
 /** The last crumb has no href. */
 export interface Crumb {
@@ -68,12 +72,14 @@ export interface ArticleSummary {
   codeCover?: CodeCover
   coverCaption?: string
   coverStyle: 'image' | 'code' | 'none'
+  hue: Hue
 }
 export interface Article extends ArticleSummary {
   body: Block[]
   author: AuthorRef
   revision?: number
   faq: {q: string; a: string}[]
+  faqTitle?: string
   seo: Seo
   prev?: ArticleSummary
   next?: ArticleSummary
@@ -101,6 +107,15 @@ export interface ProjectSummary {
   docsUrl?: string
   privateRepo: boolean
   updatedAt: string
+  hue: Hue
+  /** Monogram for tiles and list rows, e.g. "SP". */
+  glyph: string
+  /** Short line for compact rows, e.g. "Block editor CMS". */
+  tagline?: string
+  /** True when the project has a public deployment (url set). */
+  live: boolean
+  /** True when the code is public (repoUrl set and not private). */
+  sourceAvailable: boolean
 }
 export interface Project extends ProjectSummary {
   body: Block[]
@@ -157,6 +172,9 @@ export interface Author extends AuthorRef {
   availableFrom?: string
   links: Link[]
   currentProject?: ProjectSummary
+  focus?: string
+  backgroundNote?: string
+  stack: TermRef[]
 }
 export interface Topic {
   term: TermRef
@@ -176,7 +194,12 @@ export interface SiteSettings {
   statusUrl?: string
   maintenance?: {from: string; until: string} | null
   likedSongsTotal?: number
-  social: {github?: string; youtube?: string; linkedin?: string; spotify?: string}
+  social: {
+    github?: string
+    youtube?: string
+    linkedin?: string
+    spotify?: string
+  }
 }
 
 export interface NavItem {
@@ -189,6 +212,8 @@ export interface MegaMenuData {
   featured: (ArticleSummary | ProjectSummary)[]
   topics: TermRef[]
   links: Link[]
+  /** The "Also" list of the projects menu (projects that are not featured). */
+  also: Link[]
 }
 export interface FooterData {
   columns: {title: string; links: Link[]}[]

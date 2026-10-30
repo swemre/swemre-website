@@ -12,6 +12,7 @@
 // Wire JSON of SWEPress public API v2, as served by the real API and by mock/plugin.ts.
 // Base: ${VITE_API_BASE}/public/v2/channels/${VITE_CHANNEL_KEY}. Header X-Read-Key on reads.
 // Owner: agent C. Others import, never edit; ask C for changes.
+import type {Hue} from './blocks.ts'
 
 export type Uuid = string
 /** ISO-8601 UTC timestamp. */
@@ -39,12 +40,7 @@ export interface ApiTerm {
 }
 
 export type ContentTypeKey =
-  | 'article'
-  | 'project'
-  | 'page'
-  | 'song'
-  | 'author'
-  | 'site-settings'
+  'article' | 'project' | 'page' | 'song' | 'author' | 'site-settings'
 
 /** An item of GET /publications. */
 export interface ApiPublicationSummary {
@@ -105,7 +101,8 @@ export interface ApiListQuery {
   size?: number
 }
 
-export type FormValue = string | boolean
+/** Multi choices (chips) are string arrays; an empty optional field is null. */
+export type FormValue = string | boolean | null | string[]
 export interface ApiFormSubmission {
   fields: Record<string, FormValue>
 }
@@ -115,6 +112,8 @@ export interface ApiSubmittedForm {
   receivedAt: Instant
   submittedAt?: Instant
   ignoredFields?: string[]
+  /** Form-specific answer data. newsletter-confirm returns name, email and topics (topic slugs). */
+  result?: Record<string, FormValue>
 }
 
 export interface ApiErrorBody {
@@ -131,6 +130,8 @@ export interface ApiErrorBody {
   errors: {field: string; message: string}[]
   /** 500 answers carry it; the 500 page shows it. */
   requestId?: string
+  /** 503 answers during planned maintenance carry the window. */
+  maintenance?: {from: Instant; until: Instant}
 }
 
 /** The fields object per content type. All optional; adapters apply defaults. */
@@ -145,6 +146,17 @@ export interface FieldMap {
     coverCaption?: string
     revision?: number
     faq?: {q: string; a: string}[]
+    /** Heading over the FAQ (board: "Questions about the template"). */
+    faqTitle?: string
+    /** Accent hue of the cover and card. */
+    hue?: Hue
+    /** The big glyph on a code cover, e.g. "{ }". */
+    codeCoverGlyph?: string
+    /** Slugs of articles or projects for "More from the workshop"; computed when absent. */
+    related?: string[]
+    /** Slugs that override the date neighbours of the previous / next links. */
+    previous?: string
+    next?: string
   }
   project: {
     summary?: string
@@ -160,6 +172,13 @@ export interface FieldMap {
     order?: number
     codeCover?: string
     codeCoverFile?: string
+    hue?: Hue
+    /** Monogram on project tiles, e.g. "SP". */
+    glyph?: string
+    /** Short line for compact rows ("More from the workshop"), e.g. "Block editor CMS". */
+    tagline?: string
+    /** Slugs of related articles and projects; computed from shared tags when absent. */
+    related?: string[]
   }
   page: {
     lead?: string
@@ -173,6 +192,8 @@ export interface FieldMap {
     formKey?: FormKey
   }
   song: {
+    /** Position in the liked playlist; ?seed=0 picks the first ones in this order. */
+    order?: number
     artist?: string
     album?: string
     year?: number
@@ -187,7 +208,12 @@ export interface FieldMap {
     availability?: string
     availableFrom?: string
     links?: {label: string; url: string}[]
+    /** Project slug. */
     currentProject?: string
+    focus?: string
+    backgroundNote?: string
+    /** Tag slugs shown as stack chips. */
+    stack?: string[]
   }
   'site-settings': {
     tagline?: string
@@ -201,7 +227,12 @@ export interface FieldMap {
     statusUrl?: string
     maintenance?: {from: string; until: string} | null
     likedSongsTotal?: number
-    social?: {github?: string; youtube?: string; linkedin?: string; spotify?: string}
+    social?: {
+      github?: string
+      youtube?: string
+      linkedin?: string
+      spotify?: string
+    }
   }
 }
 

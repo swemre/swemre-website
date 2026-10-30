@@ -9,9 +9,47 @@
  * Contact: emre@swemre.com
  */
 
+// 500 (boards 500, 4K 500): the status page with the request id from route.params.requestId,
+// Try again (reloads), Home and Articles.
 import type {TemplateProps} from '../../contract/templates.ts'
+import {Button} from '../../design/index.tsx'
+import {CodeMark, StatusHero, StatusLink} from '../parts/status.tsx'
 
-// Placeholder until its owner builds it.
+function reload() {
+  window.location.reload()
+}
+
 export function ErrorTemplate({route}: TemplateProps) {
-  return <p>error template: {route.path}</p>
+  const id = route.params.requestId
+  return (
+    <StatusHero
+      hue="blue"
+      railLabel="5e7e500"
+      mark={
+        <CodeMark
+          code="500"
+          color="var(--a2-err-text)"
+          glow="var(--a2-err-rgb)"
+        />
+      }
+      markLabel="Server error"
+      markColor="var(--a2-err-text)"
+      eyebrow="error 500"
+      detail={id ? `request id ${id}` : undefined}
+      title="Something broke on my side."
+      lead="The server ran into an error. It has been logged and I will look at it. Try again in a moment."
+      actions={
+        <>
+          <Button
+            kind="primary"
+            label="Try again"
+            iconLeft="refresh"
+            onClick={reload}
+          />
+          <StatusLink to="/">Home</StatusLink>
+          <StatusLink to="/articles">Articles</StatusLink>
+        </>
+      }
+    />
+  )
 }

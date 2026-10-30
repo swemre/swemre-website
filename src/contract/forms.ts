@@ -14,14 +14,7 @@
 import type {ApiSubmittedForm, FormKey} from './api.ts'
 
 export type FieldKind =
-  | 'text'
-  | 'email'
-  | 'tel'
-  | 'contact'
-  | 'select'
-  | 'area'
-  | 'check'
-  | 'chips'
+  'text' | 'email' | 'tel' | 'contact' | 'select' | 'area' | 'check' | 'chips'
 
 export interface FieldSpec {
   /** API field key. */
@@ -34,6 +27,8 @@ export interface FieldSpec {
   optional?: boolean
   /** Shown under the field when it is invalid. */
   error?: string
+  /** The name in the error summary ("Consent" for the consent box); default label. */
+  summaryLabel?: string
   options?: {value: string; label: string}[]
   initial?: string | boolean | string[]
 }
@@ -45,8 +40,10 @@ export interface FormSpec {
   submitLabel: string
 }
 
-export type FormState = 'default' | 'errors' | 'submitting' | 'success' | 'failure'
-export type FailureKind = 'closed' | 'limited' | 'invalid' | 'unreachable' | 'failed'
+export type FormState =
+  'default' | 'errors' | 'submitting' | 'success' | 'failure'
+export type FailureKind =
+  'closed' | 'limited' | 'invalid' | 'unreachable' | 'failed'
 export type FormValues = Record<string, string | boolean | string[]>
 
 export interface FormMachine {

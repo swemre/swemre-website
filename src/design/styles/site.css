@@ -1,0 +1,582 @@
+/*
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+/* Site overrides on top of the board CSS: fluid viewport roots, the fixed chrome, base reset, focus,
+   reduced motion and print. Owner: agent A. */
+
+/* Fluid roots: the boards draw 390 / 834 / 1440; the site fills the window. 4K is the 1920 layout
+   zoomed to the window width (AppProviders sets --a2-zoom = innerWidth / 1920, 2 at 3840). */
+html {
+  background: var(--a2-ground);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+:is([data-theme='light'], .a2-light) {
+  color-scheme: light;
+}
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.a2-root.a2-m,
+.a2-root.a2-t,
+.a2-root.a2-d {
+  width: 100%;
+}
+.a2-root.a2-4k {
+  width: 1920px;
+  zoom: var(--a2-zoom, 2);
+}
+.a2-root {
+  overflow: clip;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.a2-4k.a2-root {
+  min-height: calc(100vh / var(--a2-zoom, 2));
+}
+.a2-root > main {
+  flex: 1 0 auto;
+  position: relative;
+}
+.a2-root > .a2-nav {
+  position: fixed;
+}
+.a2-root > .a2-footer {
+  flex: none;
+}
+img {
+  height: auto;
+}
+input,
+textarea,
+select {
+  border-radius: 0;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* Page-wide grain, fixed to the window */
+.a2-site-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: var(--a2-grain-op);
+}
+.a2-site-grain svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Skip link: visible only on focus */
+.a2-skip {
+  position: fixed;
+  left: 16px;
+  top: -64px;
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-control);
+  background: var(--a2-blue);
+  color: var(--a2-on-blue);
+  font-size: 14px;
+  font-weight: 600;
+}
+.a2-skip:focus {
+  top: 10px;
+}
+
+/* Focus: a2-focus outline with the 3px ring; fields draw their own ring on the control */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--a2-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--a2-focus-ring);
+}
+/* Bordered controls take the board's focus state (V4-Comp-Nav "search focus", README): the
+   a2-focus border and a 3px ring instead of the outline. */
+:is(.a2-btn, .a2-chip, .a2-nctl, .a2-soc):focus-visible {
+  outline: none;
+  border-color: var(--a2-focus);
+  box-shadow: 0 0 0 3px var(--a2-focus-ring-2);
+}
+.a2-navlink:focus-visible {
+  outline: none;
+  color: var(--a2-text-white);
+  background: var(--a2-nav-hover-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--a2-focus),
+    0 0 0 3px var(--a2-focus-ring-2);
+}
+.pf-in:focus-visible,
+.pf-q:focus-visible,
+[tabindex='-1']:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.a2-check input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+.a2-check input:focus-visible + .a2-box {
+  outline: 2px solid var(--a2-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--a2-focus-ring);
+}
+
+/* Scroll lock while a dialog or the mobile menu is open */
+html.a2-locked {
+  overflow: hidden;
+}
+html.a2-locked body {
+  overflow: hidden;
+}
+
+/* Reduced motion: every animation and transition stops */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Print, for single pages: light (AppProviders switches the theme on beforeprint), no chrome,
+   no rail, no textures or glows */
+@media print {
+  html,
+  body,
+  .a2-root {
+    background: var(--a2-ground) !important;
+  }
+  .a2-root {
+    width: auto !important;
+    zoom: 1 !important;
+    overflow: visible;
+    display: block;
+    min-height: 0;
+  }
+  .a2-nav,
+  .a2-footer,
+  .a2-skip,
+  .a2-site-grain,
+  .a2-grain-layer,
+  .a2-rail,
+  .a2-raillabel,
+  .a2-node,
+  .a2-bg,
+  .p2-mega,
+  .p2-mscrim,
+  .a2-scrim,
+  [data-print='hide'],
+  [aria-hidden='true'] {
+    display: none !important;
+  }
+  .a2-d1,
+  .a2-d2,
+  .a2-stmt,
+  .a2-h2 {
+    text-shadow: none !important;
+  }
+  .a2-card {
+    box-shadow: none !important;
+  }
+  a {
+    text-decoration: underline;
+  }
+  pre,
+  blockquote,
+  figure,
+  table {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+}
+.a2-check {
+  position: relative;
+}
+/* Print is always light, even when the visitor reads in dark mode (print preview or emulation
+   without a beforeprint event): the light token sets of tokens.css and bundle.css again. */
+@media print {
+  :root:root {
+    --a2-ground: #fbfcfe;
+    --a2-ground-2: #f1f3f7;
+    --a2-ground-deep: #f4f5f8;
+    --a2-navy-deep: #f3f6fd;
+    --a2-navy: #eef2fc;
+    --a2-navy-mid: #e9eefb;
+    --a2-navy-mid-2: #eaeffb;
+    --a2-navy-low: #f5f7fd;
+    --a2-text-white: #0a0b10;
+    --a2-text-hi: #13151b;
+    --a2-text: #33363d;
+    --a2-text-lead: #33363d;
+    --a2-text-mid: #4a4e57;
+    --a2-text-lo: #5b606a;
+    --a2-text-path: #5b606a;
+    --a2-text-mono-2: #4a4e57;
+    --a2-text-dim: #b9bfca;
+    --a2-text-faint: #a7adb8;
+    --a2-reel-dim: #8f98aa;
+    --a2-reel-hi: #13151b;
+    --a2-song-current: #4b2fb0;
+    --a2-meta-hi: #33363d;
+    --a2-meta: #4a4e57;
+    --a2-meta-lo: #5b606a;
+    --a2-meta-arrow: #5b606a;
+    --a2-hero-label: #33363d;
+    --a2-hero-dt: #5b606a;
+    --a2-line: #e3e6ec;
+    --a2-line-2: #d9dde5;
+    --a2-line-3: #c9ced8;
+    --a2-field-line: #858c99;
+    --a2-rule-bold: rgba(19, 21, 27, 0.82);
+    --a2-line-soft: rgba(12, 13, 16, 0.1);
+    --a2-line-blue: rgba(61, 111, 216, 0.16);
+    --a2-line-blue-2: rgba(61, 111, 216, 0.22);
+    --a2-line-blue-3: rgba(61, 111, 216, 0.32);
+    --a2-line-blue-4: rgba(61, 111, 216, 0.5);
+    --a2-panel-line: rgba(61, 111, 216, 0.22);
+    --a2-tile-line: #d9dde5;
+    --a2-tile-line-2: #c9ced8;
+    --a2-pill-line: #c9ced8;
+    --a2-pill-sep: #d9dde5;
+    --a2-field-bg: #ffffff;
+    --a2-field-text: #13151b;
+    --a2-field-ph: #5b606a;
+    --a2-option-bg: #ffffff;
+    --a2-check-line: #1d6a9c;
+    --a2-check-bg: rgba(56, 140, 200, 0.06);
+    --a2-prompt-bg: #ffffff;
+    --a2-switch-on: #3d6fd8;
+    --a2-blue-hover: #2a55b8;
+    --a2-link: #2552b2;
+    --a2-soft: #2a5ccc;
+    --a2-pale: #1d3f8c;
+    --a2-blue-ink: #2552b2;
+    --a2-lilac: #5f43c4;
+    --a2-hue-sky: #1d6a9c;
+    --a2-hue-blue: #2a5ccc;
+    --a2-hue-peri: #4351c6;
+    --a2-hue-lilac: #6744cc;
+    --a2-hue-mist: #3a58c0;
+    --a2-hue-aqua: #0f7092;
+    --a2-mint: #0c7450;
+    --a2-err: #c62f27;
+    --a2-err-text: #b0261f;
+    --a2-glow-text: rgba(143, 180, 236, 0);
+    --a2-hero-glow-1: rgba(61, 111, 216, 0.12);
+    --a2-hero-glow-2: rgba(118, 112, 240, 0.09);
+    --a2-stmt-glow: rgba(61, 111, 216, 0.05);
+    --a2-btn-glow: rgba(61, 111, 216, 0.35);
+    --a2-panel-glow: rgba(61, 111, 216, 0.12);
+    --a2-focus-glow: rgba(61, 111, 216, 0.25);
+    --a2-arc-light: rgba(61, 111, 216, 0.07);
+    --a2-grid-line: #0a1a40;
+    --a2-arc-0: #2a55b8;
+    --a2-arc-1: #3d6fd8;
+    --a2-arc-2: #6f8fe0;
+    --a2-arc-node: #ffffff;
+    --a2-arc-node-line: #3d6fd8;
+    --a2-arc-tag: #3d6fd8;
+    --a2-arc-tag-text: #ffffff;
+    --a2-arc-stem: rgba(61, 111, 216, 0.55);
+    --a2-card-bg: #ffffff;
+    --a2-card-flat: #f5f7fb;
+    --a2-card-solid: #ffffff;
+    --a2-empty-bg: #f5f7fb;
+    --a2-tint: rgba(61, 111, 216, 0.06);
+    --a2-tint-soft: rgba(61, 111, 216, 0.07);
+    --a2-chip-active: rgba(61, 111, 216, 0.08);
+    --a2-mark: rgba(61, 111, 216, 0.16);
+    --a2-pill-bg: #ffffff;
+    --a2-btn2-bg: #ffffff;
+    --a2-tile-bg: #f5f7fb;
+    --a2-tab-active: rgba(12, 13, 16, 0.05);
+    --a2-deck-back: #e9edf5;
+    --a2-diagram-glow: rgba(88, 104, 224, 0.1);
+    --a2-diagram-box: #ffffff;
+    --a2-nav-scrolled: rgba(251, 252, 254, 0.94);
+    --a2-nav-scrolled-line: rgba(12, 13, 16, 0.08);
+    --a2-nav-text: #3a3d45;
+    --a2-nav-icon: #5b606a;
+    --a2-nav-active-bg: rgba(12, 13, 16, 0.07);
+    --a2-nav-hover-bg: rgba(12, 13, 16, 0.05);
+    --a2-nav-open-ring: rgba(12, 13, 16, 0.14);
+    --a2-nctl-line: #c9ced8;
+    --a2-chip-ink: #0c0d10;
+    --a2-chip-ink-text: #ffffff;
+    --a2-scrim: rgba(16, 22, 40, 0.4);
+    --a2-scrim-menu: rgba(16, 22, 40, 0.32);
+    --a2-scrim-search: rgba(16, 22, 40, 0.36);
+    --a2-code-bg: #10131a;
+    --a2-skel: rgba(61, 111, 216, 0.07);
+    --a2-skel-shine: rgba(255, 255, 255, 0.75);
+    --a2-focus: #3d6fd8;
+    --a2-focus-ring: rgba(61, 111, 216, 0.18);
+    --a2-island-bg: #10131a;
+    --a2-btn-line: #2a55b8;
+    --a2-btn2-line: #8a919d;
+    --a2-focus-ring-2: rgba(61, 111, 216, 0.22);
+    --a2-empty-line: rgba(61, 111, 216, 0.35);
+    --a2-dfoot-line: rgba(61, 111, 216, 0.16);
+    --a2-ilink-line: rgba(42, 92, 204, 0.4);
+    --a2-head-bg: rgba(61, 111, 216, 0.08);
+    --a2-head-line: rgba(61, 111, 216, 0.35);
+    --a2-tree-bg: rgba(61, 111, 216, 0.08);
+    --a2-tree-inset: rgba(61, 111, 216, 0.2);
+    --a2-panel-glow-2: rgba(61, 111, 216, 0.1);
+    --a2-arc-light-2: rgba(61, 111, 216, 0.08);
+    --a2-top-glow-1: rgba(61, 111, 216, 0.11);
+    --a2-top-glow-2: rgba(118, 112, 240, 0.08);
+    --a2-grid-line-status: #0a0b10;
+    --a2-status-dot: #c9ced8;
+    --a2-island-line: rgba(12, 13, 16, 0.08);
+    --a2-chip-ink-shadow: 0 8px 24px -10px rgba(12, 13, 16, 0.35);
+    --a2-shadow-card: 0 24px 48px -32px rgba(20, 32, 70, 0.18);
+    --a2-shadow-panel:
+      0 32px 80px -24px rgba(16, 26, 60, 0.28), 0 0 0 1px rgba(12, 13, 16, 0.04);
+    --a2-shadow-sheet: 0 40px 100px -30px rgba(16, 26, 60, 0.22);
+    --a2-shadow-nav: 0 12px 32px -20px rgba(20, 30, 60, 0.18);
+    --a2-shadow-media: 0 24px 48px -24px rgba(20, 32, 70, 0.22);
+    --a2-shadow-front: 0 40px 80px -30px rgba(20, 20, 50, 0.28);
+    --a2-shadow-pill: 0 10px 30px -14px rgba(20, 32, 70, 0.18);
+    --a2-shadow-stamp: 0 20px 40px -16px rgba(20, 32, 70, 0.22);
+    --a2-btn2-inset: none;
+    --a2-pill-inset: inset 0 0 0 rgba(0, 0, 0, 0);
+    --a2-tile-inset: inset 0 0 0 rgba(0, 0, 0, 0);
+    --a2-reel-grad: linear-gradient(95deg, #4351c6, #6744cc);
+    --a2-accent: linear-gradient(
+      100deg,
+      #1e4fbd 0%,
+      #2a5ccc 40%,
+      #3d6fd8 75%,
+      #5f43c4 100%
+    );
+    --a2-accent-2: linear-gradient(
+      95deg,
+      #2552b2 0%,
+      #2a5ccc 55%,
+      #4351c6 100%
+    );
+    --a2-hero-grad: linear-gradient(
+      160deg,
+      #f3f6fd 0%,
+      #eef2fc 45%,
+      #e9eefb 68%,
+      #f5f7fd 100%
+    );
+    --a2-top-grad: linear-gradient(
+      160deg,
+      #f3f6fd 0%,
+      #eef2fc 50%,
+      #eaeffb 75%,
+      #f5f7fd 100%
+    );
+    --a2-status-grad: linear-gradient(
+      160deg,
+      #f4f5f8 0%,
+      #fbfcfe 45%,
+      #f1f3f7 68%,
+      #fbfcfe 100%
+    );
+    --a2-plan-grad: linear-gradient(160deg, #eaf0fd, #f5f8fe);
+    --a2-note-grad: linear-gradient(160deg, #eef3fd, #f8f9fd);
+    --a2-panel-grad: linear-gradient(180deg, #ffffff, #f8f9fd);
+    --a2-sheet-grad: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(250, 251, 254, 0.98)
+    );
+    --a2-ticker-bg: linear-gradient(
+      90deg,
+      rgba(61, 111, 216, 0.06),
+      rgba(61, 111, 216, 0.03) 60%,
+      transparent
+    );
+    --a2-heading-hl: linear-gradient(
+      90deg,
+      rgba(61, 111, 216, 0.08),
+      rgba(61, 111, 216, 0) 70%
+    );
+    --a2-reel-rule: linear-gradient(
+      90deg,
+      transparent,
+      rgba(61, 111, 216, 0.35) 18%,
+      rgba(61, 111, 216, 0.35) 82%,
+      transparent
+    );
+    --a2-hue-sky-rgb: 56 140 200;
+    --a2-hue-blue-rgb: 61 111 216;
+    --a2-hue-peri-rgb: 88 104 224;
+    --a2-hue-lilac-rgb: 120 90 220;
+    --a2-hue-mist-rgb: 80 110 220;
+    --a2-hue-aqua-rgb: 30 150 190;
+    --a2-mint-rgb: 12 116 80;
+    --a2-err-rgb: 198 47 39;
+    --a2-err-text-rgb: 176 38 31;
+    --a2-glow-k: 0.66;
+    --a2-glow-text-k: 0;
+    --a2-node-glow-k: 0.6;
+    --a2-grain-op: 0.04;
+    --a2-tex-k: 0.7;
+    --a2-paper-op: 0.1;
+    --a2-grid-op: 0.06;
+    --a2-grid-op-status: 0.05;
+    --a2-arc-blur-op: 0.18;
+    --a2-pale-rgb: 29 63 140;
+    --a2-rail-op: 0.6;
+    --a2-rail-label-op: 0.8;
+    --a2-side-cover-filter: grayscale(0.5) brightness(1.02) opacity(0.8);
+    --a2-selection: rgba(61, 111, 216, 0.2);
+    color-scheme: light;
+  }
+  :root:root .a2-island {
+    --a2-text-white: #ffffff;
+    --a2-text-hi: #f0f2f5;
+    --a2-text: #c4c8d0;
+    --a2-text-lead: rgba(255, 255, 255, 0.78);
+    --a2-text-mid: #8a909b;
+    --a2-text-lo: #868c97;
+    --a2-text-path: #9aa1ad;
+    --a2-text-mono-2: #9aa3b2;
+    --a2-text-dim: #3a3f49;
+    --a2-text-faint: #4a505c;
+    --a2-text-glyph: #f0f6ff;
+    --a2-reel-dim: #c9d6ee;
+    --a2-reel-hi: #dbe5f6;
+    --a2-song-current: #d9cffb;
+    --a2-meta-hi: rgba(214, 226, 246, 0.84);
+    --a2-meta: rgba(196, 214, 242, 0.66);
+    --a2-meta-lo: rgba(196, 214, 242, 0.5);
+    --a2-meta-arrow: rgba(196, 214, 242, 0.4);
+    --a2-hero-label: rgba(255, 255, 255, 0.84);
+    --a2-hero-dt: rgba(255, 255, 255, 0.62);
+    --a2-line: #1b1e24;
+    --a2-line-2: #23262e;
+    --a2-line-3: #2e323b;
+    --a2-field-line: #2e3440;
+    --a2-rule-bold: rgba(240, 242, 245, 0.82);
+    --a2-line-soft: rgba(196, 214, 242, 0.14);
+    --a2-line-blue: rgba(143, 180, 236, 0.14);
+    --a2-line-blue-2: rgba(143, 180, 236, 0.2);
+    --a2-line-blue-3: rgba(143, 180, 236, 0.3);
+    --a2-line-blue-4: rgba(143, 180, 236, 0.45);
+    --a2-panel-line: rgba(143, 180, 236, 0.26);
+    --a2-tile-line: rgba(196, 214, 242, 0.16);
+    --a2-tile-line-2: rgba(196, 214, 242, 0.22);
+    --a2-pill-line: rgba(196, 214, 242, 0.2);
+    --a2-pill-sep: rgba(196, 214, 242, 0.18);
+    --a2-blue: #3d6fd8;
+    --a2-blue-hover: #4a7be0;
+    --a2-blue-dark: #2a55b8;
+    --a2-blue-navy: #244577;
+    --a2-link: #8fadda;
+    --a2-soft: #8fb4ec;
+    --a2-pale: #c4d6f2;
+    --a2-blue-ink: #b0c6e8;
+    --a2-lilac: #a99cf0;
+    --a2-violet: #6f63d8;
+    --a2-hue-sky: #7fc0e6;
+    --a2-hue-blue: #8fb4ec;
+    --a2-hue-peri: #9aa8f4;
+    --a2-hue-lilac: #b19cf0;
+    --a2-hue-mist: #a1b4f4;
+    --a2-hue-aqua: #80cdea;
+    --a2-hue-sky-rgb: 127 192 230;
+    --a2-hue-blue-rgb: 143 180 236;
+    --a2-hue-peri-rgb: 154 168 244;
+    --a2-hue-lilac-rgb: 177 156 240;
+    --a2-hue-mist-rgb: 161 180 244;
+    --a2-hue-aqua-rgb: 128 205 234;
+    --a2-reel-grad: linear-gradient(95deg, #9aa8f4, #b8b0fa);
+    --a2-mint: #86d4b4;
+    --a2-mint-rgb: 134 212 180;
+    --a2-err: #f47067;
+    --a2-err-text: #f69a93;
+    --a2-err-rgb: 244 112 103;
+    --a2-err-text-rgb: 246 154 147;
+    --a2-card-bg: rgba(18, 20, 25, 0.86);
+    --a2-card-flat: rgba(18, 20, 25, 0.6);
+    --a2-card-solid: rgba(18, 20, 25, 0.9);
+    --a2-empty-bg: rgba(18, 20, 25, 0.5);
+    --a2-tint: rgba(61, 111, 216, 0.07);
+    --a2-tint-soft: rgba(143, 180, 236, 0.08);
+    --a2-chip-active: rgba(143, 173, 218, 0.14);
+    --a2-mark: rgba(61, 111, 216, 0.3);
+    --a2-pill-bg: rgba(13, 26, 66, 0.55);
+    --a2-btn2-bg: rgba(13, 26, 66, 0.42);
+    --a2-tile-bg: rgba(255, 255, 255, 0.04);
+    --a2-tab-active: rgba(255, 255, 255, 0.06);
+    --a2-deck-back: #151a24;
+    --a2-album-bg: #16181c;
+    --a2-diagram-glow: rgba(154, 168, 244, 0.18);
+    --a2-diagram-box: rgba(11, 12, 15, 0.85);
+    --a2-code-bg: rgba(9, 12, 18, 0.72);
+    --a2-code-bar: rgba(6, 11, 30, 0.75);
+    --a2-code-dim: #5d6575;
+    --a2-code-meta: #a7b0c0;
+    --a2-code-fg2: #e6e8ee;
+    --a2-code-fg3: #e8f0ff;
+    --a2-on-blue: #ffffff;
+    --a2-island-bg: rgba(0, 0, 0, 0);
+    --a2-btn-line: rgba(196, 214, 242, 0.5);
+    --a2-btn2-line: rgba(196, 214, 242, 0.26);
+    --a2-focus-ring-2: rgba(143, 173, 218, 0.2);
+    --a2-empty-line: rgba(143, 180, 236, 0.22);
+    --a2-dfoot-line: rgba(143, 180, 236, 0.12);
+    --a2-ilink-line: rgba(143, 180, 236, 0.4);
+    --a2-head-bg: rgba(143, 180, 236, 0.12);
+    --a2-head-line: rgba(143, 180, 236, 0.32);
+    --a2-tree-bg: rgba(61, 111, 216, 0.09);
+    --a2-tree-inset: rgba(143, 180, 236, 0.16);
+    --a2-panel-glow-2: rgba(53, 99, 200, 0.3);
+    --a2-arc-light-2: rgba(143, 180, 236, 0.3);
+    --a2-top-glow-1: rgba(104, 152, 230, 0.22);
+    --a2-top-glow-2: rgba(118, 112, 240, 0.12);
+    --a2-grid-line-status: #ffffff;
+    --a2-status-dot: rgba(196, 214, 242, 0.3);
+    --a2-pale-rgb: 196 214 242;
+    --a2-pill-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --a2-tile-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --a2-cover-dot: rgba(196, 214, 242, 0.5);
+    --a2-cover-line: rgba(196, 214, 242, 0.45);
+    --a2-hero-mask: #000;
+    --a2-code-bg: #10131a;
+    color: var(--a2-text);
+  }
+}
