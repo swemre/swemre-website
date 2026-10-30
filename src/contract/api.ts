@@ -1,0 +1,242 @@
+/**
+ * Copyright 2026 swemre (emre@swemre.com). All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 with the Commons Clause
+ * License Condition v1.0 (the "License"). Personal use of this code and
+ * content is permitted; any commercial gain requires prior written
+ * permission from the copyright holder. See the LICENSE file for full terms.
+ *
+ * Contact: emre@swemre.com
+ */
+
+// Wire JSON of SWEPress public API v2, as served by the real API and by mock/plugin.ts.
+// Base: ${VITE_API_BASE}/public/v2/channels/${VITE_CHANNEL_KEY}. Header X-Read-Key on reads.
+// Owner: agent C. Others import, never edit; ask C for changes.
+
+export type Uuid = string
+/** ISO-8601 UTC timestamp. */
+export type Instant = string
+
+export interface ApiMedia {
+  id: Uuid
+  /** Relative to VITE_API_BASE unless it starts with http or /. */
+  url: string
+  alt?: string | null
+  mimeType?: string
+  width?: number
+  height?: number
+}
+
+export type TermKind = 'CATEGORY' | 'TAG'
+export interface ApiTerm {
+  id: Uuid
+  kind: TermKind
+  name: string
+  slug: string
+  /** GET /terms only. */
+  publicationCount?: number
+  description?: string | null
+}
+
+export type ContentTypeKey =
+  | 'article'
+  | 'project'
+  | 'page'
+  | 'song'
+  | 'author'
+  | 'site-settings'
+
+/** An item of GET /publications. */
+export interface ApiPublicationSummary {
+  id: Uuid
+  documentId: Uuid
+  workId: Uuid
+  contentType: ContentTypeKey
+  locale: string
+  slug: string
+  title: string
+  excerpt?: string | null
+  author?: string | null
+  cover: ApiMedia | null
+  /** Per content type, see FieldMap. */
+  fields: Record<string, unknown>
+  /** The website-page distribution's section (if any) and its tags. */
+  terms: ApiTerm[]
+  /** The website-page distribution's category; it is the site area and the first URL segment. */
+  section: ApiTerm | null
+  publishedAt: Instant
+  updatedAt?: Instant
+  seoTitle?: string | null
+  seoDescription?: string | null
+  canonicalUrl: string | null
+  noindex: boolean
+}
+
+/** GET /publications/{slug}. */
+export interface ApiPublication extends ApiPublicationSummary {
+  body?: ApiBody
+  languageVersions: {locale: string; slug: string}[]
+}
+
+/** Bodies are block lists (see contract/blocks.ts). */
+export interface ApiBody {
+  blocks: unknown[]
+}
+
+export interface ApiPage<T> {
+  items: T[]
+  total: number
+  page: number
+  size: number
+}
+
+export interface ApiRedirect {
+  from: string
+  to: string
+  locale: string
+}
+
+export interface ApiListQuery {
+  contentType?: ContentTypeKey
+  /** Term slug, category or tag. */
+  term?: string
+  page?: number
+  /** 1..100 */
+  size?: number
+}
+
+export type FormValue = string | boolean
+export interface ApiFormSubmission {
+  fields: Record<string, FormValue>
+}
+/** 201 of POST /forms/{key}/submissions. */
+export interface ApiSubmittedForm {
+  id: Uuid
+  receivedAt: Instant
+  submittedAt?: Instant
+  ignoredFields?: string[]
+}
+
+export interface ApiErrorBody {
+  key:
+    | 'NOT_FOUND'
+    | 'VALIDATION_FAILED'
+    | 'FORM_CLOSED'
+    | 'RATE_LIMITED'
+    | 'CHANNEL_READ_DENIED'
+    | 'UNAVAILABLE'
+    | 'INTERNAL'
+    | (string & {})
+  message: string
+  errors: {field: string; message: string}[]
+  /** 500 answers carry it; the 500 page shows it. */
+  requestId?: string
+}
+
+/** The fields object per content type. All optional; adapters apply defaults. */
+export interface FieldMap {
+  article: {
+    summary?: string
+    readingTime?: number
+    coverStyle?: 'image' | 'code' | 'none'
+    codeCover?: string
+    codeCoverFile?: string
+    codeCoverRepo?: string
+    coverCaption?: string
+    revision?: number
+    faq?: {q: string; a: string}[]
+  }
+  project: {
+    summary?: string
+    status?: 'now-building' | 'live' | 'source-only' | 'archived'
+    version?: string
+    year?: number
+    language?: string
+    url?: string
+    repoUrl?: string
+    docsUrl?: string
+    privateRepo?: boolean
+    featured?: boolean
+    order?: number
+    codeCover?: string
+    codeCoverFile?: string
+  }
+  page: {
+    lead?: string
+    eyebrow?: string
+    policyVersion?: string
+    effectiveDate?: string
+    changelogUrl?: string
+    pdfUrl?: string
+    showToc?: boolean
+    showPrint?: boolean
+    formKey?: FormKey
+  }
+  song: {
+    artist?: string
+    album?: string
+    year?: number
+    spotifyUrl?: string
+    artwork?: ApiMedia
+  }
+  author: {
+    name?: string
+    role?: string
+    headline?: string
+    writingSince?: number
+    availability?: string
+    availableFrom?: string
+    links?: {label: string; url: string}[]
+    currentProject?: string
+  }
+  'site-settings': {
+    tagline?: string
+    contactEmail?: string
+    footerTagline?: string
+    heroEyebrow?: string
+    heroLead?: string
+    nowBuilding?: string
+    latestArticle?: string
+    newsletterCadence?: string
+    statusUrl?: string
+    maintenance?: {from: string; until: string} | null
+    likedSongsTotal?: number
+    social?: {github?: string; youtube?: string; linkedin?: string; spotify?: string}
+  }
+}
+
+export type FormKey =
+  | 'newsletter'
+  | 'contact'
+  | 'cv-request'
+  | 'callback-request'
+  | 'newsletter-confirm'
+  | 'newsletter-unsubscribe'
+
+/** The client agent C implements in src/data/client.ts; mock and real API both satisfy it. */
+export interface PublicApiClient {
+  list(query: ApiListQuery): Promise<ApiPage<ApiPublicationSummary>>
+  listAll(
+    query: Omit<ApiListQuery, 'page' | 'size'>,
+  ): Promise<ApiPublicationSummary[]>
+  /** 404 resolves to undefined. */
+  get(slug: string): Promise<ApiPublication | undefined>
+  terms(kind?: TermKind): Promise<ApiTerm[]>
+  redirects(): Promise<ApiRedirect[]>
+  submit(
+    form: FormKey,
+    fields: Record<string, FormValue>,
+  ): Promise<ApiSubmittedForm>
+  mediaUrl(media: ApiMedia): string
+}
+
+/** Thrown by the client for non-2xx answers other than a read's 404. */
+export class ApiError extends Error {
+  readonly status: number
+  readonly body?: ApiErrorBody
+  constructor(status: number, body?: ApiErrorBody) {
+    super(body?.message ?? `HTTP ${status}`)
+    this.status = status
+    this.body = body
+  }
+}

@@ -27,8 +27,8 @@
       property="og:description"
       content="Portfolio, articles and projects of Emre, software engineer."
     />
-    <meta property="og:url" content="%SITE_URL%/" />
-    <meta property="og:image" content="%SITE_URL%/images/avatar-384.png" />
+    <meta property="og:url" content="http://localhost:5173/" />
+    <meta property="og:image" content="http://localhost:5173/images/avatar-384.png" />
     <meta name="twitter:card" content="summary" />
     <link
       rel="alternate"
@@ -36,16 +36,22 @@
       title="swemre articles"
       href="/rss.xml"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+    />
+    <!-- Theme before first paint: dark unless the visitor chose light -->
     <script>
       try {
         var t = localStorage.getItem('swemre:theme')
-        if (t !== 'light' && t !== 'dark') {
-          t = matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light'
-        }
+        if (t !== 'light') t = 'dark'
         document.documentElement.dataset.theme = t
-      } catch (e) {}
+        if (t === 'light') document.documentElement.classList.add('a2-light')
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark'
+      }
     </script>
   </head>
   <body>
