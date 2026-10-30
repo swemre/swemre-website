@@ -35,6 +35,8 @@ export interface Receipt {
 export interface FormDef {
   key: FormKey
   route: string
+  /** The page's hero text. */
+  hero: {eyebrow: string; title: string; lead: string}
   /** Hue of the page: rail, number, glow and receipt. */
   hue: 'aqua' | 'blue'
   /** Rail labels of the hero and the form section (desktop and 4K). */
@@ -158,6 +160,11 @@ const newsletterFields: FieldSpec[] = [
 export const NEWSLETTER: FormDef = {
   key: 'newsletter',
   route: '/newsletter',
+  hero: {
+    eyebrow: t('form.newsletter.page.eyebrow'),
+    title: t('form.newsletter.page.title'),
+    lead: t('form.newsletter.page.lead'),
+  },
   hue: 'blue',
   commits: ['ne75e11', 'acce55d'],
   fields: newsletterFields,
@@ -198,6 +205,11 @@ export const NEWSLETTER: FormDef = {
 export const CONTACT: FormDef = {
   key: 'contact',
   route: '/contact',
+  hero: {
+    eyebrow: t('form.contact.page.eyebrow'),
+    title: t('form.contact.page.title'),
+    lead: t('form.contact.page.lead'),
+  },
   hue: 'aqua',
   commits: ['c0ntac7', '5e7d0a1'],
   fields: [
@@ -403,6 +415,11 @@ const callbackFields: FieldSpec[] = [
 export const CALLBACK: FormDef = {
   key: 'callback-request',
   route: '/call-back',
+  hero: {
+    eyebrow: t('form.callback.page.eyebrow'),
+    title: t('form.callback.page.title'),
+    lead: t('form.callback.page.lead'),
+  },
   hue: 'aqua',
   commits: ['ca11bac', 'd1a10ff'],
   fields: callbackFields,
@@ -459,13 +476,6 @@ export const CALLBACK: FormDef = {
   },
 }
 
-export const FORMS: Record<string, FormDef> = {
-  newsletter: NEWSLETTER,
-  contact: CONTACT,
-  'callback-request': CALLBACK,
-}
-
-/** The form of a route, for pages without a formKey. */
 export const FORM_BY_ROUTE: Record<string, FormDef> = Object.fromEntries(
-  Object.values(FORMS).map(f => [f.route, f]),
+  [NEWSLETTER, CONTACT, CALLBACK].map(f => [f.route, f]),
 )

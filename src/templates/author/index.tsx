@@ -48,7 +48,7 @@ export function AuthorTemplate({route}: TemplateProps) {
     return (
       <PageError
         what={t('state.what.author')}
-        command={`GET /api/public/v2/channels/swemre-website/publications/${slug}`}
+        command="GET /api/public/v2/channels/swemre-website/publications?content-type=project"
         onRetry={res.retry}
       />
     )

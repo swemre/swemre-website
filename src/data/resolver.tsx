@@ -14,8 +14,8 @@
 //   /:a                     -> publication :a
 //   /:a/:b                  -> publication :b, then its canonical path must equal the URL
 //   deeper, or unknown      -> not-found (notFoundKind from the first segment)
-//   /sp/:slug               -> redirect to /policies/:slug; API 301s (e.g. /about) are followed
-//                              by fetch and end on the canonical path of the target
+//   /sp/:slug               -> redirect to /policies/:slug; /about and /callback redirect to
+//                              their site routes; API 301s are followed by fetch
 //   API 503 / unreachable   -> unavailable (logo bar, no footer); other API 5xx -> error (requestId)
 import {
   Component,
@@ -45,21 +45,51 @@ import {
   localeHref,
   t,
   type Locale,
+  type TextKey,
 } from '../i18n/index.ts'
+
+/** Title and description of the site's own routes. */
+const ROUTE_HEAD: Record<string, [TextKey, TextKey]> = {
+  '/': ['route.home.title', 'route.home.description'],
+  '/articles': ['route.articles.title', 'route.articles.description'],
+  '/projects': ['route.projects.title', 'route.projects.description'],
+  '/search': ['route.search.title', 'route.search.description'],
+  '/newsletter': ['route.newsletter.title', 'route.newsletter.description'],
+  '/contact': ['route.contact.title', 'route.contact.description'],
+  '/call-back': ['route.callback.title', 'route.callback.description'],
+  '/newsletter/confirmed': [
+    'route.confirmed.title',
+    'route.confirmed.description',
+  ],
+  '/newsletter/unsubscribed': [
+    'route.unsubscribed.title',
+    'route.unsubscribed.description',
+  ],
+}
+
+function routeHead(route: ResolvedRoute): [string, string | undefined] {
+  const pub = route.publication
+  if (pub)
+    return [
+      pub.seoTitle ?? pub.title,
+      pub.seoDescription ?? pub.excerpt ?? undefined,
+    ]
+  if (route.template === 'topic')
+    return [t('route.topic.title'), t('route.topic.description')]
+  if (route.template === 'author') return ['Emre', t('author.profile.headline')]
+  if (route.template === 'not-found') return [t('notFound.mark'), undefined]
+  const keys = ROUTE_HEAD[route.path]
+  return keys ? [t(keys[0]), t(keys[1])] : ['', undefined]
+}
 
 function setHead(route: ResolvedRoute) {
   const pub = route.publication
-  const title = pub
-    ? (pub.seoTitle ?? pub.title)
-    : route.template === 'not-found'
-      ? t('notFound.mark')
-      : ''
+  const [title, desc] = routeHead(route)
   document.title = !title
     ? 'SWEMRE'
     : title.includes('SWEMRE')
       ? title
       : `${title} · SWEMRE`
-  const desc = pub?.seoDescription ?? pub?.excerpt
   if (desc) setMeta('name', 'description', desc)
   const url = SITE_URL + localeHref(locale, route.path)
   setMeta('property', 'og:title', document.title)

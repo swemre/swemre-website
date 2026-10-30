@@ -21,7 +21,6 @@ import type {Block, Hue} from '../contract/blocks.ts'
 import {RESERVED_TAGS} from '../contract/templates.ts'
 import type {
   ArticleSummary,
-  AuthorRef,
   Crumb,
   Media,
   Page,
@@ -39,8 +38,7 @@ import {t} from '../i18n/index.ts'
 const HUES: Hue[] = ['blue', 'sky', 'lilac', 'peri', 'aqua', 'mist']
 const RESERVED = new Set<string>(RESERVED_TAGS)
 
-export const isReservedTag = (slug: string) =>
-  RESERVED.has(slug) || slug.startsWith('layout-')
+export const isReservedTag = (slug: string) => RESERVED.has(slug)
 
 function fieldsOf<K extends keyof FieldMap>(
   pub: ApiPublicationSummary,
@@ -199,7 +197,6 @@ export function crumbsOf(pub: ApiPublicationSummary): Crumb[] {
 export function toPage(pub: ApiPublication): Page {
   const f = fieldsOf<'page'>(pub)
   const tags = pub.terms.filter(t => t.kind === 'TAG').map(t => t.slug)
-  const layout = tags.find(t => t.startsWith('layout-'))
   return {
     slug: pub.slug,
     href: canonicalHref(pub),
@@ -208,7 +205,6 @@ export function toPage(pub: ApiPublication): Page {
     lead: f.lead ?? pub.excerpt ?? undefined,
     section: pub.section ? termRef(pub.section) : undefined,
     tags,
-    layout: layout?.slice('layout-'.length),
     body: blocksOf(pub),
     updatedAt: pub.updatedAt ?? pub.publishedAt,
     policyVersion: f.policyVersion,
@@ -217,7 +213,6 @@ export function toPage(pub: ApiPublication): Page {
     pdfUrl: f.pdfUrl,
     showToc: f.showToc ?? false,
     showPrint: f.showPrint ?? false,
-    formKey: f.formKey,
     seo: seoOf(pub),
     crumbs: crumbsOf(pub),
   }
@@ -235,20 +230,6 @@ export function toSong(pub: ApiPublicationSummary): Song {
       f.spotifyUrl ??
       `https://open.spotify.com/search/${encodeURIComponent(pub.title)}`,
     artwork: media(f.artwork, f.album ? `${f.album} album cover` : pub.title),
-  }
-}
-
-export function toAuthorRef(
-  pub: ApiPublicationSummary | undefined,
-  name?: string | null,
-): AuthorRef {
-  if (!pub) return {name: name ?? 'Emre', href: '/authors/emre'}
-  const f = fieldsOf<'author'>(pub)
-  return {
-    name: f.name ?? pub.title,
-    role: f.role,
-    href: canonicalHref(pub),
-    avatar: media(pub.cover, f.name ?? pub.title),
   }
 }
 

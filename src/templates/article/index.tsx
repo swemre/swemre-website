@@ -312,7 +312,7 @@ function ArticleView({a}: {a: Article}) {
             <div className="a2-c">
               <SectionHead
                 eyebrow={t('article.faq.eyebrow')}
-                title={a.faqTitle ?? faqTitle(a)}
+                title={faqTitle(a)}
                 action={
                   <Button
                     kind="secondary"

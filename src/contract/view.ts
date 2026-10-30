@@ -12,7 +12,6 @@
 // What templates and components receive. Adapters in src/data turn ApiPublication into these;
 // templates never read `fields` themselves. Owner: agent C.
 import type {Block, Hue} from './blocks.ts'
-import type {FormKey} from './api.ts'
 
 export type {Hue}
 export interface Link {
@@ -79,7 +78,6 @@ export interface Article extends ArticleSummary {
   author: AuthorRef
   revision?: number
   faq: {q: string; a: string}[]
-  faqTitle?: string
   seo: Seo
   prev?: ArticleSummary
   next?: ArticleSummary
@@ -132,10 +130,7 @@ export interface Page {
   eyebrow?: string
   lead?: string
   section?: TermRef
-  /** Plain tag slugs, layout-* included. */
   tags: string[]
-  /** The layout-* tag without its prefix, if any. */
-  layout?: string
   body: Block[]
   updatedAt: string
   policyVersion?: string
@@ -144,7 +139,6 @@ export interface Page {
   pdfUrl?: string
   showToc: boolean
   showPrint: boolean
-  formKey?: FormKey
   seo: Seo
   crumbs: Crumb[]
 }

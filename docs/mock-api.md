@@ -5,6 +5,14 @@ read with a read key. In development the Vite plugin in `mock/plugin.ts` answers
 the seed files in `mock/seed/*.json`. No backend is needed. The same plugin runs on
 `npm run preview`.
 
+**Headless.** SWEPress supplies only real content: articles, projects, real pages (such as
+`privacy-policy`), the site settings and, for now, songs. The routes, the templates and their
+text belong to the site. `/`, `/articles`, `/articles/topic/<term>`, `/projects`, `/search`,
+`/newsletter`, `/contact`, `/call-back`, the `/newsletter/thanks|confirmed|unsubscribed` pages and
+`/authors/emre` are built in code and never ask the CMS for a page. Their titles, descriptions and
+hero text are in `src/i18n/texts.json` (`route.*`, `form.<newsletter|contact|callback>.page.*`,
+`author.profile.*`).
+
 The mock follows `swemre-website-api/docs/public-api-v2.md`. Where the boards and the real API
 disagree, the mock follows the API:
 
@@ -41,13 +49,13 @@ The mock gives each answer an `X-Request-Id` header.
 
 Lists publication summaries, newest first. A summary is a publication without its `body`.
 
-| Query          | Meaning                                                         |
-| -------------- | --------------------------------------------------------------- |
-| `content-type` | `article`, `project`, `page`, `song`, `author`, `site-settings` |
-| `term`         | a term slug (category or tag)                                   |
-| `page`         | zero-based page number, default `0`                             |
-| `size`         | page size from `1` to `100`, default `20`                       |
-| `locale`       | `en` or `tr`, default `en`; only publications in that language  |
+| Query          | Meaning                                                        |
+| -------------- | -------------------------------------------------------------- |
+| `content-type` | `article`, `project`, `page`, `song`, `site-settings`          |
+| `term`         | a term slug (category or tag)                                  |
+| `page`         | zero-based page number, default `0`                            |
+| `size`         | page size from `1` to `100`, default `20`                      |
+| `locale`       | `en` or `tr`, default `en`; only publications in that language |
 
 ```http
 GET /api/public/v2/channels/swemre-website/publications?content-type=article&size=1
@@ -112,9 +120,9 @@ Returns one publication with its `body`, which holds `{blocks: [{id, type, v, pr
 - An old slug in the redirect list gets `301`, with `Location` set to the new slug's URL.
 
 ```http
-GET /api/public/v2/channels/swemre-website/publications/about
+GET /api/public/v2/channels/swemre-website/publications/old-slug
 → 301 Moved Permanently
-  Location: /api/public/v2/channels/swemre-website/publications/emre
+  Location: /api/public/v2/channels/swemre-website/publications/new-slug
 ```
 
 ### GET /terms
@@ -144,7 +152,9 @@ filters the list, and any other `kind` gets `400`.
 
 ### GET /redirects
 
-Returns the list of old slugs: `[{"from": "about", "to": "emre"}, {"from": "callback", "to": "call-back"}]`.
+Returns the list of old content slugs, `[{"from": "old-slug", "to": "new-slug", "locale": "en"}]`.
+The seed has none: `/about` and `/callback` are old addresses of site routes, so the site
+redirects them itself (to `/authors/emre` and `/call-back`).
 
 ### GET /media/{id}/file
 
@@ -246,7 +256,7 @@ The value is a comma list. Each entry is either `<fault>`, which hits every call
 Resources:
 
 - `publications` (any list)
-- `articles`, `projects`, `pages`, `songs`, `authors`, `settings` (a list or a single item of that type)
+- `articles`, `projects`, `pages`, `songs`, `settings` (a list or a single item of that type)
 - `publication` (any single item), or a slug such as `spring-boot-template`
 - `terms`, `redirects`
 - `forms`, or a form key such as `newsletter` or `contact`
@@ -275,7 +285,6 @@ Each seed file holds one content type:
 - `projects.json`
 - `pages.json`
 - `songs.json`
-- `authors.json`
 - `settings.json` (`site-settings`)
 
 `terms.json` holds the categories and tags. Seed items are short:
@@ -304,31 +313,30 @@ The one `site-settings` publication (slug `site-settings`) holds the site-wide v
 - `latest` is the latest commit.
 - Without `weeks`, the hook is empty and the strip is hidden.
 
-The author `emre` has the portrait `mock/media/avatar-emre.png` as its `cover`, the same image
-as `public/images/avatar-384.png`.
+### Authors
 
-### How a page picks its template
+There is no author content type. The author page `/authors/emre` is the site's own: its data is
+in `src/data/author.ts` and its text in `texts.json` (`author.profile.*`). An article names its
+author in its `author` string field.
 
-The **section** (category) of a publication is its area of the site and the first part of its URL.
-**Reserved tags** choose the layout. All other tags are topics.
+### How a publication picks its template
 
-| Rule                                                   | Template            | URL                  |
-| ------------------------------------------------------ | ------------------- | -------------------- |
-| page + `layout-home`                                   | `home`              | `/`                  |
-| page + section `articles` + `layout-listing`           | `articles`          | `/articles`          |
-| page + section `projects` + `layout-listing`           | `projects`          | `/projects`          |
-| page + `layout-topic`                                  | `topic`             | `/articles/topic/:t` |
-| page + `layout-search`                                 | `search`            | `/search`            |
-| page + `layout-form` (`fields.formKey` picks the form) | `form`              | `/<slug>`            |
-| page + section `newsletter` + `layout-status`          | `newsletter-status` | `/newsletter/<slug>` |
-| page + `layout-author`                                 | `author`            | `/<slug>`            |
-| any other article                                      | `article`           | `/articles/<slug>`   |
-| any other project                                      | `project`           | `/projects/<slug>`   |
-| any other author                                       | `author`            | `/authors/<slug>`    |
-| any other page                                         | `single`            | `/<section>/<slug>`  |
+The content type alone picks the template (`src/data/rules.ts`). The site's own routes are not
+in this table; they never come from the CMS.
 
-`featured` is reserved too. It marks the featured article and the featured projects, and it is
+| Content type | Template  | URL                               |
+| ------------ | --------- | --------------------------------- |
+| article      | `article` | `/articles/<slug>`                |
+| project      | `project` | `/projects/<slug>`                |
+| page         | `single`  | `/<section>/<slug>`, or `/<slug>` |
+
+The **section** (category) of a page is the first part of its URL. Tags are topics. The only
+reserved tag is `featured`: it marks the featured article and the featured projects, and it is
 never shown as a topic.
+
+The form on `/newsletter`, `/contact` and `/call-back` is picked by the route, not by a page
+field. The article template sets the FAQ heading itself; an article carries only its `faq`
+items.
 
 `/sp/<slug>` redirects to a page's canonical URL, and so does any page reached by a
 non-canonical path. An old slug from `/redirects` redirects to its new slug.
@@ -339,11 +347,13 @@ non-canonical path. An old slug from `/redirects` redirects to its new slug.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | article       | 12. `spring-boot-template` has the full body, FAQ, previous and next                                                                       |
 | project       | 7. `swemre-website-api` has the full body                                                                                                  |
-| page          | home, articles, topic, projects, search, newsletter, contact, call-back, thanks, confirmed, unsubscribed, privacy-policy                   |
+| page          | `privacy-policy`                                                                                                                           |
 | song          | 12 liked songs (the site shows 412 from settings); the first five have album art                                                           |
-| author        | `emre`                                                                                                                                     |
 | site-settings | one item: taglines, contact email, hero copy, newsletter cadence, the liked-songs total, the projects activity strip, socials, maintenance |
-| terms         | 9 categories (site areas and article categories); 26 tags: 13 article topics (Kotlin has none), project-only tags, the reserved tags       |
+| terms         | 6 categories (`policies` and 5 article categories); 18 tags: 13 article topics (Kotlin has none), 4 project-only tags, `featured`          |
+
+Songs are still the `song` content type. They will move to a SWEPress data table once its
+endpoint is known.
 
 The articles `typed-api-clients` and `ai-pair-programming`, and the copy of the `tokenset`
 project, are made up to fill the lists. No board shows them in full.
@@ -360,8 +370,8 @@ fields that differ in Turkish. The mock then serves a second publication for it 
 each other in `languageVersions`. Every item, in lists too, carries `languages`: the sorted
 locales it is published in on the channel, its own included (SWEPress api#183).
 
-Only the pages (except `privacy-policy`) and the site settings have Turkish versions. Everything
+Only the site settings have a Turkish version. Everything
 else falls back to English: lists merge both languages by `workId`, preferring Turkish. A
-single page on `/tr` first reads the English version and asks for `tr` only when its `languages`
+single publication on `/tr` first reads the English version and asks for `tr` only when its `languages`
 list has it, so a missing translation makes no `404`. Against an API without `languages` it asks
 for `tr` first and for `en` after a `404`. A page shown in English on `/tr` gets a note saying so.

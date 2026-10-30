@@ -17,6 +17,7 @@ import type {
 } from '../contract/templates.ts'
 import {toSettings} from './adapters.ts'
 import {UNREACHABLE} from './client.ts'
+import {AUTHOR_SLUG} from './author.ts'
 import {canonicalHref, selectTemplate} from './rules.ts'
 import {fetchResource, resources} from './store.ts'
 
@@ -33,7 +34,7 @@ const UNAVAILABLE: ResolvedRoute['chrome'] = {
 }
 /** Sections whose missing pages show the single-page not-found board. */
 const PAGE_SECTIONS = new Set(['policies', 'newsletter', 'authors'])
-/** Routes that render their template even when the CMS has no page for them. */
+/** The site's own routes: templates and text live in the code, the CMS is never asked for them. */
 const FIXED: Record<string, TemplateKey> = {
   '/': 'home',
   '/articles': 'articles',
@@ -45,6 +46,13 @@ const FIXED: Record<string, TemplateKey> = {
   '/newsletter/thanks': 'newsletter-status',
   '/newsletter/confirmed': 'newsletter-status',
   '/newsletter/unsubscribed': 'newsletter-status',
+  [`/authors/${AUTHOR_SLUG}`]: 'author',
+}
+
+/** Old addresses of the site's own routes. */
+const ALIASES: Record<string, string> = {
+  '/about': `/authors/${AUTHOR_SLUG}`,
+  '/callback': '/call-back',
 }
 
 export function requestId(): string {
@@ -111,17 +119,13 @@ export async function resolvePath(rawPath: string): Promise<Resolution> {
   const segments = path.split('/').filter(Boolean).map(decodeURIComponent)
   if (segments[0] === 'sp' && segments.length === 2)
     return {redirect: `/policies/${segments[1]}`}
+  if (ALIASES[path]) return {redirect: ALIASES[path]}
 
   const topic =
     segments.length === 3 &&
     segments[0] === 'articles' &&
     segments[1] === 'topic'
   if (segments.length > 2 && !topic) return notFound(path, segments)
-  const slug = topic
-    ? 'topic'
-    : segments.length === 0
-      ? 'home'
-      : segments[segments.length - 1]
 
   const window = await maintenance()
   if (window) {
@@ -131,27 +135,28 @@ export async function resolvePath(rawPath: string): Promise<Resolution> {
     }
   }
 
+  const slug = segments.at(-1) ?? ''
+  const fixed = topic ? 'topic' : FIXED[path]
+  if (fixed) {
+    const params: Record<string, string> = topic
+      ? {slug, term: segments[2]}
+      : {slug}
+    return {route: {template: fixed, path, chrome: FULL}, params}
+  }
+
   let pub: ApiPublication | undefined
   try {
     pub = await fetchResource(...resources.pub(slug))
   } catch (e) {
     return failure(path, e)
   }
-  const params: Record<string, string> = {
-    slug: segments.at(-1) ?? 'home',
-    ...(topic ? {term: segments[2]} : {}),
-  }
-  if (!pub) {
-    const fixed = topic ? 'topic' : FIXED[path]
-    return fixed
-      ? {route: {template: fixed, path, chrome: FULL}, params}
-      : notFound(path, segments)
-  }
+  if (!pub) return notFound(path, segments)
   const template = selectTemplate(pub)
   if (template === 'not-found') return notFound(path, segments)
-  if (!topic) {
-    const canonical = canonicalHref(pub)
-    if (canonical !== path) return {redirect: canonical}
+  const canonical = canonicalHref(pub)
+  if (canonical !== path) return {redirect: canonical}
+  return {
+    route: {template, path, publication: pub, chrome: FULL},
+    params: {slug},
   }
-  return {route: {template, path, publication: pub, chrome: FULL}, params}
 }

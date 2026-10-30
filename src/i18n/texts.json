@@ -131,6 +131,31 @@
   "author.cta.link": {"en": "send a message", "tr": "mesaj gönderin"},
   "author.focus": {"en": "Focus", "tr": "Odak"},
   "author.latest": {"en": "latest", "tr": "en son"},
+  "author.profile.availability": {
+    "en": "Open to new projects",
+    "tr": "Yeni projelere açığım"
+  },
+  "author.profile.availableFrom": {
+    "en": "From January 2027, remote or Amsterdam.",
+    "tr": "Ocak 2027'den itibaren, uzaktan ya da Amsterdam."
+  },
+  "author.profile.background": {
+    "en": "Enterprise Java first, now my own products.",
+    "tr": "Önce kurumsal Java, şimdi kendi ürünlerim."
+  },
+  "author.profile.body": {
+    "en": "I spent years building enterprise Java. Now I build my own products: SwePress, the API behind it and this website, and I write about what I learn on the way.",
+    "tr": "Yıllarca kurumsal Java geliştirdim. Şimdi kendi ürünlerimi geliştiriyorum: SwePress, arkasındaki API ve bu web sitesi; yol boyunca öğrendiklerimi de yazıyorum."
+  },
+  "author.profile.focus": {
+    "en": "Java services and React front ends",
+    "tr": "Java servisleri ve React ön yüzleri"
+  },
+  "author.profile.headline": {
+    "en": "I build Java services and React front ends, and write down what I learn while building them.",
+    "tr": "Java servisleri ve React ön yüzleri geliştiriyor, geliştirirken öğrendiklerimi yazıya döküyorum."
+  },
+  "author.profile.role": {"en": "Software engineer", "tr": "Yazılım mühendisi"},
   "author.readTitle": {"en": "Read {title}", "tr": "Oku: {title}"},
   "author.showing": {
     "en": "Showing {count} / newest first",
@@ -244,6 +269,18 @@
     "en": "Anything I should read before the call",
     "tr": "Görüşmeden önce okumam gereken bir şey"
   },
+  "form.callback.page.eyebrow": {
+    "en": "// call back · Mon to Fri, 09:00 to 18:00 CET",
+    "tr": "// geri arama · Pzt–Cum, 09:00–18:00 CET"
+  },
+  "form.callback.page.lead": {
+    "en": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
+    "tr": "Bir numara ya da e-posta ve size uyan saatleri bırakın. Genellikle iki iş günü içinde kendim geri ararım."
+  },
+  "form.callback.page.title": {
+    "en": "Let me call you back.",
+    "tr": "Sizi geri arayayım."
+  },
   "form.callback.receipt.copy": {
     "en": "Thanks, {name}. I’ll call you in one of the slots you picked and send a short email first to confirm the time.",
     "tr": "Teşekkürler, {name}. Seçtiğiniz aralıklardan birinde sizi arayacağım ve saati onaylamak için önce kısa bir e-posta göndereceğim."
@@ -313,6 +350,18 @@
   "form.contact.optIn.hint": {
     "en": "(optional, unsubscribe any time)",
     "tr": "(isteğe bağlı, istediğiniz zaman ayrılabilirsiniz)"
+  },
+  "form.contact.page.eyebrow": {
+    "en": "// now playing · 1987 · Never Gonna Give You Up · Rick Astley",
+    "tr": "// now playing · 1987 · Never Gonna Give You Up · Rick Astley"
+  },
+  "form.contact.page.lead": {
+    "en": "A project, a question or a bug you can’t shake. I read every message myself and reply within two working days.",
+    "tr": "Bir proje, bir soru ya da kurtulamadığınız bir hata. Her mesajı kendim okurum ve iki iş günü içinde yanıtlarım."
+  },
+  "form.contact.page.title": {
+    "en": "Never gonna let you down.",
+    "tr": "Seni asla yarı yolda bırakmam."
   },
   "form.contact.receipt.copy": {
     "en": "Thanks, {name}. I’ll reply within two working days, from my own inbox, not a no-reply address. Here’s what you sent.",
@@ -407,6 +456,15 @@
   "form.newsletter.failure": {
     "en": "That didn’t subscribe you. Nothing was lost, so press Try again.",
     "tr": "Abonelik yapılamadı. Hiçbir şey kaybolmadı, Tekrar dene'ye basın."
+  },
+  "form.newsletter.page.eyebrow": {"en": "// newsletter", "tr": "// bülten"},
+  "form.newsletter.page.lead": {
+    "en": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
+    "tr": "Java, React, mimari ve yapay zekâ üzerine pratik notlar, artı bu hafta ne bozduysam. İş yerinden bir arkadaşa yazar gibi yazılmış."
+  },
+  "form.newsletter.page.title": {
+    "en": "Let’s stay in touch.",
+    "tr": "İletişimde kalalım."
   },
   "form.newsletter.receipt.copy": {
     "en": "I sent a confirmation link to {email}. Click it and the next article comes straight to you. Not there in a minute? Look in spam or promotions.",
@@ -1078,6 +1136,62 @@
   "reading.project": {"en": "Project", "tr": "Proje"},
   "recent.eyebrow": {"en": "back to reading", "tr": "okumaya dön"},
   "recent.title": {"en": "Recent articles", "tr": "Son yazılar"},
+  "route.articles.description": {
+    "en": "Notes on building for the web: Java services, React front ends and the architecture behind my projects.",
+    "tr": "Web için geliştirme üzerine notlar: Java servisleri, React ön yüzleri ve projelerimin arkasındaki mimari."
+  },
+  "route.articles.title": {"en": "Articles", "tr": "Yazılar"},
+  "route.callback.description": {
+    "en": "Leave a number or an email and the times that suit you. I call back myself, usually within two working days.",
+    "tr": "Bir numara ya da e-posta ve size uyan saatleri bırakın. Genellikle iki iş günü içinde kendim geri ararım."
+  },
+  "route.callback.title": {"en": "Call back", "tr": "Geri arama"},
+  "route.confirmed.description": {
+    "en": "Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
+    "tr": "Adresiniz onaylandı. Sonraki mektup yeni bir yazı hazır olunca gider ve her birinde tek tıkla abonelikten çıkma bağlantısı vardır."
+  },
+  "route.confirmed.title": {"en": "You’re subscribed.", "tr": "Abone oldunuz."},
+  "route.contact.description": {
+    "en": "A project, a question or a bug you can’t shake. I read every message myself and reply within two working days.",
+    "tr": "Bir proje, bir soru ya da kurtulamadığınız bir hata. Her mesajı kendim okurum ve iki iş günü içinde yanıtlarım."
+  },
+  "route.contact.title": {"en": "Contact", "tr": "İletişim"},
+  "route.home.description": {
+    "en": "Notes and projects from a software engineer who writes Java, BTW.",
+    "tr": "Bir yazılım mühendisinden notlar ve projeler. I write Java, BTW."
+  },
+  "route.home.title": {
+    "en": "SWEMRE · Software engineer Emre",
+    "tr": "SWEMRE · Yazılım mühendisi Emre"
+  },
+  "route.newsletter.description": {
+    "en": "Practical notes on Java, React, architecture and AI, plus whatever I broke this week. Written the way I would write to a friend from work.",
+    "tr": "Java, React, mimari ve yapay zekâ üzerine pratik notlar, artı bu hafta ne bozduysam. İş yerinden bir arkadaşa yazar gibi yazılmış."
+  },
+  "route.newsletter.title": {"en": "Newsletter", "tr": "Bülten"},
+  "route.projects.description": {
+    "en": "Things I have built and am building, with the code behind them.",
+    "tr": "Yaptığım ve yapmakta olduğum şeyler, arkalarındaki kodla birlikte."
+  },
+  "route.projects.title": {"en": "Projects", "tr": "Projeler"},
+  "route.search.description": {
+    "en": "Search every article and project.",
+    "tr": "Tüm yazılarda ve projelerde arayın."
+  },
+  "route.search.title": {"en": "Search", "tr": "Arama"},
+  "route.topic.description": {
+    "en": "Every article on one topic, newest first.",
+    "tr": "Bir konudaki tüm yazılar, önce en yeni."
+  },
+  "route.topic.title": {"en": "Topic", "tr": "Konu"},
+  "route.unsubscribed.description": {
+    "en": "You will not get any more emails from swemre.com.",
+    "tr": "swemre.com'dan artık e-posta almayacaksınız."
+  },
+  "route.unsubscribed.title": {
+    "en": "You are unsubscribed.",
+    "tr": "Abonelikten çıktınız."
+  },
   "search.clear": {"en": "Clear", "tr": "Temizle"},
   "search.error.copy": {
     "en": "The search could not be run. Nothing is lost; try again in a moment.",

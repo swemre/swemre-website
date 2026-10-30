@@ -15,7 +15,7 @@
 // for example /?state=articles:error, so templates can show each board state.
 import {useMemo} from 'react'
 import {useLocation} from 'react-router-dom'
-import type {ApiPublication, ApiPublicationSummary} from '../contract/api.ts'
+import type {ApiPublicationSummary} from '../contract/api.ts'
 import type {
   Activity,
   Article,
@@ -43,7 +43,6 @@ import {
   seoOf,
   termRef,
   toArticleSummary,
-  toAuthorRef,
   toPage,
   toProjectSummary,
   toSettings,
@@ -57,6 +56,8 @@ import {
   megaArticles,
   megaProjects,
 } from './nav.ts'
+import {t} from '../i18n/index.ts'
+import {AUTHOR, AUTHOR_SLUG, authorBody, authorRef} from './author.ts'
 import {searchIndex} from './search.ts'
 import {resources, useResource, type Entry} from './store.ts'
 
@@ -105,7 +106,7 @@ function settle<T>(
 
 // Shared reads --------------------------------------------------------------------------------
 
-function useList(type: 'article' | 'project' | 'song' | 'author' | 'page') {
+function useList(type: 'article' | 'project' | 'song' | 'page') {
   return useResource(...resources.list(type))
 }
 function usePub(slug: string) {
@@ -251,32 +252,26 @@ export function useArticle(slug: string): Loadable<Article> {
   const pub = usePub(slug)
   const articles = useList('article')
   const projects = useList('project')
-  const authors = useList('author')
   return useMemo(
     () =>
-      settle(forced, [pub, articles, projects, authors], () => {
+      settle(forced, [pub, articles, projects], () => {
         const p = data(pub)
         if (!p || p.contentType !== 'article') return undefined
         const all = articleSummaries(data(articles))
         const allProjects = projectSummaries(data(projects))
-        const author =
-          data(authors).find(
-            a => a.title === p.author || a.slug === p.author,
-          ) ?? data(authors)[0]
         const f = p.fields
         return {
           ...toArticleSummary(p),
           body: blocksOf(p),
-          author: toAuthorRef(author, p.author),
+          author: authorRef(),
           revision: f.revision as number | undefined,
           faq: (f.faq as {q: string; a: string}[] | undefined) ?? [],
-          faqTitle: f.faqTitle as string | undefined,
           seo: seoOf(p),
           ...neighbours(all, p.slug, f),
           related: relatedOf(p, all, allProjects, 4),
         }
       }),
-    [forced, pub, articles, projects, authors],
+    [forced, pub, articles, projects],
   )
 }
 
@@ -436,46 +431,37 @@ export function useTerms(): Loadable<TermRef[]> {
   )
 }
 
-/** name 'author' */
+/** name 'author'. The author page is the site's own; only the project and stack come from the API. */
 export function useAuthor(slug: string): Loadable<Author> {
   const forced = useForced('author')
-  const pub = usePub(slug)
   const projects = useList('project')
   const tags = useResource(...resources.tags())
   return useMemo(
     () =>
-      settle(forced, [pub, projects, tags], () => {
-        const p = data(pub) as ApiPublication | undefined
-        if (!p || (p.contentType !== 'author' && p.contentType !== 'page'))
-          return undefined
-        const f = p.fields as Record<string, unknown>
-        const current = data(projects).find(x => x.slug === f.currentProject)
-        const stack = ((f.stack as string[] | undefined) ?? [])
+      settle(forced, [projects, tags], () => {
+        if (slug !== AUTHOR_SLUG) return undefined
+        const current = data(projects).find(
+          x => x.slug === AUTHOR.currentProject,
+        )
+        const stack = AUTHOR.stack
           .map(s => data(tags).find(t => t.slug === s))
           .filter(t => t !== undefined)
           .map(t => termRef(t))
         return {
-          ...toAuthorRef(p),
-          headline:
-            (f.headline as string | undefined) ?? p.excerpt ?? undefined,
-          body: blocksOf(p),
-          writingSince: f.writingSince as number | undefined,
-          availability: f.availability as string | undefined,
-          availableFrom: f.availableFrom as string | undefined,
-          links: (
-            (f.links as {label: string; url: string}[] | undefined) ?? []
-          ).map(l => ({
-            label: l.label,
-            href: l.url,
-            external: /^https?:/.test(l.url),
-          })),
+          ...authorRef(),
+          headline: t('author.profile.headline'),
+          body: authorBody(),
+          writingSince: AUTHOR.writingSince,
+          availability: t('author.profile.availability'),
+          availableFrom: t('author.profile.availableFrom'),
+          links: AUTHOR.links,
           currentProject: current ? toProjectSummary(current) : undefined,
-          focus: f.focus as string | undefined,
-          backgroundNote: f.backgroundNote as string | undefined,
+          focus: t('author.profile.focus'),
+          backgroundNote: t('author.profile.background'),
           stack,
         }
       }),
-    [forced, pub, projects, tags],
+    [forced, slug, projects, tags],
   )
 }
 

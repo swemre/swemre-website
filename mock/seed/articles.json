@@ -23,7 +23,6 @@
         "dark-mode-css-variables",
         "swepress"
       ],
-      "faqTitle": "Questions about the template",
       "faq": [
         {
           "q": "Does the template work with Gradle?",

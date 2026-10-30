@@ -42,7 +42,7 @@ export interface ApiTerm {
 }
 
 export type ContentTypeKey =
-  'article' | 'project' | 'page' | 'song' | 'author' | 'site-settings'
+  'article' | 'project' | 'page' | 'song' | 'site-settings'
 
 /** An item of GET /publications. */
 export interface ApiPublicationSummary {
@@ -150,8 +150,6 @@ export interface FieldMap {
     coverCaption?: string
     revision?: number
     faq?: {q: string; a: string}[]
-    /** Heading over the FAQ (board: "Questions about the template"). */
-    faqTitle?: string
     /** Accent hue of the cover and card. */
     hue?: Hue
     /** The big glyph on a code cover, e.g. "{ }". */
@@ -193,7 +191,6 @@ export interface FieldMap {
     pdfUrl?: string
     showToc?: boolean
     showPrint?: boolean
-    formKey?: FormKey
   }
   song: {
     /** Position in the liked playlist; ?seed=0 picks the first ones in this order. */
@@ -203,21 +200,6 @@ export interface FieldMap {
     year?: number
     spotifyUrl?: string
     artwork?: ApiMedia
-  }
-  author: {
-    name?: string
-    role?: string
-    headline?: string
-    writingSince?: number
-    availability?: string
-    availableFrom?: string
-    links?: {label: string; url: string}[]
-    /** Project slug. */
-    currentProject?: string
-    focus?: string
-    backgroundNote?: string
-    /** Tag slugs shown as stack chips. */
-    stack?: string[]
   }
   'site-settings': {
     tagline?: string

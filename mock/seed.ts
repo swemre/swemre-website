@@ -70,7 +70,6 @@ const FILES: Record<string, ContentTypeKey> = {
   'projects.json': 'project',
   'pages.json': 'page',
   'songs.json': 'song',
-  'authors.json': 'author',
   'settings.json': 'site-settings',
 }
 

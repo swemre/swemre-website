@@ -1,24 +1,9 @@
 {
   "categories": [
     {
-      "slug": "articles",
-      "name": "Articles",
-      "description": "The articles area: /articles and the topic pages."
-    },
-    {
-      "slug": "projects",
-      "name": "Projects",
-      "description": "The projects area: /projects."
-    },
-    {
       "slug": "policies",
       "name": "Policies",
       "description": "Legal and policy documents under /policies."
-    },
-    {
-      "slug": "newsletter",
-      "name": "Newsletter",
-      "description": "Newsletter status pages under /newsletter."
     },
     {
       "slug": "backend",
@@ -142,41 +127,6 @@
       "slug": "featured",
       "name": "featured",
       "description": "Reserved: shown in the mega menu and the home page."
-    },
-    {
-      "slug": "layout-home",
-      "name": "layout-home",
-      "description": "Reserved: selects the home template."
-    },
-    {
-      "slug": "layout-listing",
-      "name": "layout-listing",
-      "description": "Reserved: selects the listing template of the section (articles or projects)."
-    },
-    {
-      "slug": "layout-topic",
-      "name": "layout-topic",
-      "description": "Reserved: selects the topic template."
-    },
-    {
-      "slug": "layout-search",
-      "name": "layout-search",
-      "description": "Reserved: selects the search template."
-    },
-    {
-      "slug": "layout-form",
-      "name": "layout-form",
-      "description": "Reserved: selects the form template; the page field formKey picks the form."
-    },
-    {
-      "slug": "layout-status",
-      "name": "layout-status",
-      "description": "Reserved: selects the newsletter status template."
-    },
-    {
-      "slug": "layout-author",
-      "name": "layout-author",
-      "description": "Reserved: selects the author template for a page."
     }
   ]
 }

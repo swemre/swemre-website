@@ -65,28 +65,5 @@ export interface TemplateProps {
 export type TemplateComponent = ComponentType<TemplateProps>
 export type TemplateMap = Record<TemplateKey, TemplateComponent>
 
-/**
- * Template selection from the website-page distribution. Rules are tried in order, then the
- * content type decides (article -> article, project -> project, author -> author, page -> single).
- * The section (category) is the site area and first URL segment; reserved layout-* tags pick the
- * template; other tags are topics.
- */
-export interface TemplateRule {
-  template: TemplateKey
-  contentType?: string
-  /** Section slug; '*' any. */
-  section?: string
-  /** A reserved tag the publication must carry. */
-  tag?: string
-}
-
-export const RESERVED_TAGS = [
-  'layout-home',
-  'layout-listing',
-  'layout-topic',
-  'layout-search',
-  'layout-form',
-  'layout-status',
-  'layout-author',
-  'featured',
-] as const
+/** Tags with a meaning to the site; every other tag is a topic. */
+export const RESERVED_TAGS = ['featured'] as const

@@ -44,12 +44,7 @@ export function buildRss(data: MockData, siteUrl: string): string {
   const items = articles.map(a => {
     const link = `${site}/articles/${a.slug}`
     const tags = a.terms
-      .filter(
-        t =>
-          t.kind === 'TAG' &&
-          !t.slug.startsWith('layout-') &&
-          t.slug !== 'featured',
-      )
+      .filter(t => t.kind === 'TAG' && t.slug !== 'featured')
       .map(t => `      <category>${esc(t.name)}</category>`)
     return [
       '    <item>',
