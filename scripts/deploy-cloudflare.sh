@@ -49,7 +49,8 @@ export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
 export VITE_LOCALE="${VITE_LOCALE:-en}"
 export VITE_API_TIMEOUT_MS="${VITE_API_TIMEOUT_MS:-10000}"
-WRANGLER=(npx --yes wrangler@4.149.0)
+# npm exec, not npx: an old global npx package in a parent node_modules can shadow npx under npm run
+WRANGLER=(npm exec --yes --package=wrangler@4.149.0 -- wrangler)
 if [ -z "${VITE_READ_KEY:-}" ] && [ "${DRY_RUN:-}" != "1" ] && [ "$VITE_FEEDS_REQUIRED" = "1" ]; then
   echo "Set VITE_READ_KEY to the website channel's read key" >&2
   exit 1
