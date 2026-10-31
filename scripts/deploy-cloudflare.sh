@@ -19,7 +19,8 @@
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
 #   DRY_RUN=1           builds and checks the upload without deploying
 #   SKIP_INSTALL=1      keeps the installed packages, for example while a dev server is running
-# The build runs in live mode (VITE_API_MODE=live); the site reads the API in the browser.
+# The build runs in live mode: the site reads the API in the browser, and the build machine must
+# reach the API to write rss.xml and sitemap.xml.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -35,6 +36,8 @@ if [ -f .env.deploy.local ]; then
 fi
 
 export VITE_API_MODE=live
+# The build writes rss.xml and sitemap.xml from the API and fails if it cannot reach it
+export VITE_FEEDS_REQUIRED=1
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"

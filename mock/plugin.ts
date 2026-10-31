@@ -27,7 +27,7 @@ import type {
 } from '../src/contract/api.ts'
 import {loadMockData, type MockData} from './seed.ts'
 import {validateSubmission} from './forms.ts'
-import {buildRss} from './rss.ts'
+import {mockRss, mockSitemap} from './rss.ts'
 
 export interface MockOptions {
   /** VITE_API_BASE as a path, default /api. */
@@ -36,7 +36,7 @@ export interface MockOptions {
   channel?: string
   /** VITE_READ_KEY, default local-mock. */
   readKey?: string
-  /** VITE_SITE_URL, for the links in /rss.xml; default http://localhost:5173. */
+  /** VITE_SITE_URL, for the links in /rss.xml and /sitemap.xml; default http://localhost:5173. */
   siteUrl?: string
 }
 
@@ -170,7 +170,12 @@ export function createMockMiddleware(
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8')
       res.setHeader('Cache-Control', 'no-store')
-      return res.end(buildRss(load(), siteUrl))
+      return res.end(mockRss(load(), siteUrl))
+    }
+    if (url.pathname === '/sitemap.xml' && req.method === 'GET') {
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+      return res.end(mockSitemap(load(), siteUrl))
     }
     if (!url.pathname.startsWith(prefix)) return next()
     handle(req, res, url).catch((e: unknown) => {
@@ -380,7 +385,7 @@ export function mockApi(opts: MockOptions = {}): Plugin {
     configurePreviewServer(server) {
       server.middlewares.use(createMockMiddleware(opts))
     },
-    // The build ships the feed too, so a static mock build has /rss.xml.
+    // The build ships the feed and sitemap too, so a static mock build has them.
     generateBundle() {
       const data = loadMockData(
         join(HERE, 'seed'),
@@ -390,7 +395,12 @@ export function mockApi(opts: MockOptions = {}): Plugin {
       this.emitFile({
         type: 'asset',
         fileName: 'rss.xml',
-        source: buildRss(data, opts.siteUrl ?? 'http://localhost:5173'),
+        source: mockRss(data, opts.siteUrl ?? 'http://localhost:5173'),
+      })
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: mockSitemap(data, opts.siteUrl ?? 'http://localhost:5173'),
       })
     },
   }

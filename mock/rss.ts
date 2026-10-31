@@ -8,71 +8,20 @@
  *
  * Contact: emre@swemre.com
  */
-// The RSS 2.0 feed of the seeded articles, newest first. The mock serves it at /rss.xml and the
-// build writes it to dist/rss.xml in mock mode. Owner: agent C.
-import type {ApiPublication} from '../src/contract/api.ts'
+// The feed and sitemap of the seeded publications. The mock serves them at /rss.xml and
+// /sitemap.xml, and the build writes them to dist/ in mock mode. Owner: agent C.
+import {buildRss, buildSitemap, type FeedSettings} from '../feeds/build.ts'
 import type {MockData} from './seed.ts'
 
-const esc = (s: string) =>
-  s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-
-/** RFC 822 date, as RSS 2.0 wants it. */
-const rfc822 = (iso: string) => new Date(iso).toUTCString()
-
-export function buildRss(data: MockData, siteUrl: string): string {
-  const site = siteUrl.replace(/\/$/, '')
-  const settings = data.publications.find(
+const settingsOf = (data: MockData) =>
+  (data.publications.find(
     p => p.contentType === 'site-settings' && p.locale === 'en',
-  )
-  const f = (settings?.fields ?? {}) as {
-    footerTagline?: string
-    contactEmail?: string
-  }
-  const email = f.contactEmail ?? 'emre@swemre.com'
-  const articles: ApiPublication[] = data.publications
-    .filter(p => p.locale === 'en')
-    .filter(p => p.contentType === 'article')
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-  const newest = articles
-    .map(a => a.updatedAt ?? a.publishedAt)
-    .sort()
-    .pop()
-  const items = articles.map(a => {
-    const link = `${site}/articles/${a.slug}`
-    const tags = a.terms
-      .filter(t => t.kind === 'TAG' && t.slug !== 'featured')
-      .map(t => `      <category>${esc(t.name)}</category>`)
-    return [
-      '    <item>',
-      `      <title>${esc(a.title)}</title>`,
-      `      <link>${esc(link)}</link>`,
-      `      <guid isPermaLink="true">${esc(link)}</guid>`,
-      `      <pubDate>${rfc822(a.publishedAt)}</pubDate>`,
-      `      <author>${esc(`${email} (${a.author ?? 'Emre'})`)}</author>`,
-      ...(a.excerpt
-        ? [`      <description>${esc(a.excerpt)}</description>`]
-        : []),
-      ...tags,
-      '    </item>',
-    ].join('\n')
-  })
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
-    '  <channel>',
-    '    <title>SWEMRE</title>',
-    `    <link>${esc(site)}/</link>`,
-    `    <description>${esc(f.footerTagline ?? 'Notes and projects from a software engineer.')}</description>`,
-    '    <language>en</language>',
-    ...(newest ? [`    <lastBuildDate>${rfc822(newest)}</lastBuildDate>`] : []),
-    `    <atom:link href="${esc(site)}/rss.xml" rel="self" type="application/rss+xml"/>`,
-    ...items,
-    '  </channel>',
-    '</rss>',
-    '',
-  ].join('\n')
+  )?.fields ?? {}) as FeedSettings
+
+export function mockRss(data: MockData, siteUrl: string): string {
+  return buildRss(data.publications, siteUrl, settingsOf(data))
+}
+
+export function mockSitemap(data: MockData, siteUrl: string): string {
+  return buildSitemap(data.publications, siteUrl)
 }

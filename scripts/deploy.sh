@@ -13,11 +13,14 @@
 #   (.env.example lists the other VITE_* settings)
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
 #   SKIP_INSTALL=1      keeps the installed packages, for example while a dev server is running
-# The build runs in live mode (VITE_API_MODE=live); the site reads the API in the browser.
+# The build runs in live mode: the site reads the API in the browser, and the build machine must
+# reach the API to write rss.xml and sitemap.xml.
 set -euo pipefail
 
 : "${SSH_HOST:?Set SSH_HOST, for example deploy@31.187.76.148}"
 export VITE_API_MODE=live
+# The build writes rss.xml and sitemap.xml from the API and fails if it cannot reach it
+export VITE_FEEDS_REQUIRED=1
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 REMOTE_DIR="${REMOTE_DIR:-swemre-website-api}"
 REMOTE_BUILD="$REMOTE_DIR/deploy/site-build"
