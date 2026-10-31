@@ -7,7 +7,8 @@
 # Needs a Cloudflare API token with the "Workers Scripts: Edit" permission on the account.
 # Without CLOUDFLARE_API_TOKEN, wrangler signs in through the browser instead.
 # The variables can also sit in .env.deploy.local (ignored by git); values already set in the
-# shell win over the file.
+# shell win over the file, even empty ones (SSH_HOST= skips the server copy). The build ignores
+# .env.local: every VITE_* setting it reads is exported here.
 # Optional:
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
 #   VITE_CHANNEL_KEY    the website channel the site reads, default swemre-website
@@ -29,7 +30,7 @@ if [ -f .env.deploy.local ]; then
     case "$key" in '' | '#'*) continue ;; esac
     value="${value%$'\r'}"
     value="${value/#\~/$HOME}"
-    if [ -z "${!key:-}" ]; then
+    if [ -z "${!key+set}" ]; then
       export "$key=$value"
     fi
   done < .env.deploy.local
@@ -41,6 +42,8 @@ export VITE_FEEDS_REQUIRED=1
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
+export VITE_LOCALE="${VITE_LOCALE:-en}"
+export VITE_API_TIMEOUT_MS="${VITE_API_TIMEOUT_MS:-10000}"
 WRANGLER=(npx --yes wrangler@4.149.0)
 if [ -z "${VITE_READ_KEY:-}" ] && [ "${DRY_RUN:-}" != "1" ]; then
   echo "Set VITE_READ_KEY to the website channel's read key" >&2
