@@ -162,7 +162,7 @@ export function createMockMiddleware(
   const siteUrl = opts.siteUrl ?? 'http://localhost:5173'
   const prefix = `${apiBase}/public/v2/channels/`
   const load = (): MockData =>
-    loadMockData(join(HERE, 'seed'), join(HERE, 'media'), apiBase, channel)
+    loadMockData(join(HERE, 'seed'), join(HERE, 'media'), channel)
 
   return (req, res, next) => {
     const url = new URL(req.url ?? '/', 'http://mock.local')
@@ -382,11 +382,9 @@ export function mockApi(opts: MockOptions = {}): Plugin {
     },
     // The build ships the feed too, so a static mock build has /rss.xml.
     generateBundle() {
-      const apiBase = (opts.apiBase ?? '/api').replace(/\/$/, '')
       const data = loadMockData(
         join(HERE, 'seed'),
         join(HERE, 'media'),
-        apiBase,
         opts.channel ?? 'swemre-website',
       )
       this.emitFile({

@@ -1,10 +1,12 @@
 # Brand components
 
-The swemre brand components are defined in SWEPress under Settings → Components. A component
-block reaches the site as an ordinary body block whose `type` is the name without the `swemre/`
-prefix, with the fields below as its `props`. The renderers are in `src/templates/body/brand.tsx`,
-the types in `src/contract/blocks.ts`. Every component has no children and is allowed on the
-project content type.
+The swemre brand components are defined in SWEPress under Settings → Components. The public API
+serves a component block wrapped: `{"type": "component", "props": {"name": "swemre/<type>",
+"props": {...}, "version": 1}}`. The site unwraps it (`blocksOf` in `src/data/adapters.ts`) into
+a block of type `<type>` with the fields below as its `props`, and drops other brands'
+components. Body image urls are relative to VITE_API_BASE, like media urls. The renderers are in
+`src/templates/body/brand.tsx`, the types in `src/contract/blocks.ts`. Every component has no
+children and is allowed on the project content type.
 
 On a project page, a section with `architecture` or `subpages` runs full width; `cta` goes to the
 left column; the `prompt` of `coverage` or `subpages` is drawn in the section header; plain

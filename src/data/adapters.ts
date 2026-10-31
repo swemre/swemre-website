@@ -94,8 +94,43 @@ export function seoOf(pub: ApiPublicationSummary): Seo {
   }
 }
 
+const BRAND = 'swemre/'
+
+interface WireBlock {
+  type: string
+  props?: Record<string, unknown>
+}
+
+/**
+ * A brand component arrives as {type: 'component', props: {name: 'swemre/<type>', props}}; it is
+ * unwrapped to a block of its own type. Components of other brands are dropped.
+ */
+function unwrap(b: WireBlock): WireBlock | undefined {
+  if (b.type !== 'component') return b
+  const name = b.props?.name
+  if (typeof name !== 'string' || !name.startsWith(BRAND)) return undefined
+  return {
+    ...b,
+    type: name.slice(BRAND.length),
+    props: (b.props?.props ?? {}) as Record<string, unknown>,
+  }
+}
+
+function withMediaUrls(b: WireBlock): WireBlock {
+  if (b.type !== 'image' || !b.props) return b
+  const url = (u: unknown) =>
+    typeof u === 'string' ? api.mediaUrl({id: '', url: u}) : u
+  return {
+    ...b,
+    props: {...b.props, url: url(b.props.url), darkUrl: url(b.props.darkUrl)},
+  }
+}
+
 export function blocksOf(pub: ApiPublication): Block[] {
-  return (pub.body?.blocks ?? []) as Block[]
+  return ((pub.body?.blocks ?? []) as WireBlock[]).flatMap(b => {
+    const block = unwrap(b)
+    return block ? [withMediaUrls(block) as Block] : []
+  })
 }
 
 export function toArticleSummary(pub: ApiPublicationSummary): ArticleSummary {

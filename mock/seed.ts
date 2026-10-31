@@ -99,6 +99,18 @@ export function richText(value: unknown): InlineText[] {
   return out
 }
 
+/** Seed block types that SWEPress serves as brand components ({type: 'component', props: {name, props}}). */
+const BRAND_COMPONENTS = new Set([
+  'section',
+  'stack',
+  'architecture',
+  'subpages',
+  'repos',
+  'coverage',
+  'steps',
+  'cta',
+  'prefill',
+])
 const RICH_TYPES = new Set([
   'paragraph',
   'heading',
@@ -108,14 +120,10 @@ const RICH_TYPES = new Set([
   'callout',
 ])
 
-/**
- * @param apiBase the site's VITE_API_BASE path, e.g. /api; body image urls are absolute, while
- *   media `url`s are relative to it, as in the real API.
- */
+/** Media `url`s, in fields and in body images, are relative to VITE_API_BASE, as in the real API. */
 export function loadMockData(
   seedDir: string,
   mediaDir: string,
-  apiBase: string,
   channel: string,
 ): MockData {
   const mediaBase = `/public/v2/channels/${channel}/media`
@@ -144,7 +152,7 @@ export function loadMockData(
   }
   const mediaUrl = (v: unknown) =>
     typeof v === 'string' && v.startsWith('media:')
-      ? apiBase + (byName.get(v.slice(6))?.url ?? v)
+      ? (byName.get(v.slice(6))?.url ?? v)
       : v
 
   const seedTerms = read<{categories: SeedTerm[]; tags: SeedTerm[]}>(
@@ -204,12 +212,15 @@ export function loadMockData(
             props.url = mediaUrl(props.url)
             if (props.darkUrl) props.darkUrl = mediaUrl(props.darkUrl)
           }
-          return {
-            id: `${item.slug}-${String(i + 1).padStart(2, '0')}`,
-            type: b.type,
-            v: 2,
-            props,
-          }
+          const id = `${item.slug}-${String(i + 1).padStart(2, '0')}`
+          return BRAND_COMPONENTS.has(b.type)
+            ? {
+                id,
+                type: 'component',
+                v: 2,
+                props: {name: `swemre/${b.type}`, props, version: 1},
+              }
+            : {id, type: b.type, v: 2, props}
         })
         publications.push({
           id,
