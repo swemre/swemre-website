@@ -185,11 +185,12 @@ Content-Type: application/json
 | Form key                 | Fields (★ required)                                                                                                                     |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `newsletter`             | name, email ★, role, source, topics (string[]), consent ★ (`true`)                                                                      |
-| `contact`                | fullName, email ★, phone, describesYou, foundVia, favouriteLanguage, message ★, consent ★, newsletterOptIn                              |
-| `callback-request`       | fullName, contact ★ (an email, or a phone number with 9 or more digits), preferredTime ★ (string[]), timeZone, topic ★, note, consent ★ |
+| `contact`                | fullname, email ★, phone, describesyou, foundvia, favouritelanguage, message ★, consent ★, newsletteroptin                              |
+| `callback-request`       | fullname, contact ★ (an email, or a phone number with 9 or more digits), preferredtime ★ (string[]), timezone, topic ★, note, consent ★ |
 | `newsletter-confirm`     | token ★. The answer's `result` is the subscriber: `{name, email, topics}`                                                               |
 | `newsletter-unsubscribe` | token or email                                                                                                                          |
 
+- SWEPress field keys are the field names in lower case. The site's forms use camelCase names and the client lowercases them when it posts (`submit` in `src/data/client.ts`), mapping field errors back.
 - Fields the form does not know come back in `ignoredFields`.
 - The newsletter-confirm tokens `invalid` and `expired` get `400` on the `token` field.
 - Any other unknown token confirms the example subscriber, Priya Shah.

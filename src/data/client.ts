@@ -164,13 +164,27 @@ export function createClient(
     async redirects() {
       return (await call<ApiRedirect[]>('/redirects'))!
     },
+    // SWEPress field keys are the lowercased field names; errors come back under those keys.
     async submit(form: FormKey, fields: Record<string, FormValue>) {
-      const res = await call<ApiSubmittedForm>(`/forms/${form}/submissions`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({fields}),
-      })
-      return res!
+      const byKey = new Map(Object.keys(fields).map(k => [k.toLowerCase(), k]))
+      const wire = Object.fromEntries(
+        Object.entries(fields).map(([k, v]) => [k.toLowerCase(), v]),
+      )
+      try {
+        const res = await call<ApiSubmittedForm>(`/forms/${form}/submissions`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({fields: wire}),
+        })
+        return res!
+      } catch (e) {
+        if (e instanceof ApiError && e.body?.errors)
+          e.body.errors = e.body.errors.map(x => ({
+            ...x,
+            field: byKey.get(x.field) ?? x.field,
+          }))
+        throw e
+      }
     },
     mediaUrl(media: ApiMedia) {
       return /^(https?:)?\/\//.test(media.url) ||
