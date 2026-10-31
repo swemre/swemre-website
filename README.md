@@ -94,9 +94,12 @@ CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... VITE_READ_KEY=... npm run dep
 - `/articles/foo` serves `articles/foo/index.html`, and `/articles/foo/` redirects to it, so the
   canonical URLs keep no trailing slash.
 - `DRY_RUN=1` builds and checks the upload without deploying.
-- With `SSH_HOST` (and `SSH_KEY`) it also copies the build and the refresh scripts to the server,
-  where `refresh-site.sh` in `swemre-website-api` keeps the feeds and pre-rendered pages current
-  between deploys.
+- The live build writes `rss.xml`, `sitemap.xml` and a page shell per sitemap address
+  (`feeds/shells.ts`: the page's title, description and canonical link), so every known page
+  answers 200 with its own head and the app renders the content. Pages published later answer
+  404 with the app shell until the next deploy.
+- `SSH_HOST= ` skips the server copy. With `SSH_HOST` (and `SSH_KEY`) it also copies the build
+  and the refresh scripts to the server for `refresh-site.sh` in `swemre-website-api`.
 
 Once, on the day the site leaves the VPS: in the Cloudflare dashboard, open Workers & Pages >
 swemre-website > Settings > Domains & Routes, add `swemre.com` and `www.swemre.com` as custom

@@ -15,7 +15,7 @@ import type {ApiPublicationSummary} from '../src/contract/api.ts'
 import {canonicalHref} from '../src/data/rules.ts'
 
 /** The site's own routes, which the CMS never serves (src/data/resolve.ts). */
-const SITE_ROUTES = [
+export const SITE_ROUTES = [
   '/',
   '/articles',
   '/projects',

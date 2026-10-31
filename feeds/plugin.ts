@@ -12,6 +12,9 @@
 // Live builds write dist/rss.xml and dist/sitemap.xml from the website channel. The build machine
 // must reach VITE_API_BASE; with VITE_FEEDS_REQUIRED=1 (the deploy scripts) an unreachable API
 // fails the build, otherwise it warns and writes an empty feed and a sitemap of the site routes.
+// It also writes a page shell for every sitemap address (shells.ts).
+import {mkdir, readFile, writeFile} from 'node:fs/promises'
+import {join} from 'node:path'
 import type {Plugin} from 'vite'
 import type {
   ApiPage,
@@ -19,6 +22,7 @@ import type {
   ApiPublicationSummary,
 } from '../src/contract/api.ts'
 import {buildRss, buildSitemap, type FeedSettings} from './build.ts'
+import {shellHtml, shellsOf, siteShell, type Shell} from './shells.ts'
 
 export interface LiveFeedsOptions {
   apiBase: string
@@ -48,6 +52,7 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
       if (items.length >= res.total || res.items.length === 0) return items
     }
   }
+  let shells: Shell[] = []
   return {
     name: 'swemre-live-feeds',
     apply: 'build',
@@ -56,6 +61,7 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
         publications: ApiPublicationSummary[],
         settings: FeedSettings,
       ) => {
+        shells = shellsOf(publications, opts.locales)
         this.emitFile({
           type: 'asset',
           fileName: 'rss.xml',
@@ -86,6 +92,19 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
           `rss.xml and sitemap.xml written without content: ${String(e)}`,
         )
         emit([], {})
+      }
+    },
+    async writeBundle({dir = 'dist'}) {
+      const index = join(dir, 'index.html')
+      const html = await readFile(index, 'utf8')
+      await writeFile(index, siteShell(html, opts.siteUrl))
+      for (const shell of shells) {
+        const folder = join(dir, ...shell.path.split('/').filter(Boolean))
+        await mkdir(folder, {recursive: true})
+        await writeFile(
+          join(folder, 'index.html'),
+          shellHtml(html, opts.siteUrl, shell),
+        )
       }
     },
   }
