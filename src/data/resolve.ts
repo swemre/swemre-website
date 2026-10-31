@@ -83,7 +83,8 @@ function notFound(path: string, segments: string[]): Resolution {
 export function failure(path: string, e: unknown): Resolution {
   const status = e instanceof ApiError ? e.status : 500
   const body = e instanceof ApiError ? e.body : undefined
-  if (status === 503 || status === UNREACHABLE) {
+  // 401: the channel or its read key is missing on the API, so no page can load
+  if (status === 503 || status === 401 || status === UNREACHABLE) {
     const m = body?.maintenance
     return {
       route: {template: 'unavailable', path, chrome: UNAVAILABLE},

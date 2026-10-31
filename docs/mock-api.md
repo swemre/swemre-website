@@ -237,7 +237,8 @@ Every error has the same body:
 On the site:
 
 - A read that answers `404` becomes `undefined`, and the page shows not-found.
-- A `503`, or no answer at all (status `0` in `ApiError`), shows the unavailable page.
+- A `503`, a `401` (the channel or its read key is missing), or no answer at all (status `0` in
+  `ApiError`), shows the unavailable page.
 - Any other failure shows the error page.
 
 ## Fault injection

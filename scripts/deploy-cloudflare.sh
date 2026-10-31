@@ -20,6 +20,8 @@
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
 #   DRY_RUN=1           builds and checks the upload without deploying
 #   SKIP_INSTALL=1      keeps the installed packages, for example while a dev server is running
+#   --allow-empty       deploys even when the API refuses the channel (no channel or wrong read
+#                       key yet): the feeds are written empty and pages show the unavailable view
 # The build runs in live mode: the site reads the API in the browser, and the build machine must
 # reach the API to write rss.xml and sitemap.xml.
 set -euo pipefail
@@ -39,13 +41,16 @@ fi
 export VITE_API_MODE=live
 # The build writes rss.xml and sitemap.xml from the API and fails if it cannot reach it
 export VITE_FEEDS_REQUIRED=1
+if [ "${1:-}" = "--allow-empty" ]; then
+  export VITE_FEEDS_REQUIRED=0
+fi
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
 export VITE_LOCALE="${VITE_LOCALE:-en}"
 export VITE_API_TIMEOUT_MS="${VITE_API_TIMEOUT_MS:-10000}"
 WRANGLER=(npx --yes wrangler@4.149.0)
-if [ -z "${VITE_READ_KEY:-}" ] && [ "${DRY_RUN:-}" != "1" ]; then
+if [ -z "${VITE_READ_KEY:-}" ] && [ "${DRY_RUN:-}" != "1" ] && [ "$VITE_FEEDS_REQUIRED" = "1" ]; then
   echo "Set VITE_READ_KEY to the website channel's read key" >&2
   exit 1
 fi

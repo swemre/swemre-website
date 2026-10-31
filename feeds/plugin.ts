@@ -11,7 +11,7 @@
 
 // Live builds write dist/rss.xml and dist/sitemap.xml from the website channel. The build machine
 // must reach VITE_API_BASE; with VITE_FEEDS_REQUIRED=1 (the deploy scripts) an unreachable API
-// fails the build, otherwise the feeds are skipped with a warning.
+// fails the build, otherwise it warns and writes an empty feed and a sitemap of the site routes.
 import type {Plugin} from 'vite'
 import type {
   ApiPage,
@@ -52,16 +52,10 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
     name: 'swemre-live-feeds',
     apply: 'build',
     async generateBundle() {
-      try {
-        const publications = (
-          await Promise.all(opts.locales.map(listAll))
-        ).flat()
-        const settings = await get<ApiPublication>(
-          '/publications/site-settings?locale=en',
-        ).then(
-          p => p.fields as FeedSettings,
-          () => ({}),
-        )
+      const emit = (
+        publications: ApiPublicationSummary[],
+        settings: FeedSettings,
+      ) => {
         this.emitFile({
           type: 'asset',
           fileName: 'rss.xml',
@@ -72,10 +66,26 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
           fileName: 'sitemap.xml',
           source: buildSitemap(publications, opts.siteUrl),
         })
+      }
+      try {
+        const publications = (
+          await Promise.all(opts.locales.map(listAll))
+        ).flat()
+        const settings = await get<ApiPublication>(
+          '/publications/site-settings?locale=en',
+        ).then(
+          p => p.fields as FeedSettings,
+          () => ({}),
+        )
+        emit(publications, settings)
       } catch (e) {
-        const message = `rss.xml and sitemap.xml not written: ${String(e)}`
-        if (opts.required) this.error(message)
-        this.warn(message)
+        if (opts.required) {
+          this.error(`rss.xml and sitemap.xml not written: ${String(e)}`)
+        }
+        this.warn(
+          `rss.xml and sitemap.xml written without content: ${String(e)}`,
+        )
+        emit([], {})
       }
     },
   }

@@ -16,7 +16,7 @@
 //   deeper, or unknown      -> not-found (notFoundKind from the first segment)
 //   /sp/:slug               -> redirect to /policies/:slug; /about and /callback redirect to
 //                              their site routes; API 301s are followed by fetch
-//   API 503 / unreachable   -> unavailable (logo bar, no footer); other API 5xx -> error (requestId)
+//   API 503 / 401 / unreachable -> unavailable (logo bar, no footer); other API 5xx -> error (requestId)
 import {
   Component,
   createElement,
