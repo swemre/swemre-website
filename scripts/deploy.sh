@@ -13,11 +13,11 @@
 #   (.env.example lists the other VITE_* settings)
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
 #   SKIP_INSTALL=1      keeps the installed packages, for example while a dev server is running
-# swemre-blocks must sit next to this project. The build writes public/rss.xml from the
-# published posts, so the API must be reachable.
+# The build runs in live mode (VITE_API_MODE=live); the site reads the API in the browser.
 set -euo pipefail
 
 : "${SSH_HOST:?Set SSH_HOST, for example deploy@31.187.76.148}"
+export VITE_API_MODE=live
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
 REMOTE_DIR="${REMOTE_DIR:-swemre-website-api}"
 REMOTE_BUILD="$REMOTE_DIR/deploy/site-build"
@@ -36,8 +36,9 @@ echo "Copying the build to $SSH_HOST:$REMOTE_BUILD"
 tar -czf - -C dist . | "${SSH[@]}" "$SSH_HOST" \
   "rm -rf '$REMOTE_BUILD' && mkdir -p '$REMOTE_BUILD' && tar -xzf - -C '$REMOTE_BUILD'"
 
-# The server keeps the build fresh between deploys (deploy/refresh-site.sh): it reruns the
-# rss, sitemap and pre-render scripts, which need only Node and these sources
+# The server's deploy/refresh-site.sh reran the V3 rss, sitemap and pre-render scripts from this
+# copy. V4 has none of them, so copying the V4 sources here keeps that refresh from republishing
+# a V3 build; it fails until the server side is updated for V4.
 REMOTE_REFRESH="$REMOTE_DIR/deploy/site-refresh"
 echo "Copying the refresh scripts to $SSH_HOST:$REMOTE_REFRESH"
 tar -czf - scripts src package.json | "${SSH[@]}" "$SSH_HOST"   "rm -rf '$REMOTE_REFRESH' && mkdir -p '$REMOTE_REFRESH' && tar -xzf - -C '$REMOTE_REFRESH'"
