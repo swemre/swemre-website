@@ -1,4 +1,3 @@
+# The site is temporary and closed to every search engine and crawler.
 User-agent: *
-Allow: /
-
-Sitemap: https://swemre.com/sitemap.xml
+Disallow: /

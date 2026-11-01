@@ -9,7 +9,8 @@
  * Contact: emre@swemre.com
  */
 
-// Live builds write dist/rss.xml and dist/sitemap.xml from the website channel. The build machine
+// Live builds write dist/rss.xml from the website channel (no sitemap.xml while the site is
+// closed to search engines). The build machine
 // must reach VITE_API_BASE; with VITE_FEEDS_REQUIRED=1 (the deploy scripts) an unreachable API
 // fails the build, otherwise it warns and writes an empty feed and a sitemap of the site routes.
 // It also writes a page shell for every sitemap address (shells.ts).
@@ -21,7 +22,7 @@ import type {
   ApiPublication,
   ApiPublicationSummary,
 } from '../src/contract/api.ts'
-import {buildRss, buildSitemap, type FeedSettings} from './build.ts'
+import {buildRss, type FeedSettings} from './build.ts'
 import {shellHtml, shellsOf, siteShell, type Shell} from './shells.ts'
 
 export interface LiveFeedsOptions {
@@ -67,11 +68,7 @@ export function liveFeeds(opts: LiveFeedsOptions): Plugin {
           fileName: 'rss.xml',
           source: buildRss(publications, opts.siteUrl, settings),
         })
-        this.emitFile({
-          type: 'asset',
-          fileName: 'sitemap.xml',
-          source: buildSitemap(publications, opts.siteUrl),
-        })
+        // No sitemap.xml while the site is closed to search engines (public/robots.txt)
       }
       try {
         const publications = (

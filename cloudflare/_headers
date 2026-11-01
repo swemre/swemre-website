@@ -4,6 +4,8 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Cache-Control: no-cache
+  # Closed to search engines while the site is temporary
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
 # Hashed bundles never change under the same name
 /assets/*

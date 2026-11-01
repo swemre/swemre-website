@@ -97,8 +97,12 @@ function setHead(route: ResolvedRoute) {
   setMeta('property', 'og:url', url)
   setMeta('property', 'og:locale', OG_LOCALE[locale])
   setLink('canonical', url)
-  if (pub?.noindex) setMeta('name', 'robots', 'noindex')
-  else document.querySelector('meta[name="robots"]')?.remove()
+  // The whole site is closed to search engines while it is temporary (index.html sets the same)
+  setMeta(
+    'name',
+    'robots',
+    'noindex, nofollow, noarchive, nosnippet, noimageindex',
+  )
   // hreflang: only the languages this publication really has (slugs are shared across them),
   // plus x-default on the English address. Pages without versions list every language.
   for (const el of document.querySelectorAll(
