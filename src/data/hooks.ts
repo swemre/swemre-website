@@ -39,6 +39,7 @@ import {
   byProjectOrder,
   crumbsOf,
   isReservedTag,
+  jsonField,
   seoOf,
   termRef,
   toArticleSummary,
@@ -162,8 +163,10 @@ export function useActivity(): Loadable<Activity> {
   return useMemo(
     () =>
       settle(forced, [pub], () => {
-        const a = (data(pub)?.fields as {activity?: Activity} | undefined)
-          ?.activity
+        const a = jsonField(
+          (data(pub)?.fields as {activity?: Activity | string} | undefined)
+            ?.activity,
+        )
         return a?.weeks?.length ? {weeks: a.weeks, latest: a.latest} : undefined
       }),
     [forced, pub],

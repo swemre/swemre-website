@@ -11,7 +11,7 @@
 # .env.local: every VITE_* setting it reads is exported here.
 # Optional:
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
-#   VITE_CHANNEL_KEY    the website channel the site reads, default swemre-website
+#   VITE_CHANNEL_KEY    the website channel the site reads, default swemre
 #   VITE_SITE_URL       where the site is served, default https://swemre.com
 #   VITE_LOCALE and the other VITE_* settings (.env.example)
 #   SSH_HOST            also copies the build and the refresh scripts to the server, so its
@@ -45,7 +45,7 @@ if [ "${1:-}" = "--allow-empty" ]; then
   export VITE_FEEDS_REQUIRED=0
 fi
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
-export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
+export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
 export VITE_LOCALE="${VITE_LOCALE:-en}"
 export VITE_API_TIMEOUT_MS="${VITE_API_TIMEOUT_MS:-10000}"

@@ -32,13 +32,22 @@ export type TermKind = 'CATEGORY' | 'TAG'
 export interface ApiTerm {
   id: Uuid
   kind: TermKind
+  /** site-section, site-category, site-tag or a brand taxonomy (API 1.9). */
+  taxonomy?: string
   name: string
   slug: string
   /** GET /terms only. */
   publicationCount?: number
   description?: string | null
-  /** Mock extension (not in API v2 yet): related topic slugs, shown for an empty topic. */
+  /** Related topic slugs, shown for an empty topic (real since API 1.7). */
   related?: string[]
+  /** Publications per content type, e.g. {article: 2, project: 1}. GET /terms only. */
+  counts?: Record<string, number>
+}
+
+export interface ApiBreadcrumb {
+  title: string
+  path: string
 }
 
 export type ContentTypeKey = 'article' | 'project' | 'page' | 'site-settings'
@@ -67,6 +76,15 @@ export interface ApiPublicationSummary {
   seoDescription?: string | null
   canonicalUrl: string | null
   noindex: boolean
+  /** Where the item lives on the site, computed by the API from the page tree (API 1.9). */
+  path?: string
+  breadcrumbs?: ApiBreadcrumb[]
+  /** The parent page's slug, or null at the top level. */
+  parent?: string | null
+  /** Position among siblings; 0 until set. */
+  order?: number
+  /** e.g. 'home'; null for most items. */
+  template?: string | null
   /** Locales the item is published in on this channel, its own included (SWEPress api#183). */
   languages?: string[]
 }
@@ -90,9 +108,13 @@ export interface ApiPage<T> {
 }
 
 export interface ApiRedirect {
-  from: string
+  /** null when only the parent changed. */
+  from: string | null
   to: string
   locale: string
+  /** null for an old address from before paths (API 1.9). */
+  fromPath?: string | null
+  toPath?: string
 }
 
 export interface ApiListQuery {
@@ -115,7 +137,7 @@ export interface ApiSubmittedForm {
   receivedAt: Instant
   submittedAt?: Instant
   ignoredFields?: string[]
-  /** Form-specific answer data. newsletter-confirm returns name, email and topics (topic slugs). */
+  /** Not sent since API 1.9. */
   result?: Record<string, FormValue>
 }
 
@@ -217,12 +239,7 @@ export interface FieldMap {
   }
 }
 
-export type FormKey =
-  | 'newsletter'
-  | 'contact'
-  | 'callback-request'
-  | 'newsletter-confirm'
-  | 'newsletter-unsubscribe'
+export type FormKey = 'newsletter' | 'contact' | 'callback-request'
 
 /** The client agent C implements in src/data/client.ts; mock and real API both satisfy it. */
 export interface PublicApiClient {

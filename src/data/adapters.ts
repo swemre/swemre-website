@@ -203,6 +203,16 @@ export function toProjectSummary(pub: ApiPublicationSummary): ProjectSummary {
   }
 }
 
+/** Site settings keep some objects as JSON text in rich text fields (API 1.9): accept both. */
+export function jsonField<T>(v: T | string | null | undefined): T | undefined {
+  if (typeof v !== 'string') return v ?? undefined
+  try {
+    return JSON.parse(v) as T
+  } catch {
+    return undefined
+  }
+}
+
 export function toSettings(
   pub: ApiPublicationSummary | undefined,
 ): SiteSettings {
@@ -217,7 +227,7 @@ export function toSettings(
     latestArticle: f.latestArticle,
     newsletterCadence: f.newsletterCadence,
     statusUrl: f.statusUrl,
-    maintenance: f.maintenance ?? null,
+    maintenance: jsonField(f.maintenance) ?? null,
     likedSongsTotal: f.likedSongsTotal,
     social: f.social ?? {},
   }

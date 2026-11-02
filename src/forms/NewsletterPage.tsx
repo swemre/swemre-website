@@ -878,8 +878,6 @@ function useArrivalSubmit(m: Machine, on?: boolean) {
 
 function SubscribeReceipt({m}: {m: Machine}) {
   const r = NEWSLETTER.receipt
-  const token =
-    typeof m.receipt?.result?.token === 'string' ? m.receipt.result.token : ''
   return (
     <Receipt
       id="newsletter-receipt"
@@ -893,7 +891,7 @@ function SubscribeReceipt({m}: {m: Machine}) {
             kind="secondary"
             label={t('newsletter.openConfirm')}
             iconLeft="mail"
-            href={`/newsletter/confirmed${token ? `?token=${encodeURIComponent(token)}` : ''}`}
+            href="/newsletter/thanks"
           />
           <Button
             kind="ghost"
