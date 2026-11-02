@@ -12,7 +12,7 @@
 # as site-build.prev for ROLLBACK=1. No storage key is needed here.
 # Optional:
 #   VITE_API_BASE       the public API base, default https://api.swemre.com/api
-#   VITE_CHANNEL_KEY    the website channel the site reads, default swemre
+#   VITE_CHANNEL_KEY    the website channel the site reads, default swemre-website
 #   VITE_SITE_URL       where the site is served, default https://swemre.com
 #   VITE_LOCALE, VITE_API_TIMEOUT_MS   default en and 10000
 #   REMOTE_DIR          where swemre-website-api lives on the server, default swemre-website-api
@@ -52,7 +52,7 @@ export VITE_API_MODE=live
 # The build writes rss.xml and sitemap.xml from the API and fails if it cannot reach it
 export VITE_FEEDS_REQUIRED=1
 export VITE_API_BASE="${VITE_API_BASE:-https://api.swemre.com/api}"
-export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre}"
+export VITE_CHANNEL_KEY="${VITE_CHANNEL_KEY:-swemre-website}"
 export VITE_SITE_URL="${VITE_SITE_URL:-https://swemre.com}"
 export VITE_LOCALE="${VITE_LOCALE:-en}"
 export VITE_API_TIMEOUT_MS="${VITE_API_TIMEOUT_MS:-10000}"

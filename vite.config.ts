@@ -35,7 +35,7 @@ export default defineConfig(({mode}) => {
         : [
             liveFeeds({
               apiBase: env.VITE_API_BASE ?? '/api',
-              channel: env.VITE_CHANNEL_KEY ?? 'swemre',
+              channel: env.VITE_CHANNEL_KEY ?? 'swemre-website',
               readKey: env.VITE_READ_KEY ?? '',
               siteUrl: env.VITE_SITE_URL ?? 'https://swemre.com',
               locales: ['en', 'tr'],

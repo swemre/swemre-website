@@ -15,7 +15,7 @@ const env = import.meta.env
 export const API_MODE: 'mock' | 'live' =
   env.VITE_API_MODE === 'live' ? 'live' : 'mock'
 export const API_BASE: string = (env.VITE_API_BASE ?? '/api').replace(/\/$/, '')
-export const CHANNEL_KEY: string = env.VITE_CHANNEL_KEY ?? 'swemre'
+export const CHANNEL_KEY: string = env.VITE_CHANNEL_KEY ?? 'swemre-website'
 export const READ_KEY: string = env.VITE_READ_KEY ?? 'local-mock'
 export const API_TIMEOUT_MS: number = Number(env.VITE_API_TIMEOUT_MS ?? 10000)
 export const SITE_URL: string = (
