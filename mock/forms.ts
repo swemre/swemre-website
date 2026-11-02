@@ -25,34 +25,32 @@ const FORMS: Record<string, Record<string, Rule>> = {
     consent: 'true',
   },
   contact: {
-    fullname: 'optional',
+    fullName: 'optional',
     email: 'email',
     phone: 'optional',
-    describesyou: 'optional',
-    foundvia: 'optional',
-    favouritelanguage: 'optional',
+    describesYou: 'optional',
+    foundVia: 'optional',
+    favouriteLanguage: 'optional',
     message: 'required',
     consent: 'true',
-    newsletteroptin: 'optional',
+    newsletterOptIn: 'optional',
   },
   'callback-request': {
-    fullname: 'optional',
+    fullName: 'optional',
     contact: 'contact',
-    preferredtime: 'required',
-    timezone: 'optional',
+    preferredTime: 'required',
+    timeZone: 'optional',
     topic: 'required',
     note: 'optional',
     consent: 'true',
   },
-  'newsletter-confirm': {token: 'required'},
-  'newsletter-unsubscribe': {token: 'optional', email: 'optional'},
 }
 
 const MESSAGES: Record<Rule, string> = {
   required: 'This field is required.',
   email: 'Enter a full email address.',
-  contact: 'Enter a full phone number or an email.',
-  true: 'This must be ticked.',
+  contact: 'Enter an email address or a phone number.',
+  true: 'Tick this box to continue.',
   optional: '',
 }
 
@@ -87,21 +85,9 @@ export function validateSubmission(
         !EMAIL_RE.test(s))
     if (bad)
       errors.push({
-        field,
+        field: `values.${field}`,
         message: MESSAGES[rule === 'optional' ? 'email' : rule],
       })
-  }
-  if (key === 'newsletter-unsubscribe' && !fields.token && !fields.email) {
-    errors.push({field: 'token', message: 'A token or an email is required.'})
-  }
-  if (
-    key === 'newsletter-confirm' &&
-    /^(invalid|expired)$/.test(String(fields.token))
-  ) {
-    errors.push({
-      field: 'token',
-      message: 'This link has expired. Subscribe again to get a new one.',
-    })
   }
   const ignored = Object.keys(fields).filter(f => !(f in table))
   return {kind: 'ok', errors, ignored}

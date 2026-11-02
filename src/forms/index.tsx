@@ -21,7 +21,7 @@ import {NewsletterPage} from './NewsletterPage.tsx'
 import {FORM_BY_ROUTE, NEWSLETTER, type FormDef} from './specs.ts'
 
 // eslint-disable-next-line react-refresh/only-export-components -- the brief exports these here
-export {confirmSubscription, subscribe, unsubscribe} from './newsletter.ts'
+export {subscribe} from './newsletter.ts'
 export type {NewsletterOutcome, Subscriber} from './newsletter.ts'
 /** The newsletter form (fields, labels, options), for the home page's copy of it. */
 // eslint-disable-next-line react-refresh/only-export-components

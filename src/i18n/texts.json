@@ -1255,52 +1255,7 @@
   "state.what.author": {"en": "The author page", "tr": "Yazar sayfası"},
   "state.what.page": {"en": "The page", "tr": "Sayfa"},
   "state.what.project": {"en": "The project", "tr": "Proje"},
-  "status.checking": {
-    "en": "Checking the link from your email",
-    "tr": "E-postanızdaki bağlantı kontrol ediliyor"
-  },
-  "status.confirmed.accent": {"en": "subscribed.", "tr": "oldunuz."},
-  "status.confirmed.lead": {
-    "en": "Your address is confirmed. The next letter goes out when a new article is ready, and every one has a one-click unsubscribe.",
-    "tr": "Adresiniz onaylandı. Sonraki mektup yeni bir yazı hazır olunca gider ve her birinde tek tıkla abonelikten çıkma bağlantısı vardır."
-  },
-  "status.confirmed.mark": {"en": "Confirmed", "tr": "Onaylandı"},
-  "status.confirmed.thanks": {
-    "en": "Thanks, {name}. ",
-    "tr": "Teşekkürler, {name}. "
-  },
-  "status.confirmed.title": {"en": "You’re", "tr": "Abone"},
-  "status.confirming": {
-    "en": "Confirming your address…",
-    "tr": "Adresiniz onaylanıyor…"
-  },
-  "status.detail.confirmed": {"en": "confirmed", "tr": "onaylandı"},
-  "status.detail.confirming": {"en": "confirming", "tr": "onaylanıyor"},
   "status.detail.thanks": {"en": "thanks", "tr": "teşekkürler"},
-  "status.detail.unsubscribed": {
-    "en": "unsubscribed",
-    "tr": "abonelikten çıkıldı"
-  },
-  "status.detail.unsubscribing": {
-    "en": "unsubscribing",
-    "tr": "abonelikten çıkılıyor"
-  },
-  "status.expired.lead": {
-    "en": "Newsletter links work once and stop working after a while. Subscribe again to get a fresh one.",
-    "tr": "Bülten bağlantıları bir kez çalışır ve bir süre sonra geçersiz olur. Yenisini almak için tekrar abone olun."
-  },
-  "status.expired.title": {
-    "en": "This link has expired.",
-    "tr": "Bu bağlantının süresi doldu."
-  },
-  "status.failed.lead": {
-    "en": "The server did not answer. Your link still works; try again in a moment.",
-    "tr": "Sunucu yanıt vermedi. Bağlantınız hâlâ geçerli; birazdan tekrar deneyin."
-  },
-  "status.failed.title": {
-    "en": "That did not go through.",
-    "tr": "Bu işlem gerçekleşmedi."
-  },
   "status.latest.copy": {
     "en": "The three most recent articles, newest first.",
     "tr": "En son üç yazı, önce en yeni."
@@ -1310,21 +1265,12 @@
     "en": "While you wait for the next one",
     "tr": "Bir sonrakini beklerken"
   },
-  "status.mistake.after": {
-    "en": " puts you back with one click, no form needed.",
-    "tr": " ile tek tıkla geri dönersiniz, form gerekmez."
-  },
-  "status.mistake.before": {
-    "en": "Unsubscribed by mistake? ",
-    "tr": "Yanlışlıkla mı çıktınız? "
-  },
   "status.noEmail.after": {"en": ".", "tr": "."},
   "status.noEmail.before": {
     "en": "No email after a few minutes? Check your spam folder, or ",
     "tr": "Birkaç dakika sonra e-posta gelmedi mi? Spam klasörünüze bakın ya da "
   },
   "status.noEmail.link": {"en": "subscribe again", "tr": "tekrar abone olun"},
-  "status.subscribeAgain": {"en": "Subscribe again", "tr": "Tekrar abone ol"},
   "status.thanks.accent": {"en": "subscribing.", "tr": "teşekkürler."},
   "status.thanks.inbox": {"en": "your inbox", "tr": "gelen kutunuz"},
   "status.thanks.lead": {
@@ -1337,18 +1283,6 @@
   },
   "status.thanks.mark": {"en": "Thank you", "tr": "Teşekkürler"},
   "status.thanks.title": {"en": "Thanks for", "tr": "Abone olduğunuz için"},
-  "status.unsubscribed.lead": {
-    "en": "You will not get any more emails from swemre.com. Changed your mind? You can subscribe again any time.",
-    "tr": "swemre.com'dan artık e-posta almayacaksınız. Fikriniz mi değişti? İstediğiniz zaman tekrar abone olabilirsiniz."
-  },
-  "status.unsubscribed.title": {
-    "en": "You are unsubscribed.",
-    "tr": "Abonelikten çıktınız."
-  },
-  "status.unsubscribing": {
-    "en": "Unsubscribing…",
-    "tr": "Abonelikten çıkılıyor…"
-  },
   "time.daysAgo": {
     "en": {"one": "{count} day ago", "other": "{count} days ago"},
     "tr": {"other": "{count} gün önce"}

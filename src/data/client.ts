@@ -164,12 +164,10 @@ export function createClient(
     async redirects() {
       return (await call<ApiRedirect[]>('/redirects'))!
     },
-    // SWEPress field keys are the lowercased field names; errors come back under those keys.
+    // Field keys are sent exactly as the form names them (API 1.9 matches them exactly); errors
+    // come back as `values.<key>`.
     async submit(form: FormKey, fields: Record<string, FormValue>) {
-      const byKey = new Map(Object.keys(fields).map(k => [k.toLowerCase(), k]))
-      const wire = Object.fromEntries(
-        Object.entries(fields).map(([k, v]) => [k.toLowerCase(), v]),
-      )
+      const wire = fields
       try {
         const res = await call<ApiSubmittedForm>(`/forms/${form}/submissions`, {
           method: 'POST',
@@ -181,7 +179,7 @@ export function createClient(
         if (e instanceof ApiError && e.body?.errors)
           e.body.errors = e.body.errors.map(x => ({
             ...x,
-            field: byKey.get(x.field) ?? x.field,
+            field: x.field.replace(/^values\./, ''),
           }))
         throw e
       }

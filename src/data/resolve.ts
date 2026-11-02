@@ -44,8 +44,6 @@ const FIXED: Record<string, TemplateKey> = {
   '/contact': 'form',
   '/call-back': 'form',
   '/newsletter/thanks': 'newsletter-status',
-  '/newsletter/confirmed': 'newsletter-status',
-  '/newsletter/unsubscribed': 'newsletter-status',
   [`/authors/${AUTHOR_SLUG}`]: 'author',
 }
 
@@ -53,6 +51,9 @@ const FIXED: Record<string, TemplateKey> = {
 const ALIASES: Record<string, string> = {
   '/about': `/authors/${AUTHOR_SLUG}`,
   '/callback': '/call-back',
+  // API 1.9 has no confirm or unsubscribe step: old email links land on the newsletter page.
+  '/newsletter/confirmed': '/newsletter',
+  '/newsletter/unsubscribed': '/newsletter',
 }
 
 export function requestId(): string {
