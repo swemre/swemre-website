@@ -258,3 +258,8 @@ bottom: chat panel, Spotify panel, chat launcher.
 - **Phones** (below `sm`): the open chat is a full-screen sheet padded by the
   safe-area insets and the page behind it does not scroll; a `dock-clear`
   spacer under the footer keeps the dock off the page content.
+
+The read cache (`src/data/store.ts`, 3-D23) tries a failed read again after
+2, 4 and 8 s before it shows the error (a 404 is an answer), and serves a
+ready entry for 5 minutes; the next use after that shows it and loads a new
+copy behind it. Per tab and in memory only.

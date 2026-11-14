@@ -200,6 +200,8 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-MNT-14   | §4.4         | `scripts/api-types.mjs`, `src/contract/api.ts` | TC-API-05 | Designed (types generated from the committed spec; Unverified against a live API) |
 | SRS-MNT-15   | §4.4         | `src/data/client.ts`, `src/data/env.ts`, `feeds/plugin.ts`, `vite.config.ts` | TC-API-06 | Designed (mock mode checked; Unverified against the live API) |
 | SRS-MNT-16   | §4.4         | `src/data/errors.ts`, `src/forms/`, `src/data/resolve.ts` | TC-API-07 | Designed (mock fault switches checked; Unverified against the live API) |
+| SRS-MNT-17   | §4.4         | `src/data/store.ts`                        | TC-API-08 | Designed |
+| SRS-MNT-18   | §4.4         | `src/data/store.ts`                        | TC-API-08 | Designed |
 | SRS-CMP-01   | n/a          | whole app                                  | L4 suite (3 engines)    | Open              |
 | SRS-CMP-02   | §4.9         | layout tokens                              | TC-E2E-03               | Pass (SS at 1920); other widths Designed |
 | SRS-CMP-03   | §6           | stores, theme                              | TC-E2E-08               | Designed          |
@@ -271,3 +273,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-11-14 | 3-D12: rows for the new MNT requirements | Claude, for swemre review |
 | 2026-11-14 | 3-D13: rows for the new MNT requirements | Claude, for swemre review |
 | 2026-11-14 | 3-D14: rows for the new MNT requirements | Claude, for swemre review |
+| 2026-11-14 | 3-D23: rows for the new MNT requirements | Claude, for swemre review |

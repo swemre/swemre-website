@@ -559,3 +559,9 @@ publishable key as Bearer (SRS-MNT-15); `/redirects` stays on v2 until 4-D06.
 
 One map from error key to failure (`src/data/errors.ts`, SRS-MNT-16) serves
 the form machine, the newsletter flows and the resolver.
+
+### 3-D23 Read cache
+
+`src/data/store.ts` retries a failed read after 2, 4 and 8 s (not a 404) and
+keeps ready data fresh for 5 minutes, refreshing behind the old copy on use
+(SRS-MNT-17, MNT-18); no timer runs while nothing uses an entry.

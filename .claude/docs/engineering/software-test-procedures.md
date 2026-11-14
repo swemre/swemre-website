@@ -577,6 +577,13 @@ yet verified in a browser; their test cases above are Designed.
 3. Six sign-ups in a minute: the sixth shows "limited". A bad email: the field error under the email field.
 4. Confirm with an expired token: the expired panel. Page loads with a revoked key: the unavailable page.
 
+### TC-API-08 Read waits and freshness (SRS-MNT-17, MNT-18)
+
+1. API down (mock `?fault=500`): an article shows its skeleton; the network panel shows 4 tries at about 0, 2, 6 and 14 s, then the error with Try; Try starts a new set.
+2. A missing article: the not-found page after one request.
+3. Publish a new title; within 5 minutes plus one navigation the open tab shows it, with no spinner.
+4. Back and forth inside 5 minutes: no new request for the same key; no timer runs while the tab is idle (Performance panel, 1 minute).
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x
