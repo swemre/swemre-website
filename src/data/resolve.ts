@@ -17,6 +17,7 @@ import type {
 } from '../contract/templates.ts'
 import {toSettings} from './adapters.ts'
 import {UNREACHABLE} from './client.ts'
+import {KEY_PROBLEMS} from './errors.ts'
 import {AUTHOR_SLUG} from './author.ts'
 import {canonicalHref, selectTemplate} from './rules.ts'
 import {fetchResource, resources} from './store.ts'
@@ -83,8 +84,15 @@ function notFound(path: string, segments: string[]): Resolution {
 export function failure(path: string, e: unknown): Resolution {
   const status = e instanceof ApiError ? e.status : 500
   const body = e instanceof ApiError ? e.body : undefined
-  // 401: the channel or its read key is missing on the API, so no page can load
-  if (status === 503 || status === 401 || status === UNREACHABLE) {
+  // 401 and a key without its permission: the website key is missing or wrong on the API, so no
+  // page can load
+  const keyProblem = !!body?.key && KEY_PROBLEMS.has(body.key)
+  if (
+    status === 503 ||
+    status === 401 ||
+    keyProblem ||
+    status === UNREACHABLE
+  ) {
     const m = body?.maintenance
     return {
       route: {template: 'unavailable', path, chrome: UNAVAILABLE},

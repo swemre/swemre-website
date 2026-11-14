@@ -554,3 +554,8 @@ from the API's `openapi-v1.json`, aliased in `src/contract/api.ts`.
 
 The client (`src/data/client.ts`) reads `/public/v1/channels/<c>` with the
 publishable key as Bearer (SRS-MNT-15); `/redirects` stays on v2 until 4-D06.
+
+### 3-D14 Error map
+
+One map from error key to failure (`src/data/errors.ts`, SRS-MNT-16) serves
+the form machine, the newsletter flows and the resolver.

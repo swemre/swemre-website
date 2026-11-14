@@ -570,6 +570,13 @@ yet verified in a browser; their test cases above are Designed.
 3. Live build with `VITE_API_KEY`: `rss.xml` and `sitemap.xml` come from v1.
 4. A key of another channel: every read answers 404 and the not-found pages show; a revoked key: 401, the unavailable page.
 
+### TC-API-07 Forms and the error map (SRS-MNT-16)
+
+1. Newsletter sign-up in live mode: `POST /api/public/v1/channels/<c>/forms/newsletter/submissions` with Bearer; the success panel.
+2. A closed form: "closed"; mock `?fault=403-key` (a key without `public.forms.submit`): the generic failure and one console error naming the key.
+3. Six sign-ups in a minute: the sixth shows "limited". A bad email: the field error under the email field.
+4. Confirm with an expired token: the expired panel. Page loads with a revoked key: the unavailable page.
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x

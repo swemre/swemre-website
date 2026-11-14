@@ -346,6 +346,18 @@ answers 401 `API_KEY_INVALID` (the unavailable page). Media URLs stay the
 keyless `/public/v2/channels/<c>/media/<id>/file` addresses of the JSON. A
 local live run from `localhost:5173` needs a key whose origins allow it.
 
+#### IF-18 on v1 (3-D14)
+
+Forms post to `/public/v1/channels/<c>/forms/<form-key>/submissions` with
+the Bearer key. `src/data/errors.ts` maps the answer's key to what the
+visitor sees: `FORM_CLOSED` closed, `RATE_LIMITED` limited,
+`VALIDATION_FAILED` field errors, `UNAVAILABLE`/`TIMEOUT`/`UNREACHABLE`
+try later, `NOT_FOUND` and the key problems (`API_KEY_MISSING`,
+`API_KEY_INVALID`, `API_KEY_PERMISSION_MISSING` with `permission`,
+`CHANNEL_READ_DENIED`) the generic failure (logged once); any other key
+falls back to the status (400 invalid, 429 limited, else failed). Page
+loads with a key problem show the unavailable page.
+
 ### 6.4 IF-18 Public form submissions
 
 | Item       | Value                                                                         |
@@ -487,3 +499,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |
 | 2026-11-14 | 3-D12: IF-20/IF-18 on public API v1 | Claude, for swemre review |
 | 2026-11-14 | 3-D13: IF-20/IF-18 on public API v1 | Claude, for swemre review |
+| 2026-11-14 | 3-D14: IF-20/IF-18 on public API v1 | Claude, for swemre review |

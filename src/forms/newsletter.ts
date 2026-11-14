@@ -14,6 +14,7 @@
 // the sign-up itself, used by the home page's subscribe block. Owner: agent C.
 import {ApiError, type FormValue} from '../contract/api.ts'
 import {api} from '../data/client.ts'
+import {errorKind} from '../data/errors.ts'
 
 export interface Subscriber {
   name?: string
@@ -42,7 +43,7 @@ function failure(e: unknown): {
     const onToken = e.body?.errors?.some(x => x.field === 'token')
     return {
       ok: false,
-      reason: e.status === 400 && onToken ? 'expired' : 'failed',
+      reason: errorKind(e) === 'invalid' && onToken ? 'expired' : 'failed',
       status: e.status,
       requestId: e.body?.requestId,
     }
