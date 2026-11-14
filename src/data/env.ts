@@ -16,7 +16,13 @@ export const API_MODE: 'mock' | 'live' =
   env.VITE_API_MODE === 'live' ? 'live' : 'mock'
 export const API_BASE: string = (env.VITE_API_BASE ?? '/api').replace(/\/$/, '')
 export const CHANNEL_KEY: string = env.VITE_CHANNEL_KEY ?? 'swemre-website'
+// TODO(4-D06): the read key stays for /redirects only, until redirects are on v1
 export const READ_KEY: string = env.VITE_READ_KEY ?? 'local-mock'
+// The publishable key v1 reads take as Bearer; the default is the mock's own, of the right shape
+export const API_KEY: string =
+  env.VITE_API_KEY || 'swp_pk_localmck_' + 'x'.repeat(32)
+if (API_KEY.startsWith('swp_sk_'))
+  throw new Error('VITE_API_KEY must be a publishable key (swp_pk_…)')
 export const API_TIMEOUT_MS: number = Number(env.VITE_API_TIMEOUT_MS ?? 10000)
 export const SITE_URL: string = (
   env.VITE_SITE_URL ?? 'https://swemre.com'

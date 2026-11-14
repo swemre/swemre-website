@@ -331,6 +331,7 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
 | SRS-MNT-13  | With a channel key, articles, projects, songs, pages and site settings shall be read from public API v2 for that channel in the configured locale, and form submissions and chat shall go there too, with the read key as `X-Read-Key` (only on v2 requests) and a chat's visitor token as `X-Visitor-Token`; without a socket the chat shall poll for replies every 15 s. Without a channel key, and for page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
 | SRS-MNT-14  | The website's wire types (publications, terms, media, form answers, problem bodies) shall be generated from the public API's committed `openapi-v1.json` with openapi-typescript 7.13.0 into `src/contract/generated/api-v1.d.ts`; `src/contract/api.ts` shall alias them and add only the site's own types (FR-API-013). | I | P1 |
+| SRS-MNT-15  | Every read (browser and build: RSS, sitemap) shall go to `/api/public/v1/channels/{channel}/...` with `Authorization: Bearer <VITE_API_KEY>`, a publishable `swp_pk_` key; a `swp_sk_` value shall fail the build. Only `/redirects` stays on v2 with `X-Read-Key` until 4-D06 (FR-PRM-121). | T | P1 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -375,3 +376,4 @@ features). No backend, no cookies, no analytics.
 | 2026-10-23 | PRS-000313: added GEN-11 (JSON-LD) | Claude, for swemre review |
 | 2026-10-24 | PRS-000005: added ART-18 (cover focal point) | Claude, for swemre review |
 | 2026-11-14 | 3-D12: added SRS-MNT-14 | Claude, for swemre review |
+| 2026-11-14 | 3-D13: added SRS-MNT-15 | Claude, for swemre review |

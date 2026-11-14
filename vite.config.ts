@@ -20,6 +20,9 @@ import {mockApi} from './mock/plugin.ts'
 export default defineConfig(({mode}) => {
   const env = {...loadEnv(mode, process.cwd()), ...process.env}
   const mock = (env.VITE_API_MODE ?? 'mock') === 'mock'
+  // A secret key must never ship in the bundle
+  if (env.VITE_API_KEY?.startsWith('swp_sk_'))
+    throw new Error('VITE_API_KEY must be a publishable key (swp_pk_…)')
   return {
     plugins: [
       react(),
@@ -29,6 +32,7 @@ export default defineConfig(({mode}) => {
               apiBase: env.VITE_API_BASE,
               channel: env.VITE_CHANNEL_KEY,
               readKey: env.VITE_READ_KEY,
+              apiKey: env.VITE_API_KEY,
               siteUrl: env.VITE_SITE_URL,
             }),
           ]
@@ -36,7 +40,7 @@ export default defineConfig(({mode}) => {
             liveFeeds({
               apiBase: env.VITE_API_BASE ?? '/api',
               channel: env.VITE_CHANNEL_KEY ?? 'swemre-website',
-              readKey: env.VITE_READ_KEY ?? '',
+              apiKey: env.VITE_API_KEY ?? '',
               siteUrl: env.VITE_SITE_URL ?? 'https://swemre.com',
               locales: ['en', 'tr'],
               required: env.VITE_FEEDS_REQUIRED === '1',

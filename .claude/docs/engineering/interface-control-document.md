@@ -332,6 +332,20 @@ not hand-edited). `src/contract/api.ts` aliases them; `FieldMap`,
 `ContentTypeKey`, `ApiListQuery`, `FormValue`, `FormKey`, `PublicApiClient`,
 `ApiError` and the v2 `ApiRedirect` (until 4-D06) stay hand-written.
 
+#### IF-20 on v1 (3-D13)
+
+| Variable       | Default                          | Use |
+| -------------- | -------------------------------- | --- |
+| `VITE_API_KEY` | a mock-only `swp_pk_localmck_...` | The website's publishable key (the API's `WEBSITE_API_KEY`), sent as `Authorization: Bearer` on every v1 call; required in live builds; a `swp_sk_` value fails the build |
+| `VITE_READ_KEY` | `local-mock`                    | `X-Read-Key` for `/public/v2/.../redirects` only, until 4-D06 |
+
+Reads: `GET /public/v1/channels/<c>/publications`, `.../publications/<slug>`,
+`.../terms` (and the build's RSS and sitemap). A key of another channel
+answers 404 on every read (the not-found pages); a revoked or expired key
+answers 401 `API_KEY_INVALID` (the unavailable page). Media URLs stay the
+keyless `/public/v2/channels/<c>/media/<id>/file` addresses of the JSON. A
+local live run from `localhost:5173` needs a key whose origins allow it.
+
 ### 6.4 IF-18 Public form submissions
 
 | Item       | Value                                                                         |
@@ -472,3 +486,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-24 | PRS-000565: IF-18 forms post to their table endpoint (accepted fields, `FORM_CLOSED`, field errors) | Claude, for swemre review |
 | 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |
 | 2026-11-14 | 3-D12: IF-20/IF-18 on public API v1 | Claude, for swemre review |
+| 2026-11-14 | 3-D13: IF-20/IF-18 on public API v1 | Claude, for swemre review |

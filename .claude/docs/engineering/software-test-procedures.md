@@ -563,6 +563,13 @@ yet verified in a browser; their test cases above are Designed.
 2. Remove a field from the spec's `PublicationSummary`, regenerate: `npm run build` fails where the site reads it. Revert.
 3. `npm run checkstyle`, `npm run build`, strict `tsc` pass.
 
+### TC-API-06 Reads on v1 with the publishable key (SRS-MNT-15)
+
+1. `.env.local`: `VITE_API_MODE=live`, `VITE_API_BASE`, `VITE_API_KEY=<key>`, `VITE_READ_KEY`; `npm run dev`: every publication and term request goes to `/api/public/v1/channels/<c>/...` with `Authorization: Bearer swp_pk_...`; only `/public/v2/.../redirects` carries `X-Read-Key`.
+2. `VITE_API_KEY=swp_sk_...` → `npm run build` fails with "VITE_API_KEY must be a publishable key".
+3. Live build with `VITE_API_KEY`: `rss.xml` and `sitemap.xml` come from v1.
+4. A key of another channel: every read answers 404 and the not-found pages show; a revoked key: 401, the unavailable page.
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x

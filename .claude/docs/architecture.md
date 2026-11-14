@@ -549,3 +549,8 @@ Full trace: SWE-DOC-007.
 
 The wire contract is generated (SRS-MNT-14): `src/contract/generated/api-v1.d.ts`
 from the API's `openapi-v1.json`, aliased in `src/contract/api.ts`.
+
+### 3-D13 Public API v1
+
+The client (`src/data/client.ts`) reads `/public/v1/channels/<c>` with the
+publishable key as Bearer (SRS-MNT-15); `/redirects` stays on v2 until 4-D06.

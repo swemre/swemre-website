@@ -29,6 +29,7 @@ import {
 import {DEFAULT_LOCALE, locale as pageLocale} from '../i18n/index.ts'
 import {
   API_BASE,
+  API_KEY,
   API_TIMEOUT_MS,
   CHANNEL_KEY,
   DEV_SWITCHES,
@@ -49,14 +50,22 @@ export function createClient(
   opts: {
     base?: string
     channel?: string
+    apiKey?: string
     readKey?: string
     timeoutMs?: number
     locale?: string
   } = {},
 ): PublicApiClient {
   const base = opts.base ?? API_BASE
-  const root = `${base}/public/v2/channels/${encodeURIComponent(opts.channel ?? CHANNEL_KEY)}`
+  const channel = encodeURIComponent(opts.channel ?? CHANNEL_KEY)
+  const root = `${base}/public/v1/channels/${channel}`
+  const apiKey = opts.apiKey ?? API_KEY
+  // TODO(4-D06): redirects stay on v2 with the read key until v1 has them
+  const v2Root = `${base}/public/v2/channels/${channel}`
   const readKey = opts.readKey ?? READ_KEY
+  const authHeaders = (): Record<string, string> => ({
+    Authorization: `Bearer ${apiKey}`,
+  })
   const timeoutMs = opts.timeoutMs ?? API_TIMEOUT_MS
   // Reads ask for the page's language; anything missing in it falls back to the default one.
   const locale = opts.locale ?? pageLocale
@@ -66,17 +75,18 @@ export function createClient(
     path: string,
     init: RequestInit = {},
     notFound?: 'undefined',
+    v2 = false,
   ): Promise<T | undefined> {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), timeoutMs)
     let res: Response
     try {
-      res = await fetch(root + path, {
+      res = await fetch((v2 ? v2Root : root) + path, {
         ...init,
         signal: controller.signal,
         headers: {
           Accept: 'application/json',
-          'X-Read-Key': readKey,
+          ...(v2 ? {'X-Read-Key': readKey} : authHeaders()),
           ...faultHeader(),
           ...init.headers,
         },
@@ -162,7 +172,7 @@ export function createClient(
       return (await call<ApiTerm[]>(`/terms${qs({kind, locale: fallback})}`))!
     },
     async redirects() {
-      return (await call<ApiRedirect[]>('/redirects'))!
+      return (await call<ApiRedirect[]>('/redirects', {}, undefined, true))!
     },
     // SWEPress field keys are the lowercased field names; errors come back under those keys.
     async submit(form: FormKey, fields: Record<string, FormValue>) {
