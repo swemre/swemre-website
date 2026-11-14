@@ -9,42 +9,53 @@
  * Contact: emre@swemre.com
  */
 
-// Wire JSON of SWEPress public API v2, as served by the real API and by mock/plugin.ts.
-// Base: ${VITE_API_BASE}/public/v2/channels/${VITE_CHANNEL_KEY}. Header X-Read-Key on reads.
+// Wire JSON of SWEPress public API v1, generated from the API's openapi-v1.json
+// (npm run api:types, 3-D12) and narrowed here where the site knows more (content type keys,
+// term kinds, field maps). Base: ${VITE_API_BASE}/public/v1/channels/${VITE_CHANNEL_KEY}.
 // Owner: agent C. Others import, never edit; ask C for changes.
 import type {Hue} from './blocks.ts'
+import type {components} from './generated/api-v1.d.ts'
+
+type Schemas = components['schemas']
 
 export type Uuid = string
-/** ISO-8601 UTC timestamp. */
 export type Instant = string
 
-export interface ApiMedia {
+/** url is relative to VITE_API_BASE unless it starts with http or /. */
+export type ApiMedia = Omit<Schemas['Media'], 'alt'> & {
   id: Uuid
-  /** Relative to VITE_API_BASE unless it starts with http or /. */
   url: string
   alt?: string | null
-  mimeType?: string
-  width?: number
-  height?: number
 }
 
 export type TermKind = 'CATEGORY' | 'TAG'
-export interface ApiTerm {
+export type ApiTerm = Omit<Schemas['Term'], 'kind' | 'description'> & {
   id: Uuid
   kind: TermKind
+  description?: string | null
   name: string
   slug: string
-  /** GET /terms only. */
-  publicationCount?: number
-  description?: string | null
-  /** Mock extension (not in API v2 yet): related topic slugs, shown for an empty topic. */
-  related?: string[]
 }
 
 export type ContentTypeKey = 'article' | 'project' | 'page' | 'site-settings'
 
-/** An item of GET /publications. */
-export interface ApiPublicationSummary {
+// The generated types do not say what may be null; these fields may
+type Narrowed =
+  | 'contentType'
+  | 'cover'
+  | 'terms'
+  | 'section'
+  | 'fields'
+  | 'excerpt'
+  | 'author'
+  | 'seoTitle'
+  | 'seoDescription'
+  | 'canonicalUrl'
+
+export type ApiPublicationSummary = Omit<
+  Schemas['PublicationSummary'],
+  Narrowed
+> & {
   id: Uuid
   documentId: Uuid
   workId: Uuid
@@ -52,43 +63,41 @@ export interface ApiPublicationSummary {
   locale: string
   slug: string
   title: string
-  excerpt?: string | null
-  author?: string | null
   cover: ApiMedia | null
   /** Per content type, see FieldMap. */
   fields: Record<string, unknown>
-  /** The website-page distribution's section (if any) and its tags. */
   terms: ApiTerm[]
-  /** The website-page distribution's category; it is the site area and the first URL segment. */
   section: ApiTerm | null
   publishedAt: Instant
-  updatedAt?: Instant
+  noindex: boolean
+  excerpt?: string | null
+  author?: string | null
   seoTitle?: string | null
   seoDescription?: string | null
   canonicalUrl: string | null
-  noindex: boolean
-  /** Locales the item is published in on this channel, its own included (SWEPress api#183). */
-  languages?: string[]
 }
 
-/** GET /publications/{slug}. */
-export interface ApiPublication extends ApiPublicationSummary {
-  body?: ApiBody
-  languageVersions: {locale: string; slug: string}[]
-}
-
-/** Bodies are block lists (see contract/blocks.ts). */
-export interface ApiBody {
+export type ApiBody = NonNullable<Schemas['Publication']['body']> & {
   blocks: unknown[]
 }
 
-export interface ApiPage<T> {
+export type ApiPublication = ApiPublicationSummary &
+  Omit<Schemas['Publication'], Narrowed | 'body' | 'languageVersions'> & {
+    body?: ApiBody
+    languageVersions: {locale: string; slug: string}[]
+  }
+
+export type ApiPage<T> = Omit<
+  Schemas['PageResultPublicationSummary'],
+  'items'
+> & {
   items: T[]
   total: number
   page: number
   size: number
 }
 
+// TODO(4-D06): redirects are read on v2 until v1 has them, so this one is hand-written
 export interface ApiRedirect {
   from: string
   to: string
@@ -119,7 +128,10 @@ export interface ApiSubmittedForm {
   result?: Record<string, FormValue>
 }
 
-export interface ApiErrorBody {
+export type ApiErrorBody = Omit<
+  Schemas['Problem'],
+  'key' | 'errors' | 'message'
+> & {
   key:
     | 'NOT_FOUND'
     | 'VALIDATION_FAILED'
@@ -128,6 +140,9 @@ export interface ApiErrorBody {
     | 'CHANNEL_READ_DENIED'
     | 'UNAVAILABLE'
     | 'INTERNAL'
+    | 'API_KEY_MISSING'
+    | 'API_KEY_INVALID'
+    | 'API_KEY_PERMISSION_MISSING'
     | (string & {})
   message: string
   errors: {field: string; message: string}[]
@@ -137,7 +152,6 @@ export interface ApiErrorBody {
   maintenance?: {from: Instant; until: Instant}
 }
 
-/** The fields object per content type. All optional; adapters apply defaults. */
 export interface FieldMap {
   article: {
     summary?: string

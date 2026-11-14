@@ -544,3 +544,8 @@ Full trace: SWE-DOC-007.
 | 2026-10-23 | PRS-000311: canonical and Twitter tags through `documentTags`, §4.10a route pre-render, preview plugin | Claude, for swemre review |
 | 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: §6 failed loads, unreachable chat and forms (closes RSK-04) | Claude, for swemre review |
+
+### 3-D12 Wire types
+
+The wire contract is generated (SRS-MNT-14): `src/contract/generated/api-v1.d.ts`
+from the API's `openapi-v1.json`, aliased in `src/contract/api.ts`.

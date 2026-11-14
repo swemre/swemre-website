@@ -197,6 +197,7 @@ reviewed on 2026-10-15, `INSP` = inspection of the code on 2026-10-15.
 | SRS-MNT-11   | §4.3         | `config/env.ts`, `config/siteDefaults.ts`, `vite.config.ts`, `index.html` | TC-API-02 | Manual (Verified 2026-10-23: build with `VITE_SITE_URL` and `VITE_LOCALE` set) |
 | SRS-MNT-12   | §4.3         | `services/publicApi.ts`                    | TC-API-03               | Manual (Verified 2026-10-23 with a local mock server: 200 ms timeout rejected after 212 ms) |
 | SRS-MNT-13   | §4.3         | `services/publicApi.ts`                    | TC-API-04               | Manual (Verified 2026-10-24 against local mocks of docs/public-api-v2.md: publications, forms incl. 429, chat start, continue, token check; not yet against the API's v2 endpoints) |
+| SRS-MNT-14   | §4.4         | `scripts/api-types.mjs`, `src/contract/api.ts` | TC-API-05 | Designed (types generated from the committed spec; Unverified against a live API) |
 | SRS-CMP-01   | n/a          | whole app                                  | L4 suite (3 engines)    | Open              |
 | SRS-CMP-02   | §4.9         | layout tokens                              | TC-E2E-03               | Pass (SS at 1920); other widths Designed |
 | SRS-CMP-03   | §6           | stores, theme                              | TC-E2E-08               | Designed          |
@@ -265,3 +266,4 @@ requirement; every requirement above cites at least one test or inspection.
 | 2026-10-24 | PRS-000322: A11Y-02, A11Y-03 (closes the RSK-09 failure), A11Y-07 statuses after the audit | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: GEN-11 row | Claude, for swemre review |
 | 2026-10-24 | PRS-000005: ART-18 row | Claude, for swemre review |
+| 2026-11-14 | 3-D12: rows for the new MNT requirements | Claude, for swemre review |

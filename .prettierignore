@@ -6,3 +6,4 @@ package-lock.json
 LICENSE
 NOTICE
 *.mdx
+src/contract/generated

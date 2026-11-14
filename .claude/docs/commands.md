@@ -68,3 +68,4 @@ work in both. Line endings are LF (`.editorconfig`, `files.eol`); Git may warn
 about LF to CRLF conversion, which is harmless. Windows Python writes CRLF in
 text mode, so scripts that edit files should open them with LF newlines
 (Prettier rejects CRLF).
+| `npm run api:types` | Regenerate `src/contract/generated/api-v1.d.ts` from the API's committed `openapi-v1.json` (`API_SPEC` for another file or an `/api/public/v1/openapi.json` URL); run it in the same change as any contract change |

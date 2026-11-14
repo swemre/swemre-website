@@ -557,6 +557,12 @@ Browser check by the lead for the website UX tickets. Verified in browser
 Every other UX fix (W2, W3, W10, W12 to W17, W21 to W23, W25, W26) is not
 yet verified in a browser; their test cases above are Designed.
 
+### TC-API-05 Generated wire types (SRS-MNT-14)
+
+1. `API_SPEC=<api repo>/modules/api/service/src/main/resources/openapi-v1.json npm run api:types`: the file is written; a second run gives no diff.
+2. Remove a field from the spec's `PublicationSummary`, regenerate: `npm run build` fails where the site reads it. Revert.
+3. `npm run checkstyle`, `npm run build`, strict `tsc` pass.
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x

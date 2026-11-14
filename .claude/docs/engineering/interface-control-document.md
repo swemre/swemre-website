@@ -323,6 +323,15 @@ A 401 (`CHANNEL_READ_DENIED`: unknown channel, missing or wrong read key)
 rejects with `ApiError(401)`. Not used yet: `GET .../terms?kind=&locale=`.
 Media URLs arrive as paths and are joined to `VITE_API_BASE`, as in v1.
 
+#### IF-20 wire types (3-D12)
+
+The wire types come from the API's committed `openapi-v1.json`
+(`npm run api:types`, `scripts/api-types.mjs`, openapi-typescript 7.13.0,
+the CMS's version) into `src/contract/generated/api-v1.d.ts` (committed,
+not hand-edited). `src/contract/api.ts` aliases them; `FieldMap`,
+`ContentTypeKey`, `ApiListQuery`, `FormValue`, `FormKey`, `PublicApiClient`,
+`ApiError` and the v2 `ApiRedirect` (until 4-D06) stay hand-written.
+
 ### 6.4 IF-18 Public form submissions
 
 | Item       | Value                                                                         |
@@ -462,3 +471,4 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-24 | IF-20: forms and chat on v2 | Claude, for swemre review |
 | 2026-10-24 | PRS-000565: IF-18 forms post to their table endpoint (accepted fields, `FORM_CLOSED`, field errors) | Claude, for swemre review |
 | 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |
+| 2026-11-14 | 3-D12: IF-20/IF-18 on public API v1 | Claude, for swemre review |
