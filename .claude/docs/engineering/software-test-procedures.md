@@ -557,6 +557,33 @@ Browser check by the lead for the website UX tickets. Verified in browser
 Every other UX fix (W2, W3, W10, W12 to W17, W21 to W23, W25, W26) is not
 yet verified in a browser; their test cases above are Designed.
 
+### TC-API-05 Generated wire types (SRS-MNT-14)
+
+1. `API_SPEC=<api repo>/modules/api/service/src/main/resources/openapi-v1.json npm run api:types`: the file is written; a second run gives no diff.
+2. Remove a field from the spec's `PublicationSummary`, regenerate: `npm run build` fails where the site reads it. Revert.
+3. `npm run checkstyle`, `npm run build`, strict `tsc` pass.
+
+### TC-API-06 Reads on v1 with the publishable key (SRS-MNT-15)
+
+1. `.env.local`: `VITE_API_MODE=live`, `VITE_API_BASE`, `VITE_API_KEY=<key>`, `VITE_READ_KEY`; `npm run dev`: every publication and term request goes to `/api/public/v1/channels/<c>/...` with `Authorization: Bearer swp_pk_...`; only `/public/v2/.../redirects` carries `X-Read-Key`.
+2. `VITE_API_KEY=swp_sk_...` → `npm run build` fails with "VITE_API_KEY must be a publishable key".
+3. Live build with `VITE_API_KEY`: `rss.xml` and `sitemap.xml` come from v1.
+4. A key of another channel: every read answers 404 and the not-found pages show; a revoked key: 401, the unavailable page.
+
+### TC-API-07 Forms and the error map (SRS-MNT-16)
+
+1. Newsletter sign-up in live mode: `POST /api/public/v1/channels/<c>/forms/newsletter/submissions` with Bearer; the success panel.
+2. A closed form: "closed"; mock `?fault=403-key` (a key without `public.forms.submit`): the generic failure and one console error naming the key.
+3. Six sign-ups in a minute: the sixth shows "limited". A bad email: the field error under the email field.
+4. Confirm with an expired token: the expired panel. Page loads with a revoked key: the unavailable page.
+
+### TC-API-08 Read waits and freshness (SRS-MNT-17, MNT-18)
+
+1. API down (mock `?fault=500`): an article shows its skeleton; the network panel shows 4 tries at about 0, 2, 6 and 14 s, then the error with Try; Try starts a new set.
+2. A missing article: the not-found page after one request.
+3. Publish a new title; within 5 minutes plus one navigation the open tab shows it, with no spinner.
+4. Back and forth inside 5 minutes: no new request for the same key; no timer runs while the tab is idle (Performance panel, 1 minute).
+
 ## Appendix A: contrast record
 
 Measured 2026-10-15 from the token values in `src/main.css` (WCAG 2.x

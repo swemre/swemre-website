@@ -23,6 +23,8 @@ const IGNORED_DIRS = new Set([
   '.vscode',
   '.claude',
   'public',
+  // Written by scripts/api-types.mjs
+  'generated',
 ])
 
 const LINES = [

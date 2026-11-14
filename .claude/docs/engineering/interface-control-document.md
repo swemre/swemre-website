@@ -323,6 +323,41 @@ A 401 (`CHANNEL_READ_DENIED`: unknown channel, missing or wrong read key)
 rejects with `ApiError(401)`. Not used yet: `GET .../terms?kind=&locale=`.
 Media URLs arrive as paths and are joined to `VITE_API_BASE`, as in v1.
 
+#### IF-20 wire types (3-D12)
+
+The wire types come from the API's committed `openapi-v1.json`
+(`npm run api:types`, `scripts/api-types.mjs`, openapi-typescript 7.13.0,
+the CMS's version) into `src/contract/generated/api-v1.d.ts` (committed,
+not hand-edited). `src/contract/api.ts` aliases them; `FieldMap`,
+`ContentTypeKey`, `ApiListQuery`, `FormValue`, `FormKey`, `PublicApiClient`,
+`ApiError` and the v2 `ApiRedirect` (until 4-D06) stay hand-written.
+
+#### IF-20 on v1 (3-D13)
+
+| Variable       | Default                          | Use |
+| -------------- | -------------------------------- | --- |
+| `VITE_API_KEY` | a mock-only `swp_pk_localmck_...` | The website's publishable key (the API's `WEBSITE_API_KEY`), sent as `Authorization: Bearer` on every v1 call; required in live builds; a `swp_sk_` value fails the build |
+| `VITE_READ_KEY` | `local-mock`                    | `X-Read-Key` for `/public/v2/.../redirects` only, until 4-D06 |
+
+Reads: `GET /public/v1/channels/<c>/publications`, `.../publications/<slug>`,
+`.../terms` (and the build's RSS and sitemap). A key of another channel
+answers 404 on every read (the not-found pages); a revoked or expired key
+answers 401 `API_KEY_INVALID` (the unavailable page). Media URLs stay the
+keyless `/public/v2/channels/<c>/media/<id>/file` addresses of the JSON. A
+local live run from `localhost:5173` needs a key whose origins allow it.
+
+#### IF-18 on v1 (3-D14)
+
+Forms post to `/public/v1/channels/<c>/forms/<form-key>/submissions` with
+the Bearer key. `src/data/errors.ts` maps the answer's key to what the
+visitor sees: `FORM_CLOSED` closed, `RATE_LIMITED` limited,
+`VALIDATION_FAILED` field errors, `UNAVAILABLE`/`TIMEOUT`/`UNREACHABLE`
+try later, `NOT_FOUND` and the key problems (`API_KEY_MISSING`,
+`API_KEY_INVALID`, `API_KEY_PERMISSION_MISSING` with `permission`,
+`CHANNEL_READ_DENIED`) the generic failure (logged once); any other key
+falls back to the status (400 invalid, 429 limited, else failed). Page
+loads with a key problem show the unavailable page.
+
 ### 6.4 IF-18 Public form submissions
 
 | Item       | Value                                                                         |
@@ -462,3 +497,6 @@ containers, spacing, motion. Reference: `../design-system.md`.
 | 2026-10-24 | IF-20: forms and chat on v2 | Claude, for swemre review |
 | 2026-10-24 | PRS-000565: IF-18 forms post to their table endpoint (accepted fields, `FORM_CLOSED`, field errors) | Claude, for swemre review |
 | 2026-10-23 | IF-19: JSON-LD structured data script (SRS-GEN-11) | Claude, for swemre review |
+| 2026-11-14 | 3-D12: IF-20/IF-18 on public API v1 | Claude, for swemre review |
+| 2026-11-14 | 3-D13: IF-20/IF-18 on public API v1 | Claude, for swemre review |
+| 2026-11-14 | 3-D14: IF-20/IF-18 on public API v1 | Claude, for swemre review |

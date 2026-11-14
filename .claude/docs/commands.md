@@ -68,3 +68,11 @@ work in both. Line endings are LF (`.editorconfig`, `files.eol`); Git may warn
 about LF to CRLF conversion, which is harmless. Windows Python writes CRLF in
 text mode, so scripts that edit files should open them with LF newlines
 (Prettier rejects CRLF).
+| `npm run api:types` | Regenerate `src/contract/generated/api-v1.d.ts` from the API's committed `openapi-v1.json` (`API_SPEC` for another file or an `/api/public/v1/openapi.json` URL); run it in the same change as any contract change |
+## Public API v1 key (3-D13)
+
+`VITE_API_KEY` is the website's publishable key (`swp_pk_...`, the API's
+`WEBSITE_API_KEY`), sent as Bearer on every v1 read; `scripts/deploy.sh` and
+`scripts/deploy-cloudflare.sh` require it in live builds. A local live run
+from `localhost:5173` needs a key whose origins allow it.
+

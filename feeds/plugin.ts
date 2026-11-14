@@ -28,17 +28,20 @@ import {shellHtml, shellsOf, siteShell, type Shell} from './shells.ts'
 export interface LiveFeedsOptions {
   apiBase: string
   channel: string
-  readKey: string
+  apiKey: string
   siteUrl: string
   locales: string[]
   required: boolean
 }
 
 export function liveFeeds(opts: LiveFeedsOptions): Plugin {
-  const base = `${opts.apiBase.replace(/\/$/, '')}/public/v2/channels/${opts.channel}`
+  const base = `${opts.apiBase.replace(/\/$/, '')}/public/v1/channels/${opts.channel}`
   const get = async <T>(path: string): Promise<T> => {
     const res = await fetch(base + path, {
-      headers: {'X-Read-Key': opts.readKey, Accept: 'application/json'},
+      headers: {
+        Authorization: `Bearer ${opts.apiKey}`,
+        Accept: 'application/json',
+      },
     })
     if (!res.ok) throw new Error(`GET ${path}: HTTP ${res.status}`)
     return (await res.json()) as T

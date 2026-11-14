@@ -24,8 +24,8 @@ import type {
   FormState,
   FormValues,
 } from '../contract/forms.ts'
-import {UNREACHABLE} from '../data/client.ts'
 import {api} from '../data/client.ts'
+import {errorKind} from '../data/errors.ts'
 import type {FormDef} from './specs.ts'
 import {initialValues, validate, wireFields} from './validate.ts'
 
@@ -50,14 +50,7 @@ export interface Machine extends FormMachine {
 
 const OFFSET = {m: 88, other: 112}
 
-function failureOf(e: unknown): FailureKind {
-  if (!(e instanceof ApiError)) return 'failed'
-  if (e.status === UNREACHABLE) return 'unreachable'
-  if (e.status === 403) return 'closed'
-  if (e.status === 429) return 'limited'
-  if (e.status === 400) return 'invalid'
-  return 'failed'
-}
+const failureOf = (e: unknown): FailureKind => errorKind(e)
 
 export const STATUS_TEXT: Record<number, string> = {
   201: 'Created',

@@ -544,3 +544,24 @@ Full trace: SWE-DOC-007.
 | 2026-10-23 | PRS-000311: canonical and Twitter tags through `documentTags`, §4.10a route pre-render, preview plugin | Claude, for swemre review |
 | 2026-10-23 | §4.3: one public API client and one site environment (ADR-017) | Claude, for swemre review |
 | 2026-10-23 | PRS-000333: §6 failed loads, unreachable chat and forms (closes RSK-04) | Claude, for swemre review |
+
+### 3-D12 Wire types
+
+The wire contract is generated (SRS-MNT-14): `src/contract/generated/api-v1.d.ts`
+from the API's `openapi-v1.json`, aliased in `src/contract/api.ts`.
+
+### 3-D13 Public API v1
+
+The client (`src/data/client.ts`) reads `/public/v1/channels/<c>` with the
+publishable key as Bearer (SRS-MNT-15); `/redirects` stays on v2 until 4-D06.
+
+### 3-D14 Error map
+
+One map from error key to failure (`src/data/errors.ts`, SRS-MNT-16) serves
+the form machine, the newsletter flows and the resolver.
+
+### 3-D23 Read cache
+
+`src/data/store.ts` retries a failed read after 2, 4 and 8 s (not a 404) and
+keeps ready data fresh for 5 minutes, refreshing behind the old copy on use
+(SRS-MNT-17, MNT-18); no timer runs while nothing uses an entry.

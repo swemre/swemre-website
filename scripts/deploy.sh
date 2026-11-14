@@ -47,6 +47,8 @@ if [ "${ROLLBACK:-}" = "1" ]; then
   exit 0
 fi
 
+: "${VITE_API_KEY:?Set VITE_API_KEY to the website's publishable key (the API's WEBSITE_API_KEY)}"
+# Until 4-D06 /redirects is read on v2 with the channel's read key
 : "${VITE_READ_KEY:?Set VITE_READ_KEY to the read key of the production website channel}"
 export VITE_API_MODE=live
 # The build writes rss.xml and sitemap.xml from the API and fails if it cannot reach it

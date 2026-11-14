@@ -36,6 +36,8 @@ export interface MockOptions {
   channel?: string
   /** VITE_READ_KEY, default local-mock. */
   readKey?: string
+  /** VITE_API_KEY, the publishable key v1 reads take as Bearer; default the mock-only key. */
+  apiKey?: string
   /** VITE_SITE_URL, for the links in /rss.xml and /sitemap.xml; default http://localhost:5173. */
   siteUrl?: string
 }
@@ -159,8 +161,11 @@ export function createMockMiddleware(
   const apiBase = (opts.apiBase ?? '/api').replace(/\/$/, '')
   const channel = opts.channel ?? 'swemre-website'
   const readKey = opts.readKey ?? 'local-mock'
+  const apiKey = opts.apiKey || 'swp_pk_localmck_' + 'x'.repeat(32)
   const siteUrl = opts.siteUrl ?? 'http://localhost:5173'
   const prefix = `${apiBase}/public/v2/channels/`
+  // TODO(4-D17): a minimal v1 alias over the v2 handlers until the mock moves to v1
+  const v1Prefix = `${apiBase}/public/v1/channels/`
   const load = (): MockData =>
     loadMockData(join(HERE, 'seed'), join(HERE, 'media'), channel)
 
@@ -177,7 +182,8 @@ export function createMockMiddleware(
       res.setHeader('Content-Type', 'application/xml; charset=utf-8')
       return res.end(mockSitemap(load(), siteUrl))
     }
-    if (!url.pathname.startsWith(prefix)) return next()
+    if (!url.pathname.startsWith(prefix) && !url.pathname.startsWith(v1Prefix))
+      return next()
     handle(req, res, url).catch((e: unknown) => {
       console.error('[mock-api]', e)
       faultAnswer(res, 500)
@@ -185,8 +191,9 @@ export function createMockMiddleware(
   }
 
   async function handle(req: IncomingMessage, res: Res, url: URL) {
+    const v1 = url.pathname.startsWith(v1Prefix)
     const [ch, ...rest] = url.pathname
-      .slice(prefix.length)
+      .slice(v1 ? v1Prefix.length : prefix.length)
       .split('/')
       .map(decodeURIComponent)
     const route = rest.join('/')
@@ -210,7 +217,17 @@ export function createMockMiddleware(
 
     const isForm =
       method === 'POST' && /^forms\/[^/]+\/submissions$/.test(route)
-    if (ch !== channel || (!isForm && req.headers['x-read-key'] !== readKey)) {
+    if (v1) {
+      const auth = req.headers.authorization
+      if (!auth)
+        return error(res, 401, 'API_KEY_MISSING', 'An API key is needed')
+      if (auth !== `Bearer ${apiKey}`)
+        return error(res, 401, 'API_KEY_INVALID', 'The API key is not valid')
+      if (ch !== channel) return error(res, 404, 'NOT_FOUND', 'No such channel')
+    } else if (
+      ch !== channel ||
+      (!isForm && req.headers['x-read-key'] !== readKey)
+    ) {
       return faultAnswer(res, 401)
     }
 
@@ -221,6 +238,11 @@ export function createMockMiddleware(
       await delay(TIMEOUT_MS)
       return faultAnswer(res, 504)
     }
+    // 3-D14 a key without public.forms.submit, for the hand check of the error map
+    if (fault === '403-key')
+      return error(res, 403, 'API_KEY_PERMISSION_MISSING', 'No permission', {
+        permission: 'public.forms.submit',
+      })
     if (fault === 'slow') await delay(SLOW_MS)
     else if (fault && /^\d{3}$/.test(fault))
       return faultAnswer(res, Number(fault))

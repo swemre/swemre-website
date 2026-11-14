@@ -330,6 +330,11 @@ features). No backend, no cookies, no analytics.
 | SRS-MNT-11  | The API base, workspace key, channel key, read key, site URL, locale and read timeout shall come from the build's `VITE_*` environment through `config/env.ts`, with the defaults in `config/siteDefaults.ts`; `index.html`, the bundle and the RSS and sitemap scripts shall use the same values. | T | P1 |
 | SRS-MNT-12  | A public API read shall fail after the configured timeout (default 10 s) instead of waiting indefinitely. | T | P1 |
 | SRS-MNT-13  | With a channel key, articles, projects, songs, pages and site settings shall be read from public API v2 for that channel in the configured locale, and form submissions and chat shall go there too, with the read key as `X-Read-Key` (only on v2 requests) and a chat's visitor token as `X-Visitor-Token`; without a socket the chat shall poll for replies every 15 s. Without a channel key, and for page views, the workspace API v1 shall be used. A wrong or missing read key (401) shall fail like any other error. | T | P1 |
+| SRS-MNT-14  | The website's wire types (publications, terms, media, form answers, problem bodies) shall be generated from the public API's committed `openapi-v1.json` with openapi-typescript 7.13.0 into `src/contract/generated/api-v1.d.ts`; `src/contract/api.ts` shall alias them and add only the site's own types (FR-API-013). | I | P1 |
+| SRS-MNT-15  | Every read (browser and build: RSS, sitemap) shall go to `/api/public/v1/channels/{channel}/...` with `Authorization: Bearer <VITE_API_KEY>`, a publishable `swp_pk_` key; a `swp_sk_` value shall fail the build. Only `/redirects` stays on v2 with `X-Read-Key` until 4-D06 (FR-PRM-121). | T | P1 |
+| SRS-MNT-16  | Form posts shall go to `/api/public/v1/channels/{channel}/forms/{form-key}/submissions` with the publishable key, and the failure a visitor sees shall be chosen from the answer's error key through one map (`src/data/errors.ts`), falling back to the status for unknown keys; a key problem (`API_KEY_*`) shall show the generic failure and log once (FR-API-016, FR-API-009). | T | P1 |
+| SRS-MNT-17  | A failed read shall try again after 2, 4 and 8 s and then show the error with its Try button; a 404 is an answer and is not retried (FR-SIT-031). | T | P2 |
+| SRS-MNT-18  | Cached site data (per tab, in memory) shall be fresh for 5 minutes; the next use after that shows the old data at once and swaps in a new copy without a spinner; a failed refresh keeps the old data (FR-SIT-032). | T | P2 |
 
 ### 4.5 Compatibility and responsiveness (CMP)
 
@@ -373,3 +378,7 @@ features). No backend, no cookies, no analytics.
 | 2026-10-24 | PRS-000322: A11Y-02 ring colour on the bands | Claude, for swemre review |
 | 2026-10-23 | PRS-000313: added GEN-11 (JSON-LD) | Claude, for swemre review |
 | 2026-10-24 | PRS-000005: added ART-18 (cover focal point) | Claude, for swemre review |
+| 2026-11-14 | 3-D12: added SRS-MNT-14 | Claude, for swemre review |
+| 2026-11-14 | 3-D13: added SRS-MNT-15 | Claude, for swemre review |
+| 2026-11-14 | 3-D14: added SRS-MNT-16 | Claude, for swemre review |
+| 2026-11-14 | 3-D23: added SRS-MNT-17, SRS-MNT-18 | Claude, for swemre review |
